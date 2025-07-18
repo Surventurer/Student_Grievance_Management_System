@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard Test - Student Grievance System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <h1>🎉 Admin Dashboard Test</h1>
+    <p>If you can see this, the template is working!</p>
+    
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5>Total Grievances</h5>
+                    <h2>{{ total_grievances|default:0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5>Pending</h5>
+                    <h2>{{ pending_grievances|default:0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5>Resolved</h5>
+                    <h2>{{ resolved_grievances|default:0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h5>Rejected</h5>
+                    <h2>{{ rejected_grievances|default:0 }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <h3>Recent Grievances</h3>
+        {% if recent_grievances %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Student</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for grievance in recent_grievances %}
+                        <tr>
+                            <td>{{ grievance.title }}</td>
+                            <td>{{ grievance.student.user.get_full_name|default:grievance.student.user.email }}</td>
+                            <td>
+                                <span class="badge bg-{% if grievance.status == 'pending' %}warning{% elif grievance.status == 'resolved' %}success{% else %}danger{% endif %}">
+                                    {{ grievance.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ grievance.submitted_at|date:"M d, Y" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted">No grievances found.</p>
+        {% endif %}
+    </div>
+    
+    <div class="mt-4">
+        <h3>Debug Info</h3>
+        <ul>
+            <li>User: {{ user.email }}</li>
+            <li>Is Admin: {{ user.is_admin }}</li>
+            <li>Template Path: admin_panel/dashboard_test.html</li>
+            <li>Total Grievances: {{ total_grievances }}</li>
+            <li>Recent Grievances Count: {{ recent_grievances|length }}</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

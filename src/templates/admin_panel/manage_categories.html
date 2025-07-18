@@ -1,0 +1,380 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Categories - Admin Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .category-card {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid #e9ecef;
+    }
+    
+    .category-item {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .category-item:hover {
+        background: #fff;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .category-item.inactive {
+        background: #f1f3f4;
+        opacity: 0.7;
+    }
+    
+    .category-header {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .category-type-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-weight: 500;
+    }
+    
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+    
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 24px;
+    }
+    
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+        background-color: #007bff;
+    }
+    
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+    
+    .form-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+    }
+    
+    .form-card .form-control {
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.3);
+        color: white;
+    }
+    
+    .form-card .form-control::placeholder {
+        color: rgba(255,255,255,0.7);
+    }
+    
+    .form-card .form-control:focus {
+        background: rgba(255,255,255,0.2);
+        border-color: rgba(255,255,255,0.5);
+        color: white;
+        box-shadow: 0 0 0 0.2rem rgba(255,255,255,0.25);
+    }
+    
+    .form-card .form-select {
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.3);
+        color: white;
+    }
+    
+    .form-card .form-select option {
+        background: #495057;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-gray-800">
+                        <i class="fas fa-tags me-2"></i>Manage Categories
+                    </h1>
+                    <p class="text-muted mb-0">Add and manage grievance categories</p>
+                </div>
+                <div>
+                    <a href="{% url 'admin_panel:dashboard' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Add New Category -->
+        <div class="col-lg-4">
+            <div class="form-card">
+                <h5 class="text-white mb-4">
+                    <i class="fas fa-plus me-2"></i>Add New Category
+                </h5>
+                
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="form-label text-white">Category Name</label>
+                        <input type="text" class="form-control" id="name" name="name" 
+                               placeholder="Enter category name..." required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label text-white">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" 
+                                  placeholder="Enter category description..." required></textarea>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="category_type" class="form-label text-white">Category Type</label>
+                        <select class="form-select" id="category_type" name="category_type" required>
+                            <option value="">Select type...</option>
+                            <option value="academic">Academic</option>
+                            <option value="non_academic">Non-Academic</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-light">
+                            <i class="fas fa-save me-2"></i>Create Category
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Categories List -->
+        <div class="col-lg-8">
+            <div class="category-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list me-2 text-primary"></i>All Categories
+                        <span class="badge bg-primary">{{ categories.count }}</span>
+                    </h5>
+                    <div>
+                        <span class="badge bg-info me-2">{{ categories|dictsort:"category_type"|dictsort:"is_active"|length }} Academic</span>
+                        <span class="badge bg-warning">{{ categories|dictsort:"category_type"|dictsort:"is_active"|length }} Non-Academic</span>
+                    </div>
+                </div>
+                
+                {% if categories %}
+                <div class="category-list">
+                    {% for category in categories %}
+                    <div class="category-item {% if not category.is_active %}inactive{% endif %}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="category-header">
+                                    <h6 class="mb-1">{{ category.name }}</h6>
+                                    <div class="ms-auto d-flex align-items-center">
+                                        <span class="category-type-badge bg-{% if category.category_type == 'academic' %}info{% else %}warning{% endif %} text-white me-2">
+                                            {{ category.get_category_type_display }}
+                                        </span>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" {% if category.is_active %}checked{% endif %} 
+                                                   onchange="toggleCategoryStatus('{{ category.id }}')">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <p class="text-muted mb-2">{{ category.description }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-clipboard-list me-1"></i>
+                                        {{ category.grievances.count }} grievance{{ category.grievances.count|pluralize }}
+                                    </small>
+                                    <small class="text-muted">
+                                        Status: 
+                                        <span class="badge bg-{% if category.is_active %}success{% else %}secondary{% endif %} px-2 py-1">
+                                            {% if category.is_active %}Active{% else %}Inactive{% endif %}
+                                        </span>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-tags fa-3x text-muted mb-3"></i>
+                    <h6 class="text-muted">No categories found</h6>
+                    <p class="text-muted">Create your first category using the form on the left</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="category-card">
+                <h5 class="mb-4">
+                    <i class="fas fa-chart-bar me-2 text-success"></i>Category Statistics
+                </h5>
+                
+                <div class="row">
+                    {% for category in categories %}
+                    {% if category.grievances.count > 0 %}
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">{{ category.name|truncatechars:20 }}</h6>
+                                <div class="display-6 text-primary mb-2">{{ category.grievances.count }}</div>
+                                <p class="card-text text-muted">
+                                    <small>
+                                        Pending: {{ category.grievances.filter_status_pending.count }}<br>
+                                        Resolved: {{ category.grievances.filter_status_resolved.count }}
+                                    </small>
+                                </p>
+                                <span class="badge bg-{% if category.category_type == 'academic' %}info{% else %}warning{% endif %}">
+                                    {{ category.get_category_type_display }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    {% if not categories %}
+                    <div class="col-12">
+                        <div class="text-center py-4">
+                            <i class="fas fa-chart-bar fa-2x text-muted mb-3"></i>
+                            <h6 class="text-muted">No statistics available</h6>
+                            <p class="text-muted">Categories with grievances will appear here</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-success">
+                    <i class="fas fa-check-circle me-2"></i>Success
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="successMessage">Category status updated successfully!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleCategoryStatus(categoryId) {
+    fetch(`/admin-panel/categories/${categoryId}/toggle/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('successMessage').textContent = 
+                `Category ${data.status} successfully!`;
+            
+            // Show success modal
+            var modal = new bootstrap.Modal(document.getElementById('successModal'));
+            modal.show();
+            
+            // Optionally reload page after modal is closed
+            modal._element.addEventListener('hidden.bs.modal', function () {
+                location.reload();
+            });
+        } else {
+            alert('Error updating category status: ' + (data.error || 'Unknown error'));
+            // Revert the toggle
+            event.target.checked = !event.target.checked;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating category status');
+        // Revert the toggle
+        event.target.checked = !event.target.checked;
+    });
+}
+
+// Display messages if any
+{% if messages %}
+document.addEventListener('DOMContentLoaded', function() {
+    {% for message in messages %}
+    var alertClass = '{% if message.tags == "error" %}danger{% else %}{{ message.tags }}{% endif %}';
+    var alertHtml = `
+        <div class="alert alert-${alertClass} alert-dismissible fade show" role="alert">
+            <i class="fas fa-{% if message.tags == "success" %}check-circle{% elif message.tags == "error" %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    // Insert at the top of the container
+    var container = document.querySelector('.container-fluid');
+    container.insertAdjacentHTML('afterbegin', alertHtml);
+    {% endfor %}
+});
+{% endif %}
+</script>
+{% endblock %}

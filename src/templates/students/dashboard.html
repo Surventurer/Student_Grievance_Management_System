@@ -102,6 +102,7 @@
             </div>
             <div class="card-body">
                 <p><strong>Student ID:</strong> {{ student_profile.student_id }}</p>
+                <p><strong>School:</strong> {{ student_profile.school|default:"Not provided" }}</p>
                 <p><strong>Department:</strong> {{ student_profile.department }}</p>
                 <p><strong>Email:</strong> {{ student_profile.user.email }}</p>
                 <p><strong>Contact:</strong> {{ student_profile.contact_no|default:"Not provided" }}</p>

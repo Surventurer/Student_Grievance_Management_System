@@ -73,7 +73,6 @@
                             <th>Category</th>
                             <th>Department</th>
                             <th>Status</th>
-                            <th>Priority</th>
                             <th>Submitted</th>
                             <th>Actions</th>
                         </tr>
@@ -99,11 +98,6 @@
                             <td>
                                 <span class="badge bg-{% if grievance.status == 'pending' %}warning{% elif grievance.status == 'resolved' %}success{% else %}danger{% endif %}">
                                     {{ grievance.get_status_display }}
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge bg-{% if grievance.priority == 'high' %}danger{% elif grievance.priority == 'medium' %}warning{% else %}secondary{% endif %}">
-                                    {{ grievance.get_priority_display }}
                                 </span>
                             </td>
                             <td>{{ grievance.submitted_at|date:"M d, Y H:i" }}</td>

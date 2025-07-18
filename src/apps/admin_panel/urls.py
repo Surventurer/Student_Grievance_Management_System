@@ -4,14 +4,30 @@ from . import views
 app_name = 'admin_panel'
 
 urlpatterns = [
+    # Dashboard
     path('dashboard/', views.admin_dashboard, name='dashboard'),
-    path('grievances/', views.grievance_list, name='grievance_list'),
+    
+    # Grievance Management
+    path('grievances/', views.grievance_list_advanced, name='grievance_list'),
     path('grievances/api/', views.manage_grievances, name='manage_grievances'),
-    path('grievances/<uuid:grievance_id>/', views.grievance_detail, name='grievance_detail'),
+    path('grievances/<uuid:grievance_id>/', views.grievance_detail_view, name='grievance_detail'),
+    path('grievances/<uuid:grievance_id>/update-status/', views.update_grievance_status, name='update_grievance_status'),
+    path('grievances/<uuid:grievance_id>/add-response/', views.add_admin_response, name='add_admin_response'),
+    
+    # Student Management
     path('students/', views.student_list, name='student_list'),
     path('students/api/', views.manage_students, name='manage_students'),
-    path('categories/', views.manage_categories, name='manage_categories'),
+    path('students/<int:student_id>/', views.student_detail_view, name='student_detail'),
+    
+    # Category Management
+    path('categories/', views.manage_categories_view, name='manage_categories'),
+    path('categories/<int:category_id>/toggle/', views.toggle_category_status, name='toggle_category'),
+    
+    # Reports and Analytics
     path('reports/', views.reports, name='reports'),
     path('reports/api/', views.reports_api, name='reports_api'),
-    path('audit-logs/', views.audit_logs, name='audit_logs'),
+    
+    # Audit Logs
+    path('audit-logs/', views.audit_logs_view, name='audit_logs'),
+    path('audit-logs/api/', views.audit_logs, name='audit_logs_api'),
 ]

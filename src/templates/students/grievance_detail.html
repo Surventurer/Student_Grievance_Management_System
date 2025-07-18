@@ -63,12 +63,16 @@
                 </div>
                 {% endif %}
 
-                <!-- Comments/Updates -->
-                {% if grievance.comments.all %}
+                <!-- Admin Responses & Updates -->
+                {% with public_comments=grievance.comments.all|dictsort:"timestamp" %}
+                {% if public_comments %}
                 <div class="mb-4">
-                    <h6 class="fw-bold text-muted">Updates & Comments</h6>
-                    {% for comment in grievance.comments.all %}
-                    <div class="card mb-3 {% if comment.comment_type == 'internal_note' %}border-warning{% elif comment.comment_type == 'status_update' %}border-info{% endif %}">
+                    <h6 class="fw-bold text-muted">
+                        <i class="fas fa-comments me-2"></i>Admin Responses & Updates
+                    </h6>
+                    {% for comment in public_comments %}
+                    {% if not comment.is_internal %}
+                    <div class="card mb-3 {% if comment.comment_type == 'status_update' %}border-info{% elif comment.user.is_admin %}border-success{% endif %}">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <div>
@@ -76,23 +80,26 @@
                                         {% if comment.user.is_student %}
                                             {{ comment.user.get_full_name }} (Student)
                                         {% else %}
+                                            <i class="fas fa-user-shield me-1 text-success"></i>
                                             {{ comment.user.get_full_name }} (Admin)
                                         {% endif %}
                                     </strong>
                                     {% if comment.comment_type != 'comment' %}
-                                        <span class="badge bg-{% if comment.comment_type == 'status_update' %}info{% else %}warning{% endif %} ms-2">
+                                        <span class="badge bg-{% if comment.comment_type == 'status_update' %}info{% else %}secondary{% endif %} ms-2">
                                             {{ comment.get_comment_type_display }}
                                         </span>
                                     {% endif %}
                                 </div>
-                                <small class="text-muted">{{ comment.created_at|date:"M d, Y H:i" }}</small>
+                                <small class="text-muted">{{ comment.timestamp|date:"M d, Y H:i" }}</small>
                             </div>
                             <p class="mb-0">{{ comment.message|linebreaks }}</p>
                         </div>
                     </div>
+                    {% endif %}
                     {% endfor %}
                 </div>
                 {% endif %}
+                {% endwith %}
             </div>
         </div>
     </div>
@@ -123,14 +130,6 @@
                 <div class="row mb-2">
                     <div class="col-5 fw-bold">Department:</div>
                     <div class="col-7">{{ grievance.department|default:"N/A" }}</div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-5 fw-bold">Priority:</div>
-                    <div class="col-7">
-                        <span class="badge bg-{% if grievance.priority == 'high' %}danger{% elif grievance.priority == 'medium' %}warning{% else %}secondary{% endif %}">
-                            {{ grievance.get_priority_display }}
-                        </span>
-                    </div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-5 fw-bold">Status:</div>

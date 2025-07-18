@@ -1,0 +1,485 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Grievance Details - {{ grievance.grievance_id }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detail-card {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid #e9ecef;
+    }
+    
+    .info-row {
+        border-bottom: 1px solid #e9ecef;
+        padding: 1rem 0;
+    }
+    
+    .info-row:last-child {
+        border-bottom: none;
+    }
+    
+    .label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+    
+    .value {
+        color: #6c757d;
+    }
+    
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+    
+    .action-buttons .btn {
+        margin: 0.25rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+    }
+    
+    .timeline {
+        position: relative;
+        padding-left: 2rem;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 0.5rem;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #dee2e6;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 1.5rem;
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #007bff;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -1.75rem;
+        top: 1rem;
+        width: 12px;
+        height: 12px;
+        background: #007bff;
+        border-radius: 50%;
+        border: 2px solid #fff;
+    }
+    
+    .attachment-preview {
+        border: 2px dashed #dee2e6;
+        border-radius: 8px;
+        padding: 2rem;
+        text-align: center;
+        background: #f8f9fa;
+    }
+    
+    .comment-box {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-gray-800">
+                        <i class="fas fa-eye me-2"></i>Grievance Details
+                    </h1>
+                    <p class="text-muted mb-0">ID: {{ grievance.grievance_id }}</p>
+                </div>
+                <div>
+                    <a href="{% url 'admin_panel:grievance_list' %}" 
+                       class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to List
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Details -->
+        <div class="col-lg-8">
+            <!-- Grievance Information -->
+            <div class="detail-card">
+                <h5 class="mb-4">
+                    <i class="fas fa-info-circle me-2 text-primary"></i>Grievance Information
+                </h5>
+                
+                <div class="info-row">
+                    <div class="label">Title</div>
+                    <div class="value h5">{{ grievance.title }}</div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="label">Description</div>
+                    <div class="value">{{ grievance.description|linebreaks }}</div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="label">Category</div>
+                    <div class="value">
+                        <span class="badge bg-{% if grievance.category.category_type == 'academic' %}info{% else %}warning{% endif %} fs-6">
+                            {{ grievance.category.name }}
+                        </span>
+                        <small class="text-muted ms-2">({{ grievance.category.get_category_type_display }})</small>
+                    </div>
+                </div>
+                
+                {% if grievance.department %}
+                <div class="info-row">
+                    <div class="label">Department</div>
+                    <div class="value">{{ grievance.department }}</div>
+                </div>
+                {% endif %}
+                
+                <div class="info-row">
+                    <div class="label">Submitted Date</div>
+                    <div class="value">{{ grievance.submitted_at|date:"F d, Y \a\t H:i" }}</div>
+                </div>
+                
+                {% if grievance.resolved_at %}
+                <div class="info-row">
+                    <div class="label">Resolved Date</div>
+                    <div class="value">{{ grievance.resolved_at|date:"F d, Y \a\t H:i" }}</div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Supporting Documents -->
+            {% if grievance.attachments.all %}
+            <div class="detail-card">
+                <h5 class="mb-4">
+                    <i class="fas fa-paperclip me-2 text-secondary"></i>Supporting Documents
+                </h5>
+                
+                <div class="row">
+                    {% for attachment in grievance.attachments.all %}
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card border">
+                            <div class="card-body text-center">
+                                <i class="fas fa-file fa-2x text-muted mb-2"></i>
+                                <h6 class="card-title text-truncate">{{ attachment.file_name }}</h6>
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <strong>Type:</strong> {{ attachment.file_type }}<br>
+                                        <strong>Size:</strong> {{ attachment.file_size|filesizeformat }}<br>
+                                        <strong>Uploaded:</strong> {{ attachment.uploaded_at|date:"M d, Y H:i" }}
+                                    </small>
+                                </p>
+                                <div class="d-flex gap-2 justify-content-center">
+                                    <a href="{{ attachment.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <a href="{{ attachment.file.url }}" class="btn btn-sm btn-primary" download="{{ attachment.file_name }}">
+                                        <i class="fas fa-download"></i> Download
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Total {{ grievance.attachments.count }} supporting document{{ grievance.attachments.count|pluralize }}
+                    </small>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Admin Responses & Comments -->
+            <div class="detail-card">
+                <h5 class="mb-4">
+                    <i class="fas fa-reply me-2 text-success"></i>Admin Responses & Comments
+                </h5>
+                
+                <!-- Existing Comments -->
+                {% with all_comments=grievance.comments.all|dictsort:"timestamp" %}
+                {% if all_comments %}
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-3">Previous Comments:</h6>
+                    {% for comment in all_comments %}
+                    <div class="comment-box mb-3 {% if comment.is_internal %}border-warning{% endif %}">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <strong>
+                                    {% if comment.user.is_student %}
+                                        <i class="fas fa-user me-1 text-primary"></i>
+                                        {{ comment.user.get_full_name }} (Student)
+                                    {% else %}
+                                        <i class="fas fa-user-shield me-1 text-success"></i>
+                                        {{ comment.user.get_full_name }} (Admin)
+                                    {% endif %}
+                                </strong>
+                                {% if comment.comment_type != 'comment' %}
+                                    <span class="badge bg-{% if comment.comment_type == 'status_update' %}info{% else %}secondary{% endif %} ms-2">
+                                        {{ comment.get_comment_type_display }}
+                                    </span>
+                                {% endif %}
+                                {% if comment.is_internal %}
+                                    <span class="badge bg-warning ms-1">Internal</span>
+                                {% endif %}
+                            </div>
+                            <small class="text-muted">{{ comment.timestamp|date:"M d, Y H:i" }}</small>
+                        </div>
+                        <p class="mb-0">{{ comment.message|linebreaks }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+                
+                <!-- Add New Response Form -->
+                <form id="adminResponseForm" method="POST" action="{% url 'admin_panel:add_admin_response' grievance.id %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="admin_response" class="form-label">Add Comment/Response</label>
+                        <textarea class="form-control" id="admin_response" name="admin_response" rows="4" 
+                                  placeholder="Enter your response or comments..." required></textarea>
+                        <div class="form-text">This response will be visible to the student</div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-comment me-2"></i>Add Public Response
+                        </button>
+                        <button type="button" class="btn btn-outline-warning" onclick="submitInternalNote()">
+                            <i class="fas fa-sticky-note me-2"></i>Add Internal Note
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Status and Actions -->
+            <div class="detail-card">
+                <h5 class="mb-4">
+                    <i class="fas fa-cogs me-2 text-warning"></i>Status & Actions
+                </h5>
+                
+                <div class="text-center mb-4">
+                    <div class="label mb-2">Current Status</div>
+                    <span class="status-badge bg-{% if grievance.status == 'pending' %}warning{% elif grievance.status == 'resolved' %}success{% else %}danger{% endif %} text-white">
+                        {{ grievance.get_status_display }}
+                    </span>
+                </div>
+                
+                {% if grievance.status == 'pending' %}
+                <div class="action-buttons text-center">
+                    <button class="btn btn-success" onclick="updateGrievanceStatus('{{ grievance.id }}', 'resolved')">
+                        <i class="fas fa-check me-2"></i>Mark as Resolved
+                    </button>
+                    <button class="btn btn-danger" onclick="updateGrievanceStatus('{{ grievance.id }}', 'rejected')">
+                        <i class="fas fa-times me-2"></i>Mark as Rejected
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Student Information -->
+            <div class="detail-card">
+                <h5 class="mb-4">
+                    <i class="fas fa-user me-2 text-info"></i>Student Information
+                </h5>
+                
+                {% if not grievance.is_anonymous %}
+                <div class="info-row">
+                    <div class="label">Name</div>
+                    <div class="value">{{ grievance.student.user.get_full_name }}</div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="label">Student ID</div>
+                    <div class="value">{{ grievance.student.student_id }}</div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="label">Email</div>
+                    <div class="value">{{ grievance.student.user.email }}</div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="label">Department</div>
+                    <div class="value">{{ grievance.student.department|default:"Not specified" }}</div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="label">Course</div>
+                    <div class="value">{{ grievance.student.course|default:"Not specified" }}</div>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <a href="{% url 'admin_panel:student_detail' grievance.student.id %}" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-eye me-2"></i>View Student Profile
+                    </a>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-user-secret fa-3x text-warning mb-3"></i>
+                    <h6 class="text-muted">Anonymous Grievance</h6>
+                    <p class="text-muted small">Student identity is protected</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Timeline -->
+            <div class="detail-card">
+                <h5 class="mb-4">
+                    <i class="fas fa-history me-2 text-secondary"></i>Timeline
+                </h5>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <strong>Grievance Submitted</strong>
+                        <br>
+                        <small class="text-muted">{{ grievance.submitted_at|date:"F d, Y \a\t H:i" }}</small>
+                    </div>
+                    
+                    {% if grievance.resolved_at %}
+                    <div class="timeline-item">
+                        <strong>Grievance {{ grievance.get_status_display }}</strong>
+                        <br>
+                        <small class="text-muted">{{ grievance.resolved_at|date:"F d, Y \a\t H:i" }}</small>
+                        {% if grievance.resolved_by %}
+                        <br>
+                        <small class="text-muted">by {{ grievance.resolved_by.get_full_name }}</small>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Function to update grievance status
+function updateGrievanceStatus(grievanceId, status) {
+    const confirmMessage = status === 'resolved' ? 'resolve' : 'reject';
+    if (confirm(`Are you sure you want to ${confirmMessage} this grievance?`)) {
+        fetch(`/admin-panel/grievances/${grievanceId}/update-status/`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                status: status
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error updating grievance status: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error updating grievance status');
+        });
+    }
+}
+
+// Handle admin response form submission
+document.getElementById('adminResponseForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const responseText = formData.get('admin_response').trim();
+    
+    if (!responseText) {
+        alert('Please enter a response');
+        return;
+    }
+    
+    fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Clear the form
+            document.getElementById('admin_response').value = '';
+            // Reload to show the new comment
+            location.reload();
+        } else {
+            alert('Error adding response: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error adding response');
+    });
+});
+
+// Function to submit internal note
+function submitInternalNote() {
+    const responseText = document.getElementById('admin_response').value.trim();
+    
+    if (!responseText) {
+        alert('Please enter a note');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('admin_response', responseText);
+    formData.append('is_internal', 'true');
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    fetch('{% url "admin_panel:add_admin_response" grievance.id %}', {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('admin_response').value = '';
+            location.reload();
+        } else {
+            alert('Error adding internal note: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error adding internal note');
+    });
+}
+</script>
+{% endblock %}

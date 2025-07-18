@@ -76,19 +76,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.role == 'superadmin'
     
     def get_full_name(self):
-        return f"{self.first_name} {self.last_name}".strip()
-    
-    @property
-    def is_student(self):
-        return self.role == 'student'
-    
-    @property
-    def is_admin(self):
-        return self.role in ['admin', 'superadmin', 'officer']
-    
-    @property
-    def is_superadmin(self):
-        return self.role == 'superadmin'
+        """Get full name from student profile if available, otherwise return email"""
+        if hasattr(self, 'student_profile') and self.student_profile:
+            return self.student_profile.name or self.email
+        return self.email
 
 
 class EmailVerification(models.Model):

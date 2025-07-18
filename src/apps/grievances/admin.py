@@ -30,8 +30,8 @@ class CategoryAdmin(admin.ModelAdmin):
 class GrievanceAdmin(admin.ModelAdmin):
     """Admin interface for Grievance model"""
     
-    list_display = ['title', 'student', 'category', 'status', 'priority', 'submitted_at']
-    list_filter = ['status', 'priority', 'category__category_type', 'submitted_at']
+    list_display = ['title', 'student', 'category', 'status', 'submitted_at']
+    list_filter = ['status', 'category__category_type', 'submitted_at']
     search_fields = ['title', 'description', 'student__user__email']
     readonly_fields = ['id', 'submitted_at', 'updated_at']
     
@@ -39,8 +39,8 @@ class GrievanceAdmin(admin.ModelAdmin):
         ('Basic Information', {
             'fields': ('student', 'title', 'description', 'category', 'department')
         }),
-        ('Status & Priority', {
-            'fields': ('status', 'priority', 'assigned_admin')
+        ('Status & Assignment', {
+            'fields': ('status', 'assigned_admin')
         }),
         ('Additional Info', {
             'fields': ('is_anonymous', 'supporting_docs'),

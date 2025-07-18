@@ -1,0 +1,315 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - Student Grievance System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-card {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+        border: 1px solid #e9ecef;
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+    
+    .stats-card {
+        text-align: center;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 1.5rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stats-card.total { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .stats-card.pending { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .stats-card.resolved { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .stats-card.rejected { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    
+    .stats-icon {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 2rem;
+        opacity: 0.3;
+    }
+    
+    .stats-number {
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stats-label {
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+    
+    .table th {
+        background: #f8f9fa;
+        border: none;
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .table td {
+        border: none;
+        vertical-align: middle;
+    }
+    
+    .table tbody tr {
+        border-bottom: 1px solid #e9ecef;
+        transition: background 0.3s ease;
+    }
+    
+    .table tbody tr:hover {
+        background: #f8f9fa;
+    }
+    
+    .badge {
+        font-size: 0.875em;
+        padding: 0.375rem 0.75rem;
+    }
+    
+    .action-btn {
+        padding: 0.375rem 0.75rem;
+        margin: 0 0.125rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-gray-800">
+                        <i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard
+                    </h1>
+                    <p class="text-muted mb-0">Welcome back! Here's what's happening with your grievance system.</p>
+                </div>
+                <div>
+                    <button class="btn btn-primary" onclick="location.reload()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-card total">
+                <div class="stats-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="stats-number">{{ total_grievances|default:0 }}</div>
+                <div class="stats-label">Total Grievances</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-card pending">
+                <div class="stats-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stats-number">{{ pending_grievances|default:0 }}</div>
+                <div class="stats-label">Pending Review</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-card resolved">
+                <div class="stats-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stats-number">{{ resolved_grievances|default:0 }}</div>
+                <div class="stats-label">Resolved</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-card rejected">
+                <div class="stats-icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="stats-number">{{ rejected_grievances|default:0 }}</div>
+                <div class="stats-label">Rejected</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Row -->
+    <div class="row">
+        <!-- Recent Grievances -->
+        <div class="col-lg-8">
+            <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list-alt me-2"></i>Recent Grievances
+                    </h5>
+                    <a href="{% url 'admin_panel:grievance_list' %}" class="btn btn-outline-primary btn-sm">
+                        View All
+                    </a>
+                </div>
+                
+                {% if recent_grievances %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Student</th>
+                                <th>Category</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for grievance in recent_grievances %}
+                            <tr>
+                                <td>
+                                    <strong>{{ grievance.title|truncatechars:50 }}</strong>
+                                </td>
+                                <td>
+                                    {% if grievance.student %}
+                                        {{ grievance.student.user.get_display_name|default:grievance.student.user.email }}
+                                    {% else %}
+                                        Unknown Student
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if grievance.category %}
+                                        {{ grievance.category.name }}
+                                    {% else %}
+                                        No Category
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if grievance.status == 'pending' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% elif grievance.status == 'resolved' %}
+                                        <span class="badge bg-success">Resolved</span>
+                                    {% elif grievance.status == 'rejected' %}
+                                        <span class="badge bg-danger">Rejected</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ grievance.status|title }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ grievance.submitted_at|date:"M d, Y" }}</td>
+                                <td>
+                                    <a href="{% url 'admin_panel:grievance_detail' grievance.id %}" 
+                                       class="btn btn-outline-primary action-btn">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No grievances submitted yet.</p>
+                    <small class="text-muted">New grievances will appear here when students submit them.</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Category Statistics & Quick Actions -->
+        <div class="col-lg-4">
+            <!-- Category Statistics -->
+            <div class="dashboard-card mb-4">
+                <h5 class="card-title mb-3">
+                    <i class="fas fa-chart-pie me-2"></i>Top Categories
+                </h5>
+                {% if category_stats %}
+                    {% for category in category_stats %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>{{ category.name|truncatechars:20 }}</span>
+                        <span class="badge bg-primary">{{ category.count }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted mb-0">No category data available</p>
+                {% endif %}
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="dashboard-card">
+                <h5 class="card-title mb-3">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </h5>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'admin_panel:grievance_list' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-list me-2"></i>Manage Grievances
+                    </a>
+                    <a href="{% url 'admin_panel:student_list' %}" class="btn btn-outline-info">
+                        <i class="fas fa-users me-2"></i>Manage Students
+                    </a>
+                    <a href="{% url 'admin_panel:manage_categories' %}" class="btn btn-outline-warning">
+                        <i class="fas fa-tags me-2"></i>Manage Categories
+                    </a>
+                    <a href="{% url 'admin_panel:reports' %}" class="btn btn-outline-success">
+                        <i class="fas fa-chart-bar me-2"></i>View Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Statistics -->
+    {% if monthly_stats %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="dashboard-card">
+                <h5 class="card-title mb-3">
+                    <i class="fas fa-chart-line me-2"></i>Monthly Grievance Trends
+                </h5>
+                <div class="row">
+                    {% for stat in monthly_stats %}
+                    <div class="col-md-2 text-center mb-3">
+                        <div class="border rounded p-3">
+                            <div class="h4 mb-1 text-primary">{{ stat.count }}</div>
+                            <small class="text-muted">{{ stat.month }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-refresh every 5 minutes
+    setTimeout(function() {
+        location.reload();
+    }, 300000);
+    
+    // Add tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}
