@@ -1,0 +1,8 @@
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 2406
+"GET /static/css/style.css HTTP/1.1" 200 4118
+"GET /static/js/main.js HTTP/1.1" 200 9705
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 3944
+"GET /auth/register/ HTTP/1.1" 200 5043
