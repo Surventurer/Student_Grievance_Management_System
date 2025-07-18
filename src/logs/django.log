@@ -1821,3 +1821,11 @@ Watching for file changes with StatReloader
 "GET /auth/student-registration/ HTTP/1.1" 200 6362
 "GET /static/css/style.css HTTP/1.1" 304 0
 "GET /static/js/main.js HTTP/1.1" 304 0
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 2414
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /static/css/style.css HTTP/1.1" 304 0
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 3944
+"GET /auth/student-registration/ HTTP/1.1" 200 6362
