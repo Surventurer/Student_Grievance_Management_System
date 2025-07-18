@@ -24,8 +24,16 @@
                     
                     {% if messages %}
                         {% for message in messages %}
-                            <div class="alert alert-danger d-flex align-items-center mb-3" role="alert">
-                                <i class="fas fa-exclamation-triangle me-2"></i>
+                            <div class="alert alert-{{ message.tags }} d-flex align-items-center mb-3" role="alert">
+                                {% if message.tags == 'error' %}
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                {% elif message.tags == 'success' %}
+                                    <i class="fas fa-check-circle me-2"></i>
+                                {% elif message.tags == 'warning' %}
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                {% else %}
+                                    <i class="fas fa-info-circle me-2"></i>
+                                {% endif %}
                                 <div>{{ message }}</div>
                             </div>
                         {% endfor %}
@@ -36,6 +44,7 @@
                 
                 <div class="text-center mt-3">
                     <p>New Student? <a href="{% url 'authentication:student_registration' %}">Register here</a></p>
+                    <p>Need to verify your email? <a href="{% url 'authentication:verify_email_view' %}">Verify here</a></p>
                     <p><a href="#">Forgot Password?</a></p>
                 </div>
             </div>

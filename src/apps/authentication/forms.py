@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from apps.students.models import StudentProfile, School, Department
+from .models import TemporaryRegistration
 
 User = get_user_model()
 
@@ -76,27 +77,39 @@ class StudentRegistrationForm(forms.Form):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
-        # If school is selected, populate departments
+        # Always set department queryset based on school selection
+        school_id = None
         if 'school' in self.data:
             try:
                 school_id = int(self.data.get('school'))
-                self.fields['department'].queryset = Department.objects.filter(school_id=school_id)
             except (ValueError, TypeError):
-                pass
+                school_id = None
         elif self.initial.get('school'):
-            self.fields['department'].queryset = self.initial['school'].departments.all()
+            try:
+                school_id = int(self.initial.get('school').id)
+            except (AttributeError, ValueError, TypeError):
+                school_id = None
+        if school_id:
+            self.fields['department'].queryset = Department.objects.filter(school=school_id)
+        else:
+            self.fields['department'].queryset = Department.objects.none()
     
     def clean_email(self):
         email = self.cleaned_data.get('email')
+        # Check both actual users and temporary registrations
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError("A user with this email already exists.")
+        if TemporaryRegistration.objects.filter(email=email, is_verified=False).exists():
+            raise forms.ValidationError("A registration with this email is already pending verification.")
         return email
     
     def clean_student_id(self):
         student_id = self.cleaned_data.get('student_id')
+        # Check both actual student profiles and temporary registrations
         if StudentProfile.objects.filter(student_id=student_id).exists():
             raise forms.ValidationError("A student with this ID already exists.")
+        if TemporaryRegistration.objects.filter(student_id=student_id, is_verified=False).exists():
+            raise forms.ValidationError("A registration with this student ID is already pending verification.")
         return student_id
     
     def clean(self):
@@ -111,24 +124,29 @@ class StudentRegistrationForm(forms.Form):
         return cleaned_data
     
     def save(self):
-        """Create User and StudentProfile"""
+        """Create TemporaryRegistration instead of actual User and StudentProfile"""
+        from django.contrib.auth.hashers import make_password
+        from django.utils import timezone
+        from datetime import timedelta
+        import random
+        import string
+        
         cleaned_data = self.cleaned_data
         
-        # Create User
-        user = User.objects.create_user(
-            email=cleaned_data['email'],
-            password=cleaned_data['password'],
-            role='student'
-        )
+        # Generate OTP
+        otp = ''.join(random.choices(string.digits, k=6))
         
-        # Create StudentProfile
-        student_profile = StudentProfile.objects.create(
-            user=user,
+        # Create temporary registration
+        temp_registration = TemporaryRegistration.objects.create(
             name=cleaned_data['name'],
             student_id=cleaned_data['student_id'],
-            school=cleaned_data['school'].name,  # Store school name from School model
-            department=cleaned_data['department'].name,  # Store department name from Department model
-            contact_no=cleaned_data['contact_no']
+            email=cleaned_data['email'],
+            password=make_password(cleaned_data['password']),  # Hash the password
+            contact_no=cleaned_data['contact_no'],
+            school=cleaned_data['school'].name,
+            department=cleaned_data['department'].name,
+            otp=otp,
+            expires_at=timezone.now() + timedelta(minutes=10)
         )
         
-        return user, student_profile
+        return temp_registration

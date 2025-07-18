@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Student Profile{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>My Profile</h1>
+            <a href="{% url 'students:dashboard' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Profile Information</h5>
+            </div>
+            <div class="card-body">
+                <!-- Read-only Profile Information -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-muted mb-3">Personal Information <small class="text-muted">(Read Only)</small></h6>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" value="{{ student_profile.name|default:'Not provided' }}" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-control" value="{{ student_profile.user.email }}" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Student ID</label>
+                            <input type="text" class="form-control" value="{{ student_profile.student_id }}" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">School</label>
+                            <input type="text" class="form-control" value="{{ student_profile.school|default:'Not provided' }}" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Department</label>
+                            <input type="text" class="form-control" value="{{ student_profile.department }}" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- Editable Contact Information -->
+                <form method="post" action="{% url 'students:update_contact' %}">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Contact Information</h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="contact_no" class="form-label">Contact Number</label>
+                                <input type="tel" class="form-control" id="contact_no" name="contact_no" 
+                                       value="{{ student_profile.contact_no|default:'' }}" 
+                                       placeholder="Enter your contact number"
+                                       pattern="[0-9]{10,15}" 
+                                       title="Please enter a valid phone number (10-15 digits)">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Update Contact Number
+                    </button>
+                </form>
+
+                <hr>
+
+                <!-- Password Change Form -->
+                <div class="mt-4">
+                    <h6 class="text-muted mb-3">Security</h6>
+                    <form method="post" action="{% url 'students:change_password' %}">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="current_password" class="form-label">Current Password</label>
+                                    <input type="password" class="form-control" id="current_password" name="current_password" 
+                                           placeholder="Enter current password" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="new_password1" class="form-label">New Password</label>
+                                    <input type="password" class="form-control" id="new_password1" name="new_password1" 
+                                           placeholder="Enter new password" required>
+                                    <div class="form-text">Password must be at least 8 characters long</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="new_password2" class="form-label">Confirm New Password</label>
+                                    <input type="password" class="form-control" id="new_password2" name="new_password2" 
+                                           placeholder="Confirm new password" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-key"></i> Change Password
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Account Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Account Status:</strong>
+                    <span class="badge bg-{{ student_profile.user.is_active|yesno:'success,danger' }}">
+                        {{ student_profile.user.is_active|yesno:'Active,Inactive' }}
+                    </span>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Email Verified:</strong>
+                    <span class="badge bg-{{ student_profile.user.is_email_verified|yesno:'success,warning' }}">
+                        {{ student_profile.user.is_email_verified|yesno:'Verified,Not Verified' }}
+                    </span>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Member Since:</strong>
+                    <br>{{ student_profile.created_at|date:"F d, Y" }}
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Last Updated:</strong>
+                    <br>{{ student_profile.updated_at|date:"F d, Y" }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'students:dashboard' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a href="#" class="btn btn-outline-secondary">
+                        <i class="fas fa-file-alt"></i> Submit Grievance
+                    </a>
+                    <a href="{% url 'authentication:logout_view' %}" class="btn btn-outline-danger">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

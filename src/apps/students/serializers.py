@@ -68,15 +68,22 @@ class AdminProfileSerializer(serializers.ModelSerializer):
 class DepartmentSerializer(serializers.ModelSerializer):
     """Serializer for department"""
     
-    head_name = serializers.CharField(source='head_of_department.user.get_full_name', read_only=True)
+    school_name = serializers.CharField(source='school.name', read_only=True)
+    display_name = serializers.SerializerMethodField()
     
     class Meta:
         model = Department
         fields = [
-            'id', 'name', 'description', 'head_name', 'contact_email',
-            'contact_phone', 'created_at', 'updated_at'
+            'id', 'name', 'school_name', 'display_name', 
+            'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
+    
+    def get_display_name(self, obj):
+        """Return department name with school for display"""
+        if obj.school:
+            return f"{obj.name} - {obj.school.name}"
+        return obj.name
 
 
 class UserActivitySerializer(serializers.ModelSerializer):

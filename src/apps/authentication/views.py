@@ -18,10 +18,10 @@ import random
 import string
 from datetime import timedelta
 
-from .models import User, EmailVerification, PasswordReset
+from .models import User, EmailVerification, PasswordReset, TemporaryRegistration
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, PasswordResetSerializer
 from .forms import StudentRegistrationForm
-from apps.students.models import Department
+from apps.students.models import Department, School
 
 
 def generate_otp():
@@ -276,16 +276,24 @@ def student_registration(request):
         form = StudentRegistrationForm(request.POST)
         if form.is_valid():
             try:
-                user, student_profile = form.save()
-                messages.success(request, f'Registration successful! Welcome {student_profile.name}')
+                # Save to temporary registration (not actual database)
+                temp_registration = form.save()
                 
-                # Auto login after registration
-                user = authenticate(request, email=user.email, password=form.cleaned_data['password'])
-                if user:
-                    login(request, user)
-                    return redirect('students:dashboard')  # Redirect to student dashboard
-                else:
-                    return redirect('authentication:login')
+                # Send OTP via email
+                try:
+                    send_mail(
+                        'Verify Your Email - Student Grievance System',
+                        f'Dear {temp_registration.name},\n\nYour OTP for email verification is: {temp_registration.otp}\n\nThis OTP is valid for 10 minutes.\n\nThank you!',
+                        settings.EMAIL_HOST_USER,
+                        [temp_registration.email],
+                        fail_silently=False,
+                    )
+                    messages.success(request, f'Registration initiated! Please check your email ({temp_registration.email}) for verification OTP. Your Registration ID is: {temp_registration.id}')
+                except Exception as email_error:
+                    messages.warning(request, f'Registration saved! However, we could not send the verification email. Your Registration ID is: {temp_registration.id}. Please contact support.')
+                
+                # Redirect to email verification page
+                return redirect('authentication:verify_email_view')
                     
             except Exception as e:
                 messages.error(request, f'Registration failed: {str(e)}')
@@ -300,6 +308,69 @@ def student_registration(request):
 def load_departments(request):
     """AJAX view to load departments based on selected school"""
     school_id = request.GET.get('school_id')
-    departments = Department.objects.filter(school_id=school_id).order_by('name')
-    department_data = [{'id': dept.id, 'name': dept.name} for dept in departments]
-    return JsonResponse({'departments': department_data})
+    
+    try:
+        if school_id:
+            # Get the school object first to verify it exists
+            try:
+                school = School.objects.get(id=school_id)
+            except School.DoesNotExist:
+                return JsonResponse({'departments': [], 'error': 'School not found'})
+            
+            # Get departments for the school
+            departments = Department.objects.filter(school=school_id).order_by('name')
+            
+            # Create response data
+            department_data = [{'id': dept.id, 'name': dept.name} for dept in departments]
+            
+            return JsonResponse({
+                'departments': department_data, 
+                'school': {'id': school.id, 'name': school.name},
+                'count': departments.count()
+            })
+        else:
+            return JsonResponse({'departments': [], 'error': 'No school ID provided'})
+            
+    except Exception as e:
+        return JsonResponse({'departments': [], 'error': 'Internal server error'}, status=500)
+
+
+def verify_email_view(request):
+    """Web view for email verification"""
+    if request.method == 'POST':
+        registration_id = request.POST.get('user_id')  # Actually registration ID now
+        otp = request.POST.get('otp')
+        
+        try:
+            # Look for temporary registration instead of user
+            temp_registration = TemporaryRegistration.objects.get(id=registration_id, is_verified=False)
+            
+            if temp_registration.otp != otp:
+                messages.error(request, 'Invalid OTP. Please check and try again.')
+                return render(request, 'authentication/verify_email.html')
+            
+            if temp_registration.is_expired:
+                messages.error(request, 'OTP has expired. Please register again.')
+                temp_registration.delete()  # Clean up expired registration
+                return render(request, 'authentication/verify_email.html')
+            
+            # Create actual user and student profile
+            try:
+                user, student_profile = temp_registration.create_actual_user()
+                
+                # Mark temp registration as verified and delete it
+                temp_registration.is_verified = True
+                temp_registration.delete()  # Clean up after successful verification
+                
+                messages.success(request, f'Email verified successfully! Welcome {student_profile.name}! You can now log in.')
+                return redirect('authentication:login_view')
+                
+            except Exception as creation_error:
+                messages.error(request, 'An error occurred while creating your account. Please try again.')
+            
+        except TemporaryRegistration.DoesNotExist:
+            messages.error(request, 'Registration not found or already verified. Please check your Registration ID.')
+        except Exception as e:
+            messages.error(request, 'An error occurred. Please try again.')
+    
+    return render(request, 'authentication/verify_email.html')

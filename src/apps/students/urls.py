@@ -16,4 +16,6 @@ urlpatterns = [
     # Web views
     path('', views.student_dashboard_view, name='dashboard'),
     path('profile/', views.student_profile_view, name='profile'),
+    path('profile/update-contact/', views.update_contact_view, name='update_contact'),
+    path('profile/change-password/', views.change_password_view, name='change_password'),
 ]

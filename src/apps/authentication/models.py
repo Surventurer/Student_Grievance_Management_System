@@ -125,3 +125,55 @@ class PasswordReset(models.Model):
     def is_expired(self):
         from django.utils import timezone
         return timezone.now() > self.expires_at
+
+
+class TemporaryRegistration(models.Model):
+    """Model to store registration data temporarily until email verification"""
+    
+    # Personal Information
+    name = models.CharField(max_length=100)
+    student_id = models.CharField(max_length=50)
+    email = models.EmailField()
+    password = models.CharField(max_length=255)  # Will store hashed password
+    contact_no = models.CharField(max_length=15)
+    school = models.CharField(max_length=200)
+    department = models.CharField(max_length=100)
+    
+    # Verification
+    otp = models.CharField(max_length=6)
+    is_verified = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    
+    def __str__(self):
+        return f"Temp registration for {self.email}"
+    
+    @property
+    def is_expired(self):
+        from django.utils import timezone
+        return timezone.now() > self.expires_at
+    
+    def create_actual_user(self):
+        """Create the actual User and StudentProfile after verification"""
+        from apps.students.models import StudentProfile
+        from django.contrib.auth.hashers import make_password
+        
+        # Create User
+        user = User.objects.create(
+            email=self.email,
+            password=self.password,  # Password is already hashed
+            role='student',
+            is_email_verified=True  # Since they verified via temp registration
+        )
+        
+        # Create StudentProfile
+        student_profile = StudentProfile.objects.create(
+            user=user,
+            name=self.name,
+            student_id=self.student_id,
+            school=self.school,
+            department=self.department,
+            contact_no=self.contact_no
+        )
+        
+        return user, student_profile

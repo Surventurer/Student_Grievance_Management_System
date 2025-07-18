@@ -129,32 +129,64 @@
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const schoolSelect = document.getElementById('id_school');
-    const departmentSelect = document.getElementById('id_department');
+// Wait for the DOM to fully load before attaching event handlers
+window.addEventListener('load', function() {
+    // Get the school and department select elements
+    const schoolSelect = document.querySelector('#id_school');
+    const departmentSelect = document.querySelector('#id_department');
     
-    schoolSelect.addEventListener('change', function() {
-        const schoolId = this.value;
-        
-        // Clear department options
+    // Verify both elements exist
+    if (!schoolSelect || !departmentSelect) {
+        return;
+    }
+    
+    // Function to load departments based on school selection
+    function loadDepartments(schoolId) {
+        // Clear existing department options
         departmentSelect.innerHTML = '<option value="">Select Department</option>';
         
-        if (schoolId) {
-            // Fetch departments for selected school
-            fetch(`{% url 'authentication:load_departments' %}?school_id=${schoolId}`)
-                .then(response => response.json())
-                .then(data => {
-                    data.departments.forEach(dept => {
-                        const option = document.createElement('option');
-                        option.value = dept.id;
-                        option.textContent = dept.name;
-                        departmentSelect.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error loading departments:', error);
-                });
+        // If no school is selected, stop here
+        if (!schoolId) {
+            return;
         }
+        
+        // Build the API URL
+        const apiUrl = '/auth/load-departments/?school_id=' + schoolId;
+        
+        // Make the AJAX request
+        fetch(apiUrl)
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+                return response.json();
+            })
+            .then(function(data) {
+                if (!data.departments || data.departments.length === 0) {
+                    return;
+                }
+                
+                // Add each department as an option
+                data.departments.forEach(function(dept) {
+                    const option = document.createElement('option');
+                    option.value = dept.id;
+                    option.textContent = dept.name;
+                    departmentSelect.appendChild(option);
+                });
+            })
+            .catch(function(error) {
+                // Add an error option without exposing details
+                const errorOption = document.createElement('option');
+                errorOption.value = '';
+                errorOption.textContent = 'Error loading departments';
+                departmentSelect.appendChild(errorOption);
+            });
+    }
+    
+    // Attach the change event listener to the school dropdown
+    schoolSelect.addEventListener('change', function() {
+        const selectedSchoolId = this.value;
+        loadDepartments(selectedSchoolId);
     });
 });
 </script>

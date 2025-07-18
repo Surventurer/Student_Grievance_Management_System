@@ -17,6 +17,7 @@ urlpatterns = [
     path('', views.login_view, name='login'),
     path('login/', views.login_view, name='login_view'),
     path('logout/', views.logout_view, name='logout_view'),
+    path('verify-email/', views.verify_email_view, name='verify_email_view'),
     
     # Student Registration Only (No admin/staff registration)
     path('student-registration/', views.student_registration, name='student_registration'),

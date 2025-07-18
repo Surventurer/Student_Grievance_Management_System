@@ -4,6 +4,28 @@
 {% block title %}Student Profile{% endblock %}
 
 {% block content %}
+<style>
+.readonly-field {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+}
+.profile-section {
+    border-left: 4px solid #007bff;
+    padding-left: 15px;
+    margin-bottom: 20px;
+}
+.editable-section {
+    border-left: 4px solid #28a745;
+    padding-left: 15px;
+    margin-bottom: 20px;
+}
+.security-section {
+    border-left: 4px solid #ffc107;
+    padding-left: 15px;
+    margin-bottom: 20px;
+}
+</style>
+
 <div class="row">
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -22,97 +44,130 @@
                 <h5 class="card-title mb-0">Profile Information</h5>
             </div>
             <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="row">
+                <!-- Read-only Profile Information -->
+                <div class="profile-section">
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3">
+                                <i class="fas fa-lock me-2"></i>Personal Information 
+                                <small class="text-muted">(Read Only)</small>
+                            </h6>
+                        </div>
+                        
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="first_name" class="form-label">First Name</label>
-                                <input type="text" class="form-control" id="first_name" name="first_name" 
-                                       value="{{ student_profile.user.first_name }}" required>
+                                <label class="form-label fw-bold">Full Name</label>
+                                <input type="text" class="form-control readonly-field" value="{{ student_profile.name|default:'Not provided' }}" readonly>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="last_name" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" id="last_name" name="last_name" 
-                                       value="{{ student_profile.user.last_name }}" required>
+                                <label class="form-label fw-bold">Email Address</label>
+                                <input type="email" class="form-control readonly-field" value="{{ student_profile.user.email }}" readonly>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="row">
+                        
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" 
-                                       value="{{ student_profile.user.email }}" readonly>
-                                <div class="form-text">Email cannot be changed</div>
+                                <label class="form-label fw-bold">Student ID</label>
+                                <input type="text" class="form-control readonly-field" value="{{ student_profile.student_id }}" readonly>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="student_id" class="form-label">Student ID</label>
-                                <input type="text" class="form-control" id="student_id" name="student_id" 
-                                       value="{{ student_profile.student_id }}" readonly>
-                                <div class="form-text">Student ID cannot be changed</div>
+                                <label class="form-label fw-bold">School</label>
+                                <input type="text" class="form-control readonly-field" value="{{ student_profile.school|default:'Not provided' }}" readonly>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="row">
+                        
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="department" class="form-label">Department</label>
-                                <input type="text" class="form-control" id="department" name="department" 
-                                       value="{{ student_profile.department }}" readonly>
-                                <div class="form-text">Department cannot be changed</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="year_of_study" class="form-label">Year of Study</label>
-                                <input type="text" class="form-control" id="year_of_study" name="year_of_study" 
-                                       value="{{ student_profile.year_of_study }}" readonly>
-                                <div class="form-text">Year of study cannot be changed</div>
+                                <label class="form-label fw-bold">Department</label>
+                                <input type="text" class="form-control readonly-field" value="{{ student_profile.department }}" readonly>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="course" class="form-label">Course</label>
-                                <input type="text" class="form-control" id="course" name="course" 
-                                       value="{{ student_profile.course }}" readonly>
-                                <div class="form-text">Course cannot be changed</div>
+                </div>
+
+                <!-- Editable Contact Information -->
+                <div class="editable-section">
+                    <form method="post" action="{% url 'students:update_contact' %}">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <h6 class="text-success mb-3">
+                                    <i class="fas fa-edit me-2"></i>Contact Information
+                                </h6>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="contact_no" class="form-label fw-bold">Contact Number</label>
+                                    <input type="tel" class="form-control" id="contact_no" name="contact_no" 
+                                           value="{{ student_profile.contact_no|default:'' }}" 
+                                           placeholder="Enter your contact number"
+                                           pattern="[0-9]{10,15}" 
+                                           title="Please enter a valid phone number (10-15 digits)">
+                                    <div class="form-text">Enter your 10-15 digit phone number</div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="contact_no" class="form-label">Contact Number</label>
-                                <input type="tel" class="form-control" id="contact_no" name="contact_no" 
-                                       value="{{ student_profile.contact_no }}" placeholder="Enter your contact number">
+                        
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Update Contact Number
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Password Change Form -->
+                <div class="security-section">
+                    <div class="mt-4">
+                        <h6 class="text-warning mb-3">
+                            <i class="fas fa-shield-alt me-2"></i>Security Settings
+                        </h6>
+                        <form method="post" action="{% url 'students:change_password' %}">
+                            {% csrf_token %}
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="current_password" class="form-label fw-bold">Current Password</label>
+                                        <input type="password" class="form-control" id="current_password" name="current_password" 
+                                               placeholder="Enter current password" required>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="new_password1" class="form-label fw-bold">New Password</label>
+                                        <input type="password" class="form-control" id="new_password1" name="new_password1" 
+                                               placeholder="Enter new password" required>
+                                        <div class="form-text">Password must be at least 8 characters long</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="new_password2" class="form-label fw-bold">Confirm New Password</label>
+                                        <input type="password" class="form-control" id="new_password2" name="new_password2" 
+                                               placeholder="Confirm new password" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-key"></i> Change Password
+                            </button>
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle"></i> You will be logged out after changing your password
+                                </small>
+                            </div>
+                        </form>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="emergency_contact" class="form-label">Emergency Contact</label>
-                        <input type="tel" class="form-control" id="emergency_contact" name="emergency_contact" 
-                               value="{{ student_profile.emergency_contact }}" placeholder="Enter emergency contact number">
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="address" class="form-label">Address</label>
-                        <textarea class="form-control" id="address" name="address" rows="3" 
-                                  placeholder="Enter your address">{{ student_profile.address }}</textarea>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Update Profile
-                    </button>
-                </form>
+                </div>
             </div>
         </div>
     </div>
@@ -158,7 +213,7 @@
                     <a href="{% url 'students:dashboard' %}" class="btn btn-outline-primary">
                         <i class="fas fa-tachometer-alt"></i> Dashboard
                     </a>
-                    <a href="#" class="btn btn-outline-secondary">
+                    <a href="{% url 'grievances_web:submit_grievance' %}" class="btn btn-outline-secondary">
                         <i class="fas fa-file-alt"></i> Submit Grievance
                     </a>
                     <a href="{% url 'authentication:logout_view' %}" class="btn btn-outline-danger">

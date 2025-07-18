@@ -18,6 +18,7 @@ urlpatterns = [
     path('api/notifications/', include('apps.notifications.urls')),
     path('auth/', include('apps.authentication.urls')),  # For web views
     path('students/', include('apps.students.urls')),  # For student web views
+    path('grievances/', include(('apps.grievances.urls', 'grievances'), namespace='grievances_web')),  # For grievance web views
     path('admin-panel/', include('apps.admin_panel.urls')),  # For admin web views
 ]
 

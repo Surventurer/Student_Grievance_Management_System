@@ -24,10 +24,15 @@ class Category(models.Model):
     
     class Meta:
         verbose_name_plural = "Categories"
-        ordering = ['name']
+        ordering = ['category_type', 'name']
     
     def __str__(self):
         return f"{self.name} ({self.get_category_type_display()})"
+    
+    @property
+    def is_other_category(self):
+        """Check if this is an 'Other' category"""
+        return self.name.lower().startswith('other')
 
 
 class Grievance(models.Model):
@@ -52,6 +57,7 @@ class Grievance(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='grievances')
+    department = models.CharField(max_length=100, blank=True, null=True, help_text="Department related to grievance")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium')
     assigned_to = models.ForeignKey(AdminProfile, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_grievances')
@@ -226,3 +232,25 @@ class AuditLog(models.Model):
     
     def __str__(self):
         return f"{self.user.email} - {self.action} - {self.target_model}"
+
+
+class GrievanceOTPVerification(models.Model):
+    """OTP verification for grievance submission"""
+    
+    email = models.EmailField()
+    otp = models.CharField(max_length=6)
+    purpose = models.CharField(max_length=50, default='grievance_submission')
+    is_verified = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"OTP for {self.email} - {self.purpose}"
+    
+    @property
+    def is_expired(self):
+        from django.utils import timezone
+        from datetime import timedelta
+        return timezone.now() > (self.created_at + timedelta(minutes=10))
+    
+    class Meta:
+        ordering = ['-created_at']

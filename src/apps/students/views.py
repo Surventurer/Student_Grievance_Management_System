@@ -256,7 +256,22 @@ def student_dashboard_view(request):
 
 @login_required
 def student_profile_view(request):
-    """Student profile web view"""
+    """Student profile web view - restricted to only show profile info"""
+    if not request.user.is_student:
+        return redirect('admin_panel:dashboard')
+    
+    try:
+        student_profile = request.user.student_profile
+    except StudentProfile.DoesNotExist:
+        messages.error(request, 'Student profile not found')
+        return redirect('authentication:login')
+    
+    return render(request, 'students/profile.html', {'student_profile': student_profile})
+
+
+@login_required
+def update_contact_view(request):
+    """Update only contact number - restricted functionality"""
     if not request.user.is_student:
         return redirect('admin_panel:dashboard')
     
@@ -267,18 +282,58 @@ def student_profile_view(request):
         return redirect('authentication:login')
     
     if request.method == 'POST':
-        # Handle profile update
-        student_profile.contact_no = request.POST.get('contact_no', '')
-        student_profile.emergency_contact = request.POST.get('emergency_contact', '')
-        student_profile.address = request.POST.get('address', '')
+        contact_no = request.POST.get('contact_no', '').strip()
+        
+        # Validate contact number
+        if contact_no and not contact_no.isdigit():
+            messages.error(request, 'Contact number should contain only digits')
+            return redirect('students:profile')
+        
+        if contact_no and (len(contact_no) < 10 or len(contact_no) > 15):
+            messages.error(request, 'Contact number should be between 10-15 digits')
+            return redirect('students:profile')
+        
+        # Update contact number
+        student_profile.contact_no = contact_no
         student_profile.save()
         
-        # Update user info
-        request.user.first_name = request.POST.get('first_name', '')
-        request.user.last_name = request.POST.get('last_name', '')
-        request.user.save()
-        
-        messages.success(request, 'Profile updated successfully')
+        messages.success(request, 'Contact number updated successfully')
         return redirect('students:profile')
     
-    return render(request, 'students/profile.html', {'student_profile': student_profile})
+    return redirect('students:profile')
+
+
+@login_required  
+def change_password_view(request):
+    """Change password for student - restricted functionality"""
+    if not request.user.is_student:
+        return redirect('admin_panel:dashboard')
+    
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_password1 = request.POST.get('new_password1')
+        new_password2 = request.POST.get('new_password2')
+        
+        # Validate current password
+        if not request.user.check_password(current_password):
+            messages.error(request, 'Current password is incorrect')
+            return redirect('students:profile')
+        
+        # Validate new passwords match
+        if new_password1 != new_password2:
+            messages.error(request, 'New passwords do not match')
+            return redirect('students:profile')
+        
+        # Validate password strength
+        if len(new_password1) < 8:
+            messages.error(request, 'Password must be at least 8 characters long')
+            return redirect('students:profile')
+        
+        # Update password
+        request.user.set_password(new_password1)
+        request.user.save()
+        
+        messages.success(request, 'Password changed successfully. Please login again.')
+        return redirect('authentication:login')
+    
+    return redirect('students:profile')

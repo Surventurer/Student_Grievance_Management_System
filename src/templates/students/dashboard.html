@@ -89,7 +89,7 @@
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
-                    <a href="#" class="btn btn-primary">Submit New Grievance</a>
+                    <a href="{% url 'grievances_web:submit_grievance' %}" class="btn btn-primary">Submit New Grievance</a>
                     <a href="#" class="btn btn-outline-secondary">View All Grievances</a>
                     <a href="{% url 'students:profile' %}" class="btn btn-outline-info">Manage Profile</a>
                 </div>
