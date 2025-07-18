@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test School-Department Linking</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        select { padding: 8px; width: 300px; }
+    </style>
+</head>
+<body>
+    <h2>🧪 Test School-Department Linking</h2>
+    
+    <div class="form-group">
+        <label>School:</label>
+        <select id="school-select">
+            <option value="">Select School</option>
+            <option value="1">School of Engineering and Technology</option>
+            <option value="2">School of Business and Management</option>
+            <option value="3">School of Computer Science</option>
+            <option value="4">School of Medicine and Health Sciences</option>
+            <option value="5">School of Arts and Humanities</option>
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label>Department:</label>
+        <select id="department-select">
+            <option value="">Select Department</option>
+        </select>
+    </div>
+    
+    <div id="result"></div>
+    
+    <script>
+    document.getElementById('school-select').addEventListener('change', function() {
+        const schoolId = this.value;
+        const departmentSelect = document.getElementById('department-select');
+        const result = document.getElementById('result');
+        
+        // Clear department options
+        departmentSelect.innerHTML = '<option value="">Select Department</option>';
+        
+        if (schoolId) {
+            result.innerHTML = '⏳ Loading departments...';
+            
+            fetch(`http://127.0.0.1:8000/auth/load-departments/?school_id=${schoolId}`)
+                .then(response => response.json())
+                .then(data => {
+                    result.innerHTML = `✅ Loaded ${data.departments.length} departments`;
+                    data.departments.forEach(dept => {
+                        const option = document.createElement('option');
+                        option.value = dept.id;
+                        option.textContent = dept.name;
+                        departmentSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    result.innerHTML = '❌ Error loading departments';
+                    console.error('Error:', error);
+                });
+        } else {
+            result.innerHTML = '';
+        }
+    });
+    </script>
+</body>
+</html>

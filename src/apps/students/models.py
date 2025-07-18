@@ -3,23 +3,59 @@ from django.conf import settings
 import uuid
 
 
-class StudentProfile(models.Model):
-    """Student profile model"""
+class School(models.Model):
+    """School model as per database schema"""
     
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='student_profile')
-    student_id = models.CharField(max_length=50, unique=True)
-    department = models.CharField(max_length=100)
-    contact_no = models.CharField(max_length=15, blank=True, null=True)
-    year_of_study = models.CharField(max_length=20, blank=True, null=True)
-    course = models.CharField(max_length=100, blank=True, null=True)
-    emergency_contact = models.CharField(max_length=15, blank=True, null=True)
-    address = models.TextField(blank=True, null=True)
+    id = models.AutoField(primary_key=True)  # UUID/Auto Primary key
+    name = models.CharField(max_length=200, unique=True)  # Name of the school (unique)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"{self.student_id} - {self.user.get_full_name()}"
+        return self.name
+    
+    class Meta:
+        verbose_name = "School"
+        verbose_name_plural = "Schools"
+
+
+class Department(models.Model):
+    """Department model as per database schema"""
+    
+    id = models.AutoField(primary_key=True)  # UUID/Auto Primary key  
+    name = models.CharField(max_length=100)  # Name of the department
+    school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='departments', null=True, blank=True)  # Links department to a school (nullable for migration)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.name}" + (f" - {self.school.name}" if self.school else "")
+    
+    class Meta:
+        verbose_name = "Department"
+        verbose_name_plural = "Departments"
+
+
+class StudentProfile(models.Model):
+    """Student profile model as per database schema"""
+    
+    # Using user relationship to get email (FK to User.email - One-to-One)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='student_profile')
+    name = models.CharField(max_length=100, blank=True, null=True)  # Full name of the student (nullable for migration)
+    student_id = models.CharField(max_length=50, unique=True)  # Student enrollment Id
+    school = models.CharField(max_length=200, blank=True, null=True)  # Name of the School (optional, not in doc)
+    department = models.CharField(max_length=100)  # Department name
+    contact_no = models.CharField(max_length=15, blank=True, null=True)  # Contact number (nullable for migration)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.student_id} - {self.name or 'No Name'}"
+    
+    @property
+    def email(self):
+        """Get email from related user"""
+        return self.user.email
     
     class Meta:
         verbose_name = "Student Profile"
@@ -27,7 +63,7 @@ class StudentProfile(models.Model):
 
 
 class AdminProfile(models.Model):
-    """Admin profile model"""
+    """Admin profile model - keeping existing structure"""
     
     ROLE_LEVEL_CHOICES = [
         ('superadmin', 'Super Admin'),
@@ -51,26 +87,6 @@ class AdminProfile(models.Model):
     class Meta:
         verbose_name = "Admin Profile"
         verbose_name_plural = "Admin Profiles"
-
-
-class Department(models.Model):
-    """Department model"""
-    
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=100, unique=True)
-    description = models.TextField(blank=True, null=True)
-    head_of_department = models.ForeignKey(AdminProfile, on_delete=models.SET_NULL, null=True, blank=True, related_name='headed_departments')
-    contact_email = models.EmailField(blank=True, null=True)
-    contact_phone = models.CharField(max_length=15, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    def __str__(self):
-        return self.name
-    
-    class Meta:
-        verbose_name = "Department"
-        verbose_name_plural = "Departments"
 
 
 class UserActivity(models.Model):

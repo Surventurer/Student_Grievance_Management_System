@@ -6,3 +6,1818 @@ Watching for file changes with StatReloader
 Not Found: /favicon.ico
 "GET /favicon.ico HTTP/1.1" 404 3944
 "GET /auth/register/ HTTP/1.1" 200 5043
+"GET /auth/ HTTP/1.1" 200 2406
+"GET /static/css/style.css HTTP/1.1" 304 0
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /auth/register/ HTTP/1.1" 200 5043
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 2406
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 3944
+"GET /auth/register/ HTTP/1.1" 200 5043
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 2406
+"GET /static/css/style.css HTTP/1.1" 304 0
+"GET /static/js/main.js HTTP/1.1" 304 0
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 3944
+"GET /auth/register/ HTTP/1.1" 200 5043
+"POST /auth/register/ HTTP/1.1" 200 5043
+"GET /auth/ HTTP/1.1" 200 2406
+Internal Server Error: /auth/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: authentication_user
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 236, in login_view
+    user = authenticate(request, username=email, password=password)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/views/decorators/debug.py", line 75, in sensitive_variables_wrapper
+    return func(*func_args, **func_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/contrib/auth/__init__.py", line 114, in authenticate
+    user = backend.authenticate(request, **credentials)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/contrib/auth/backends.py", line 65, in authenticate
+    user = UserModel._default_manager.get_by_natural_key(username)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/contrib/auth/base_user.py", line 37, in get_by_natural_key
+    return self.get(**{self.model.USERNAME_FIELD: username})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/models/query.py", line 629, in get
+    num = len(clone)
+          ^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/models/query.py", line 366, in __len__
+    self._fetch_all()
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/models/query.py", line 1949, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: authentication_user
+"POST /auth/ HTTP/1.1" 500 161076
+"GET /admin/ HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/ HTTP/1.1" 200 4170
+Internal Server Error: /admin/login/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: authentication_user
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/utils/decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/views/decorators/cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/contrib/admin/sites.py", line 449, in login
+    return LoginView.as_view(**defaults)(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/views/generic/base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/utils/decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/utils/decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/views/decorators/debug.py", line 143, in sensitive_post_parameters_wrapper
+    return view(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/utils/decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/utils/decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/views/decorators/cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/contrib/auth/views.py", line 89, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/views/generic/base.py", line 144, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/views/generic/edit.py", line 150, in post
+    if form.is_valid():
+       ^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/forms/forms.py", line 206, in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/forms/forms.py", line 201, in errors
+    self.full_clean()
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/forms/forms.py", line 338, in full_clean
+    self._clean_form()
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/forms/forms.py", line 354, in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/views/decorators/debug.py", line 75, in sensitive_variables_wrapper
+    return func(*func_args, **func_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/contrib/auth/forms.py", line 366, in clean
+    self.user_cache = authenticate(
+                      ^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/views/decorators/debug.py", line 75, in sensitive_variables_wrapper
+    return func(*func_args, **func_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/contrib/auth/__init__.py", line 114, in authenticate
+    user = backend.authenticate(request, **credentials)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/contrib/auth/backends.py", line 65, in authenticate
+    user = UserModel._default_manager.get_by_natural_key(username)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/contrib/auth/base_user.py", line 37, in get_by_natural_key
+    return self.get(**{self.model.USERNAME_FIELD: username})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/models/query.py", line 629, in get
+    num = len(clone)
+          ^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/models/query.py", line 366, in __len__
+    self._fetch_all()
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/models/query.py", line 1949, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: authentication_user
+"POST /admin/login/?next=/admin/ HTTP/1.1" 500 254385
+"GET /admin/login/?next=/admin/ HTTP/1.1" 200 4170
+/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/students/models.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/students/models.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/students/models.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/students/admin.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/students/admin.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/students/models.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/students/models.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/students/models.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 2406
+"GET /static/css/style.css HTTP/1.1" 304 0
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /auth/register/ HTTP/1.1" 200 5043
+Watching for file changes with StatReloader
+"GET /auth/register/ HTTP/1.1" 200 5043
+"GET /admin/ HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/ HTTP/1.1" 200 4170
+"POST /admin/login/?next=/admin/ HTTP/1.1" 200 4355
+Watching for file changes with StatReloader
+"GET /admin/ HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/ HTTP/1.1" 200 4170
+"GET /admin/?id=6ce753f8-59a6-4e48-8093-daa3f76fd004&vscodeBrowserReqId=1752820196310 HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/%3Fid%3D6ce753f8-59a6-4e48-8093-daa3f76fd004%26vscodeBrowserReqId%3D1752820196310 HTTP/1.1" 200 4328
+"POST /admin/login/?next=/admin/ HTTP/1.1" 302 0
+"GET /admin/ HTTP/1.1" 200 11626
+"GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
+"GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+"GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+"GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 200 581
+"GET /admin/authentication/user/ HTTP/1.1" 200 23655
+"GET /static/admin/css/changelists.css HTTP/1.1" 200 6878
+"GET /static/admin/js/jquery.init.js HTTP/1.1" 200 347
+"GET /static/admin/js/core.js HTTP/1.1" 200 6208
+"GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 200 9777
+"GET /static/admin/js/actions.js HTTP/1.1" 200 8076
+"GET /static/admin/js/urlify.js HTTP/1.1" 200 7887
+"GET /static/admin/img/search.svg HTTP/1.1" 200 458
+"GET /static/admin/js/prepopulate.js HTTP/1.1" 200 1531
+"GET /static/admin/img/icon-yes.svg HTTP/1.1" 200 436
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 200 285314
+"GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 200 325171
+"GET /static/admin/js/filters.js HTTP/1.1" 200 978
+"GET /static/admin/img/tooltag-add.svg HTTP/1.1" 200 331
+"GET /static/admin/img/sorting-icons.svg HTTP/1.1" 200 1097
+"GET /admin/authentication/emailverification/ HTTP/1.1" 200 13466
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/authentication/passwordreset/ HTTP/1.1" 200 13438
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/authentication/user/ HTTP/1.1" 200 23655
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/students/useractivity/ HTTP/1.1" 200 13308
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/students/studentprofile/ HTTP/1.1" 200 19968
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/students/school/ HTTP/1.1" 200 16624
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/students/department/ HTTP/1.1" 200 21707
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/students/adminprofile/ HTTP/1.1" 200 18182
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/authentication/user/ HTTP/1.1" 200 23655
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/authentication/user/?o=4.-6 HTTP/1.1" 200 24624
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/authentication/user/?o=-4.-6 HTTP/1.1" 200 24662
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/authentication/user/?o=-6 HTTP/1.1" 200 24186
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/authentication/user/?o=4.-6 HTTP/1.1" 200 24624
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/authentication/user/?o=-4.-6 HTTP/1.1" 200 24662
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/admin.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin/authentication/user/?o=-4.-6 HTTP/1.1" 200 24272
+"GET /static/admin/img/icon-no.svg HTTP/1.1" 200 560
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/authentication/user/?o=-4.-6 HTTP/1.1" 200 24272
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+Watching for file changes with StatReloader
+"GET /admin/?id=6ce753f8-59a6-4e48-8093-daa3f76fd004&vscodeBrowserReqId=1752820507156 HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/%3Fid%3D6ce753f8-59a6-4e48-8093-daa3f76fd004%26vscodeBrowserReqId%3D1752820507156 HTTP/1.1" 200 4328
+"GET /admin/authentication/user/?o=-4.-6 HTTP/1.1" 200 24272
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/authentication/user/?o=-4.-6 HTTP/1.1" 200 24272
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/authentication/user/?o=-4.-6 HTTP/1.1" 200 24272
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/authentication/user/?o=-4.-6 HTTP/1.1" 200 24272
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/authentication/user/?o=-4.-6 HTTP/1.1" 200 24272
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/authentication/user/?o=-4.-6 HTTP/1.1" 200 24272
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"POST /admin/logout/ HTTP/1.1" 200 3568
+"GET /admin/ HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/ HTTP/1.1" 200 4170
+"POST /admin/login/?next=/admin/ HTTP/1.1" 302 0
+"GET /admin/ HTTP/1.1" 200 11637
+"GET /admin/authentication/user/ HTTP/1.1" 200 23589
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/students/school/ HTTP/1.1" 200 16635
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/students/studentprofile/ HTTP/1.1" 200 19979
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/students/useractivity/ HTTP/1.1" 200 13319
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/students/studentprofile/ HTTP/1.1" 200 19979
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/students/department/ HTTP/1.1" 200 21718
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/authentication/user/ HTTP/1.1" 200 23589
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/admin.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin/authentication/user/ HTTP/1.1" 200 23589
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET / HTTP/1.1" 302 0
+Internal Server Error: /auth/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 250, in login_view
+    return render(request, 'authentication/login.html')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/ HTTP/1.1" 500 152230
+Forbidden (CSRF token from POST incorrect.): /admin/login/
+"POST /admin/login/?next=/admin/ HTTP/1.1" 403 2503
+"POST /admin/logout/ HTTP/1.1" 200 3568
+"GET / HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 2406
+"GET /auth/register/ HTTP/1.1" 200 5043
+"GET /admin/ HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/ HTTP/1.1" 200 4170
+/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py changed, reloading.
+Watching for file changes with StatReloader
+"POST /admin/login/?next=/admin/ HTTP/1.1" 302 0
+"GET /admin/ HTTP/1.1" 200 11637
+"GET /admin/authentication/user/ HTTP/1.1" 200 23589
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/students/studentprofile/ HTTP/1.1" 200 19979
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/urls.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /auth/student-registration/?id=6ce753f8-59a6-4e48-8093-daa3f76fd004&vscodeBrowserReqId=1752820958064 HTTP/1.1" 200 5074
+Internal Server Error: /auth/student-registration/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 297, in student_registration
+    return render(request, 'authentication/student_registration.html', {'form': form})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/student-registration/ HTTP/1.1" 500 158866
+Internal Server Error: /auth/student-registration/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 297, in student_registration
+    return render(request, 'authentication/student_registration.html', {'form': form})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/student-registration/ HTTP/1.1" 500 159003
+Internal Server Error: /auth/student-registration/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 297, in student_registration
+    return render(request, 'authentication/student_registration.html', {'form': form})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/student-registration/ HTTP/1.1" 500 159003
+Internal Server Error: /auth/student-registration/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 297, in student_registration
+    return render(request, 'authentication/student_registration.html', {'form': form})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/student-registration/ HTTP/1.1" 500 159003
+Internal Server Error: /auth/student-registration/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 297, in student_registration
+    return render(request, 'authentication/student_registration.html', {'form': form})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/student-registration/ HTTP/1.1" 500 159003
+Internal Server Error: /auth/student-registration/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 297, in student_registration
+    return render(request, 'authentication/student_registration.html', {'form': form})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/student-registration/ HTTP/1.1" 500 159003
+Internal Server Error: /auth/student-registration/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 297, in student_registration
+    return render(request, 'authentication/student_registration.html', {'form': form})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/student-registration/ HTTP/1.1" 500 159003
+Internal Server Error: /auth/student-registration/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 297, in student_registration
+    return render(request, 'authentication/student_registration.html', {'form': form})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/student-registration/ HTTP/1.1" 500 159003
+Internal Server Error: /auth/student-registration/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 297, in student_registration
+    return render(request, 'authentication/student_registration.html', {'form': form})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/student-registration/ HTTP/1.1" 500 159003
+Internal Server Error: /auth/student-registration/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 297, in student_registration
+    return render(request, 'authentication/student_registration.html', {'form': form})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/student-registration/ HTTP/1.1" 500 159003
+"GET /admin/students/studentprofile/ HTTP/1.1" 200 19979
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET / HTTP/1.1" 302 0
+Internal Server Error: /auth/login/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 252, in login_view
+    return render(request, 'authentication/login.html')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/login/ HTTP/1.1" 500 152322
+"GET / HTTP/1.1" 302 0
+Internal Server Error: /auth/login/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 252, in login_view
+    return render(request, 'authentication/login.html')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/login/ HTTP/1.1" 500 152322
+Internal Server Error: /auth/student-registration/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 297, in student_registration
+    return render(request, 'authentication/student_registration.html', {'form': form})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/student-registration/ HTTP/1.1" 500 158866
+Internal Server Error: /auth/login/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 252, in login_view
+    return render(request, 'authentication/login.html')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/login/ HTTP/1.1" 500 152322
+Watching for file changes with StatReloader
+Internal Server Error: /auth/login/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 252, in login_view
+    return render(request, 'authentication/login.html')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/login/ HTTP/1.1" 500 152459
+Internal Server Error: /auth/login/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 252, in login_view
+    return render(request, 'authentication/login.html')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/login/ HTTP/1.1" 500 152459
+Internal Server Error: /auth/login/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 252, in login_view
+    return render(request, 'authentication/login.html')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/login/ HTTP/1.1" 500 152459
+Internal Server Error: /auth/login/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 252, in login_view
+    return render(request, 'authentication/login.html')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/login/ HTTP/1.1" 500 152459
+Internal Server Error: /auth/login/
+Traceback (most recent call last):
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/views.py", line 252, in login_view
+    return render(request, 'authentication/login.html')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 722, in resolve
+    obj = self.var.resolve(context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 854, in resolve
+    value = self._resolve_lookup(context)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/.venv/lib/python3.12/site-packages/django/template/base.py", line 925, in _resolve_lookup
+    current = current()
+              ^^^^^^^^^
+  File "/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py", line 73, in get_full_name
+    return f"{self.first_name} {self.last_name}".strip()
+              ^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'first_name'
+"GET /auth/login/ HTTP/1.1" 500 152459
+/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/models.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /auth/student-registration/?id=6ce753f8-59a6-4e48-8093-daa3f76fd004&vscodeBrowserReqId=1752821230935 HTTP/1.1" 200 5074
+"GET /auth/student-registration/ HTTP/1.1" 200 5941
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /static/css/style.css HTTP/1.1" 304 0
+"GET /auth/login/ HTTP/1.1" 200 3365
+"GET /auth/student-registration/ HTTP/1.1" 200 5941
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 2872
+"GET /auth/student-registration/ HTTP/1.1" 200 5074
+"GET /auth/student-registration/ HTTP/1.1" 200 5074
+"GET /auth/ HTTP/1.1" 200 2414
+"GET /auth/ HTTP/1.1" 200 2414
+"GET /auth/student-registration/ HTTP/1.1" 200 5074
+"GET /auth/student-registration/ HTTP/1.1" 200 5074
+"GET /auth/student-registration/ HTTP/1.1" 200 6362
+/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/urls.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /auth/student-registration/?id=6ce753f8-59a6-4e48-8093-daa3f76fd004&vscodeBrowserReqId=1752821428495 HTTP/1.1" 200 6362
+/Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/authentication/forms.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /auth/student-registration/?id=6ce753f8-59a6-4e48-8093-daa3f76fd004&vscodeBrowserReqId=1752821552050 HTTP/1.1" 200 6362
+"GET /auth/student-registration/ HTTP/1.1" 200 6362
+"GET /auth/load-departments/?school_id=1 HTTP/1.1" 200 147
+"GET /auth/load-departments/?school_id=3 HTTP/1.1" 200 144
+"GET /auth/student-registration/?id=6ce753f8-59a6-4e48-8093-daa3f76fd004&vscodeBrowserReqId=1752821672353 HTTP/1.1" 200 6362
+"GET /auth/student-registration/ HTTP/1.1" 200 6362
+"GET /auth/student-registration/ HTTP/1.1" 200 6362
+"GET /static/css/style.css HTTP/1.1" 304 0
+"GET /static/js/main.js HTTP/1.1" 304 0

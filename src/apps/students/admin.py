@@ -1,25 +1,35 @@
 from django.contrib import admin
-from .models import StudentProfile, AdminProfile, Department, UserActivity
+from .models import StudentProfile, AdminProfile, Department, UserActivity, School
+
+
+@admin.register(School)
+class SchoolAdmin(admin.ModelAdmin):
+    """Admin configuration for School"""
+    
+    list_display = ['id', 'name', 'created_at']
+    list_filter = ['created_at']
+    search_fields = ['name']
+    ordering = ['name']
 
 
 @admin.register(StudentProfile)
 class StudentProfileAdmin(admin.ModelAdmin):
     """Admin configuration for StudentProfile"""
     
-    list_display = ['student_id', 'user', 'department', 'year_of_study', 'created_at']
-    list_filter = ['department', 'year_of_study', 'created_at']
-    search_fields = ['student_id', 'user__email', 'user__first_name', 'user__last_name']
+    list_display = ['student_id', 'name', 'user', 'department', 'created_at']
+    list_filter = ['department', 'created_at']
+    search_fields = ['student_id', 'name', 'user__email', 'department']
     ordering = ['-created_at']
     
     fieldsets = (
         ('User Information', {
-            'fields': ('user',)
+            'fields': ('user', 'name')
         }),
         ('Academic Information', {
-            'fields': ('student_id', 'department', 'year_of_study', 'course')
+            'fields': ('student_id', 'department', 'school')
         }),
         ('Contact Information', {
-            'fields': ('contact_no', 'emergency_contact', 'address')
+            'fields': ('contact_no',)
         }),
     )
 
@@ -50,17 +60,14 @@ class AdminProfileAdmin(admin.ModelAdmin):
 class DepartmentAdmin(admin.ModelAdmin):
     """Admin configuration for Department"""
     
-    list_display = ['name', 'head_of_department', 'contact_email', 'created_at']
-    list_filter = ['created_at']
-    search_fields = ['name', 'description']
+    list_display = ['id', 'name', 'school', 'created_at']
+    list_filter = ['school', 'created_at']
+    search_fields = ['name', 'school__name']
     ordering = ['name']
     
     fieldsets = (
         ('Department Information', {
-            'fields': ('name', 'description', 'head_of_department')
-        }),
-        ('Contact Information', {
-            'fields': ('contact_email', 'contact_phone')
+            'fields': ('name', 'school')
         }),
     )
 

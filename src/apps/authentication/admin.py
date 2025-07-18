@@ -4,26 +4,31 @@ from .models import User, EmailVerification, PasswordReset
 
 
 class UserAdmin(BaseUserAdmin):
-    """Admin configuration for User model"""
+    """Admin configuration for User model - showing only schema fields"""
     
-    list_display = ['email', 'username', 'role', 'is_email_verified', 'is_active', 'created_at']
+    # Display only the fields from your schema: email, password, role, created_at
+    list_display = ['email', 'role', 'is_email_verified', 'is_active', 'created_at']
     list_filter = ['role', 'is_email_verified', 'is_active', 'created_at']
-    search_fields = ['email', 'username', 'first_name', 'last_name']
+    search_fields = ['email']
     ordering = ['-created_at']
     
     fieldsets = (
-        (None, {'fields': ('email', 'username', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name')}),
-        ('Permissions', {'fields': ('role', 'is_active', 'is_email_verified', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Important dates', {'fields': ('last_login', 'date_joined')}),
+        ('User Schema Fields', {'fields': ('email', 'password', 'role', 'created_at')}),
+        ('System Fields', {'fields': ('is_active', 'is_email_verified', 'is_staff', 'is_superuser')}),
+        ('Permissions', {'fields': ('groups', 'user_permissions')}),
     )
+    
+    readonly_fields = ['created_at']
     
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'username', 'password1', 'password2', 'role'),
+            'fields': ('email', 'password1', 'password2', 'role'),
         }),
     )
+    
+    # Remove username-related functionality since we don't have username field
+    filter_horizontal = ('groups', 'user_permissions',)
 
 
 @admin.register(EmailVerification)

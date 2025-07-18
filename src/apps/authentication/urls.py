@@ -14,7 +14,11 @@ urlpatterns = [
     path('api/reset-password/<str:token>/', views.reset_password, name='api_reset_password'),
     
     # Web views
-    path('', views.login_view, name='login_view'),
-    path('register/', views.register_view, name='register_view'),
+    path('', views.login_view, name='login'),
+    path('login/', views.login_view, name='login_view'),
     path('logout/', views.logout_view, name='logout_view'),
+    
+    # Student Registration Only (No admin/staff registration)
+    path('student-registration/', views.student_registration, name='student_registration'),
+    path('load-departments/', views.load_departments, name='load_departments'),
 ]

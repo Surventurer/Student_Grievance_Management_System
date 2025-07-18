@@ -20,6 +20,8 @@ from datetime import timedelta
 
 from .models import User, EmailVerification, PasswordReset
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, PasswordResetSerializer
+from .forms import StudentRegistrationForm
+from apps.students.models import Department
 
 
 def generate_otp():
@@ -266,3 +268,38 @@ def logout_view(request):
         logout(request)
         messages.success(request, 'You have been logged out successfully.')
     return redirect('authentication:login_view')
+
+
+def student_registration(request):
+    """Student Registration View"""
+    if request.method == 'POST':
+        form = StudentRegistrationForm(request.POST)
+        if form.is_valid():
+            try:
+                user, student_profile = form.save()
+                messages.success(request, f'Registration successful! Welcome {student_profile.name}')
+                
+                # Auto login after registration
+                user = authenticate(request, email=user.email, password=form.cleaned_data['password'])
+                if user:
+                    login(request, user)
+                    return redirect('students:dashboard')  # Redirect to student dashboard
+                else:
+                    return redirect('authentication:login')
+                    
+            except Exception as e:
+                messages.error(request, f'Registration failed: {str(e)}')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = StudentRegistrationForm()
+    
+    return render(request, 'authentication/student_registration.html', {'form': form})
+
+
+def load_departments(request):
+    """AJAX view to load departments based on selected school"""
+    school_id = request.GET.get('school_id')
+    departments = Department.objects.filter(school_id=school_id).order_by('name')
+    department_data = [{'id': dept.id, 'name': dept.name} for dept in departments]
+    return JsonResponse({'departments': department_data})
