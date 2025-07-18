@@ -49,6 +49,8 @@ def submit_grievance_view(request):
         return redirect('students:dashboard')
     
     if request.method == 'POST':
+        print(f"DEBUG: POST request received")
+        print(f"DEBUG: POST data: {dict(request.POST)}")
         try:
             # Get form data
             title = request.POST.get('title', '').strip()
@@ -82,7 +84,13 @@ def submit_grievance_view(request):
                 is_verified=False
             ).first()
             
+            print(f"DEBUG: OTP verification lookup - email: {request.user.email}, otp: {otp_code}")
+            print(f"DEBUG: Found verification: {email_verification}")
+            if email_verification:
+                print(f"DEBUG: Verification expired: {email_verification.is_expired}")
+            
             if not email_verification or email_verification.is_expired:
+                print(f"DEBUG: OTP verification failed")
                 messages.error(request, 'Invalid or expired OTP. Please try again.')
                 context = {
                     'student_profile': request.user.student_profile
@@ -147,10 +155,14 @@ def submit_grievance_view(request):
             # Auto-assign grievance
             grievance.auto_assign()
             
+            print(f"DEBUG: Grievance created successfully: {grievance.grievance_id}")
             messages.success(request, f'Grievance submitted successfully! Your grievance ID is: {grievance.grievance_id}')
             return redirect('students:dashboard')
             
         except Exception as e:
+            print(f"DEBUG: Exception in grievance submission: {str(e)}")
+            import traceback
+            traceback.print_exc()
             messages.error(request, f'Error submitting grievance: {str(e)}')
             context = {
                 'student_profile': request.user.student_profile

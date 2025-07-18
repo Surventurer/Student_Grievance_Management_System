@@ -102,7 +102,7 @@
                             
                             <!-- Non-Academic Department (Selectable) -->
                             <div id="non_academic_department" class="department-field" style="display: none;">
-                                <select class="form-control" id="department_select" name="department" required>
+                                <select class="form-control" id="department_select" name="department">
                                     <option value="">Select Department (All Schools)</option>
                                     <!-- Will be populated dynamically -->
                                 </select>
@@ -460,53 +460,70 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Handle form submission
     const grievanceForm = document.getElementById('grievanceForm');
+    
     grievanceForm.addEventListener('submit', function(e) {
-        e.preventDefault();
+        console.log('Form submission attempted');
         
         // Check if all required fields are filled
         const title = document.getElementById('title').value.trim();
         const description = document.getElementById('description').value.trim();
         const categoryType = document.querySelector('input[name="category_type"]:checked')?.value;
-        const categoryId = document.getElementById('nature').value;
-        const departmentId = document.getElementById('department').value;
+        const categoryId = document.getElementById('nature_of_grievance').value;
+        const departmentId = document.getElementById('department_select').value;
+        const otpCode = document.getElementById('otp_code').value.trim();
+        
+        console.log('Form data:', { title, description, categoryType, categoryId, departmentId, otpCode });
         
         if (!title) {
+            e.preventDefault();
             alert('Please enter a title for your grievance.');
-            return;
+            return false;
         }
         
         if (!description) {
+            e.preventDefault();
             alert('Please provide a description of your grievance.');
-            return;
+            return false;
         }
         
         if (!categoryType) {
+            e.preventDefault();
             alert('Please select grievance type (Academic or Non-Academic).');
-            return;
+            return false;
         }
         
         if (!categoryId) {
+            e.preventDefault();
             alert('Please select a category.');
-            return;
+            return false;
         }
         
         if (categoryType === 'non_academic' && !departmentId) {
+            e.preventDefault();
             alert('Please select a department for non-academic grievances.');
-            return;
+            return false;
+        }
+        
+        if (!otpCode || otpCode.length !== 6) {
+            e.preventDefault();
+            alert('Please enter the 6-digit OTP sent to your email.');
+            return false;
         }
         
         // Check if OTP is verified
-        if (submitBtn.disabled) {
+        if (!otpVerified) {
+            e.preventDefault();
             alert('Please verify your email with OTP before submitting.');
-            return;
+            return false;
         }
         
         // Show loading state
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Submitting...';
         
-        // Submit the form
-        this.submit();
+        console.log('Form validation passed, submitting...');
+        // Allow form to submit normally
+        return true;
     });
 
     // Load academic categories by default and set up departments
