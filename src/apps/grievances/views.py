@@ -130,8 +130,15 @@ def submit_grievance_view(request):
             supporting_docs = request.FILES.getlist('supporting_docs')
             for file in supporting_docs:
                 if file.size <= 5 * 1024 * 1024:  # 5MB limit
-                    # Save file and create attachment record (you may need to add this model)
-                    pass
+                    # Create attachment record
+                    from .models import GrievanceAttachment
+                    GrievanceAttachment.objects.create(
+                        grievance=grievance,
+                        file=file,
+                        file_name=file.name,
+                        file_size=file.size,
+                        file_type=file.content_type
+                    )
             
             # Mark OTP as verified
             email_verification.is_verified = True

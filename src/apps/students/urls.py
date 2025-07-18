@@ -18,4 +18,6 @@ urlpatterns = [
     path('profile/', views.student_profile_view, name='profile'),
     path('profile/update-contact/', views.update_contact_view, name='update_contact'),
     path('profile/change-password/', views.change_password_view, name='change_password'),
+    path('grievances/', views.student_grievances_view, name='grievances'),
+    path('grievances/<uuid:grievance_id>/', views.student_grievance_detail_view, name='grievance_detail'),
 ]

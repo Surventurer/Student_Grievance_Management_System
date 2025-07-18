@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Grievance Details - {{ grievance.grievance_id }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Grievance Details</h1>
+            <a href="{% url 'students:grievances' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Grievances
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Main Grievance Card -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <span class="badge bg-secondary me-2">{{ grievance.grievance_id }}</span>
+                    {{ grievance.title }}
+                </h5>
+                <span class="badge bg-{% if grievance.status == 'pending' %}warning{% elif grievance.status == 'resolved' %}success{% else %}danger{% endif %} fs-6">
+                    {{ grievance.get_status_display }}
+                </span>
+            </div>
+            <div class="card-body">
+                <!-- Description -->
+                <div class="mb-4">
+                    <h6 class="fw-bold text-muted">Description</h6>
+                    <p class="mb-0">{{ grievance.description|linebreaks }}</p>
+                </div>
+
+                <!-- Supporting Documents -->
+                {% if grievance.attachments.all %}
+                <div class="mb-4">
+                    <h6 class="fw-bold text-muted">Supporting Documents</h6>
+                    <div class="row">
+                        {% for attachment in grievance.attachments.all %}
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card border">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-file fa-2x text-muted mb-2"></i>
+                                    <h6 class="card-title text-truncate">{{ attachment.file_name }}</h6>
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            {{ attachment.file_size|filesizeformat }}<br>
+                                            {{ attachment.uploaded_at|date:"M d, Y H:i" }}
+                                        </small>
+                                    </p>
+                                    <a href="{{ attachment.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                        <i class="fas fa-download"></i> Download
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Comments/Updates -->
+                {% if grievance.comments.all %}
+                <div class="mb-4">
+                    <h6 class="fw-bold text-muted">Updates & Comments</h6>
+                    {% for comment in grievance.comments.all %}
+                    <div class="card mb-3 {% if comment.comment_type == 'internal_note' %}border-warning{% elif comment.comment_type == 'status_update' %}border-info{% endif %}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <strong>
+                                        {% if comment.user.is_student %}
+                                            {{ comment.user.get_full_name }} (Student)
+                                        {% else %}
+                                            {{ comment.user.get_full_name }} (Admin)
+                                        {% endif %}
+                                    </strong>
+                                    {% if comment.comment_type != 'comment' %}
+                                        <span class="badge bg-{% if comment.comment_type == 'status_update' %}info{% else %}warning{% endif %} ms-2">
+                                            {{ comment.get_comment_type_display }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <small class="text-muted">{{ comment.created_at|date:"M d, Y H:i" }}</small>
+                            </div>
+                            <p class="mb-0">{{ comment.message|linebreaks }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Grievance Information -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Grievance Information</h6>
+            </div>
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">ID:</div>
+                    <div class="col-7">{{ grievance.grievance_id }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">Category:</div>
+                    <div class="col-7">
+                        <span class="badge bg-{% if grievance.category.category_type == 'academic' %}info{% else %}warning{% endif %}">
+                            {{ grievance.category.name }}
+                        </span>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">Type:</div>
+                    <div class="col-7">{{ grievance.category.get_category_type_display }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">Department:</div>
+                    <div class="col-7">{{ grievance.department|default:"N/A" }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">Priority:</div>
+                    <div class="col-7">
+                        <span class="badge bg-{% if grievance.priority == 'high' %}danger{% elif grievance.priority == 'medium' %}warning{% else %}secondary{% endif %}">
+                            {{ grievance.get_priority_display }}
+                        </span>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">Status:</div>
+                    <div class="col-7">
+                        <span class="badge bg-{% if grievance.status == 'pending' %}warning{% elif grievance.status == 'resolved' %}success{% else %}danger{% endif %}">
+                            {{ grievance.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">Anonymous:</div>
+                    <div class="col-7">
+                        {% if grievance.is_anonymous %}
+                            <i class="fas fa-check text-success"></i> Yes
+                        {% else %}
+                            <i class="fas fa-times text-danger"></i> No
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">Submitted:</div>
+                    <div class="col-7">{{ grievance.submitted_at|date:"M d, Y H:i" }}</div>
+                </div>
+                {% if grievance.assigned_to %}
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">Assigned To:</div>
+                    <div class="col-7">{{ grievance.assigned_to.user.get_full_name }}</div>
+                </div>
+                {% endif %}
+                {% if grievance.resolved_at %}
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">Resolved:</div>
+                    <div class="col-7">{{ grievance.resolved_at|date:"M d, Y H:i" }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0">Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'students:grievances' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-list"></i> View All Grievances
+                    </a>
+                    <a href="{% url 'grievances_web:submit_grievance' %}" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Submit New Grievance
+                    </a>
+                    {% if grievance.status != 'resolved' and grievance.status != 'rejected' %}
+                    <button type="button" class="btn btn-outline-info" onclick="alert('Contact feature coming soon!')">
+                        <i class="fas fa-envelope"></i> Contact Admin
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

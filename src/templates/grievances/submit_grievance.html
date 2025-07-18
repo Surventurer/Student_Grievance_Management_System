@@ -458,6 +458,57 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Handle form submission
+    const grievanceForm = document.getElementById('grievanceForm');
+    grievanceForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Check if all required fields are filled
+        const title = document.getElementById('title').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const categoryType = document.querySelector('input[name="category_type"]:checked')?.value;
+        const categoryId = document.getElementById('nature').value;
+        const departmentId = document.getElementById('department').value;
+        
+        if (!title) {
+            alert('Please enter a title for your grievance.');
+            return;
+        }
+        
+        if (!description) {
+            alert('Please provide a description of your grievance.');
+            return;
+        }
+        
+        if (!categoryType) {
+            alert('Please select grievance type (Academic or Non-Academic).');
+            return;
+        }
+        
+        if (!categoryId) {
+            alert('Please select a category.');
+            return;
+        }
+        
+        if (categoryType === 'non_academic' && !departmentId) {
+            alert('Please select a department for non-academic grievances.');
+            return;
+        }
+        
+        // Check if OTP is verified
+        if (submitBtn.disabled) {
+            alert('Please verify your email with OTP before submitting.');
+            return;
+        }
+        
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Submitting...';
+        
+        // Submit the form
+        this.submit();
+    });
+
     // Load academic categories by default and set up departments
     loadCategories('academic');
     loadDepartments(); // Load departments for potential non-academic use

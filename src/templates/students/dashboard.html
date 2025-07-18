@@ -68,7 +68,7 @@
                                     </td>
                                     <td>{{ grievance.submitted_at|date:"M d, Y" }}</td>
                                     <td>
-                                        <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                                        <a href="{% url 'students:grievance_detail' grievance.id %}" class="btn btn-sm btn-outline-primary">View</a>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -90,7 +90,7 @@
             <div class="card-body">
                 <div class="d-grid gap-2">
                     <a href="{% url 'grievances_web:submit_grievance' %}" class="btn btn-primary">Submit New Grievance</a>
-                    <a href="#" class="btn btn-outline-secondary">View All Grievances</a>
+                    <a href="{% url 'students:grievances' %}" class="btn btn-outline-secondary">View All Grievances</a>
                     <a href="{% url 'students:profile' %}" class="btn btn-outline-info">Manage Profile</a>
                 </div>
             </div>

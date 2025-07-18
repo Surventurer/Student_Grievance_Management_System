@@ -40,7 +40,6 @@ class Grievance(models.Model):
     
     STATUS_CHOICES = [
         ('pending', 'Pending'),
-        ('under_review', 'Under Review'),
         ('resolved', 'Resolved'),
         ('rejected', 'Rejected'),
     ]

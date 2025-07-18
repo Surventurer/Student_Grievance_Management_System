@@ -337,3 +337,67 @@ def change_password_view(request):
         return redirect('authentication:login')
     
     return redirect('students:profile')
+
+
+@login_required
+def student_grievances_view(request):
+    """View all student grievances"""
+    if not request.user.is_student:
+        return redirect('admin_panel:dashboard')
+    
+    try:
+        student_profile = request.user.student_profile
+    except StudentProfile.DoesNotExist:
+        messages.error(request, 'Student profile not found')
+        return redirect('authentication:login')
+    
+    # Get all student's grievances with pagination
+    all_grievances = Grievance.objects.filter(student=student_profile)
+    grievances = all_grievances.order_by('-submitted_at')
+    
+    # Filter by status if provided
+    status_filter = request.GET.get('status')
+    if status_filter:
+        grievances = grievances.filter(status=status_filter)
+    
+    # Pagination
+    paginator = Paginator(grievances, 10)  # Show 10 grievances per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'student_profile': student_profile,
+        'page_obj': page_obj,
+        'status_filter': status_filter,
+        'total_grievances': all_grievances.count(),
+        'pending_grievances': all_grievances.filter(status='pending').count(),
+        'resolved_grievances': all_grievances.filter(status='resolved').count(),
+    }
+    
+    return render(request, 'students/grievances.html', context)
+
+
+@login_required
+def student_grievance_detail_view(request, grievance_id):
+    """View individual grievance details"""
+    if not request.user.is_student:
+        return redirect('admin_panel:dashboard')
+    
+    try:
+        student_profile = request.user.student_profile
+    except StudentProfile.DoesNotExist:
+        messages.error(request, 'Student profile not found')
+        return redirect('authentication:login')
+    
+    try:
+        grievance = Grievance.objects.get(id=grievance_id, student=student_profile)
+    except Grievance.DoesNotExist:
+        messages.error(request, 'Grievance not found')
+        return redirect('students:grievances')
+    
+    context = {
+        'student_profile': student_profile,
+        'grievance': grievance,
+    }
+    
+    return render(request, 'students/grievance_detail.html', context)
