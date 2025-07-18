@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Student Dashboard</h1>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title">Total Grievances</h5>
+                <h3>{{ total_grievances }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <h5 class="card-title">Pending</h5>
+                <h3>{{ pending_grievances }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">Resolved</h5>
+                <h3>{{ resolved_grievances }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5>Recent Grievances</h5>
+            </div>
+            <div class="card-body">
+                {% if grievances %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Status</th>
+                                    <th>Submitted</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for grievance in grievances %}
+                                <tr>
+                                    <td>{{ grievance.title }}</td>
+                                    <td>{{ grievance.category.name }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if grievance.status == 'pending' %}warning{% elif grievance.status == 'resolved' %}success{% else %}info{% endif %}">
+                                            {{ grievance.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ grievance.submitted_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p>No grievances submitted yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="#" class="btn btn-primary">Submit New Grievance</a>
+                    <a href="#" class="btn btn-outline-secondary">View All Grievances</a>
+                    <a href="{% url 'students:profile' %}" class="btn btn-outline-info">Manage Profile</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>Profile Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Student ID:</strong> {{ student_profile.student_id }}</p>
+                <p><strong>Department:</strong> {{ student_profile.department }}</p>
+                <p><strong>Email:</strong> {{ student_profile.user.email }}</p>
+                <p><strong>Contact:</strong> {{ student_profile.contact_no|default:"Not provided" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

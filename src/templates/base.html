@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Grievance Management System{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% load static %}{% static 'css/style.css' %}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            {% if user.is_authenticated %}
+                {% if user.is_admin %}
+                    <a class="navbar-brand" href="{% url 'admin_panel:dashboard' %}">
+                        Student Grievance System
+                    </a>
+                {% elif user.is_student %}
+                    <a class="navbar-brand" href="{% url 'students:dashboard' %}">
+                        Student Grievance System
+                    </a>
+                {% else %}
+                    <a class="navbar-brand" href="{% url 'authentication:login_view' %}">
+                        Student Grievance System
+                    </a>
+                {% endif %}
+            {% else %}
+                <a class="navbar-brand" href="{% url 'authentication:login_view' %}">
+                    Student Grievance System
+                </a>
+            {% endif %}
+            
+            {% if user.is_authenticated %}
+            <div class="navbar-nav me-auto">
+                {% if user.is_student %}
+                <a class="nav-link" href="{% url 'students:dashboard' %}">Dashboard</a>
+                {% endif %}
+                {% if user.is_admin %}
+                <a class="nav-link" href="{% url 'admin_panel:dashboard' %}">Admin Dashboard</a>
+                <a class="nav-link" href="{% url 'admin_panel:grievance_list' %}">Grievances</a>
+                <a class="nav-link" href="{% url 'admin_panel:student_list' %}">Students</a>
+                <a class="nav-link" href="{% url 'admin_panel:reports' %}">Reports</a>
+                {% endif %}
+            </div>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3">
+                    Welcome, {{ user.get_full_name|default:user.username }}
+                    {% if user.is_admin %}
+                    <span class="badge bg-primary">Admin</span>
+                    {% endif %}
+                </span>
+                <a class="nav-link" href="{% url 'authentication:logout_view' %}">Logout</a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+    
+    <main class="container mt-4">
+        {% if messages and request.resolver_match.url_name != 'login_view' %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}
+        {% endblock %}
+    </main>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% load static %}{% static 'js/main.js' %}"></script>
+</body>
+</html>

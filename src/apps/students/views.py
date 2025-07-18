@@ -1,0 +1,284 @@
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.http import JsonResponse
+from django.core.paginator import Paginator
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.db.models import Q
+
+from .models import StudentProfile, AdminProfile, Department, UserActivity
+from .serializers import StudentProfileSerializer, AdminProfileSerializer, DepartmentSerializer
+from apps.authentication.models import User
+from apps.grievances.models import Grievance
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def student_dashboard(request):
+    """Student dashboard API"""
+    try:
+        student_profile = request.user.student_profile
+    except StudentProfile.DoesNotExist:
+        return Response({'error': 'Student profile not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    # Get student's grievances
+    grievances = Grievance.objects.filter(student=student_profile).order_by('-submitted_at')
+    
+    # Dashboard statistics
+    total_grievances = grievances.count()
+    pending_grievances = grievances.filter(status='pending').count()
+    resolved_grievances = grievances.filter(status='resolved').count()
+    
+    # Recent grievances
+    recent_grievances = grievances[:5]
+    
+    return Response({
+        'student_profile': StudentProfileSerializer(student_profile).data,
+        'statistics': {
+            'total_grievances': total_grievances,
+            'pending_grievances': pending_grievances,
+            'resolved_grievances': resolved_grievances,
+        },
+        'recent_grievances': [
+            {
+                'id': g.id,
+                'title': g.title,
+                'status': g.status,
+                'submitted_at': g.submitted_at,
+                'category': g.category.name if g.category else None,
+            }
+            for g in recent_grievances
+        ]
+    })
+
+
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+def student_profile(request):
+    """Get or update student profile"""
+    try:
+        student_profile = request.user.student_profile
+    except StudentProfile.DoesNotExist:
+        return Response({'error': 'Student profile not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        serializer = StudentProfileSerializer(student_profile)
+        return Response(serializer.data)
+    
+    elif request.method == 'PUT':
+        serializer = StudentProfileSerializer(student_profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def admin_dashboard(request):
+    """Admin dashboard API"""
+    if not request.user.is_admin:
+        return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)
+    
+    try:
+        admin_profile = request.user.admin_profile
+    except AdminProfile.DoesNotExist:
+        return Response({'error': 'Admin profile not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    # Get grievances assigned to this admin
+    if admin_profile.role_level == 'superadmin':
+        grievances = Grievance.objects.all()
+    else:
+        grievances = Grievance.objects.filter(assigned_to=admin_profile)
+    
+    # Dashboard statistics
+    total_grievances = grievances.count()
+    pending_grievances = grievances.filter(status='pending').count()
+    under_review_grievances = grievances.filter(status='under_review').count()
+    resolved_grievances = grievances.filter(status='resolved').count()
+    rejected_grievances = grievances.filter(status='rejected').count()
+    
+    # Recent grievances
+    recent_grievances = grievances.order_by('-submitted_at')[:10]
+    
+    return Response({
+        'admin_profile': AdminProfileSerializer(admin_profile).data,
+        'statistics': {
+            'total_grievances': total_grievances,
+            'pending_grievances': pending_grievances,
+            'under_review_grievances': under_review_grievances,
+            'resolved_grievances': resolved_grievances,
+            'rejected_grievances': rejected_grievances,
+        },
+        'recent_grievances': [
+            {
+                'id': g.id,
+                'title': g.title,
+                'status': g.status,
+                'submitted_at': g.submitted_at,
+                'student': g.student.student_id,
+                'category': g.category.name if g.category else None,
+            }
+            for g in recent_grievances
+        ]
+    })
+
+
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+def admin_profile(request):
+    """Get or update admin profile"""
+    if not request.user.is_admin:
+        return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)
+    
+    try:
+        admin_profile = request.user.admin_profile
+    except AdminProfile.DoesNotExist:
+        return Response({'error': 'Admin profile not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        serializer = AdminProfileSerializer(admin_profile)
+        return Response(serializer.data)
+    
+    elif request.method == 'PUT':
+        serializer = AdminProfileSerializer(admin_profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def manage_students(request):
+    """Manage students - Admin only"""
+    if not request.user.is_admin:
+        return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)
+    
+    # Search and filter students
+    search_query = request.GET.get('search', '')
+    department_filter = request.GET.get('department', '')
+    
+    students = StudentProfile.objects.select_related('user').all()
+    
+    if search_query:
+        students = students.filter(
+            Q(student_id__icontains=search_query) |
+            Q(user__first_name__icontains=search_query) |
+            Q(user__last_name__icontains=search_query) |
+            Q(user__email__icontains=search_query)
+        )
+    
+    if department_filter:
+        students = students.filter(department=department_filter)
+    
+    # Pagination
+    paginator = Paginator(students, 20)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+    
+    return Response({
+        'students': [
+            {
+                'id': s.id,
+                'student_id': s.student_id,
+                'name': s.user.get_full_name(),
+                'email': s.user.email,
+                'department': s.department,
+                'is_active': s.user.is_active,
+                'created_at': s.created_at,
+            }
+            for s in page_obj
+        ],
+        'pagination': {
+            'current_page': page_obj.number,
+            'total_pages': paginator.num_pages,
+            'total_count': paginator.count,
+        }
+    })
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def departments(request):
+    """Get all departments"""
+    departments = Department.objects.all()
+    serializer = DepartmentSerializer(departments, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_activity(request):
+    """Get user login activity"""
+    activities = UserActivity.objects.filter(user=request.user).order_by('-login_time')[:10]
+    
+    return Response([
+        {
+            'login_time': activity.login_time,
+            'ip_address': activity.ip_address,
+            'user_agent': activity.user_agent,
+            'is_successful': activity.is_successful,
+        }
+        for activity in activities
+    ])
+
+
+# Web views
+@login_required
+def student_dashboard_view(request):
+    """Student dashboard web view"""
+    if not request.user.is_student:
+        return redirect('admin_panel:dashboard')
+    
+    try:
+        student_profile = request.user.student_profile
+    except StudentProfile.DoesNotExist:
+        messages.error(request, 'Student profile not found')
+        return redirect('authentication:login')
+    
+    # Get student's grievances
+    grievances = Grievance.objects.filter(student=student_profile).order_by('-submitted_at')
+    
+    context = {
+        'student_profile': student_profile,
+        'grievances': grievances[:5],  # Recent 5 grievances
+        'total_grievances': grievances.count(),
+        'pending_grievances': grievances.filter(status='pending').count(),
+        'resolved_grievances': grievances.filter(status='resolved').count(),
+    }
+    
+    return render(request, 'students/dashboard.html', context)
+
+
+@login_required
+def student_profile_view(request):
+    """Student profile web view"""
+    if not request.user.is_student:
+        return redirect('admin_panel:dashboard')
+    
+    try:
+        student_profile = request.user.student_profile
+    except StudentProfile.DoesNotExist:
+        messages.error(request, 'Student profile not found')
+        return redirect('authentication:login')
+    
+    if request.method == 'POST':
+        # Handle profile update
+        student_profile.contact_no = request.POST.get('contact_no', '')
+        student_profile.emergency_contact = request.POST.get('emergency_contact', '')
+        student_profile.address = request.POST.get('address', '')
+        student_profile.save()
+        
+        # Update user info
+        request.user.first_name = request.POST.get('first_name', '')
+        request.user.last_name = request.POST.get('last_name', '')
+        request.user.save()
+        
+        messages.success(request, 'Profile updated successfully')
+        return redirect('students:profile')
+    
+    return render(request, 'students/profile.html', {'student_profile': student_profile})
