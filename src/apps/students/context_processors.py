@@ -4,8 +4,6 @@ from .views import get_student_notifications
 def student_notifications(request):
     """Context processor to add student notifications to all templates"""
     if request.user.is_authenticated and request.user.is_student:
-        # Pass request to access session
-        request.user.session = request.session
         notifications = get_student_notifications(request.user)
         return {
             'student_notifications': notifications,

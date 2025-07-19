@@ -237,6 +237,7 @@
                     
                     <!-- Reply Form -->
                     {% if grievance.status != 'resolved' %}
+                    <div id="message-form"></div>
                     <form id="studentResponseForm" method="POST" action="{% url 'students:add_student_response' grievance.id %}" class="mt-3">
                         {% csrf_token %}
                         <div class="input-group">
@@ -508,6 +509,29 @@ document.addEventListener('DOMContentLoaded', function() {
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
     
+    // Handle URL fragment for maintaining scroll position after form submission
+    if (window.location.hash === '#message-form') {
+        // Clear the message form textarea since message was successfully sent
+        const textarea = document.querySelector('#studentResponseForm textarea[name="student_response"]');
+        if (textarea) {
+            textarea.value = '';
+        }
+        
+        // Scroll to message form after a short delay to ensure page is fully loaded
+        setTimeout(() => {
+            const messageForm = document.getElementById('message-form');
+            if (messageForm) {
+                messageForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            // Also scroll chat container to bottom to show latest message
+            if (chatContainer) {
+                setTimeout(() => {
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 100);
+            }
+        }, 100);
+    }
+    
     // Form submission feedback
     const feedbackForm = document.getElementById('feedbackForm');
     if (feedbackForm) {
@@ -542,6 +566,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!textarea.value.trim()) {
                 e.preventDefault();
                 alert('Please enter a message before sending.');
+                textarea.focus();
                 return false;
             }
             
@@ -549,6 +574,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const originalText = submitBtn.innerHTML;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Sending...';
             submitBtn.disabled = true;
+            
+            // Store scroll position of chat container before submission
+            const chatContainer = document.querySelector('.chat-container');
+            if (chatContainer) {
+                sessionStorage.setItem('chatScrollPosition', chatContainer.scrollTop);
+            }
         });
     }
 });

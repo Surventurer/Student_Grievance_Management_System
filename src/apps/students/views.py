@@ -15,6 +15,7 @@ from .models import StudentProfile, AdminProfile, Department, UserActivity
 from .serializers import StudentProfileSerializer, AdminProfileSerializer, DepartmentSerializer
 from apps.authentication.models import User
 from apps.grievances.models import Grievance, GrievanceComment, Feedback
+from apps.notifications.models import ReadNotification
 from django.shortcuts import get_object_or_404
 
 
@@ -26,26 +27,57 @@ def get_student_notifications(user, exclude_viewed=True):
     try:
         student_profile = user.student_profile
         
-        # Get recent admin messages (within last 7 days) that the student hasn't seen
+        # Get recent admin messages (within last 7 days)
         recent_time = timezone.now() - timedelta(days=7)
-        
-        # Get viewed notification IDs from session
-        viewed_notifications = user.session.get('viewed_notifications', []) if hasattr(user, 'session') else []
         
         notifications = GrievanceComment.objects.filter(
             grievance__student=student_profile,
             user__role__in=['admin', 'superadmin', 'officer'],  # Filter by admin roles
             is_internal=False,  # Only public messages
             timestamp__gte=recent_time
-        ).select_related('grievance', 'user').order_by('-timestamp')
+        ).select_related('grievance', 'user')
         
-        # Exclude viewed notifications if requested
-        if exclude_viewed and viewed_notifications:
-            notifications = notifications.exclude(id__in=viewed_notifications)
+        # Exclude read notifications if requested
+        if exclude_viewed:
+            read_notification_ids = ReadNotification.objects.filter(
+                student=user
+            ).values_list('comment_id', flat=True)
+            notifications = notifications.exclude(id__in=read_notification_ids)
             
-        return notifications[:10]
+        return notifications.order_by('-timestamp')[:10]
     except StudentProfile.DoesNotExist:
         return []
+
+
+def mark_grievance_notifications_read(user, grievance):
+    """Mark all notifications for a specific grievance as read"""
+    if not user.is_authenticated or not user.is_student:
+        return
+    
+    try:
+        # Get all unread admin comments for this grievance
+        admin_comments = GrievanceComment.objects.filter(
+            grievance=grievance,
+            user__role__in=['admin', 'superadmin', 'officer'],
+            is_internal=False
+        )
+        
+        # Mark them as read (bulk create, ignore duplicates)
+        read_notifications = []
+        for comment in admin_comments:
+            read_notifications.append(
+                ReadNotification(student=user, comment=comment)
+            )
+        
+        # Use bulk_create with ignore_conflicts to avoid duplicate key errors
+        ReadNotification.objects.bulk_create(
+            read_notifications, 
+            ignore_conflicts=True
+        )
+        
+    except Exception as e:
+        # Log error but don't fail the main request
+        print(f"Error marking notifications as read: {e}")
 
 
 @api_view(['GET'])
@@ -449,6 +481,9 @@ def student_grievance_detail_view(request, grievance_id):
         messages.error(request, 'Grievance not found')
         return redirect('students:grievances')
     
+    # Mark all notifications for this grievance as read
+    mark_grievance_notifications_read(request.user, grievance)
+    
     context = {
         'student_profile': student_profile,
         'grievance': grievance,
@@ -475,7 +510,10 @@ def add_student_response(request, grievance_id):
         
         if not student_response:
             messages.error(request, 'Response cannot be empty.')
-            return redirect('students:grievance_detail', grievance_id=grievance_id)
+            from django.http import HttpResponseRedirect
+            from django.urls import reverse
+            url = reverse('students:grievance_detail', kwargs={'grievance_id': grievance_id})
+            return HttpResponseRedirect(f"{url}#message-form")
         
         # Create the student response comment
         comment = GrievanceComment.objects.create(
@@ -486,11 +524,18 @@ def add_student_response(request, grievance_id):
             is_internal=False  # Student responses are always public
         )
         
-        return redirect('students:grievance_detail', grievance_id=grievance_id)
+        # Redirect with fragment to maintain scroll position near message form
+        from django.http import HttpResponseRedirect
+        from django.urls import reverse
+        url = reverse('students:grievance_detail', kwargs={'grievance_id': grievance_id})
+        return HttpResponseRedirect(f"{url}#message-form")
         
     except Exception as e:
         messages.error(request, f'Error sending response: {str(e)}')
-        return redirect('students:grievance_detail', grievance_id=grievance_id)
+        from django.http import HttpResponseRedirect
+        from django.urls import reverse
+        url = reverse('students:grievance_detail', kwargs={'grievance_id': grievance_id})
+        return HttpResponseRedirect(f"{url}#message-form")
 
 
 @login_required
@@ -552,8 +597,6 @@ def get_notifications_api(request):
     if not request.user.is_student:
         return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)
     
-    # Pass request to access session
-    request.user.session = request.session
     notifications = get_student_notifications(request.user)
     
     notifications_data = []
@@ -580,11 +623,23 @@ def mark_notification_read(request, notification_id):
     if not request.user.is_student:
         return JsonResponse({'error': 'Access denied'}, status=403)
     
-    # Add notification ID to viewed notifications in session
-    viewed_notifications = request.session.get('viewed_notifications', [])
-    if str(notification_id) not in viewed_notifications:
-        viewed_notifications.append(str(notification_id))
-        request.session['viewed_notifications'] = viewed_notifications
-        request.session.modified = True
-    
-    return JsonResponse({'success': True})
+    try:
+        # Get the comment/notification
+        comment = get_object_or_404(GrievanceComment, id=notification_id)
+        
+        # Create or get the read notification record
+        read_notification, created = ReadNotification.objects.get_or_create(
+            student=request.user,
+            comment=comment,
+            defaults={'read_at': timezone.now()}
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'was_new': created  # True if this was the first time marking as read
+        })
+        
+    except GrievanceComment.DoesNotExist:
+        return JsonResponse({'error': 'Notification not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

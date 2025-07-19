@@ -6982,3 +6982,120 @@ Watching for file changes with StatReloader
 "GET /students/api/notifications/ HTTP/1.1" 200 30
 "GET /auth/logout/ HTTP/1.1" 302 0
 "GET /auth/login/ HTTP/1.1" 200 3107
+Watching for file changes with StatReloader
+"GET /auth/login/ HTTP/1.1" 200 2670
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 16780
+"POST /students/api/notifications/mark-read/065df47a-4a7c-4d70-9cea-60eb7057ab51/ HTTP/1.1" 200 17
+"GET /students/grievances/e99f8701-b361-4f99-9eed-86bd5eb759a7/ HTTP/1.1" 200 26876
+"POST /students/api/notifications/mark-read/87e2d1b5-6287-4287-afe0-510bd004f377/ HTTP/1.1" 200 17
+"GET /students/grievances/85728d6c-700a-4e8d-8624-013c3049b4db/ HTTP/1.1" 200 30216
+"GET /students/ HTTP/1.1" 200 13683
+"GET /students/ HTTP/1.1" 200 13683
+"GET /students/ HTTP/1.1" 200 13683
+"GET /students/ HTTP/1.1" 200 13683
+"GET /students/ HTTP/1.1" 200 13683
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3107
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 16780
+"GET /students/api/notifications/ HTTP/1.1" 200 559
+"GET /students/api/notifications/ HTTP/1.1" 200 559
+"GET /students/api/notifications/ HTTP/1.1" 200 559
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\notifications\models.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /students/api/notifications/ HTTP/1.1" 200 559
+"GET /students/api/notifications/ HTTP/1.1" 200 559
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /students/api/notifications/ HTTP/1.1" 200 559
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\notifications\admin.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /students/api/notifications/ HTTP/1.1" 200 559
+"GET /?id=8f21c104-1f42-43c8-a782-2712d6cb5e55&vscodeBrowserReqId=1752898434997 HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 2670
+"GET /students/api/notifications/ HTTP/1.1" 200 559
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /students/api/notifications/ HTTP/1.1" 200 559
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /students/ HTTP/1.1" 200 16780
+"POST /students/api/notifications/mark-read/065df47a-4a7c-4d70-9cea-60eb7057ab51/ HTTP/1.1" 200 34
+"GET /students/grievances/e99f8701-b361-4f99-9eed-86bd5eb759a7/ HTTP/1.1" 200 26876
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3107
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 15387
+"POST /students/api/notifications/mark-read/87e2d1b5-6287-4287-afe0-510bd004f377/ HTTP/1.1" 200 34
+"GET /students/grievances/85728d6c-700a-4e8d-8624-013c3049b4db/ HTTP/1.1" 200 30216
+"POST /students/grievances/85728d6c-700a-4e8d-8624-013c3049b4db/add-response/ HTTP/1.1" 302 0
+"GET /students/grievances/85728d6c-700a-4e8d-8624-013c3049b4db/ HTTP/1.1" 200 31429
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\notifications\admin.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/grievances/ HTTP/1.1" 200 19454
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3107
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 16110
+"POST /students/api/notifications/mark-read/d228f181-73e5-467e-8cf5-d8bf3dd6b9a5/ HTTP/1.1" 200 34
+"GET /students/grievances/4cf6d2d0-1cee-4ce4-bc52-3ebcb718f668/ HTTP/1.1" 200 28722
+"GET /students/ HTTP/1.1" 200 12973
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3107
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 13683
+"GET /students/grievances/504fa23d-6bf2-402b-9a6e-ab0c9c04d97b/ HTTP/1.1" 200 21823
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /?id=8f21c104-1f42-43c8-a782-2712d6cb5e55&vscodeBrowserReqId=1752898781549 HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 2670
+"POST /students/grievances/504fa23d-6bf2-402b-9a6e-ab0c9c04d97b/add-response/ HTTP/1.1" 302 0
+"GET /students/grievances/504fa23d-6bf2-402b-9a6e-ab0c9c04d97b/ HTTP/1.1" 200 24184
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3107
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 19810
+"GET /admin-panel/grievances/504fa23d-6bf2-402b-9a6e-ab0c9c04d97b/ HTTP/1.1" 200 16801
+"POST /admin-panel/grievances/504fa23d-6bf2-402b-9a6e-ab0c9c04d97b/add-response/ HTTP/1.1" 200 148
+"GET /admin-panel/grievances/504fa23d-6bf2-402b-9a6e-ab0c9c04d97b/ HTTP/1.1" 200 17624
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3107
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 15377
+"POST /students/api/notifications/mark-read/df0aa548-3967-4c8b-82be-b2a0f825f6ff/ HTTP/1.1" 200 34
+"GET /students/grievances/504fa23d-6bf2-402b-9a6e-ab0c9c04d97b/ HTTP/1.1" 200 25507
+"POST /students/grievances/504fa23d-6bf2-402b-9a6e-ab0c9c04d97b/add-response/ HTTP/1.1" 302 0
+"GET /students/grievances/504fa23d-6bf2-402b-9a6e-ab0c9c04d97b/ HTTP/1.1" 200 26720
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3107
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 19810
+"GET /admin-panel/grievances/504fa23d-6bf2-402b-9a6e-ab0c9c04d97b/ HTTP/1.1" 200 18418
+"GET /admin-panel/grievances/ HTTP/1.1" 200 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 19810
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3107
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 12973
+"GET /students/profile/ HTTP/1.1" 200 18461
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3107
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\views.py changed, reloading.
+Watching for file changes with StatReloader
