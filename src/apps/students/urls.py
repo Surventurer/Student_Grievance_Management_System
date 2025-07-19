@@ -20,4 +20,8 @@ urlpatterns = [
     path('profile/change-password/', views.change_password_view, name='change_password'),
     path('grievances/', views.student_grievances_view, name='grievances'),
     path('grievances/<uuid:grievance_id>/', views.student_grievance_detail_view, name='grievance_detail'),
+    path('grievances/<uuid:grievance_id>/add-response/', views.add_student_response, name='add_student_response'),
+    path('grievances/<uuid:grievance_id>/submit-feedback/', views.submit_feedback_view, name='submit_feedback'),
+    path('api/notifications/', views.get_notifications_api, name='notifications_api'),
+    path('api/notifications/mark-read/<uuid:notification_id>/', views.mark_notification_read, name='mark_notification_read'),
 ]

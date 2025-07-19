@@ -7,12 +7,45 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.db.models import Q
+from django.db.models import Q, Count, Max
+from django.utils import timezone
+from datetime import timedelta
 
 from .models import StudentProfile, AdminProfile, Department, UserActivity
 from .serializers import StudentProfileSerializer, AdminProfileSerializer, DepartmentSerializer
 from apps.authentication.models import User
-from apps.grievances.models import Grievance
+from apps.grievances.models import Grievance, GrievanceComment, Feedback
+from django.shortcuts import get_object_or_404
+
+
+def get_student_notifications(user, exclude_viewed=True):
+    """Get unread admin messages for student"""
+    if not user.is_authenticated or not user.is_student:
+        return []
+    
+    try:
+        student_profile = user.student_profile
+        
+        # Get recent admin messages (within last 7 days) that the student hasn't seen
+        recent_time = timezone.now() - timedelta(days=7)
+        
+        # Get viewed notification IDs from session
+        viewed_notifications = user.session.get('viewed_notifications', []) if hasattr(user, 'session') else []
+        
+        notifications = GrievanceComment.objects.filter(
+            grievance__student=student_profile,
+            user__role__in=['admin', 'superadmin', 'officer'],  # Filter by admin roles
+            is_internal=False,  # Only public messages
+            timestamp__gte=recent_time
+        ).select_related('grievance', 'user').order_by('-timestamp')
+        
+        # Exclude viewed notifications if requested
+        if exclude_viewed and viewed_notifications:
+            notifications = notifications.exclude(id__in=viewed_notifications)
+            
+        return notifications[:10]
+    except StudentProfile.DoesNotExist:
+        return []
 
 
 @api_view(['GET'])
@@ -351,9 +384,28 @@ def student_grievances_view(request):
         messages.error(request, 'Student profile not found')
         return redirect('authentication:login')
     
-    # Get all student's grievances with pagination
+    # Get all student's grievances
     all_grievances = Grievance.objects.filter(student=student_profile)
     grievances = all_grievances.order_by('-submitted_at')
+    
+    # Search functionality
+    search_query = request.GET.get('search', '').strip()
+    if search_query:
+        # Handle GRV-XXXX format search
+        if search_query.upper().startswith('GRV-'):
+            # Extract the UUID part after GRV-
+            uuid_part = search_query[4:].upper()
+            grievances = grievances.filter(
+                Q(id__istartswith=uuid_part) |
+                Q(title__icontains=search_query) |
+                Q(category__name__icontains=search_query)
+            )
+        else:
+            grievances = grievances.filter(
+                Q(id__icontains=search_query.upper()) |  # Search by UUID (case-insensitive)
+                Q(title__icontains=search_query) |
+                Q(category__name__icontains=search_query)
+            )
     
     # Filter by status if provided
     status_filter = request.GET.get('status')
@@ -369,9 +421,11 @@ def student_grievances_view(request):
         'student_profile': student_profile,
         'page_obj': page_obj,
         'status_filter': status_filter,
+        'search_query': search_query,
         'total_grievances': all_grievances.count(),
         'pending_grievances': all_grievances.filter(status='pending').count(),
         'resolved_grievances': all_grievances.filter(status='resolved').count(),
+        'filtered_count': grievances.count() if search_query or status_filter else all_grievances.count(),
     }
     
     return render(request, 'students/grievances.html', context)
@@ -401,3 +455,136 @@ def student_grievance_detail_view(request, grievance_id):
     }
     
     return render(request, 'students/grievance_detail.html', context)
+
+
+@login_required
+def add_student_response(request, grievance_id):
+    """Add student response/reply to grievance"""
+    if not request.user.is_student:
+        messages.error(request, 'Access denied.')
+        return redirect('students:dashboard')
+    
+    if request.method != 'POST':
+        messages.error(request, 'Invalid request method.')
+        return redirect('students:grievance_detail', grievance_id=grievance_id)
+    
+    try:
+        student_profile = request.user.student_profile
+        grievance = get_object_or_404(Grievance, id=grievance_id, student=student_profile)
+        student_response = request.POST.get('student_response', '').strip()
+        
+        if not student_response:
+            messages.error(request, 'Response cannot be empty.')
+            return redirect('students:grievance_detail', grievance_id=grievance_id)
+        
+        # Create the student response comment
+        comment = GrievanceComment.objects.create(
+            grievance=grievance,
+            user=request.user,
+            message=student_response,
+            comment_type='comment',
+            is_internal=False  # Student responses are always public
+        )
+        
+        return redirect('students:grievance_detail', grievance_id=grievance_id)
+        
+    except Exception as e:
+        messages.error(request, f'Error sending response: {str(e)}')
+        return redirect('students:grievance_detail', grievance_id=grievance_id)
+
+
+@login_required
+def submit_feedback_view(request, grievance_id):
+    """Submit feedback for resolved grievance"""
+    if not request.user.is_student:
+        messages.error(request, 'Access denied.')
+        return redirect('students:dashboard')
+    
+    if request.method != 'POST':
+        messages.error(request, 'Invalid request method.')
+        return redirect('students:grievance_detail', grievance_id=grievance_id)
+    
+    try:
+        student_profile = request.user.student_profile
+        grievance = get_object_or_404(Grievance, id=grievance_id, student=student_profile)
+        
+        # Check if grievance is resolved
+        if grievance.status != 'resolved':
+            messages.error(request, 'Feedback can only be submitted for resolved grievances.')
+            return redirect('students:grievance_detail', grievance_id=grievance_id)
+        
+        # Check if feedback already exists
+        if hasattr(grievance, 'feedback'):
+            messages.warning(request, 'Feedback has already been submitted for this grievance.')
+            return redirect('students:grievance_detail', grievance_id=grievance_id)
+        
+        rating = request.POST.get('rating')
+        comments = request.POST.get('comments', '').strip()
+        is_satisfied = request.POST.get('is_satisfied') == 'true'
+        improvement_suggestions = request.POST.get('improvement_suggestions', '').strip()
+        
+        # Validate rating
+        if not rating or not rating.isdigit() or int(rating) not in range(1, 6):
+            messages.error(request, 'Rating must be between 1 and 5.')
+            return redirect('students:grievance_detail', grievance_id=grievance_id)
+        
+        # Create feedback
+        feedback = Feedback.objects.create(
+            grievance=grievance,
+            rating=int(rating),
+            comments=comments,
+            is_satisfied=is_satisfied,
+            improvement_suggestions=improvement_suggestions
+        )
+        
+        messages.success(request, 'Thank you for your feedback! It helps us improve our services.')
+        return redirect('students:grievance_detail', grievance_id=grievance_id)
+        
+    except Exception as e:
+        messages.error(request, f'Error submitting feedback: {str(e)}')
+        return redirect('students:grievance_detail', grievance_id=grievance_id)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_notifications_api(request):
+    """API endpoint to get student notifications"""
+    if not request.user.is_student:
+        return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)
+    
+    # Pass request to access session
+    request.user.session = request.session
+    notifications = get_student_notifications(request.user)
+    
+    notifications_data = []
+    for notification in notifications:
+        notifications_data.append({
+            'id': str(notification.id),
+            'message': notification.message,
+            'timestamp': notification.timestamp,
+            'admin_name': notification.user.get_full_name(),
+            'grievance_id': str(notification.grievance.id),
+            'grievance_title': notification.grievance.title,
+            'grievance_status': notification.grievance.status,
+        })
+    
+    return Response({
+        'notifications': notifications_data,
+        'count': len(notifications_data)
+    })
+
+
+@login_required
+def mark_notification_read(request, notification_id):
+    """Mark a notification as read"""
+    if not request.user.is_student:
+        return JsonResponse({'error': 'Access denied'}, status=403)
+    
+    # Add notification ID to viewed notifications in session
+    viewed_notifications = request.session.get('viewed_notifications', [])
+    if str(notification_id) not in viewed_notifications:
+        viewed_notifications.append(str(notification_id))
+        request.session['viewed_notifications'] = viewed_notifications
+        request.session.modified = True
+    
+    return JsonResponse({'success': True})

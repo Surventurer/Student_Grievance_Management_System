@@ -57,6 +57,62 @@
                 {% endif %}
             </div>
             <div class="navbar-nav ms-auto">
+                {% if user.is_student %}
+                <!-- Student Notifications -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bell"></i>
+                        {% if notifications_count > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.7rem;">
+                            {{ notifications_count|default:"" }}
+                        </span>
+                        {% endif %}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" style="width: 350px; max-height: 400px; overflow-y: auto;">
+                        <li class="dropdown-header">
+                            <i class="fas fa-bell me-2"></i>Recent Messages from Admins
+                        </li>
+                        {% if student_notifications %}
+                            {% for notification in student_notifications %}
+                            <li>
+                                <a class="dropdown-item py-2 border-bottom notification-link" 
+                                   href="{% url 'students:grievance_detail' notification.grievance.id %}"
+                                   data-notification-id="{{ notification.id }}">
+                                    <div class="d-flex">
+                                        <div class="flex-grow-1">
+                                            <div class="fw-bold text-primary small">
+                                                <i class="fas fa-user-shield me-1"></i>{{ notification.user.get_full_name }}
+                                            </div>
+                                            <div class="text-muted small mb-1">
+                                                Grievance: {{ notification.grievance.title|truncatechars:30 }}
+                                            </div>
+                                            <div class="text-dark">{{ notification.message|truncatechars:80 }}</div>
+                                            <div class="text-muted small mt-1">
+                                                <i class="fas fa-clock me-1"></i>{{ notification.timestamp|timesince }} ago
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            {% endfor %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-center text-primary" href="{% url 'students:grievances' %}">
+                                    <i class="fas fa-eye me-2"></i>View All Grievances
+                                </a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <div class="dropdown-item-text text-center text-muted py-3">
+                                    <i class="fas fa-inbox fa-2x mb-2"></i>
+                                    <br>No new messages
+                                </div>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+                {% endif %}
+                
                 <span class="navbar-text me-3">
                     Welcome, {{ user.get_display_name }}
                     {% if user.is_admin %}
@@ -86,6 +142,121 @@
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/main.js' %}"></script>
+    
+    {% if user.is_student %}
+    <script>
+    // Auto-refresh notifications every 30 seconds
+    function refreshNotifications() {
+        fetch('{% url "students:notifications_api" %}', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.querySelector('.notification-badge');
+            const dropdown = document.querySelector('#notificationsDropdown');
+            
+            if (data.count > 0) {
+                if (badge) {
+                    badge.textContent = data.count;
+                } else {
+                    // Create badge if it doesn't exist
+                    const newBadge = document.createElement('span');
+                    newBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge';
+                    newBadge.style.fontSize = '0.7rem';
+                    newBadge.textContent = data.count;
+                    dropdown.appendChild(newBadge);
+                }
+            } else {
+                if (badge) {
+                    badge.remove();
+                }
+            }
+        })
+        .catch(error => console.log('Notification refresh failed:', error));
+    }
+    
+    // Refresh notifications every 30 seconds
+    setInterval(refreshNotifications, 30000);
+    
+    // Add notification badge class for animation
+    document.addEventListener('DOMContentLoaded', function() {
+        const badge = document.querySelector('.position-absolute.badge');
+        if (badge) {
+            badge.classList.add('notification-badge');
+        }
+        
+        // Handle notification clicks
+        const notificationLinks = document.querySelectorAll('.notification-link');
+        notificationLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                const notificationId = this.getAttribute('data-notification-id');
+                if (notificationId) {
+                    // Mark notification as read
+                    fetch(`/students/api/notifications/mark-read/${notificationId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            // Remove the notification from the dropdown
+                            const listItem = this.closest('li');
+                            if (listItem) {
+                                listItem.style.opacity = '0.5';
+                                setTimeout(() => {
+                                    listItem.remove();
+                                    // Update badge count
+                                    updateNotificationBadge();
+                                }, 200);
+                            }
+                        }
+                    }).catch(error => {
+                        console.log('Failed to mark notification as read:', error);
+                    });
+                }
+            });
+        });
+        
+        // Function to update notification badge
+        function updateNotificationBadge() {
+            const remainingNotifications = document.querySelectorAll('.notification-link').length;
+            const badge = document.querySelector('.notification-badge');
+            
+            if (remainingNotifications === 0) {
+                if (badge) {
+                    badge.remove();
+                }
+                // Show "No new messages" if no notifications remain
+                const dropdownMenu = document.querySelector('#notificationsDropdown').nextElementSibling;
+                const existingNotifications = dropdownMenu.querySelectorAll('.notification-link');
+                if (existingNotifications.length === 0) {
+                    const noMessagesHtml = `
+                        <li>
+                            <div class="dropdown-item-text text-center text-muted py-3">
+                                <i class="fas fa-inbox fa-2x mb-2"></i>
+                                <br>No new messages
+                            </div>
+                        </li>`;
+                    // Find the place to insert this (after the header, before the "View All" link)
+                    const divider = dropdownMenu.querySelector('.dropdown-divider');
+                    if (divider) {
+                        divider.previousElementSibling.insertAdjacentHTML('afterend', noMessagesHtml);
+                    }
+                }
+            } else {
+                if (badge) {
+                    badge.textContent = remainingNotifications;
+                }
+            }
+        }
+    });
+    </script>
+    {% endif %}
+    
     {% block extra_js %}{% endblock %}
 </body>
 </html>

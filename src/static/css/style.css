@@ -48,6 +48,62 @@ body {
     padding: 4px 8px;
 }
 
+/* Notification Dropdown Styles */
+.dropdown-menu {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-item {
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.notification-badge {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.notification-item {
+    border-left: 3px solid #007bff;
+    transition: border-color 0.2s ease;
+}
+
+.notification-item:hover {
+    border-left-color: #0056b3;
+}
+
+/* Notification removal animation */
+.notification-link {
+    transition: all 0.3s ease;
+}
+
+.notification-link:hover {
+    background-color: #f8f9fa !important;
+    transform: translateX(2px);
+}
+
+/* Smooth removal animation */
+.notification-removing {
+    opacity: 0.5;
+    transform: translateX(-10px);
+}
+
 .alert {
     border-radius: 6px;
     margin-bottom: 20px;
