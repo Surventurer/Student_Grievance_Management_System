@@ -270,6 +270,116 @@ def logout_view(request):
     return redirect('authentication:login_view')
 
 
+def forgot_password_view(request):
+    """Web view for forgot password form"""
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        
+        try:
+            user = User.objects.get(email=email)
+            
+            # Check if there's already a recent reset request (within last 5 minutes)
+            recent_reset = PasswordReset.objects.filter(
+                user=user,
+                created_at__gte=timezone.now() - timedelta(minutes=5),
+                is_used=False
+            ).first()
+            
+            if recent_reset:
+                messages.warning(request, 'A password reset link was already sent recently. Please check your email or wait 5 minutes before requesting again.')
+                return render(request, 'authentication/forgot_password.html')
+            
+            # Generate reset token
+            token = generate_token()
+            expires_at = timezone.now() + timedelta(hours=1)
+            
+            PasswordReset.objects.create(
+                user=user,
+                token=token,
+                expires_at=expires_at
+            )
+            
+            # Send reset email
+            try:
+                from django.urls import reverse
+                reset_url = reverse('authentication:reset_password_view', kwargs={'token': token})
+                reset_link = f"http://127.0.0.1:8000{reset_url}"
+                
+                email_subject = 'Password Reset - Student Grievance System'
+                email_message = f"""Hello {user.email},
+
+You requested a password reset for your Student Grievance Management System account.
+
+Click the link below to reset your password:
+{reset_link}
+
+This link will expire in 1 hour for security reasons.
+
+If you didn't request this password reset, please ignore this email.
+
+Best regards,
+Student Grievance Management System Team"""
+                
+                send_mail(
+                    email_subject,
+                    email_message,
+                    settings.EMAIL_HOST_USER,
+                    [user.email],
+                    fail_silently=False,
+                )
+                
+                messages.success(request, 'Password reset link has been sent to your email.')
+                return redirect('authentication:forgot_password_view')
+            except Exception as e:
+                # Delete the reset token if email sending fails
+                PasswordReset.objects.filter(token=token).delete()
+                messages.error(request, 'Error sending reset email. Please try again.')
+                return render(request, 'authentication/forgot_password.html')
+            
+        except User.DoesNotExist:
+            messages.error(request, 'User with this email does not exist.')
+        except Exception as e:
+            messages.error(request, 'Error sending reset email. Please try again.')
+    
+    return render(request, 'authentication/forgot_password.html')
+
+
+def reset_password_view(request, token):
+    """Web view for password reset form"""
+    try:
+        reset_request = PasswordReset.objects.get(token=token, is_used=False)
+        
+        if reset_request.is_expired:
+            messages.error(request, 'Reset token has expired. Please request a new one.')
+            return redirect('authentication:forgot_password_view')
+        
+        if request.method == 'POST':
+            new_password = request.POST.get('new_password')
+            confirm_password = request.POST.get('confirm_password')
+            
+            if not new_password or len(new_password) < 6:
+                messages.error(request, 'Password must be at least 6 characters long.')
+            elif new_password != confirm_password:
+                messages.error(request, 'Passwords do not match.')
+            else:
+                # Reset password
+                user = reset_request.user
+                user.set_password(new_password)
+                user.save()
+                
+                reset_request.is_used = True
+                reset_request.save()
+                
+                messages.success(request, 'Password reset successfully. You can now login with your new password.')
+                return redirect('authentication:login')
+        
+        return render(request, 'authentication/reset_password.html', {'token': token})
+        
+    except PasswordReset.DoesNotExist:
+        messages.error(request, 'Invalid or expired reset token.')
+        return redirect('authentication:forgot_password_view')
+
+
 def student_registration(request):
     """Student Registration View"""
     if request.method == 'POST':

@@ -18,6 +18,8 @@ urlpatterns = [
     path('login/', views.login_view, name='login_view'),
     path('logout/', views.logout_view, name='logout_view'),
     path('verify-email/', views.verify_email_view, name='verify_email_view'),
+    path('forgot-password/', views.forgot_password_view, name='forgot_password_view'),
+    path('reset-password/<str:token>/', views.reset_password_view, name='reset_password_view'),
     
     # Student Registration Only (No admin/staff registration)
     path('student-registration/', views.student_registration, name='student_registration'),
