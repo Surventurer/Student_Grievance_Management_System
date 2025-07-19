@@ -118,6 +118,25 @@ class PasswordReset(models.Model):
         return timezone.now() > self.expires_at
 
 
+class AdminLoginOTP(models.Model):
+    """Model for admin login OTP verification"""
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='admin_login_otps')
+    otp = models.CharField(max_length=6)
+    is_used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    session_key = models.CharField(max_length=100, null=True, blank=True)  # To track login session
+    
+    def __str__(self):
+        return f"Admin Login OTP for {self.user.email}"
+    
+    @property
+    def is_expired(self):
+        from django.utils import timezone
+        return timezone.now() > self.expires_at
+
+
 class TemporaryRegistration(models.Model):
     """Model to store registration data temporarily until email verification"""
     

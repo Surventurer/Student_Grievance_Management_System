@@ -20,6 +20,7 @@ urlpatterns = [
     path('verify-email/', views.verify_email_view, name='verify_email_view'),
     path('forgot-password/', views.forgot_password_view, name='forgot_password_view'),
     path('reset-password/<str:token>/', views.reset_password_view, name='reset_password_view'),
+    path('resend-admin-otp/', views.resend_admin_otp, name='resend_admin_otp'),
     
     # Student Registration Only (No admin/staff registration)
     path('student-registration/', views.student_registration, name='student_registration'),

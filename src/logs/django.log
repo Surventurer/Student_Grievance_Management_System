@@ -7568,3 +7568,83 @@ Watching for file changes with StatReloader
 C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\urls.py changed, reloading.
 Watching for file changes with StatReloader
 Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 2691
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4098
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 13682
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3128
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 19810
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3128
+"GET /static/css/style.css HTTP/1.1" 304 0
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 13682
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/grievances/85728d6c-700a-4e8d-8624-013c3049b4db/ HTTP/1.1" 200 32804
+"GET /static/css/style.css HTTP/1.1" 304 0
+"GET /students/ HTTP/1.1" 200 13682
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3128
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 19810
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 19810
+"GET /admin-panel/categories/ HTTP/1.1" 200 138246
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3128
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 13682
+"GET /grievances/submit/ HTTP/1.1" 200 33076
+"GET /grievances/api/categories/?type=academic HTTP/1.1" 200 4130
+"GET /students/api/departments/ HTTP/1.1" 200 5107
+"GET /students/ HTTP/1.1" 200 13682
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3128
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 19810
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\authentication\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 19810
+"GET /static/css/style.css HTTP/1.1" 304 0
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/grievances/ HTTP/1.1" 200 0
+"GET /admin-panel/grievances/ HTTP/1.1" 200 0
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\authentication\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3973
+"GET /static/css/style.css HTTP/1.1" 304 0
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4098
+"POST /auth/login/ HTTP/1.1" 200 8244
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 20091
+"GET /admin-panel/students/ HTTP/1.1" 200 0
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3568
+"POST /auth/login/ HTTP/1.1" 200 7340
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 20091
+"GET /admin-panel/grievances/4cf6d2d0-1cee-4ce4-bc52-3ebcb718f668/ HTTP/1.1" 200 19327
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 19810
+"GET /admin-panel/grievances/ HTTP/1.1" 200 0
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader

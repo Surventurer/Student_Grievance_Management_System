@@ -18,7 +18,7 @@ import random
 import string
 from datetime import timedelta
 
-from .models import User, EmailVerification, PasswordReset, TemporaryRegistration
+from .models import User, EmailVerification, PasswordReset, TemporaryRegistration, AdminLoginOTP
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, PasswordResetSerializer
 from .forms import StudentRegistrationForm
 from apps.students.models import Department, School
@@ -230,26 +230,207 @@ def profile(request):
 
 # Web views for frontend
 def login_view(request):
-    """Login page"""
+    """Login page with OTP verification for admins"""
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
+        otp_code = request.POST.get('otp')
         
-        user = authenticate(request, username=email, password=password)
-        if user:
-            if not user.is_email_verified:
-                messages.error(request, 'Please verify your email first')
-                return render(request, 'authentication/login.html')
-            
-            login(request, user)
-            if user.is_student:
-                return redirect('students:dashboard')
+        # First step: Email and password validation
+        if not otp_code:
+            user = authenticate(request, username=email, password=password)
+            if user:
+                if not user.is_email_verified:
+                    messages.error(request, 'Please verify your email first')
+                    return render(request, 'authentication/login.html')
+                
+                # For admin users, require OTP
+                if user.is_admin:
+                    # Generate and send OTP
+                    otp = generate_otp()
+                    expires_at = timezone.now() + timedelta(minutes=5)
+                    
+                    # Store user ID in session for OTP verification
+                    request.session['admin_login_user_id'] = user.id
+                    request.session['admin_login_email'] = user.email
+                    
+                    # Create OTP record
+                    AdminLoginOTP.objects.create(
+                        user=user,
+                        otp=otp,
+                        expires_at=expires_at,
+                        session_key=request.session.session_key
+                    )
+                    
+                    # Send OTP via email
+                    try:
+                        send_mail(
+                            'Admin Login Verification - OTP',
+                            f'Your OTP for admin login is: {otp}. This code will expire in 5 minutes.\n\nIf you did not attempt to login, please contact the system administrator immediately.',
+                            settings.EMAIL_HOST_USER,
+                            [user.email],
+                            fail_silently=False,
+                        )
+                        
+                        messages.success(request, 'OTP has been sent to your email. Please enter it below to complete login.')
+                        return render(request, 'authentication/login.html', {
+                            'show_otp_field': True,
+                            'email': email
+                        })
+                    except Exception as e:
+                        messages.error(request, 'Failed to send OTP. Please try again.')
+                        return render(request, 'authentication/login.html')
+                
+                # For non-admin users (students, officers), login directly
+                else:
+                    login(request, user)
+                    return redirect('students:dashboard')
             else:
-                return redirect('admin_panel:dashboard')
+                messages.error(request, 'Invalid email or password')
         
-        messages.error(request, 'Invalid credentials')
+        # Second step: OTP verification for admin users
+        else:
+            user_id = request.session.get('admin_login_user_id')
+            if not user_id:
+                messages.error(request, 'Session expired. Please login again.')
+                return redirect('authentication:login_view')
+            
+            try:
+                user = User.objects.get(id=user_id)
+                
+                # Check for too many failed attempts (more than 3 in last 5 minutes)
+                recent_failed_attempts = AdminLoginOTP.objects.filter(
+                    user=user,
+                    created_at__gte=timezone.now() - timedelta(minutes=5),
+                    is_used=True  # We'll mark failed attempts as used with a special flag later
+                ).count()
+                
+                if recent_failed_attempts >= 3:
+                    messages.error(request, 'Too many failed attempts. Please wait 5 minutes before trying again.')
+                    # Clear session data
+                    request.session.pop('admin_login_user_id', None)
+                    request.session.pop('admin_login_email', None)
+                    return redirect('authentication:login_view')
+                
+                otp_record = AdminLoginOTP.objects.filter(
+                    user=user,
+                    otp=otp_code,
+                    is_used=False
+                ).order_by('-created_at').first()
+                
+                if not otp_record:
+                    messages.error(request, 'Invalid OTP. Please try again.')
+                    return render(request, 'authentication/login.html', {
+                        'show_otp_field': True,
+                        'email': request.session.get('admin_login_email')
+                    })
+                
+                if otp_record.is_expired:
+                    messages.error(request, 'OTP has expired. Please login again.')
+                    # Clear session data
+                    request.session.pop('admin_login_user_id', None)
+                    request.session.pop('admin_login_email', None)
+                    return redirect('authentication:login_view')
+                
+                # OTP is valid, complete login
+                otp_record.is_used = True
+                otp_record.save()
+                
+                # Clear all unused OTPs for this user
+                AdminLoginOTP.objects.filter(
+                    user=user,
+                    is_used=False
+                ).update(is_used=True)
+                
+                # Clear session data
+                request.session.pop('admin_login_user_id', None)
+                request.session.pop('admin_login_email', None)
+                
+                login(request, user)
+                messages.success(request, 'Login successful!')
+                return redirect('admin_panel:dashboard')
+                
+            except User.DoesNotExist:
+                messages.error(request, 'Invalid session. Please login again.')
+                return redirect('authentication:login_view')
     
     return render(request, 'authentication/login.html')
+
+
+def resend_admin_otp(request):
+    """Resend OTP for admin login"""
+    if request.method == 'POST':
+        user_id = request.session.get('admin_login_user_id')
+        if not user_id:
+            return JsonResponse({
+                'success': False,
+                'message': 'Session expired. Please login again.'
+            })
+        
+        try:
+            user = User.objects.get(id=user_id)
+            
+            # Check if there's a recent OTP request (within last 1 minute)
+            recent_otp = AdminLoginOTP.objects.filter(
+                user=user,
+                created_at__gte=timezone.now() - timedelta(minutes=1),
+                is_used=False
+            ).first()
+            
+            if recent_otp:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Please wait 1 minute before requesting a new OTP.'
+                })
+            
+            # Generate new OTP
+            otp = generate_otp()
+            expires_at = timezone.now() + timedelta(minutes=5)
+            
+            # Invalidate previous unused OTPs
+            AdminLoginOTP.objects.filter(
+                user=user,
+                is_used=False
+            ).update(is_used=True)
+            
+            # Create new OTP record
+            AdminLoginOTP.objects.create(
+                user=user,
+                otp=otp,
+                expires_at=expires_at,
+                session_key=request.session.session_key
+            )
+            
+            # Send new OTP via email
+            try:
+                send_mail(
+                    'Admin Login Verification - New OTP',
+                    f'Your new OTP for admin login is: {otp}. This code will expire in 5 minutes.\n\nIf you did not attempt to login, please contact the system administrator immediately.',
+                    settings.EMAIL_HOST_USER,
+                    [user.email],
+                    fail_silently=False,
+                )
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': 'New OTP has been sent to your email.'
+                })
+            except Exception as e:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Failed to send OTP. Please try again.'
+                })
+                
+        except User.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'message': 'Invalid session. Please login again.'
+            })
+    
+    return JsonResponse({
+        'success': False,
+        'message': 'Invalid request method.'
+    })
 
 
 def register_view(request):
