@@ -1,0 +1,392 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}System Settings - Admin Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .settings-card {
+        background: #fff;
+        border-rad                            <button class="btn btn-sm btn-outline-primary edit-setting-btn" 
+                                    data-setting-id="{{ setting.id }}"
+                                    data-setting-key="{{ setting.key }}"
+                                    data-setting-value="{{ setting.value }}"
+                                    data-setting-type="{{ setting.setting_type }}"
+                                    data-setting-description="{{ setting.description }}"
+                                    data-setting-active="{{ setting.is_active }}">
+                                <i class="fas fa-edit"></i>
+                            </button> 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid #e9ecef;
+    }
+    
+    .setting-item {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .setting-item:hover {
+        background: #fff;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .setting-item.inactive {
+        background: #f1f3f4;
+        opacity: 0.7;
+    }
+    
+    .setting-key {
+        font-weight: 600;
+        color: #495057;
+        font-size: 1.1rem;
+    }
+    
+    .setting-value {
+        color: #6c757d;
+        margin: 0.5rem 0;
+        padding: 0.5rem;
+        background: #fff;
+        border-radius: 5px;
+        border: 1px solid #dee2e6;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    }
+    
+    .setting-description {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+    
+    .setting-type-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-weight: 500;
+    }
+    
+    .form-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+    }
+    
+    .form-card .form-control,
+    .form-card .form-select {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+    
+    .form-card .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .form-card .form-control:focus,
+    .form-card .form-select:focus {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.5);
+        color: white;
+        box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+    }
+    
+    .form-card label {
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 500;
+    }
+    
+    .action-buttons .btn {
+        padding: 0.375rem 0.75rem;
+        margin: 0 0.125rem;
+        border-radius: 8px;
+    }
+    
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+    
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 24px;
+    }
+    
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+        background-color: #007bff;
+    }
+    
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0 text-gray-800">
+                        <i class="fas fa-cogs me-2"></i>System Settings
+                    </h1>
+                    <p class="text-muted mb-0">Configure system-wide settings and preferences</p>
+                </div>
+                <div>
+                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addSettingModal">
+                        <i class="fas fa-plus me-2"></i>Add Setting
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings by Category -->
+    {% regroup settings by setting_type as settings_by_type %}
+    
+    <div class="row">
+        {% for setting_type in settings_by_type %}
+        <div class="col-lg-6">
+            <div class="settings-card">
+                <h5 class="card-title mb-4">
+                    <i class="fas fa-{% if setting_type.grouper == 'general' %}cog{% elif setting_type.grouper == 'email' %}envelope{% elif setting_type.grouper == 'security' %}shield-alt{% else %}bell{% endif %} me-2 text-primary"></i>{{ setting_type.grouper|title }} Settings
+                </h5>
+                
+                {% for setting in setting_type.list %}
+                <div class="setting-item {% if not setting.is_active %}inactive{% endif %}">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="setting-key">{{ setting.key }}</div>
+                        <div class="d-flex align-items-center">
+                            <span class="setting-type-badge bg-{% if setting.setting_type == 'general' %}primary{% elif setting.setting_type == 'email' %}info{% elif setting.setting_type == 'security' %}warning{% else %}success{% endif %} text-white me-2">
+                                {{ setting.get_setting_type_display }}
+                            </span>
+                            
+                            <label class="toggle-switch">
+                                <input type="checkbox" {% if setting.is_active %}checked{% endif %} 
+                                       onchange="toggleSettingStatus('{{ setting.id }}')">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-value">{{ setting.value|truncatechars:100 }}</div>
+                    
+                    {% if setting.description %}
+                    <div class="setting-description">{{ setting.description }}</div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>
+                            Updated {{ setting.updated_at|timesince }} ago
+                            {% if setting.updated_by %}by {{ setting.updated_by.email }}{% endif %}
+                        </small>
+                        
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-outline-primary" 
+                                    onclick="editSetting('{{ setting.id }}', '{{ setting.key }}', `{{ setting.value|escapejs }}`, '{{ setting.setting_type }}', `{{ setting.description|escapejs }}`, {% if setting.is_active %}true{% else %}false{% endif %})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" 
+                                    onclick="deleteSetting('{{ setting.id }}', '{{ setting.key }}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-3 text-muted">
+                    <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                    No {{ setting_type.grouper }} settings configured
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="settings-card text-center py-5">
+                <i class="fas fa-cogs fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No system settings configured</h5>
+                <p class="text-muted">Add your first system setting to get started</p>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSettingModal">
+                    <i class="fas fa-plus me-2"></i>Add First Setting
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Add/Edit Setting Modal -->
+<div class="modal fade" id="addSettingModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" id="settingForm">
+                {% csrf_token %}
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalTitle">
+                        <i class="fas fa-plus me-2"></i>Add System Setting
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="setting_id" id="settingId">
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="settingKey" class="form-label">Setting Key *</label>
+                                <input type="text" class="form-control" name="key" id="settingKey" 
+                                       placeholder="e.g., SMTP_HOST" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="settingType" class="form-label">Category *</label>
+                                <select class="form-select" name="setting_type" id="settingType" required>
+                                    <option value="">Select category...</option>
+                                    {% for type_key, type_name in setting_types %}
+                                    <option value="{{ type_key }}">{{ type_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="settingValue" class="form-label">Setting Value *</label>
+                        <textarea class="form-control" name="value" id="settingValue" rows="3" 
+                                  placeholder="Enter the setting value..." required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="settingDescription" class="form-label">Description</label>
+                        <textarea class="form-control" name="description" id="settingDescription" rows="2"
+                                  placeholder="Brief description of what this setting controls..."></textarea>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" name="is_active" id="settingActive" checked>
+                        <label class="form-check-label" for="settingActive">
+                            Setting is active
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i><span id="submitText">Save Setting</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% csrf_token %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Toggle setting status
+function toggleSettingStatus(settingId) {
+    // For now, just show a message. You can implement AJAX call here
+    console.log('Toggle status for setting:', settingId);
+}
+
+// Edit setting
+document.querySelectorAll('.edit-setting-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const id = this.dataset.settingId;
+        const key = this.dataset.settingKey;
+        const value = this.dataset.settingValue;
+        const type = this.dataset.settingType;
+        const description = this.dataset.settingDescription;
+        const isActive = this.dataset.settingActive === 'True';
+        
+        document.getElementById('settingId').value = id;
+        document.getElementById('settingKey').value = key;
+        document.getElementById('settingValue').value = value;
+        document.getElementById('settingType').value = type;
+        document.getElementById('settingDescription').value = description;
+        document.getElementById('settingActive').checked = isActive;
+        
+        document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit me-2"></i>Edit System Setting';
+        document.getElementById('submitText').textContent = 'Update Setting';
+        
+        new bootstrap.Modal(document.getElementById('addSettingModal')).show();
+    });
+});
+
+// Edit setting (deprecated function)
+function editSetting(id, key, value, type, description, isActive) {
+    // This function is kept for backward compatibility
+}
+
+// Delete setting
+function deleteSetting(settingId, settingKey) {
+    if (confirm(`Are you sure you want to delete the setting "${settingKey}"? This action cannot be undone.`)) {
+        fetch(`/admin-panel/settings/${settingId}/delete/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error deleting setting: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting setting');
+        });
+    }
+}
+
+// Reset form when modal is closed
+document.getElementById('addSettingModal').addEventListener('hidden.bs.modal', function () {
+    document.getElementById('settingForm').reset();
+    document.getElementById('settingId').value = '';
+    document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus me-2"></i>Add System Setting';
+    document.getElementById('submitText').textContent = 'Save Setting';
+});
+</script>
+{% endblock %}
