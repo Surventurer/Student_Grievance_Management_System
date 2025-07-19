@@ -1,0 +1,472 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load math_filters %}
+
+{% block title %}Reports & Analytics - Admin Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stats-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        transition: all 0.3s ease;
+        min-height: 120px;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+    }
+    
+    .stats-card.resolved {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+    
+    .stats-card.pending {
+        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+    }
+    
+    .stats-card.rejected {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+    }
+    
+    .stats-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stats-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+    
+    .chart-container {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .filter-card {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid #e9ecef;
+    }
+    
+    .download-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 25px;
+        padding: 0.5rem 1.5rem;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .download-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .table-responsive {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .table th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        font-weight: 600;
+    }
+    
+    .progress {
+        height: 8px;
+        border-radius: 4px;
+    }
+    
+    .tab-content {
+        padding: 2rem 0;
+    }
+    
+    .nav-pills .nav-link {
+        border-radius: 25px;
+        font-weight: 600;
+        margin: 0 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    
+    /* Chart styles */
+    .trends-chart {
+        height: 400px;
+        width: 100%;
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">
+                <i class="fas fa-chart-bar me-3"></i>Reports & Analytics
+            </h2>
+        </div>
+    </div>
+    
+    <!-- Filter Section -->
+    <div class="filter-card">
+        <form method="GET" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">From Date</label>
+                <input type="date" class="form-control" name="from_date" value="{{ from_date }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">To Date</label>
+                <input type="date" class="form-control" name="to_date" value="{{ to_date }}">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Month</label>
+                <select class="form-select" name="month">
+                    <option value="">All Months</option>
+                    {% for month_num, month_name in months %}
+                    <option value="{{ month_num }}" {% if selected_month == month_num|stringformat:"s" %}selected{% endif %}>
+                        {{ month_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Year</label>
+                <select class="form-select" name="year">
+                    {% for year_option in years %}
+                    <option value="{{ year_option }}" {% if selected_year == year_option|stringformat:"s" %}selected{% endif %}>
+                        {{ year_option }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="fas fa-filter me-1"></i>Filter
+                </button>
+                <a href="{% url 'admin_panel:reports_dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-times me-1"></i>Clear
+                </a>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ total_grievances }}</div>
+                <div class="stats-label">
+                    <i class="fas fa-clipboard-list me-2"></i>Total Grievances
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stats-card resolved">
+                <div class="stats-number">{{ solved_grievances }}</div>
+                <div class="stats-label">
+                    <i class="fas fa-check-circle me-2"></i>Resolved
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stats-card pending">
+                <div class="stats-number">{{ pending_grievances }}</div>
+                <div class="stats-label">
+                    <i class="fas fa-clock me-2"></i>Pending
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stats-card rejected">
+                <div class="stats-number">{{ rejected_grievances }}</div>
+                <div class="stats-label">
+                    <i class="fas fa-times-circle me-2"></i>Rejected
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Download Buttons -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex flex-wrap gap-3">
+                <a href="{% url 'admin_panel:download_grievances_csv' %}{% if from_date %}?from_date={{ from_date }}{% endif %}{% if to_date %}&to_date={{ to_date }}{% endif %}" 
+                   class="btn download-btn">
+                    <i class="fas fa-download me-2"></i>Download Grievances Report
+                </a>
+                <a href="{% url 'admin_panel:download_monthly_stats_csv' %}?year={{ selected_year }}" 
+                   class="btn download-btn">
+                    <i class="fas fa-calendar-alt me-2"></i>Download Monthly Stats
+                </a>
+                <a href="{% url 'admin_panel:download_category_stats_csv' %}{% if from_date %}?from_date={{ from_date }}{% endif %}{% if to_date %}&to_date={{ to_date }}{% endif %}" 
+                   class="btn download-btn">
+                    <i class="fas fa-tags me-2"></i>Download Category Stats
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tab Navigation -->
+    <ul class="nav nav-pills justify-content-center mb-4" id="reportTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="monthly-tab" data-bs-toggle="pill" data-bs-target="#monthly" type="button">
+                <i class="fas fa-calendar-alt me-2"></i>Monthly Statistics
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="category-tab" data-bs-toggle="pill" data-bs-target="#category" type="button">
+                <i class="fas fa-tags me-2"></i>Category Analysis
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="department-tab" data-bs-toggle="pill" data-bs-target="#department" type="button">
+                <i class="fas fa-building me-2"></i>Department Analysis
+            </button>
+        </li>
+    </ul>
+    
+    <!-- Tab Content -->
+    <div class="tab-content" id="reportTabsContent">
+        <!-- Monthly Statistics -->
+        <div class="tab-pane fade show active" id="monthly" role="tabpanel">
+            <div class="chart-container">
+                <h4 class="mb-4">
+                    <i class="fas fa-chart-line me-2"></i>Monthly Grievance Statistics - {{ selected_year }}
+                </h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Total</th>
+                                <th>Resolved</th>
+                                <th>Pending</th>
+                                <th>Rejected</th>
+                                <th>Resolution Rate</th>
+                                <th>Progress</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for month_stat in monthly_stats %}
+                            <tr>
+                                <td><strong>{{ month_stat.month_name }}</strong></td>
+                                <td>
+                                    <span class="badge bg-primary">{{ month_stat.total }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">{{ month_stat.solved }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning">{{ month_stat.pending }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger">{{ month_stat.rejected }}</span>
+                                </td>
+                                <td>
+                                    {% if month_stat.total > 0 %}
+                                        <strong>{{ month_stat.solved|div:month_stat.total|mul:100|floatformat:1 }}%</strong>
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if month_stat.total > 0 %}
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success" 
+                                                 style="width: {{ month_stat.solved|div:month_stat.total|mul:100 }}%">
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Category Analysis -->
+        <div class="tab-pane fade" id="category" role="tabpanel">
+            <div class="chart-container">
+                <h4 class="mb-4">
+                    <i class="fas fa-chart-pie me-2"></i>Category-wise Grievance Analysis
+                </h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Total</th>
+                                <th>Resolved</th>
+                                <th>Pending</th>
+                                <th>Rejected</th>
+                                <th>Resolution Rate</th>
+                                <th>Progress</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for category in category_stats %}
+                            <tr>
+                                <td><strong>{{ category.category__name|default:"Uncategorized" }}</strong></td>
+                                <td>
+                                    <span class="badge bg-primary">{{ category.count }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">{{ category.solved }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning">{{ category.pending }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger">{{ category.rejected }}</span>
+                                </td>
+                                <td>
+                                    {% if category.count > 0 %}
+                                        <strong>{{ category.solved|div:category.count|mul:100|floatformat:1 }}%</strong>
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if category.count > 0 %}
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success" 
+                                                 style="width: {{ category.solved|div:category.count|mul:100 }}%">
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Department Analysis -->
+        <div class="tab-pane fade" id="department" role="tabpanel">
+            <div class="chart-container">
+                <h4 class="mb-4">
+                    <i class="fas fa-building me-2"></i>Department-wise Analysis
+                </h4>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h5>Top Schools</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>School</th>
+                                        <th>Total</th>
+                                        <th>Resolved</th>
+                                        <th>Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for school in school_stats %}
+                                    <tr>
+                                        <td>{{ school.student__school|default:"Unknown" }}</td>
+                                        <td><span class="badge bg-primary">{{ school.count }}</span></td>
+                                        <td><span class="badge bg-success">{{ school.solved }}</span></td>
+                                        <td>
+                                            {% if school.count > 0 %}
+                                                {{ school.solved|div:school.count|mul:100|floatformat:1 }}%
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <h5>Top Departments</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Department</th>
+                                        <th>Total</th>
+                                        <th>Resolved</th>
+                                        <th>Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for dept in department_stats %}
+                                    <tr>
+                                        <td>{{ dept.student__department|default:"Unknown" }}</td>
+                                        <td><span class="badge bg-primary">{{ dept.count }}</span></td>
+                                        <td><span class="badge bg-success">{{ dept.solved }}</span></td>
+                                        <td>
+                                            {% if dept.count > 0 %}
+                                                {{ dept.solved|div:dept.count|mul:100|floatformat:1 }}%
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-update to_date when from_date changes
+    const fromDateInput = document.querySelector('input[name="from_date"]');
+    const toDateInput = document.querySelector('input[name="to_date"]');
+    
+    if (fromDateInput && toDateInput) {
+        fromDateInput.addEventListener('change', function() {
+            if (this.value && !toDateInput.value) {
+                toDateInput.value = this.value;
+            }
+        });
+    }
+    
+    // Show loading state for download buttons
+    document.querySelectorAll('.download-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
+            this.disabled = true;
+            
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.disabled = false;
+            }, 3000);
+        });
+    });
+});
+</script>
+{% endblock %}

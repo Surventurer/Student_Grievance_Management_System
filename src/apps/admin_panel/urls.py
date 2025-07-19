@@ -32,6 +32,10 @@ urlpatterns = [
     # Reports and Analytics
     path('reports/', views.reports, name='reports'),
     path('reports/api/', views.reports_api, name='reports_api'),
+    path('reports/dashboard/', views.reports_dashboard, name='reports_dashboard'),
+    path('reports/download/grievances/', views.download_grievances_csv, name='download_grievances_csv'),
+    path('reports/download/monthly/', views.download_monthly_stats_csv, name='download_monthly_stats_csv'),
+    path('reports/download/categories/', views.download_category_stats_csv, name='download_category_stats_csv'),
     
     # Audit Logs
     path('audit-logs/', views.audit_logs_view, name='audit_logs'),

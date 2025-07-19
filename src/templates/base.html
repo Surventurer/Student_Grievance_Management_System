@@ -50,10 +50,21 @@
                 </a>
                 {% endif %}
                 {% if user.is_admin %}
-                <a class="nav-link" href="{% url 'admin_panel:dashboard' %}">Admin Dashboard</a>
-                <a class="nav-link" href="{% url 'admin_panel:grievance_list' %}">Grievances</a>
-                <a class="nav-link" href="{% url 'admin_panel:student_list' %}">Students</a>
-                <a class="nav-link" href="{% url 'admin_panel:reports' %}">Reports</a>
+                <a class="nav-link" href="{% url 'admin_panel:dashboard' %}">
+                    <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                </a>
+                <a class="nav-link" href="{% url 'admin_panel:grievance_list' %}">
+                    <i class="fas fa-exclamation-triangle me-1"></i>Grievances
+                </a>
+                <a class="nav-link" href="{% url 'admin_panel:student_list' %}">
+                    <i class="fas fa-users me-1"></i>Students
+                </a>
+                <a class="nav-link" href="{% url 'admin_panel:reports_dashboard' %}">
+                    <i class="fas fa-chart-bar me-1"></i>Reports
+                </a>
+                <a class="nav-link" href="{% url 'admin_panel:audit_logs' %}">
+                    <i class="fas fa-history me-1"></i>Audit Logs
+                </a>
                 {% endif %}
             </div>
             <div class="navbar-nav ms-auto">

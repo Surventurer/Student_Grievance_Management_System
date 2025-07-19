@@ -22,6 +22,7 @@ from .models import User, EmailVerification, PasswordReset, TemporaryRegistratio
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, PasswordResetSerializer
 from .forms import StudentRegistrationForm
 from apps.students.models import Department, School
+from apps.admin_panel.audit_utils import log_login_action, log_logout_action
 
 
 def generate_otp():
@@ -347,6 +348,10 @@ def login_view(request):
                 request.session.pop('admin_login_email', None)
                 
                 login(request, user)
+                
+                # Log successful admin login
+                log_login_action(user, request, success=True)
+                
                 messages.success(request, 'Login successful!')
                 return redirect('admin_panel:dashboard')
                 
@@ -446,6 +451,9 @@ def register_view(request):
 def logout_view(request):
     """Logout user"""
     if request.user.is_authenticated:
+        # Log admin logout before logging out
+        log_logout_action(request.user, request)
+        
         logout(request)
         messages.success(request, 'You have been logged out successfully.')
     return redirect('authentication:login_view')

@@ -56,15 +56,44 @@ def admin_dashboard(request):
         except Exception as e:
             print(f"Error getting category stats: {e}")
         
-        # Simple monthly stats
-        monthly_stats = [
-            {'month': 'January 2025', 'count': 10},
-            {'month': 'February 2025', 'count': 15},
-            {'month': 'March 2025', 'count': 8},
-            {'month': 'April 2025', 'count': 12},
-            {'month': 'May 2025', 'count': 18},
-            {'month': 'June 2025', 'count': 14},
-        ]
+        # Enhanced monthly stats for chart visualization
+        current_year = timezone.now().year
+        monthly_stats = []
+        
+        for month_num in range(1, 13):
+            try:
+                # Get actual data from database
+                month_grievances = Grievance.objects.filter(
+                    submitted_at__year=current_year,
+                    submitted_at__month=month_num
+                )
+                
+                total_count = month_grievances.count()
+                resolved_count = month_grievances.filter(status='resolved').count()
+                pending_count = month_grievances.filter(status='pending').count()
+                rejected_count = month_grievances.filter(status='rejected').count()
+                
+                monthly_stats.append({
+                    'month': datetime(current_year, month_num, 1).strftime('%B'),
+                    'month_name': datetime(current_year, month_num, 1).strftime('%B %Y'),
+                    'count': total_count,  # Keep for backward compatibility
+                    'total': total_count,
+                    'resolved': resolved_count,
+                    'pending': pending_count,
+                    'rejected': rejected_count,
+                })
+            except Exception as e:
+                print(f"Error calculating stats for month {month_num}: {e}")
+                # Fallback with zero values
+                monthly_stats.append({
+                    'month': datetime(current_year, month_num, 1).strftime('%B'),
+                    'month_name': datetime(current_year, month_num, 1).strftime('%B %Y'),
+                    'count': 0,
+                    'total': 0,
+                    'resolved': 0,
+                    'pending': 0,
+                    'rejected': 0,
+                })
         
         context = {
             'total_grievances': total_grievances,
@@ -74,6 +103,7 @@ def admin_dashboard(request):
             'recent_grievances': recent_grievances,
             'category_stats': category_stats,
             'monthly_stats': monthly_stats,
+            'monthly_stats_json': json.dumps(monthly_stats),  # Add JSON for Chart.js
         }
         
         print("Rendering admin dashboard template...")
@@ -528,20 +558,86 @@ def student_detail_view(request, student_id):
 
 @login_required
 def audit_logs_view(request):
-    """View for audit logs"""
-    if not request.user.is_superuser:
-        messages.error(request, 'Access denied')
+    """Enhanced view for audit logs with filtering"""
+    if not request.user.is_admin:
+        messages.error(request, 'Access denied - Admin privileges required')
         return redirect('authentication:login')
     
-    logs = AuditLog.objects.all().order_by('-timestamp')
+    # Get all audit logs
+    logs = AuditLog.objects.select_related('user').order_by('-timestamp')
+    
+    # Filtering
+    action_filter = request.GET.get('action')
+    user_filter = request.GET.get('user')
+    date_from = request.GET.get('date_from')
+    date_to = request.GET.get('date_to')
+    search_query = request.GET.get('search', '').strip()
+    
+    if action_filter:
+        logs = logs.filter(action=action_filter)
+    
+    if user_filter:
+        logs = logs.filter(user__email__icontains=user_filter)
+    
+    if date_from:
+        try:
+            from datetime import datetime
+            date_from_obj = datetime.strptime(date_from, '%Y-%m-%d').date()
+            logs = logs.filter(timestamp__date__gte=date_from_obj)
+        except ValueError:
+            pass
+    
+    if date_to:
+        try:
+            from datetime import datetime
+            date_to_obj = datetime.strptime(date_to, '%Y-%m-%d').date()
+            logs = logs.filter(timestamp__date__lte=date_to_obj)
+        except ValueError:
+            pass
+    
+    if search_query:
+        logs = logs.filter(
+            Q(description__icontains=search_query) |
+            Q(target_model__icontains=search_query) |
+            Q(user__email__icontains=search_query)
+        )
+    
+    # Get unique action types for filter dropdown
+    action_types = AuditLog.objects.values_list('action', flat=True).distinct().order_by('action')
+    
+    # Get recent admin users for filter dropdown
+    admin_users = AuditLog.objects.select_related('user').values(
+        'user__email'
+    ).distinct().order_by('user__email')[:20]
     
     # Pagination
-    paginator = Paginator(logs, 50)
+    paginator = Paginator(logs, 25)
     page_number = request.GET.get('page')
     audit_logs = paginator.get_page(page_number)
     
+    # Statistics
+    total_logs = AuditLog.objects.count()
+    today_logs = AuditLog.objects.filter(timestamp__date=timezone.now().date()).count()
+    
+    # Action statistics
+    action_stats = AuditLog.objects.values('action').annotate(
+        count=Count('action')
+    ).order_by('-count')[:5]
+    
     context = {
         'audit_logs': audit_logs,
+        'action_types': action_types,
+        'admin_users': admin_users,
+        'total_logs': total_logs,
+        'today_logs': today_logs,
+        'action_stats': action_stats,
+        'filters': {
+            'action': action_filter,
+            'user': user_filter,
+            'date_from': date_from,
+            'date_to': date_to,
+            'search': search_query,
+        }
     }
     
     return render(request, 'admin_panel/audit_logs.html', context)
@@ -1039,3 +1135,304 @@ Student Grievance Management System
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@staff_member_required
+def reports_dashboard(request):
+    """Admin reports dashboard with statistics"""
+    
+    # Get date filters
+    from_date = request.GET.get('from_date')
+    to_date = request.GET.get('to_date')
+    month = request.GET.get('month')
+    year = request.GET.get('year', timezone.now().year)
+    
+    # Base queryset
+    grievances = Grievance.objects.all()
+    
+    # Apply filters
+    if from_date and to_date:
+        grievances = grievances.filter(
+            submitted_at__date__gte=from_date,
+            submitted_at__date__lte=to_date
+        )
+    elif month and year:
+        grievances = grievances.filter(
+            submitted_at__year=year,
+            submitted_at__month=month
+        )
+    
+    # Calculate statistics
+    total_grievances = grievances.count()
+    solved_grievances = grievances.filter(status='resolved').count()
+    pending_grievances = grievances.filter(status='pending').count()
+    rejected_grievances = grievances.filter(status='rejected').count()
+    
+    # Category wise statistics
+    category_stats = grievances.values('category__name').annotate(
+        count=Count('id'),
+        solved=Count('id', filter=Q(status='resolved')),
+        pending=Count('id', filter=Q(status='pending')),
+        rejected=Count('id', filter=Q(status='rejected'))
+    ).order_by('-count')
+    
+    # Monthly statistics for current year
+    monthly_stats = []
+    for month_num in range(1, 13):
+        month_grievances = Grievance.objects.filter(
+            submitted_at__year=year,
+            submitted_at__month=month_num
+        )
+        monthly_stats.append({
+            'month': month_num,
+            'month_name': datetime(int(year), month_num, 1).strftime('%B'),
+            'total': month_grievances.count(),
+            'solved': month_grievances.filter(status='resolved').count(),
+            'pending': month_grievances.filter(status='pending').count(),
+            'rejected': month_grievances.filter(status='rejected').count(),
+        })
+    
+    # School/Department wise statistics
+    school_stats = grievances.values('student__school').annotate(
+        count=Count('id'),
+        solved=Count('id', filter=Q(status='resolved')),
+        pending=Count('id', filter=Q(status='pending'))
+    ).order_by('-count')[:10]
+    
+    department_stats = grievances.values('student__department').annotate(
+        count=Count('id'),
+        solved=Count('id', filter=Q(status='resolved')),
+        pending=Count('id', filter=Q(status='pending'))
+    ).order_by('-count')[:10]
+    
+    context = {
+        'total_grievances': total_grievances,
+        'solved_grievances': solved_grievances,
+        'pending_grievances': pending_grievances,
+        'rejected_grievances': rejected_grievances,
+        'category_stats': category_stats,
+        'monthly_stats': monthly_stats,
+        'monthly_stats_json': json.dumps(list(monthly_stats)),
+        'school_stats': school_stats,
+        'department_stats': department_stats,
+        'from_date': from_date,
+        'to_date': to_date,
+        'selected_month': month,
+        'selected_year': year,
+        'years': range(timezone.now().year - 5, timezone.now().year + 2),  # Current year - 5 to current year + 1
+        'months': [
+            (1, 'January'), (2, 'February'), (3, 'March'),
+            (4, 'April'), (5, 'May'), (6, 'June'),
+            (7, 'July'), (8, 'August'), (9, 'September'),
+            (10, 'October'), (11, 'November'), (12, 'December')
+        ]
+    }
+    
+    return render(request, 'admin_panel/reports.html', context)
+
+
+@login_required
+@staff_member_required
+def download_grievances_csv(request):
+    """Download grievances report as CSV"""
+    import csv
+    from django.http import HttpResponse
+    
+    # Get filters
+    from_date = request.GET.get('from_date')
+    to_date = request.GET.get('to_date')
+    status_filter = request.GET.get('status')
+    category_filter = request.GET.get('category')
+    
+    # Base queryset
+    grievances = Grievance.objects.select_related(
+        'student', 'category', 'assigned_to'
+    ).order_by('-submitted_at')
+    
+    # Apply filters
+    if from_date and to_date:
+        grievances = grievances.filter(
+            submitted_at__date__gte=from_date,
+            submitted_at__date__lte=to_date
+        )
+    
+    if status_filter:
+        grievances = grievances.filter(status=status_filter)
+    
+    if category_filter:
+        grievances = grievances.filter(category_id=category_filter)
+    
+    # Create CSV response
+    response = HttpResponse(content_type='text/csv')
+    filename = f'grievances_report_{timezone.now().strftime("%Y%m%d_%H%M%S")}.csv'
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    
+    writer = csv.writer(response)
+    
+    # CSV Headers
+    writer.writerow([
+        'Grievance ID',
+        'Student ID',
+        'Student Name',
+        'Student Email',
+        'School',
+        'Department',
+        'Category',
+        'Title',
+        'Description',
+        'Status',
+        'Priority',
+        'Assigned To',
+        'Created Date',
+        'Updated Date',
+        'Resolution Date',
+        'Days to Resolve'
+    ])
+    
+    # CSV Data
+    for grievance in grievances:
+        days_to_resolve = ''
+        if grievance.status == 'resolved' and grievance.updated_at:
+            days_diff = (grievance.updated_at - grievance.submitted_at).days
+            days_to_resolve = str(days_diff)
+        
+        writer.writerow([
+            f'GRV-{grievance.id}',
+            grievance.student.student_id if grievance.student else '',
+            grievance.student.name if grievance.student else '',
+            grievance.student.user.email if grievance.student and grievance.student.user else '',
+            grievance.student.school if grievance.student else '',
+            grievance.student.department if grievance.student else '',
+            grievance.category.name if grievance.category else '',
+            grievance.title,
+            grievance.description[:200] + '...' if len(grievance.description) > 200 else grievance.description,
+            grievance.get_status_display(),
+            grievance.get_priority_display() if grievance.priority else '',
+            grievance.assigned_to.user.get_full_name() if grievance.assigned_to else 'Unassigned',
+            grievance.submitted_at.strftime('%Y-%m-%d %H:%M:%S'),
+            grievance.updated_at.strftime('%Y-%m-%d %H:%M:%S') if grievance.updated_at else '',
+            grievance.updated_at.strftime('%Y-%m-%d') if grievance.status == 'resolved' and grievance.updated_at else '',
+            days_to_resolve
+        ])
+    
+    return response
+
+
+@login_required
+@staff_member_required
+def download_monthly_stats_csv(request):
+    """Download monthly statistics as CSV"""
+    import csv
+    from django.http import HttpResponse
+    
+    year = request.GET.get('year', timezone.now().year)
+    
+    # Create CSV response
+    response = HttpResponse(content_type='text/csv')
+    filename = f'monthly_grievances_stats_{year}.csv'
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    
+    writer = csv.writer(response)
+    
+    # CSV Headers
+    writer.writerow([
+        'Month',
+        'Total Grievances',
+        'Resolved',
+        'Pending',
+        'Rejected',
+        'Resolution Rate (%)'
+    ])
+    
+    # Monthly data
+    for month_num in range(1, 13):
+        month_grievances = Grievance.objects.filter(
+            submitted_at__year=year,
+            submitted_at__month=month_num
+        )
+        
+        total = month_grievances.count()
+        resolved = month_grievances.filter(status='resolved').count()
+        pending = month_grievances.filter(status='pending').count()
+        rejected = month_grievances.filter(status='rejected').count()
+        
+        resolution_rate = (resolved / total * 100) if total > 0 else 0
+        
+        month_name = datetime(int(year), month_num, 1).strftime('%B %Y')
+        
+        writer.writerow([
+            month_name,
+            total,
+            resolved,
+            pending,
+            rejected,
+            f'{resolution_rate:.1f}'
+        ])
+    
+    return response
+
+
+@login_required
+@staff_member_required
+def download_category_stats_csv(request):
+    """Download category-wise statistics as CSV"""
+    import csv
+    from django.http import HttpResponse
+    
+    # Get filters
+    from_date = request.GET.get('from_date')
+    to_date = request.GET.get('to_date')
+    
+    # Base queryset
+    grievances = Grievance.objects.all()
+    
+    if from_date and to_date:
+        grievances = grievances.filter(
+            submitted_at__date__gte=from_date,
+            submitted_at__date__lte=to_date
+        )
+    
+    # Category statistics
+    category_stats = grievances.values('category__name').annotate(
+        total=Count('id'),
+        resolved=Count('id', filter=Q(status='resolved')),
+        pending=Count('id', filter=Q(status='pending')),
+        rejected=Count('id', filter=Q(status='rejected'))
+    ).order_by('-total')
+    
+    # Create CSV response
+    response = HttpResponse(content_type='text/csv')
+    filename = f'category_stats_{timezone.now().strftime("%Y%m%d")}.csv'
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    
+    writer = csv.writer(response)
+    
+    # CSV Headers
+    writer.writerow([
+        'Category',
+        'Total Grievances',
+        'Resolved',
+        'Pending',
+        'Rejected',
+        'Resolution Rate (%)'
+    ])
+    
+    # Category data
+    for stat in category_stats:
+        total = stat['total']
+        resolved = stat['resolved']
+        pending = stat['pending']
+        rejected = stat['rejected']
+        resolution_rate = (resolved / total * 100) if total > 0 else 0
+        
+        writer.writerow([
+            stat['category__name'] or 'Uncategorized',
+            total,
+            resolved,
+            pending,
+            rejected,
+            f'{resolution_rate:.1f}'
+        ])
+    
+    return response
