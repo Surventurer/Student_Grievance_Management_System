@@ -4,10 +4,21 @@ import uuid
 
 
 class School(models.Model):
-    """School model as per database schema"""
+    """School model as per database schema - Enhanced for CRUD management"""
     
     id = models.AutoField(primary_key=True)  # UUID/Auto Primary key
     name = models.CharField(max_length=200, unique=True)  # Name of the school (unique)
+    code = models.CharField(max_length=20, blank=True, null=True, unique=True)  # School code (optional)
+    description = models.TextField(blank=True, null=True)  # School description
+    address = models.TextField(blank=True, null=True)  # School address
+    phone = models.CharField(max_length=15, blank=True, null=True)  # Contact phone
+    email = models.EmailField(blank=True, null=True)  # Contact email
+    website = models.URLField(blank=True, null=True)  # School website
+    established_year = models.IntegerField(blank=True, null=True)  # Year established
+    accreditation = models.CharField(max_length=100, blank=True, null=True)  # Accreditation info
+    campus_size = models.CharField(max_length=100, blank=True, null=True)  # Campus size
+    student_capacity = models.IntegerField(blank=True, null=True)  # Student capacity
+    is_active = models.BooleanField(default=True)  # Active status
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -20,16 +31,41 @@ class School(models.Model):
 
 
 class Department(models.Model):
-    """Department model as per database schema"""
+    """Department model as per database schema - Enhanced for CRUD management"""
     
     id = models.AutoField(primary_key=True)  # UUID/Auto Primary key  
     name = models.CharField(max_length=100)  # Name of the department
+    code = models.CharField(max_length=10, blank=True, null=True)  # Department code (optional)
+    description = models.TextField(blank=True, null=True)  # Department description
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='departments', null=True, blank=True)  # Links department to a school (nullable for migration)
+    head_of_department = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='headed_departments')  # HOD
+    office_location = models.CharField(max_length=200, blank=True, null=True)  # Office location
+    contact_email = models.EmailField(blank=True, null=True)  # Department email
+    phone = models.CharField(max_length=15, blank=True, null=True)  # Department phone
+    website = models.URLField(blank=True, null=True)  # Department website
+    is_active = models.BooleanField(default=True)  # Active status
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return f"{self.name}" + (f" - {self.school.name}" if self.school else "")
+    
+    @property
+    def students(self):
+        """Get students in this department"""
+        return StudentProfile.objects.filter(department=self.name)
+    
+    @property 
+    def grievances(self):
+        """Get grievances from students in this department"""
+        from apps.grievances.models import Grievance
+        return Grievance.objects.filter(student__department=self.name)
+        
+    @property
+    def category_assignments(self):
+        """Get category assignments for this department"""
+        from apps.grievances.models import CategoryAssignment
+        return CategoryAssignment.objects.filter(department__icontains=self.name)
     
     class Meta:
         verbose_name = "Department"

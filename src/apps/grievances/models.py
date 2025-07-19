@@ -19,6 +19,7 @@ class Category(models.Model):
     default_admin = models.ForeignKey(AdminProfile, on_delete=models.SET_NULL, null=True, blank=True, related_name='default_categories')
     keywords = models.TextField(blank=True, null=True, help_text="Keywords for auto-assignment (comma-separated)")
     is_active = models.BooleanField(default=True)
+    auto_assign_enabled = models.BooleanField(default=True, help_text="Enable automatic assignment for this category")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -33,6 +34,43 @@ class Category(models.Model):
     def is_other_category(self):
         """Check if this is an 'Other' category"""
         return self.name.lower().startswith('other')
+    
+    def get_assigned_hod(self, department=None):
+        """Get the assigned HOD for this category based on department"""
+        if department:
+            assignment = CategoryAssignment.objects.filter(
+                category=self,
+                department__icontains=department,
+                is_active=True
+            ).first()
+            if assignment:
+                return assignment.assigned_admin
+        
+        # Fallback to default admin
+        return self.default_admin
+
+
+class CategoryAssignment(models.Model):
+    """Model to assign HODs/Admins to categories based on departments"""
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='assignments')
+    assigned_admin = models.ForeignKey(AdminProfile, on_delete=models.CASCADE, related_name='category_assignments')
+    department = models.CharField(max_length=100, help_text="Department this assignment applies to")
+    school = models.CharField(max_length=200, blank=True, null=True, help_text="School this assignment applies to")
+    priority_level = models.IntegerField(default=1, help_text="Higher number = higher priority for matching")
+    is_active = models.BooleanField(default=True)
+    auto_assign_keywords = models.TextField(blank=True, null=True, help_text="Additional keywords for auto-assignment (comma-separated)")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    
+    class Meta:
+        ordering = ['-priority_level', 'category__name', 'department']
+        unique_together = ['category', 'department', 'assigned_admin']
+    
+    def __str__(self):
+        return f"{self.category.name} → {self.assigned_admin} ({self.department})"
 
 
 class Grievance(models.Model):
@@ -83,29 +121,97 @@ class Grievance(models.Model):
         return f"GRV-{str(self.id)[:8].upper()}"
     
     def auto_assign(self):
-        """Auto-assign grievance based on category and keywords"""
-        if self.category.default_admin:
-            self.assigned_to = self.category.default_admin
-            self.save()
-        elif self.category.keywords:
-            # Simple keyword matching for auto-assignment
-            keywords = [k.strip().lower() for k in self.category.keywords.split(',')]
+        """Enhanced auto-assign grievance based on category assignments and department"""
+        from apps.admin_panel.audit_utils import log_custom_action
+        
+        # Skip if already assigned
+        if self.assigned_to:
+            return
+        
+        # Skip if auto-assignment is disabled for this category
+        if not self.category.auto_assign_enabled:
+            return
+        
+        assigned_admin = None
+        assignment_reason = "No assignment found"
+        
+        # Try to get department from student profile
+        student_department = self.student.department if hasattr(self.student, 'department') else None
+        
+        # Step 1: Try to find specific department assignment
+        if student_department:
+            assignment = CategoryAssignment.objects.filter(
+                category=self.category,
+                department__iexact=student_department,
+                is_active=True
+            ).order_by('-priority_level').first()
+            
+            if assignment:
+                assigned_admin = assignment.assigned_admin
+                assignment_reason = f"Department-specific assignment: {student_department}"
+        
+        # Step 2: Try keyword matching in CategoryAssignment
+        if not assigned_admin:
+            assignments_with_keywords = CategoryAssignment.objects.filter(
+                category=self.category,
+                is_active=True,
+                auto_assign_keywords__isnull=False
+            ).exclude(auto_assign_keywords='')
+            
             description_lower = self.description.lower()
             title_lower = self.title.lower()
             
-            # Check if any keyword matches
-            for keyword in keywords:
-                if keyword in description_lower or keyword in title_lower:
-                    # Find admin with matching department or expertise
-                    potential_admin = AdminProfile.objects.filter(
-                        department=self.category.name,
-                        role_level__in=['officer', 'dept_admin']
-                    ).first()
-                    
-                    if potential_admin:
-                        self.assigned_to = potential_admin
-                        self.save()
+            for assignment in assignments_with_keywords:
+                keywords = [k.strip().lower() for k in assignment.auto_assign_keywords.split(',')]
+                for keyword in keywords:
+                    if keyword and (keyword in description_lower or keyword in title_lower):
+                        assigned_admin = assignment.assigned_admin
+                        assignment_reason = f"Keyword match: '{keyword}' → {assignment.department}"
                         break
+                if assigned_admin:
+                    break
+        
+        # Step 3: Fallback to category default admin
+        if not assigned_admin and self.category.default_admin:
+            assigned_admin = self.category.default_admin
+            assignment_reason = "Category default admin"
+        
+        # Step 4: Fallback to any available admin for the department
+        if not assigned_admin and student_department:
+            fallback_admin = AdminProfile.objects.filter(
+                department__iexact=student_department,
+                role_level__in=['officer', 'dept_admin']
+            ).first()
+            
+            if fallback_admin:
+                assigned_admin = fallback_admin
+                assignment_reason = f"Department fallback: {student_department}"
+        
+        # Assign and save
+        if assigned_admin:
+            self.assigned_to = assigned_admin
+            self.save()
+            
+            # Create audit log for auto-assignment
+            try:
+                request = None  # We'll need to pass request context later
+                # For now, we'll create a simple log entry
+                from apps.grievances.models import AuditLog
+                AuditLog.objects.create(
+                    user=assigned_admin.user,
+                    action='assign',
+                    target_model='Grievance',
+                    target_id=str(self.id),
+                    description=f"Auto-assigned grievance {self.grievance_id} to {assigned_admin}. Reason: {assignment_reason}",
+                    ip_address='127.0.0.1',  # System assignment
+                    user_agent='System Auto-Assignment'
+                )
+            except Exception as e:
+                print(f"Failed to create audit log for auto-assignment: {e}")
+            
+            return assigned_admin, assignment_reason
+        
+        return None, "No suitable admin found for assignment"
 
 
 class GrievanceAttachment(models.Model):

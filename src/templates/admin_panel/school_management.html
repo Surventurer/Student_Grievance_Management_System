@@ -1,0 +1,474 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}School Management - Admin Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stats-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .stats-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin: 0;
+    }
+    
+    .filter-section {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid #17a2b8;
+    }
+    
+    .school-card {
+        border: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border-left: 4px solid #17a2b8;
+    }
+    
+    .school-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    .school-badge {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+    }
+    
+    .department-count {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border-radius: 20px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+    
+    .action-buttons .btn {
+        margin: 0 2px;
+        padding: 0.375rem 0.75rem;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #6c757d;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.3;
+    }
+    
+    .bulk-actions {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 5px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        display: none;
+    }
+    
+    .select-all-checkbox {
+        transform: scale(1.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-0">
+                        <i class="fas fa-school me-2 text-info"></i>School Management
+                    </h2>
+                    <p class="text-muted mb-0">Manage educational institutions in the system</p>
+                </div>
+                <div>
+                    <a href="{% url 'admin_panel:crud_management' %}" class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-arrow-left me-1"></i>Back to CRUD
+                    </a>
+                    <a href="{% url 'admin_panel:school_create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>Add School
+                    </a>
+                </div>
+            </div>
+            
+            <nav aria-label="breadcrumb" class="mt-2">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'admin_panel:crud_management' %}">CRUD Management</a></li>
+                    <li class="breadcrumb-item active">Schools</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="stats-number">{{ stats.total }}</h3>
+                        <p class="mb-0">Total Schools</p>
+                    </div>
+                    <i class="fas fa-school fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="stats-number">{{ stats.active }}</h3>
+                        <p class="mb-0">Active Schools</p>
+                    </div>
+                    <i class="fas fa-check-circle fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="stats-number">{{ stats.inactive }}</h3>
+                        <p class="mb-0">Inactive Schools</p>
+                    </div>
+                    <i class="fas fa-times-circle fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="stats-number">{{ stats.total_departments }}</h3>
+                        <p class="mb-0">Total Departments</p>
+                    </div>
+                    <i class="fas fa-sitemap fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-section">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="search" class="form-label">Search Schools</label>
+                <input type="text" class="form-control" id="search" name="search" 
+                       placeholder="School name, code..." value="{{ request.GET.search }}">
+            </div>
+            <div class="col-md-2">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="">All Status</option>
+                    <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="inactive" {% if request.GET.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="sort" class="form-label">Sort By</label>
+                <select class="form-select" id="sort" name="sort">
+                    <option value="name" {% if request.GET.sort == 'name' %}selected{% endif %}>Name</option>
+                    <option value="-created_at" {% if request.GET.sort == '-created_at' %}selected{% endif %}>Newest First</option>
+                    <option value="created_at" {% if request.GET.sort == 'created_at' %}selected{% endif %}>Oldest First</option>
+                    <option value="code" {% if request.GET.sort == 'code' %}selected{% endif %}>School Code</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="per_page" class="form-label">Items Per Page</label>
+                <select class="form-select" id="per_page" name="per_page">
+                    <option value="10" {% if request.GET.per_page == '10' %}selected{% endif %}>10</option>
+                    <option value="25" {% if request.GET.per_page == '25' %}selected{% endif %}>25</option>
+                    <option value="50" {% if request.GET.per_page == '50' %}selected{% endif %}>50</option>
+                    <option value="100" {% if request.GET.per_page == '100' %}selected{% endif %}>100</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="fas fa-search"></i> Filter
+                </button>
+                <a href="{% url 'admin_panel:school_management' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-undo"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bulk Actions -->
+    <div class="bulk-actions" id="bulkActions">
+        <div class="d-flex justify-content-between align-items-center">
+            <span id="selectedCount">0 schools selected</span>
+            <div>
+                <button class="btn btn-sm btn-outline-success" id="activateSelected">
+                    <i class="fas fa-check"></i> Activate Selected
+                </button>
+                <button class="btn btn-sm btn-outline-warning" id="deactivateSelected">
+                    <i class="fas fa-pause"></i> Deactivate Selected
+                </button>
+                <button class="btn btn-sm btn-outline-danger" id="deleteSelected">
+                    <i class="fas fa-trash"></i> Delete Selected
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schools List -->
+    {% if schools %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <input type="checkbox" class="form-check-input select-all-checkbox me-2" id="selectAll">
+                            Schools ({{ page_obj.paginator.count }} total)
+                        </h5>
+                        <div class="text-muted small">
+                            Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th width="40"></th>
+                                    <th>School Details</th>
+                                    <th>Contact Information</th>
+                                    <th>Departments</th>
+                                    <th>Status</th>
+                                    <th width="150">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for school in schools %}
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="form-check-input school-checkbox" value="{{ school.id }}">
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-0">{{ school.name }}</h6>
+                                            {% if school.code %}
+                                            <small class="text-muted">Code: {{ school.code }}</small><br>
+                                            {% endif %}
+                                            {% if school.address %}
+                                            <small class="text-muted">{{ school.address|truncatechars:50 }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if school.phone %}
+                                        <div><i class="fas fa-phone text-muted me-1"></i>{{ school.phone }}</div>
+                                        {% endif %}
+                                        {% if school.email %}
+                                        <div><i class="fas fa-envelope text-muted me-1"></i>{{ school.email }}</div>
+                                        {% endif %}
+                                        {% if school.website %}
+                                        <div><i class="fas fa-globe text-muted me-1"></i>
+                                            <a href="{{ school.website }}" target="_blank" class="text-decoration-none">Website</a>
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="department-count">{{ school.departments.count }} Dept{% if school.departments.count != 1 %}s{% endif %}</span>
+                                    </td>
+                                    <td>
+                                        {% if school.is_active %}
+                                        <span class="badge bg-success school-badge">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary school-badge">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a href="{% url 'admin_panel:school_edit' school.id %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-danger delete-btn" data-id="{{ school.id }}" data-name="{{ school.name }}" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <nav>
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Previous</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Last</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="empty-state">
+        <i class="fas fa-school"></i>
+        <h4>No Schools Found</h4>
+        <p>No schools match your current filters or none have been created yet.</p>
+        <a href="{% url 'admin_panel:school_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i>Create First School
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the school "<span id="deleteName"></span>"?</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Warning:</strong> This action cannot be undone. All associated departments will also be affected.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" id="deleteForm" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete School</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Delete confirmation
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const schoolId = this.dataset.id;
+            const schoolName = this.dataset.name;
+            
+            document.getElementById('deleteName').textContent = schoolName;
+            document.getElementById('deleteForm').action = `/admin-panel/schools/${schoolId}/delete/`;
+            
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        });
+    });
+    
+    // Select all functionality
+    const selectAll = document.getElementById('selectAll');
+    const schoolCheckboxes = document.querySelectorAll('.school-checkbox');
+    const bulkActions = document.getElementById('bulkActions');
+    const selectedCount = document.getElementById('selectedCount');
+    
+    selectAll.addEventListener('change', function() {
+        schoolCheckboxes.forEach(cb => cb.checked = this.checked);
+        updateBulkActions();
+    });
+    
+    schoolCheckboxes.forEach(cb => {
+        cb.addEventListener('change', updateBulkActions);
+    });
+    
+    function updateBulkActions() {
+        const selected = document.querySelectorAll('.school-checkbox:checked');
+        selectedCount.textContent = `${selected.length} school${selected.length !== 1 ? 's' : ''} selected`;
+        
+        if (selected.length > 0) {
+            bulkActions.style.display = 'block';
+        } else {
+            bulkActions.style.display = 'none';
+        }
+        
+        // Update select all checkbox
+        selectAll.indeterminate = selected.length > 0 && selected.length < schoolCheckboxes.length;
+        selectAll.checked = selected.length === schoolCheckboxes.length;
+    }
+    
+    // Bulk actions
+    document.getElementById('activateSelected').addEventListener('click', function() {
+        const selected = Array.from(document.querySelectorAll('.school-checkbox:checked')).map(cb => cb.value);
+        if (selected.length > 0 && confirm(`Activate ${selected.length} selected school(s)?`)) {
+            // Implement bulk activate
+            console.log('Activate schools:', selected);
+        }
+    });
+    
+    document.getElementById('deactivateSelected').addEventListener('click', function() {
+        const selected = Array.from(document.querySelectorAll('.school-checkbox:checked')).map(cb => cb.value);
+        if (selected.length > 0 && confirm(`Deactivate ${selected.length} selected school(s)?`)) {
+            // Implement bulk deactivate
+            console.log('Deactivate schools:', selected);
+        }
+    });
+    
+    document.getElementById('deleteSelected').addEventListener('click', function() {
+        const selected = Array.from(document.querySelectorAll('.school-checkbox:checked')).map(cb => cb.value);
+        if (selected.length > 0 && confirm(`Delete ${selected.length} selected school(s)? This action cannot be undone.`)) {
+            // Implement bulk delete
+            console.log('Delete schools:', selected);
+        }
+    });
+});
+</script>
+{% endblock %}

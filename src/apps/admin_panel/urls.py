@@ -40,4 +40,33 @@ urlpatterns = [
     # Audit Logs
     path('audit-logs/', views.audit_logs_view, name='audit_logs'),
     path('audit-logs/api/', views.audit_logs, name='audit_logs_api'),
+    
+    # Auto-Assignment Management
+    path('auto-assign/', views.auto_assign_management, name='auto_assign_management'),
+    path('auto-assign/category/<uuid:category_id>/', views.category_assignment_detail, name='category_assignment_detail'),
+    path('auto-assign/create/', views.create_category_assignment, name='create_category_assignment'),
+    path('auto-assign/update/<uuid:assignment_id>/', views.update_category_assignment, name='update_category_assignment'),
+    path('auto-assign/delete/<uuid:assignment_id>/', views.delete_category_assignment, name='delete_category_assignment'),
+    path('auto-assign/test/', views.test_auto_assignment, name='test_auto_assignment'),
+    
+    # CRUD Management
+    path('manage/', views.crud_management, name='crud_management'),
+    
+    # Category CRUD
+    path('manage/categories/', views.category_management, name='category_management'),
+    path('manage/categories/create/', views.category_create, name='category_create'),
+    path('manage/categories/<uuid:category_id>/edit/', views.category_edit, name='category_edit'),
+    path('manage/categories/<uuid:category_id>/delete/', views.category_delete, name='category_delete'),
+    
+    # School CRUD
+    path('manage/schools/', views.school_management, name='school_management'),
+    path('manage/schools/create/', views.school_create, name='school_create'),
+    path('manage/schools/<int:school_id>/edit/', views.school_edit, name='school_edit'),
+    path('manage/schools/<int:school_id>/delete/', views.school_delete, name='school_delete'),
+    
+    # Department CRUD
+    path('manage/departments/', views.department_management, name='department_management'),
+    path('manage/departments/create/', views.department_create, name='department_create'),
+    path('manage/departments/<int:department_id>/edit/', views.department_edit, name='department_edit'),
+    path('manage/departments/<int:department_id>/delete/', views.department_delete, name='department_delete'),
 ]

@@ -15,7 +15,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 import json
 
-from apps.grievances.models import Grievance, Category, GrievanceComment, AuditLog
+from apps.grievances.models import Grievance, Category, GrievanceComment, AuditLog, CategoryAssignment
 from apps.students.models import StudentProfile, AdminProfile
 
 
@@ -1373,6 +1373,287 @@ def download_monthly_stats_csv(request):
     return response
 
 
+# Auto-Assignment Management Views
+
+@login_required
+def auto_assign_management(request):
+    """Main view for managing auto-assignment of grievances"""
+    if not request.user.role in ['admin', 'superadmin']:
+        messages.error(request, 'Access denied - Admin privileges required')
+        return redirect('authentication:login')
+    
+    # Get all categories with their assignments
+    categories = Category.objects.filter(is_active=True).prefetch_related('assignments__assigned_admin')
+    
+    # Get assignment statistics
+    total_assignments = CategoryAssignment.objects.filter(is_active=True).count()
+    categories_with_assignments = categories.filter(assignments__is_active=True).distinct().count()
+    categories_without_assignments = categories.exclude(assignments__is_active=True).count()
+    
+    # Get recent auto-assignments
+    recent_assignments = AuditLog.objects.filter(
+        action='assign',
+        description__icontains='Auto-assigned'
+    ).select_related('user').order_by('-timestamp')[:10]
+    
+    context = {
+        'categories': categories,
+        'total_assignments': total_assignments,
+        'categories_with_assignments': categories_with_assignments,
+        'categories_without_assignments': categories_without_assignments,
+        'recent_assignments': recent_assignments,
+    }
+    
+    return render(request, 'admin_panel/auto_assign_management.html', context)
+
+
+@login_required
+def category_assignment_detail(request, category_id):
+    """Detailed view for managing assignments for a specific category"""
+    if not request.user.role in ['admin', 'superadmin']:
+        messages.error(request, 'Access denied - Admin privileges required')
+        return redirect('authentication:login')
+    
+    category = get_object_or_404(Category, id=category_id, is_active=True)
+    assignments = CategoryAssignment.objects.filter(
+        category=category, 
+        is_active=True
+    ).select_related('assigned_admin__user').order_by('-priority_level', 'department')
+    
+    # Get available admins for assignment
+    available_admins = AdminProfile.objects.filter(
+        role_level__in=['officer', 'dept_admin', 'superadmin']
+    ).select_related('user')
+    
+    # Get departments that need assignment
+    from apps.students.models import Department
+    departments = Department.objects.all().order_by('name')
+    
+    # Get assignment statistics for this category
+    total_grievances = Grievance.objects.filter(category=category).count()
+    auto_assigned = Grievance.objects.filter(
+        category=category,
+        assigned_to__isnull=False
+    ).count()
+    unassigned = total_grievances - auto_assigned
+    
+    context = {
+        'category': category,
+        'assignments': assignments,
+        'available_admins': available_admins,
+        'departments': departments,
+        'total_grievances': total_grievances,
+        'auto_assigned': auto_assigned,
+        'unassigned': unassigned,
+    }
+    
+    return render(request, 'admin_panel/category_assignment_detail.html', context)
+
+
+@login_required
+@require_http_methods(["POST"])
+def create_category_assignment(request):
+    """Create a new category assignment"""
+    if not request.user.role in ['admin', 'superadmin']:
+        return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
+    
+    try:
+        data = json.loads(request.body)
+        
+        category_id = data.get('category_id')
+        admin_id = data.get('admin_id')
+        department = data.get('department', '').strip()
+        school = data.get('school', '').strip()
+        priority_level = int(data.get('priority_level', 1))
+        keywords = data.get('keywords', '').strip()
+        
+        # Validate required fields
+        if not category_id or not admin_id or not department:
+            return JsonResponse({'success': False, 'error': 'Category, admin, and department are required'})
+        
+        category = get_object_or_404(Category, id=category_id, is_active=True)
+        admin = get_object_or_404(AdminProfile, id=admin_id)
+        
+        # Check for existing assignment
+        existing = CategoryAssignment.objects.filter(
+            category=category,
+            department__iexact=department,
+            assigned_admin=admin
+        ).first()
+        
+        if existing:
+            if existing.is_active:
+                return JsonResponse({'success': False, 'error': 'This assignment already exists'})
+            else:
+                # Reactivate existing assignment
+                existing.is_active = True
+                existing.priority_level = priority_level
+                existing.auto_assign_keywords = keywords
+                existing.school = school
+                existing.save()
+                assignment = existing
+        else:
+            # Create new assignment
+            assignment = CategoryAssignment.objects.create(
+                category=category,
+                assigned_admin=admin,
+                department=department,
+                school=school,
+                priority_level=priority_level,
+                auto_assign_keywords=keywords,
+                created_by=request.user
+            )
+        
+        # Create audit log
+        AuditLog.objects.create(
+            user=request.user,
+            action='create',
+            target_model='CategoryAssignment',
+            target_id=str(assignment.id),
+            description=f"Created assignment: {category.name} → {admin} for {department}",
+            ip_address=request.META.get('REMOTE_ADDR', ''),
+            user_agent=request.META.get('HTTP_USER_AGENT', '')[:255]
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'assignment': {
+                'id': str(assignment.id),
+                'admin_name': assignment.assigned_admin.user.get_full_name(),
+                'department': assignment.department,
+                'school': assignment.school,
+                'priority_level': assignment.priority_level,
+                'keywords': assignment.auto_assign_keywords or '',
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@login_required
+@require_http_methods(["POST"])
+def update_category_assignment(request, assignment_id):
+    """Update an existing category assignment"""
+    if not request.user.role in ['admin', 'superadmin']:
+        return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
+    
+    try:
+        assignment = get_object_or_404(CategoryAssignment, id=assignment_id)
+        data = json.loads(request.body)
+        
+        # Update fields
+        assignment.priority_level = int(data.get('priority_level', assignment.priority_level))
+        assignment.auto_assign_keywords = data.get('keywords', assignment.auto_assign_keywords)
+        assignment.school = data.get('school', assignment.school)
+        assignment.is_active = data.get('is_active', assignment.is_active)
+        assignment.save()
+        
+        # Create audit log
+        AuditLog.objects.create(
+            user=request.user,
+            action='update',
+            target_model='CategoryAssignment',
+            target_id=str(assignment.id),
+            description=f"Updated assignment: {assignment.category.name} → {assignment.assigned_admin}",
+            ip_address=request.META.get('REMOTE_ADDR', ''),
+            user_agent=request.META.get('HTTP_USER_AGENT', '')[:255]
+        )
+        
+        return JsonResponse({'success': True})
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@login_required
+@require_http_methods(["POST"])
+def delete_category_assignment(request, assignment_id):
+    """Delete a category assignment"""
+    if not request.user.role in ['admin', 'superadmin']:
+        return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
+    
+    try:
+        assignment = get_object_or_404(CategoryAssignment, id=assignment_id)
+        
+        # Soft delete by setting is_active to False
+        assignment.is_active = False
+        assignment.save()
+        
+        # Create audit log
+        AuditLog.objects.create(
+            user=request.user,
+            action='delete',
+            target_model='CategoryAssignment',
+            target_id=str(assignment.id),
+            description=f"Deleted assignment: {assignment.category.name} → {assignment.assigned_admin}",
+            ip_address=request.META.get('REMOTE_ADDR', ''),
+            user_agent=request.META.get('HTTP_USER_AGENT', '')[:255]
+        )
+        
+        return JsonResponse({'success': True})
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@login_required
+@require_http_methods(["POST"])
+def test_auto_assignment(request):
+    """Test auto-assignment for unassigned grievances"""
+    if not request.user.role in ['admin', 'superadmin']:
+        return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
+    
+    try:
+        # Get unassigned grievances
+        unassigned_grievances = Grievance.objects.filter(
+            assigned_to__isnull=True,
+            status='pending'
+        ).select_related('category', 'student')
+        
+        results = []
+        assigned_count = 0
+        
+        for grievance in unassigned_grievances[:20]:  # Test first 20
+            assigned_admin, reason = grievance.auto_assign()
+            if assigned_admin:
+                assigned_count += 1
+                results.append({
+                    'grievance_id': grievance.grievance_id,
+                    'title': grievance.title,
+                    'assigned_to': assigned_admin.user.get_full_name(),
+                    'reason': reason
+                })
+            else:
+                results.append({
+                    'grievance_id': grievance.grievance_id,
+                    'title': grievance.title,
+                    'assigned_to': None,
+                    'reason': reason
+                })
+        
+        # Create audit log
+        AuditLog.objects.create(
+            user=request.user,
+            action='update',
+            target_model='Grievance',
+            target_id='bulk',
+            description=f"Ran auto-assignment test: {assigned_count}/{len(results)} grievances assigned",
+            ip_address=request.META.get('REMOTE_ADDR', ''),
+            user_agent=request.META.get('HTTP_USER_AGENT', '')[:255]
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'assigned_count': assigned_count,
+            'total_tested': len(results),
+            'results': results[:10]  # Return first 10 results
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
 @login_required
 @staff_member_required
 def download_category_stats_csv(request):
@@ -1436,3 +1717,673 @@ def download_category_stats_csv(request):
         ])
     
     return response
+
+
+# =============================================================================
+# CRUD MANAGEMENT VIEWS - Categories, Schools, Departments  
+# =============================================================================
+
+@login_required
+def crud_management(request):
+    """Main CRUD management dashboard"""
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+        messages.error(request, 'Access denied - Admin privileges required')
+        return redirect('authentication:login')
+    
+    # Get statistics
+    from apps.students.models import School, Department
+    
+    stats = {
+        'categories': Category.objects.count(),
+        'active_categories': Category.objects.filter(is_active=True).count(),
+        'schools': School.objects.count(),
+        'departments': Department.objects.count(),
+        'category_assignments': CategoryAssignment.objects.filter(is_active=True).count()
+    }
+    
+    context = {
+        'stats': stats,
+        'page_title': 'CRUD Management'
+    }
+    return render(request, 'admin_panel/crud_management.html', context)
+
+# Category CRUD Views
+@login_required
+def category_management(request):
+    """Category management view"""
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+        messages.error(request, 'Access denied - Admin privileges required')
+        return redirect('authentication:login')
+    
+    # Get search and filter parameters
+    search = request.GET.get('search', '')
+    category_type = request.GET.get('type', '')
+    status_filter = request.GET.get('status', '')
+    
+    # Build queryset
+    categories = Category.objects.all()
+    
+    if search:
+        categories = categories.filter(
+            Q(name__icontains=search) | 
+            Q(description__icontains=search)
+        )
+    
+    if category_type:
+        categories = categories.filter(category_type=category_type)
+        
+    if status_filter:
+        categories = categories.filter(is_active=(status_filter == 'active'))
+    
+    categories = categories.order_by('-created_at')
+    
+    # Pagination
+    paginator = Paginator(categories, 10)
+    page_number = request.GET.get('page')
+    categories = paginator.get_page(page_number)
+    
+    context = {
+        'categories': categories,
+        'search': search,
+        'category_type': category_type,
+        'status_filter': status_filter,
+        'category_types': Category.CATEGORY_TYPES,
+        'page_title': 'Category Management'
+    }
+    return render(request, 'admin_panel/category_management.html', context)
+
+@login_required 
+@require_http_methods(["GET", "POST"])
+def category_create(request):
+    """Create new category"""
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+        messages.error(request, 'Access denied - Admin privileges required')
+        return redirect('authentication:login')
+    
+    if request.method == 'POST':
+        try:
+            name = request.POST.get('name', '').strip()
+            description = request.POST.get('description', '').strip()
+            category_type = request.POST.get('category_type')
+            keywords = request.POST.get('keywords', '').strip()
+            is_active = request.POST.get('is_active') == 'on'
+            auto_assign_enabled = request.POST.get('auto_assign_enabled') == 'on'
+            
+            if not name or not category_type:
+                messages.error(request, 'Name and category type are required')
+                return render(request, 'admin_panel/category_form.html', {
+                    'category_types': Category.CATEGORY_TYPES,
+                    'form_data': request.POST
+                })
+            
+            # Check for duplicate names
+            if Category.objects.filter(name__iexact=name).exists():
+                messages.error(request, 'A category with this name already exists')
+                return render(request, 'admin_panel/category_form.html', {
+                    'category_types': Category.CATEGORY_TYPES,
+                    'form_data': request.POST
+                })
+            
+            category = Category.objects.create(
+                name=name,
+                description=description,
+                category_type=category_type,
+                keywords=keywords,
+                is_active=is_active,
+                auto_assign_enabled=auto_assign_enabled
+            )
+            
+            # Create audit log
+            AuditLog.objects.create(
+                user=request.user,
+                action='category_create',
+                description=f'Created category: {category.name}',
+                target_model='Category',
+                target_id=str(category.id)
+            )
+            
+            messages.success(request, f'Category "{category.name}" created successfully')
+            return redirect('admin_panel:category_management')
+            
+        except Exception as e:
+            messages.error(request, f'Error creating category: {str(e)}')
+    
+    context = {
+        'category_types': Category.CATEGORY_TYPES,
+        'action': 'Create',
+        'page_title': 'Create Category'
+    }
+    return render(request, 'admin_panel/category_form.html', context)
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def category_edit(request, category_id):
+    """Edit existing category"""
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+        messages.error(request, 'Access denied - Admin privileges required')
+        return redirect('authentication:login')
+    
+    category = get_object_or_404(Category, id=category_id)
+    
+    if request.method == 'POST':
+        try:
+            name = request.POST.get('name', '').strip()
+            description = request.POST.get('description', '').strip()
+            category_type = request.POST.get('category_type')
+            keywords = request.POST.get('keywords', '').strip()
+            is_active = request.POST.get('is_active') == 'on'
+            auto_assign_enabled = request.POST.get('auto_assign_enabled') == 'on'
+            
+            if not name or not category_type:
+                messages.error(request, 'Name and category type are required')
+                return render(request, 'admin_panel/category_form.html', {
+                    'category': category,
+                    'category_types': Category.CATEGORY_TYPES,
+                    'form_data': request.POST
+                })
+            
+            # Check for duplicate names (excluding current category)
+            if Category.objects.filter(name__iexact=name).exclude(id=category.id).exists():
+                messages.error(request, 'A category with this name already exists')
+                return render(request, 'admin_panel/category_form.html', {
+                    'category': category,
+                    'category_types': Category.CATEGORY_TYPES,
+                    'form_data': request.POST
+                })
+            
+            # Store old values for audit
+            old_name = category.name
+            
+            # Update category
+            category.name = name
+            category.description = description
+            category.category_type = category_type
+            category.keywords = keywords
+            category.is_active = is_active
+            category.auto_assign_enabled = auto_assign_enabled
+            category.save()
+            
+            # Create audit log
+            AuditLog.objects.create(
+                user=request.user,
+                action='category_update',
+                description=f'Updated category: {old_name} → {category.name}',
+                target_model='Category',
+                target_id=str(category.id)
+            )
+            
+            messages.success(request, f'Category "{category.name}" updated successfully')
+            return redirect('admin_panel:category_management')
+            
+        except Exception as e:
+            messages.error(request, f'Error updating category: {str(e)}')
+    
+    context = {
+        'category': category,
+        'category_types': Category.CATEGORY_TYPES,
+        'action': 'Edit',
+        'page_title': 'Edit Category'
+    }
+    return render(request, 'admin_panel/category_form.html', context)
+
+@login_required
+@require_http_methods(["POST"])
+def category_delete(request, category_id):
+    """Delete category"""
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+        return JsonResponse({'error': 'Access denied'}, status=403)
+    
+    try:
+        category = get_object_or_404(Category, id=category_id)
+        
+        # Check if category has grievances
+        grievance_count = Grievance.objects.filter(category=category).count()
+        if grievance_count > 0:
+            return JsonResponse({
+                'error': f'Cannot delete category. It has {grievance_count} associated grievances.'
+            }, status=400)
+        
+        category_name = category.name
+        category.delete()
+        
+        # Create audit log
+        AuditLog.objects.create(
+            user=request.user,
+            action='category_delete',
+            description=f'Deleted category: {category_name}',
+            target_model='Category',
+            target_id=str(category_id)
+        )
+        
+        return JsonResponse({'success': True, 'message': f'Category "{category_name}" deleted successfully'})
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+# School CRUD Views
+@login_required
+def school_management(request):
+    """School management view"""
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+        messages.error(request, 'Access denied - Admin privileges required')
+        return redirect('authentication:login')
+    
+    from apps.students.models import School
+    
+    search = request.GET.get('search', '')
+    schools = School.objects.all()
+    
+    if search:
+        schools = schools.filter(name__icontains=search)
+    
+    schools = schools.annotate(
+        department_count=Count('departments')
+    ).order_by('-created_at')
+    
+    # Pagination
+    paginator = Paginator(schools, 10)
+    page_number = request.GET.get('page')
+    schools = paginator.get_page(page_number)
+    
+    context = {
+        'schools': schools,
+        'search': search,
+        'page_title': 'School Management'
+    }
+    return render(request, 'admin_panel/school_management.html', context)
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def school_create(request):
+    """Create new school"""
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+        messages.error(request, 'Access denied - Admin privileges required')
+        return redirect('authentication:login')
+    
+    if request.method == 'POST':
+        try:
+            from apps.students.models import School
+            
+            name = request.POST.get('name', '').strip()
+            
+            if not name:
+                messages.error(request, 'School name is required')
+                return render(request, 'admin_panel/school_form.html', {
+                    'form_data': request.POST
+                })
+            
+            # Check for duplicate names
+            if School.objects.filter(name__iexact=name).exists():
+                messages.error(request, 'A school with this name already exists')
+                return render(request, 'admin_panel/school_form.html', {
+                    'form_data': request.POST
+                })
+            
+            school = School.objects.create(name=name)
+            
+            # Create audit log
+            AuditLog.objects.create(
+                user=request.user,
+                action='school_create',
+                description=f'Created school: {school.name}',
+                target_model='School',
+                target_id=str(school.id)
+            )
+            
+            messages.success(request, f'School "{school.name}" created successfully')
+            return redirect('admin_panel:school_management')
+            
+        except Exception as e:
+            messages.error(request, f'Error creating school: {str(e)}')
+    
+    context = {
+        'action': 'Create',
+        'page_title': 'Create School'
+    }
+    return render(request, 'admin_panel/school_form.html', context)
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def school_edit(request, school_id):
+    """Edit existing school"""
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+        messages.error(request, 'Access denied - Admin privileges required')
+        return redirect('authentication:login')
+    
+    from apps.students.models import School
+    
+    school = get_object_or_404(School, id=school_id)
+    
+    if request.method == 'POST':
+        try:
+            name = request.POST.get('name', '').strip()
+            
+            if not name:
+                messages.error(request, 'School name is required')
+                return render(request, 'admin_panel/school_form.html', {
+                    'school': school,
+                    'form_data': request.POST
+                })
+            
+            # Check for duplicate names (excluding current school)
+            if School.objects.filter(name__iexact=name).exclude(id=school.id).exists():
+                messages.error(request, 'A school with this name already exists')
+                return render(request, 'admin_panel/school_form.html', {
+                    'school': school,
+                    'form_data': request.POST
+                })
+            
+            old_name = school.name
+            school.name = name
+            school.save()
+            
+            # Create audit log
+            AuditLog.objects.create(
+                user=request.user,
+                action='school_update',
+                description=f'Updated school: {old_name} → {school.name}',
+                target_model='School',
+                target_id=str(school.id)
+            )
+            
+            messages.success(request, f'School "{school.name}" updated successfully')
+            return redirect('admin_panel:school_management')
+            
+        except Exception as e:
+            messages.error(request, f'Error updating school: {str(e)}')
+    
+    context = {
+        'school': school,
+        'action': 'Edit',
+        'page_title': 'Edit School'
+    }
+    return render(request, 'admin_panel/school_form.html', context)
+
+@login_required
+@require_http_methods(["POST"])
+def school_delete(request, school_id):
+    """Delete school"""
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+        return JsonResponse({'error': 'Access denied'}, status=403)
+    
+    try:
+        from apps.students.models import School
+        
+        school = get_object_or_404(School, id=school_id)
+        
+        # Check if school has departments
+        department_count = school.departments.count()
+        if department_count > 0:
+            return JsonResponse({
+                'error': f'Cannot delete school. It has {department_count} associated departments.'
+            }, status=400)
+        
+        school_name = school.name
+        school.delete()
+        
+        # Create audit log
+        AuditLog.objects.create(
+            user=request.user,
+            action='school_delete',
+            description=f'Deleted school: {school_name}',
+            target_model='School',
+            target_id=str(school_id)
+        )
+        
+        return JsonResponse({'success': True, 'message': f'School "{school_name}" deleted successfully'})
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+# Department CRUD Views
+@login_required
+def department_management(request):
+    """Department management view"""
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+        messages.error(request, 'Access denied - Admin privileges required')
+        return redirect('authentication:login')
+    
+    from apps.students.models import Department, School
+    
+    search = request.GET.get('search', '')
+    school_filter = request.GET.get('school', '')
+    
+    departments = Department.objects.select_related('school')
+    
+    if search:
+        departments = departments.filter(
+            Q(name__icontains=search) | 
+            Q(school__name__icontains=search)
+        )
+    
+    if school_filter:
+        departments = departments.filter(school_id=school_filter)
+    
+    departments = departments.annotate(
+        student_count=Count('studentprofile')
+    ).order_by('-created_at')
+    
+    # Pagination
+    paginator = Paginator(departments, 10)
+    page_number = request.GET.get('page')
+    departments = paginator.get_page(page_number)
+    
+    context = {
+        'departments': departments,
+        'schools': School.objects.all().order_by('name'),
+        'search': search,
+        'school_filter': school_filter,
+        'page_title': 'Department Management'
+    }
+    return render(request, 'admin_panel/department_management.html', context)
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def department_create(request):
+    """Create new department"""
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+        messages.error(request, 'Access denied - Admin privileges required')
+        return redirect('authentication:login')
+    
+    if request.method == 'POST':
+        try:
+            from apps.students.models import Department, School
+            
+            name = request.POST.get('name', '').strip()
+            school_id = request.POST.get('school')
+            
+            if not name:
+                messages.error(request, 'Department name is required')
+                return render(request, 'admin_panel/department_form.html', {
+                    'schools': School.objects.all().order_by('name'),
+                    'form_data': request.POST
+                })
+            
+            school = None
+            if school_id:
+                try:
+                    school = School.objects.get(id=school_id)
+                except School.DoesNotExist:
+                    messages.error(request, 'Selected school does not exist')
+                    return render(request, 'admin_panel/department_form.html', {
+                        'schools': School.objects.all().order_by('name'),
+                        'form_data': request.POST
+                    })
+            
+            # Check for duplicate names within the same school
+            if school:
+                if Department.objects.filter(name__iexact=name, school=school).exists():
+                    messages.error(request, f'A department with this name already exists in {school.name}')
+                    return render(request, 'admin_panel/department_form.html', {
+                        'schools': School.objects.all().order_by('name'),
+                        'form_data': request.POST
+                    })
+            else:
+                if Department.objects.filter(name__iexact=name, school__isnull=True).exists():
+                    messages.error(request, 'A department with this name already exists')
+                    return render(request, 'admin_panel/department_form.html', {
+                        'schools': School.objects.all().order_by('name'),
+                        'form_data': request.POST
+                    })
+            
+            department = Department.objects.create(
+                name=name,
+                school=school
+            )
+            
+            # Create audit log
+            AuditLog.objects.create(
+                user=request.user,
+                action='department_create',
+                description=f'Created department: {department.name}' + (f' in {school.name}' if school else ''),
+                target_model='Department',
+                target_id=str(department.id)
+            )
+            
+            messages.success(request, f'Department "{department.name}" created successfully')
+            return redirect('admin_panel:department_management')
+            
+        except Exception as e:
+            messages.error(request, f'Error creating department: {str(e)}')
+    
+    from apps.students.models import School
+    context = {
+        'schools': School.objects.all().order_by('name'),
+        'action': 'Create',
+        'page_title': 'Create Department'
+    }
+    return render(request, 'admin_panel/department_form.html', context)
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def department_edit(request, department_id):
+    """Edit existing department"""
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+        messages.error(request, 'Access denied - Admin privileges required')
+        return redirect('authentication:login')
+    
+    from apps.students.models import Department, School
+    
+    department = get_object_or_404(Department, id=department_id)
+    
+    if request.method == 'POST':
+        try:
+            name = request.POST.get('name', '').strip()
+            school_id = request.POST.get('school')
+            
+            if not name:
+                messages.error(request, 'Department name is required')
+                return render(request, 'admin_panel/department_form.html', {
+                    'department': department,
+                    'schools': School.objects.all().order_by('name'),
+                    'form_data': request.POST
+                })
+            
+            school = None
+            if school_id:
+                try:
+                    school = School.objects.get(id=school_id)
+                except School.DoesNotExist:
+                    messages.error(request, 'Selected school does not exist')
+                    return render(request, 'admin_panel/department_form.html', {
+                        'department': department,
+                        'schools': School.objects.all().order_by('name'),
+                        'form_data': request.POST
+                    })
+            
+            # Check for duplicate names (excluding current department)
+            if school:
+                if Department.objects.filter(name__iexact=name, school=school).exclude(id=department.id).exists():
+                    messages.error(request, f'A department with this name already exists in {school.name}')
+                    return render(request, 'admin_panel/department_form.html', {
+                        'department': department,
+                        'schools': School.objects.all().order_by('name'),
+                        'form_data': request.POST
+                    })
+            else:
+                if Department.objects.filter(name__iexact=name, school__isnull=True).exclude(id=department.id).exists():
+                    messages.error(request, 'A department with this name already exists')
+                    return render(request, 'admin_panel/department_form.html', {
+                        'department': department,
+                        'schools': School.objects.all().order_by('name'),
+                        'form_data': request.POST
+                    })
+            
+            old_name = department.name
+            old_school = department.school
+            
+            department.name = name
+            department.school = school
+            department.save()
+            
+            # Create audit log
+            school_info = f' in {school.name}' if school else ''
+            old_school_info = f' in {old_school.name}' if old_school else ''
+            
+            AuditLog.objects.create(
+                user=request.user,
+                action='department_update',
+                description=f'Updated department: {old_name}{old_school_info} → {department.name}{school_info}',
+                target_model='Department',
+                target_id=str(department.id)
+            )
+            
+            messages.success(request, f'Department "{department.name}" updated successfully')
+            return redirect('admin_panel:department_management')
+            
+        except Exception as e:
+            messages.error(request, f'Error updating department: {str(e)}')
+    
+    context = {
+        'department': department,
+        'schools': School.objects.all().order_by('name'),
+        'action': 'Edit',
+        'page_title': 'Edit Department'
+    }
+    return render(request, 'admin_panel/department_form.html', context)
+
+@login_required
+@require_http_methods(["POST"])
+def department_delete(request, department_id):
+    """Delete department"""
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+        return JsonResponse({'error': 'Access denied'}, status=403)
+    
+    try:
+        from apps.students.models import Department, StudentProfile
+        
+        department = get_object_or_404(Department, id=department_id)
+        
+        # Check if department has students
+        student_count = StudentProfile.objects.filter(department=department.name).count()
+        if student_count > 0:
+            return JsonResponse({
+                'error': f'Cannot delete department. It has {student_count} associated students.'
+            }, status=400)
+        
+        # Check if department has admin profiles
+        admin_count = AdminProfile.objects.filter(department=department.name).count()
+        if admin_count > 0:
+            return JsonResponse({
+                'error': f'Cannot delete department. It has {admin_count} associated admin profiles.'
+            }, status=400)
+        
+        department_name = department.name
+        school_name = department.school.name if department.school else None
+        
+        department.delete()
+        
+        # Create audit log
+        school_info = f' from {school_name}' if school_name else ''
+        AuditLog.objects.create(
+            user=request.user,
+            action='department_delete',
+            description=f'Deleted department: {department_name}{school_info}',
+            target_model='Department',
+            target_id=str(department_id)
+        )
+        
+        return JsonResponse({'success': True, 'message': f'Department "{department_name}" deleted successfully'})
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

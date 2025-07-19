@@ -10723,3 +10723,1133 @@ django.template.exceptions.TemplateSyntaxError: 'block' tag with name 'content' 
 "GET /admin-panel/audit-logs/ HTTP/1.1" 200 39905
 C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\audit_utils.py changed, reloading.
 Watching for file changes with StatReloader
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 29301
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 29301
+"GET /admin-panel/audit-logs/ HTTP/1.1" 200 39905
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 29301
+"GET /static/css/style.css HTTP/1.1" 304 0
+"GET /admin-panel/categories/ HTTP/1.1" 200 147191
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\grievances\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\grievances\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin/auto-assign-management/?id=3a755ef5-b43c-49f5-826b-95b2b134c961&vscodeBrowserReqId=1752954494120 HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/auto-assign-management/%3Fid%3D3a755ef5-b43c-49f5-826b-95b2b134c961%26vscodeBrowserReqId%3D1752954494120 HTTP/1.1" 200 4374
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 29391
+"GET /static/css/style.css HTTP/1.1" 304 0
+"GET /admin-panel/auto-assign/ HTTP/1.1" 200 124189
+"POST /admin-panel/auto-assign/test/ HTTP/1.1" 200 1274
+"GET /admin-panel/grievances/ HTTP/1.1" 200 94447
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 58
+"GET /admin-panel/grievances/?page=2 HTTP/1.1" 200 36454
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 58
+"GET /admin-panel/grievances/?page=1 HTTP/1.1" 200 94447
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 58
+"GET /admin-panel/grievances/6b2ceaf2-c90d-4050-854f-94fdca14906c/ HTTP/1.1" 200 15353
+"GET /admin-panel/grievances/ HTTP/1.1" 200 94447
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 58
+"GET /admin-panel/students/ HTTP/1.1" 200 87813
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 65
+"GET /admin-panel/grievances/ HTTP/1.1" 200 94447
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 58
+"GET /admin-panel/students/ HTTP/1.1" 200 87813
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 65
+"GET /admin-panel/students/?search=john.doe%40university.edu HTTP/1.1" 200 45422
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 65
+"GET /admin-panel/students/?search= HTTP/1.1" 200 87813
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 65
+"GET /admin-panel/grievances/ HTTP/1.1" 200 94447
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 58
+"GET /admin-panel/students/ HTTP/1.1" 200 87813
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 65
+"GET /admin-panel/auto-assign/ HTTP/1.1" 200 124193
+Internal Server Error: /admin-panel/auto-assign/category/0090d2e3-758c-4cec-b173-6518488423c6/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 1450, in category_assignment_detail
+    return render(request, 'admin_panel/category_assignment_detail.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 862, in do_for
+    nodelist_loop = parser.parse(
+                    ^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 861, in do_for
+    sequence = parser.compile_filter(bits[in_index + 1])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 609, in compile_filter
+    return FilterExpression(token, self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 705, in __init__
+    filter_func = parser.find_filter(filter_name)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 615, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'split'
+"GET /admin-panel/auto-assign/category/0090d2e3-758c-4cec-b173-6518488423c6/ HTTP/1.1" 500 340068
+Internal Server Error: /admin-panel/auto-assign/category/f1a1157b-177b-4c9f-896f-79aa7d11549c/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 1450, in category_assignment_detail
+    return render(request, 'admin_panel/category_assignment_detail.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 862, in do_for
+    nodelist_loop = parser.parse(
+                    ^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 861, in do_for
+    sequence = parser.compile_filter(bits[in_index + 1])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 609, in compile_filter
+    return FilterExpression(token, self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 705, in __init__
+    filter_func = parser.find_filter(filter_name)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 615, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'split'
+"GET /admin-panel/auto-assign/category/f1a1157b-177b-4c9f-896f-79aa7d11549c/ HTTP/1.1" 500 339736
+"GET /admin-panel/categories/ HTTP/1.1" 200 152046
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 29391
+"GET /admin-panel/auto-assign/ HTTP/1.1" 200 124193
+"GET /admin-panel/categories/ HTTP/1.1" 200 152046
+Not Found: /admin-panel/categories/0090d2e3-758c-4cec-b173-6518488423c6/toggle/
+"POST /admin-panel/categories/0090d2e3-758c-4cec-b173-6518488423c6/toggle/ HTTP/1.1" 404 13273
+Not Found: /admin-panel/categories/0090d2e3-758c-4cec-b173-6518488423c6/toggle/
+"POST /admin-panel/categories/0090d2e3-758c-4cec-b173-6518488423c6/toggle/ HTTP/1.1" 404 13273
+Not Found: /admin-panel/categories/0090d2e3-758c-4cec-b173-6518488423c6/toggle/
+"POST /admin-panel/categories/0090d2e3-758c-4cec-b173-6518488423c6/toggle/ HTTP/1.1" 404 13273
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 29391
+"GET /admin-panel/grievances/ HTTP/1.1" 200 94447
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 58
+"GET /admin-panel/auto-assign/ HTTP/1.1" 200 124193
+"GET /admin-panel/auto-assign/ HTTP/1.1" 200 124193
+"GET /admin-panel/categories/ HTTP/1.1" 200 152046
+"GET /admin-panel/students/ HTTP/1.1" 200 87813
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 65
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 29391
+"GET /admin-panel/categories/ HTTP/1.1" 200 152046
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Not Found: /admin-panel/
+"GET /admin-panel/?id=3a755ef5-b43c-49f5-826b-95b2b134c961&vscodeBrowserReqId=1752956110305 HTTP/1.1" 404 17105
+"GET /admin-panel/categories/ HTTP/1.1" 200 152046
+"GET /static/css/style.css HTTP/1.1" 304 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 29391
+"GET /admin-panel/audit-logs/ HTTP/1.1" 200 66482
+"GET /admin-panel/reports/dashboard/ HTTP/1.1" 200 55792
+"GET /admin-panel/auto-assign/ HTTP/1.1" 200 124203
+"GET /admin-panel/students/ HTTP/1.1" 200 87813
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 65
+"GET /admin-panel/grievances/ HTTP/1.1" 200 94447
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 58
+Not Found: /admin-panel/
+"GET /admin-panel/?id=3a755ef5-b43c-49f5-826b-95b2b134c961&vscodeBrowserReqId=1752956218601 HTTP/1.1" 404 17105
+"GET /admin-panel/grievances/ HTTP/1.1" 200 94605
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 58
+"GET /admin-panel/manage/ HTTP/1.1" 200 15310
+Method Not Allowed (GET): /admin-panel/auto-assign/create/
+"GET /admin-panel/auto-assign/create/ HTTP/1.1" 405 0
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 1793, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 862, in do_for
+    nodelist_loop = parser.parse(
+                    ^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 861, in do_for
+    sequence = parser.compile_filter(bits[in_index + 1])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 609, in compile_filter
+    return FilterExpression(token, self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 705, in __init__
+    filter_func = parser.find_filter(filter_name)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 615, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'split'
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 349613
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 1793, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 862, in do_for
+    nodelist_loop = parser.parse(
+                    ^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 861, in do_for
+    sequence = parser.compile_filter(bits[in_index + 1])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 609, in compile_filter
+    return FilterExpression(token, self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 705, in __init__
+    filter_func = parser.find_filter(filter_name)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 615, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'split'
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 349613
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 29457
+Internal Server Error: /admin-panel/manage/departments/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2162, in department_management
+    departments = departments.annotate(
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1649, in annotate
+    return self._annotate(args, kwargs, select=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1701, in _annotate
+    clone.query.add_annotation(
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1218, in add_annotation
+    annotation = annotation.resolve_expression(self, allow_joins=True, reuse=None)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 176, in resolve_expression
+    result = super().resolve_expression(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 63, in resolve_expression
+    c = super().resolve_expression(query, allow_joins, reuse, summarize)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 300, in resolve_expression
+    expr.resolve_expression(query, allow_joins, reuse, summarize, for_save)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 902, in resolve_expression
+    return query.resolve_ref(self.name, allow_joins, reuse, summarize)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 2049, in resolve_ref
+    join_info = self.setup_joins(
+                ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1900, in setup_joins
+    path, final_field, targets, rest = self.names_to_path(
+                                       ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'studentprofile' into field. Choices are: created_at, id, name, school, school_id, updated_at
+"GET /admin-panel/manage/departments/ HTTP/1.1" 500 136623
+Internal Server Error: /admin-panel/manage/departments/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2162, in department_management
+    departments = departments.annotate(
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1649, in annotate
+    return self._annotate(args, kwargs, select=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1701, in _annotate
+    clone.query.add_annotation(
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1218, in add_annotation
+    annotation = annotation.resolve_expression(self, allow_joins=True, reuse=None)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 176, in resolve_expression
+    result = super().resolve_expression(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 63, in resolve_expression
+    c = super().resolve_expression(query, allow_joins, reuse, summarize)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 300, in resolve_expression
+    expr.resolve_expression(query, allow_joins, reuse, summarize, for_save)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 902, in resolve_expression
+    return query.resolve_ref(self.name, allow_joins, reuse, summarize)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 2049, in resolve_ref
+    join_info = self.setup_joins(
+                ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1900, in setup_joins
+    path, final_field, targets, rest = self.names_to_path(
+                                       ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'studentprofile' into field. Choices are: created_at, id, name, school, school_id, updated_at
+"GET /admin-panel/manage/departments/ HTTP/1.1" 500 136760
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 29457
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 29457
+"GET /admin-panel/manage/ HTTP/1.1" 200 15310
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/manage/?id=3a755ef5-b43c-49f5-826b-95b2b134c961&vscodeBrowserReqId=1752956497450 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/manage/%3Fid%3D3a755ef5-b43c-49f5-826b-95b2b134c961%26vscodeBrowserReqId%3D1752956497450 HTTP/1.1" 200 3077
+"GET /admin-panel/manage/categories/?id=3a755ef5-b43c-49f5-826b-95b2b134c961&vscodeBrowserReqId=1752956556829 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/manage/categories/%3Fid%3D3a755ef5-b43c-49f5-826b-95b2b134c961%26vscodeBrowserReqId%3D1752956556829 HTTP/1.1" 200 3077
+"GET /admin-panel/manage/ HTTP/1.1" 200 15310
+"GET /admin-panel/manage/categories/create/ HTTP/1.1" 200 12982
+"GET /admin-panel/manage/schools/create/ HTTP/1.1" 200 18418
+"GET /admin-panel/manage/departments/create/ HTTP/1.1" 200 26468
+Method Not Allowed (GET): /admin-panel/auto-assign/create/
+"GET /admin-panel/auto-assign/create/ HTTP/1.1" 405 0
+"GET /admin-panel/auto-assign/ HTTP/1.1" 200 124361
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 1793, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 862, in do_for
+    nodelist_loop = parser.parse(
+                    ^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 861, in do_for
+    sequence = parser.compile_filter(bits[in_index + 1])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 609, in compile_filter
+    return FilterExpression(token, self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 705, in __init__
+    filter_func = parser.find_filter(filter_name)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 615, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'split'
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 349613
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 29457
+Internal Server Error: /admin-panel/manage/departments/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2162, in department_management
+    departments = departments.annotate(
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1649, in annotate
+    return self._annotate(args, kwargs, select=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1701, in _annotate
+    clone.query.add_annotation(
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1218, in add_annotation
+    annotation = annotation.resolve_expression(self, allow_joins=True, reuse=None)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 176, in resolve_expression
+    result = super().resolve_expression(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 63, in resolve_expression
+    c = super().resolve_expression(query, allow_joins, reuse, summarize)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 300, in resolve_expression
+    expr.resolve_expression(query, allow_joins, reuse, summarize, for_save)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 902, in resolve_expression
+    return query.resolve_ref(self.name, allow_joins, reuse, summarize)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 2049, in resolve_ref
+    join_info = self.setup_joins(
+                ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1900, in setup_joins
+    path, final_field, targets, rest = self.names_to_path(
+                                       ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'studentprofile' into field. Choices are: created_at, id, name, school, school_id, updated_at
+"GET /admin-panel/manage/departments/ HTTP/1.1" 500 136623
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+"GET /admin-panel/dashboard/?id=3a755ef5-b43c-49f5-826b-95b2b134c961&vscodeBrowserReqId=1752956719952 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/dashboard/%3Fid%3D3a755ef5-b43c-49f5-826b-95b2b134c961%26vscodeBrowserReqId%3D1752956719952 HTTP/1.1" 200 3077
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\students\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\students\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\students\models.py changed, reloading.
+Watching for file changes with StatReloader
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+"GET /admin-panel/manage/?id=3a755ef5-b43c-49f5-826b-95b2b134c961&vscodeBrowserReqId=1752956862524 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/manage/%3Fid%3D3a755ef5-b43c-49f5-826b-95b2b134c961%26vscodeBrowserReqId%3D1752956862524 HTTP/1.1" 200 3077
+"GET /auth/login/?id=3a755ef5-b43c-49f5-826b-95b2b134c961&vscodeBrowserReqId=1752956869463 HTTP/1.1" 200 3077
+Watching for file changes with StatReloader
+"GET /admin-panel/manage/?id=3a755ef5-b43c-49f5-826b-95b2b134c961&vscodeBrowserReqId=1752956908937 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/manage/%3Fid%3D3a755ef5-b43c-49f5-826b-95b2b134c961%26vscodeBrowserReqId%3D1752956908937 HTTP/1.1" 200 3077
+"GET /admin-panel/dashboard/?id=3a755ef5-b43c-49f5-826b-95b2b134c961&vscodeBrowserReqId=1752956954755 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/dashboard/%3Fid%3D3a755ef5-b43c-49f5-826b-95b2b134c961%26vscodeBrowserReqId%3D1752956954755 HTTP/1.1" 200 3077
+"GET /admin-panel/manage/ HTTP/1.1" 200 15310
+"GET /admin-panel/manage/ HTTP/1.1" 200 15310
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 29433
+"GET /admin-panel/students/ HTTP/1.1" 200 87971
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 65
+"GET /admin-panel/api/departments/?school=15 HTTP/1.1" 200 103
+"POST /admin-panel/api/add-student/ HTTP/1.1" 200 166
+"GET /admin-panel/students/ HTTP/1.1" 200 92677
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 66
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3576
+"GET /auth/verify-student-email/ HTTP/1.1" 200 7158
+"POST /auth/verify-student-email/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3602
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 10721
+"GET /students/profile/ HTTP/1.1" 200 18410
+"GET /students/grievances/ HTTP/1.1" 200 15051
+"GET /api/grievances/submit/ HTTP/1.1" 200 33106
+"GET /grievances/api/categories/?type=academic HTTP/1.1" 200 4130
+"GET /students/api/departments/ HTTP/1.1" 200 5547
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3576
+"GET /admin/ HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/ HTTP/1.1" 200 4170
+"GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+"GET /static/admin/css/base.css HTTP/1.1" 304 0
+"GET /static/admin/js/theme.js HTTP/1.1" 304 0
+"GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+"GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+"GET /static/admin/css/login.css HTTP/1.1" 304 0
+"GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+"POST /admin/login/?next=/admin/ HTTP/1.1" 302 0
+"GET /admin/ HTTP/1.1" 200 15785
+"GET /static/admin/css/dashboard.css HTTP/1.1" 304 0
+"GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 304 0
+"GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+"GET /static/admin/img/icon-changelink.svg HTTP/1.1" 304 0
+"GET /admin/authentication/adminloginotp/ HTTP/1.1" 200 23736
+"GET /static/admin/css/changelists.css HTTP/1.1" 304 0
+"GET /static/admin/js/core.js HTTP/1.1" 304 0
+"GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+"GET /static/admin/js/actions.js HTTP/1.1" 304 0
+"GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 304 0
+"GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 304 0
+"GET /static/admin/js/prepopulate.js HTTP/1.1" 304 0
+"GET /static/admin/js/urlify.js HTTP/1.1" 304 0
+"GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 304 0
+"GET /static/admin/img/search.svg HTTP/1.1" 304 0
+"GET /static/admin/img/icon-yes.svg HTTP/1.1" 304 0
+"GET /static/admin/js/filters.js HTTP/1.1" 304 0
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/authentication/emailverification/ HTTP/1.1" 200 19342
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /static/admin/img/tooltag-add.svg HTTP/1.1" 304 0
+"GET /admin/authentication/passwordreset/ HTTP/1.1" 200 18811
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/authentication/user/ HTTP/1.1" 200 29585
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /static/admin/img/sorting-icons.svg HTTP/1.1" 304 0
+"GET /static/admin/img/icon-no.svg HTTP/1.1" 200 560
+"GET /admin/grievances/category/ HTTP/1.1" 200 64989
+"GET /static/admin/css/forms.css HTTP/1.1" 304 0
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /static/admin/css/widgets.css HTTP/1.1" 304 0
+"GET /admin/grievances/grievanceotpverification/ HTTP/1.1" 200 23513
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+Internal Server Error: /admin/grievances/grievance/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\admin\options.py", line 719, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\views\decorators\cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\admin\sites.py", line 246, in inner
+    return view(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\admin\options.py", line 2163, in changelist_view
+    "selection_note": _("0 of %(cnt)s selected") % {"cnt": len(cl.result_list)},
+                                                           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 366, in __len__
+    self._fetch_all()
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1949, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1610, in execute_sql
+    sql, params = self.as_sql()
+                  ^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 766, in as_sql
+    extra_select, order_by, group_by = self.pre_sql_setup(
+                                       ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 85, in pre_sql_setup
+    self.setup_query(with_col_aliases=with_col_aliases)
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 74, in setup_query
+    self.select, self.klass_info, self.annotation_col_map = self.get_select(
+                                                            ^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 299, in get_select
+    related_klass_infos = self.get_related_selections(select, select_mask)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1396, in get_related_selections
+    raise FieldError(
+django.core.exceptions.FieldError: Invalid field name(s) given in select_related: 'assigned_admin'. Choices are: student, category, assigned_to, feedback
+"GET /admin/grievances/grievance/ HTTP/1.1" 500 178423
+"GET /admin/grievances/grievanceotpverification/ HTTP/1.1" 200 23513
+"GET /admin/students/adminprofile/ HTTP/1.1" 200 22756
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/students/department/ HTTP/1.1" 200 30556
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/students/studentprofile/ HTTP/1.1" 200 24467
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4768
+"GET /static/css/style.css HTTP/1.1" 304 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 29549
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3576
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\students\models.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3077
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4098
+"POST /auth/login/ HTTP/1.1" 200 7340
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 29830
+"GET /admin-panel/audit-logs/ HTTP/1.1" 200 67298
+"GET /admin-panel/auto-assign/ HTTP/1.1" 200 124361
+"GET /admin-panel/manage/ HTTP/1.1" 200 15310
+"GET /admin-panel/students/ HTTP/1.1" 200 92673
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 66
+"GET /admin-panel/grievances/ HTTP/1.1" 200 94605
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 58
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 29549
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 29549
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3576
+"POST /auth/login/ HTTP/1.1" 200 7340
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 29830
+"GET /admin-panel/manage/ HTTP/1.1" 200 15310
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4768

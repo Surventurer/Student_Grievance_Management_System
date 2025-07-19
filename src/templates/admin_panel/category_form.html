@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ action }} Category - Admin Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-section {
+        background: #f8f9fa;
+        border-left: 4px solid #007bff;
+        padding: 1.5rem;
+        border-radius: 5px;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-section h5 {
+        color: #007bff;
+        margin-bottom: 1rem;
+    }
+    
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+    
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+    
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+        background-color: #007bff;
+    }
+    
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+    
+    .keyword-tag {
+        display: inline-block;
+        background: #e9ecef;
+        color: #495057;
+        padding: 0.25rem 0.5rem;
+        margin: 0.25rem;
+        border-radius: 3px;
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-0">
+                        <i class="fas fa-{% if action == 'Create' %}plus{% else %}edit{% endif %} me-2"></i>{{ action }} Category
+                    </h2>
+                    <p class="text-muted mb-0">{% if action == 'Create' %}Add a new category{% else %}Modify category details{% endif %}</p>
+                </div>
+                <a href="{% url 'admin_panel:category_management' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Categories
+                </a>
+            </div>
+            
+            <nav aria-label="breadcrumb" class="mt-2">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'admin_panel:crud_management' %}">CRUD Management</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'admin_panel:category_management' %}">Categories</a></li>
+                    <li class="breadcrumb-item active">{{ action }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <div class="row">
+        <div class="col-lg-8">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <h5><i class="fas fa-info-circle me-2"></i>Basic Information</h5>
+                    
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Category Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" 
+                               value="{% if category %}{{ category.name }}{% elif form_data %}{{ form_data.name }}{% endif %}" 
+                               required>
+                        <div class="form-text">Enter a unique name for this category</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"
+                                  placeholder="Optional description for this category">{% if category %}{{ category.description }}{% elif form_data %}{{ form_data.description }}{% endif %}</textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="category_type" class="form-label">Category Type <span class="text-danger">*</span></label>
+                        <select class="form-select" id="category_type" name="category_type" required>
+                            <option value="">Select category type</option>
+                            {% for value, label in category_types %}
+                            <option value="{{ value }}" 
+                                {% if category and category.category_type == value %}selected
+                                {% elif form_data and form_data.category_type == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Keywords and Auto-Assignment -->
+                <div class="form-section">
+                    <h5><i class="fas fa-robot me-2"></i>Auto-Assignment Settings</h5>
+                    
+                    <div class="mb-3">
+                        <label for="keywords" class="form-label">Keywords</label>
+                        <input type="text" class="form-control" id="keywords" name="keywords" 
+                               value="{% if category %}{{ category.keywords }}{% elif form_data %}{{ form_data.keywords }}{% endif %}" 
+                               placeholder="Enter comma-separated keywords for auto-assignment">
+                        <div class="form-text">Keywords help automatically assign grievances to appropriate administrators</div>
+                        <div id="keywordPreview" class="mt-2"></div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="auto_assign_enabled" name="auto_assign_enabled"
+                                    {% if category and category.auto_assign_enabled %}checked
+                                    {% elif form_data and form_data.auto_assign_enabled %}checked
+                                    {% elif not category and not form_data %}checked{% endif %}>
+                                <label class="form-check-label" for="auto_assign_enabled">
+                                    Enable Auto-Assignment
+                                </label>
+                            </div>
+                            <small class="text-muted">Allow automatic assignment of grievances in this category</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Settings -->
+                <div class="form-section">
+                    <h5><i class="fas fa-toggle-on me-2"></i>Status Settings</h5>
+                    
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="is_active" name="is_active"
+                            {% if category and category.is_active %}checked
+                            {% elif form_data and form_data.is_active %}checked
+                            {% elif not category and not form_data %}checked{% endif %}>
+                        <label class="form-check-label" for="is_active">
+                            Active Status
+                        </label>
+                    </div>
+                    <small class="text-muted">Only active categories can be used for new grievances</small>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>{{ action }} Category
+                    </button>
+                    <a href="{% url 'admin_panel:category_management' %}" class="btn btn-secondary">
+                        <i class="fas fa-times me-1"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Tips & Guidelines</h6>
+                </div>
+                <div class="card-body">
+                    <h6>Category Naming:</h6>
+                    <ul class="small">
+                        <li>Use descriptive and clear names</li>
+                        <li>Keep names concise but meaningful</li>
+                        <li>Avoid special characters</li>
+                    </ul>
+                    
+                    <h6>Keywords:</h6>
+                    <ul class="small">
+                        <li>Use comma-separated values</li>
+                        <li>Include relevant terms students might use</li>
+                        <li>Consider synonyms and variations</li>
+                    </ul>
+                    
+                    <h6>Auto-Assignment:</h6>
+                    <ul class="small">
+                        <li>Enable for categories with clear ownership</li>
+                        <li>Ensure proper category assignments exist</li>
+                        <li>Test assignments after creation</li>
+                    </ul>
+                </div>
+            </div>
+            
+            {% if category %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Category Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <strong>Created:</strong>
+                        </div>
+                        <div class="col-sm-6">
+                            {{ category.created_at|date:"M d, Y H:i" }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <strong>Last Updated:</strong>
+                        </div>
+                        <div class="col-sm-6">
+                            {{ category.updated_at|date:"M d, Y H:i" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Keywords preview
+    const keywordsInput = document.getElementById('keywords');
+    const keywordPreview = document.getElementById('keywordPreview');
+    
+    function updateKeywordPreview() {
+        const keywords = keywordsInput.value.split(',').map(k => k.trim()).filter(k => k);
+        keywordPreview.innerHTML = '';
+        
+        if (keywords.length > 0) {
+            keywords.forEach(keyword => {
+                const tag = document.createElement('span');
+                tag.className = 'keyword-tag';
+                tag.textContent = keyword;
+                keywordPreview.appendChild(tag);
+            });
+        }
+    }
+    
+    keywordsInput.addEventListener('input', updateKeywordPreview);
+    updateKeywordPreview(); // Initial preview
+    
+    // Form validation
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const name = document.getElementById('name').value.trim();
+        const categoryType = document.getElementById('category_type').value;
+        
+        if (!name || !categoryType) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+        }
+    });
+});
+</script>
+{% endblock %}

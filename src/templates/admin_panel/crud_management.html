@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}CRUD Management - Admin Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .crud-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        overflow: hidden;
+    }
+    
+    .crud-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .crud-card.categories {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    .crud-card.schools {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+    
+    .crud-card.departments {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    }
+    
+    .crud-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .stats-badge {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .quick-action-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .quick-action-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-0">
+                        <i class="fas fa-cogs me-2"></i>CRUD Management
+                    </h2>
+                    <p class="text-muted mb-0">Manage Categories, Schools, and Departments</p>
+                </div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">CRUD Management</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card crud-card categories h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-tags crud-icon"></i>
+                    <h5 class="card-title mb-3">Categories</h5>
+                    <div class="row text-center mb-3">
+                        <div class="col-6">
+                            <div class="stats-badge badge rounded-pill p-2 w-100 mb-2">
+                                <small>Total</small><br>
+                                <strong>{{ stats.categories }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stats-badge badge rounded-pill p-2 w-100 mb-2">
+                                <small>Active</small><br>
+                                <strong>{{ stats.active_categories }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'admin_panel:category_management' %}" class="btn quick-action-btn btn-sm">
+                            <i class="fas fa-list me-1"></i>Manage Categories
+                        </a>
+                        <a href="{% url 'admin_panel:category_create' %}" class="btn quick-action-btn btn-sm">
+                            <i class="fas fa-plus me-1"></i>Add Category
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card crud-card schools h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-university crud-icon"></i>
+                    <h5 class="card-title mb-3">Schools</h5>
+                    <div class="text-center mb-3">
+                        <div class="stats-badge badge rounded-pill p-3 w-75">
+                            <small>Total Schools</small><br>
+                            <strong style="font-size: 1.5rem;">{{ stats.schools }}</strong>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'admin_panel:school_management' %}" class="btn quick-action-btn btn-sm">
+                            <i class="fas fa-list me-1"></i>Manage Schools
+                        </a>
+                        <a href="{% url 'admin_panel:school_create' %}" class="btn quick-action-btn btn-sm">
+                            <i class="fas fa-plus me-1"></i>Add School
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card crud-card departments h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-building crud-icon"></i>
+                    <h5 class="card-title mb-3">Departments</h5>
+                    <div class="text-center mb-3">
+                        <div class="stats-badge badge rounded-pill p-3 w-75">
+                            <small>Total Departments</small><br>
+                            <strong style="font-size: 1.5rem;">{{ stats.departments }}</strong>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'admin_panel:department_management' %}" class="btn quick-action-btn btn-sm">
+                            <i class="fas fa-list me-1"></i>Manage Departments
+                        </a>
+                        <a href="{% url 'admin_panel:department_create' %}" class="btn quick-action-btn btn-sm">
+                            <i class="fas fa-plus me-1"></i>Add Department
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card crud-card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-link crud-icon"></i>
+                    <h5 class="card-title mb-3">Assignments</h5>
+                    <div class="text-center mb-3">
+                        <div class="stats-badge badge rounded-pill p-3 w-75">
+                            <small>Auto-Assignments</small><br>
+                            <strong style="font-size: 1.5rem;">{{ stats.category_assignments }}</strong>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'admin_panel:auto_assign_management' %}" class="btn quick-action-btn btn-sm">
+                            <i class="fas fa-cog me-1"></i>Auto-Assign
+                        </a>
+                        <a href="{% url 'admin_panel:create_category_assignment' %}" class="btn quick-action-btn btn-sm">
+                            <i class="fas fa-plus me-1"></i>Add Assignment
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <h6><i class="fas fa-tags me-2"></i>Category Management</h6>
+                            <p class="text-muted small mb-2">Manage grievance categories and their settings</p>
+                            <div class="btn-group w-100" role="group">
+                                <a href="{% url 'admin_panel:category_management' %}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-list"></i> View All
+                                </a>
+                                <a href="{% url 'admin_panel:category_create' %}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-plus"></i> Create New
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <h6><i class="fas fa-university me-2"></i>School Management</h6>
+                            <p class="text-muted small mb-2">Add and manage educational institutions</p>
+                            <div class="btn-group w-100" role="group">
+                                <a href="{% url 'admin_panel:school_management' %}" class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-list"></i> View All
+                                </a>
+                                <a href="{% url 'admin_panel:school_create' %}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-plus"></i> Create New
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <h6><i class="fas fa-building me-2"></i>Department Management</h6>
+                            <p class="text-muted small mb-2">Organize departments within schools</p>
+                            <div class="btn-group w-100" role="group">
+                                <a href="{% url 'admin_panel:department_management' %}" class="btn btn-outline-warning btn-sm">
+                                    <i class="fas fa-list"></i> View All
+                                </a>
+                                <a href="{% url 'admin_panel:department_create' %}" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-plus"></i> Create New
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Information -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>System Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-database me-2"></i>Database Statistics</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>Categories: <strong>{{ stats.categories }}</strong> ({{ stats.active_categories }} active)</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Schools: <strong>{{ stats.schools }}</strong></li>
+                                <li><i class="fas fa-check text-success me-2"></i>Departments: <strong>{{ stats.departments }}</strong></li>
+                                <li><i class="fas fa-check text-success me-2"></i>Auto-Assignments: <strong>{{ stats.category_assignments }}</strong></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-tools me-2"></i>Management Features</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>Full CRUD operations for all entities</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Advanced search and filtering</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Bulk operations support</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Audit logging for all changes</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Add smooth hover animations
+    $('.crud-card').hover(
+        function() {
+            $(this).find('.crud-icon').addClass('fa-spin');
+        },
+        function() {
+            $(this).find('.crud-icon').removeClass('fa-spin');
+        }
+    );
+});
+</script>
+{% endblock %}
