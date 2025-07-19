@@ -1,6 +1,9 @@
 // Main JavaScript for Student Grievance Management System
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize responsive features
+    initializeResponsiveFeatures();
+    
     // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -305,10 +308,237 @@ function showAlert(type, message) {
     }, 5000);
 }
 
+// RESPONSIVE FEATURES INITIALIZATION
+function initializeResponsiveFeatures() {
+    // Handle mobile dropdown positioning
+    handleMobileDropdowns();
+    
+    // Initialize responsive tables
+    initializeResponsiveTables();
+    
+    // Handle mobile navigation
+    initializeMobileNavigation();
+    
+    // Handle touch events for mobile
+    initializeTouchEvents();
+    
+    // Handle window resize events
+    window.addEventListener('resize', handleWindowResize);
+    
+    // Initial responsive check
+    handleWindowResize();
+}
+
+// Handle mobile dropdown positioning
+function handleMobileDropdowns() {
+    const dropdowns = document.querySelectorAll('.dropdown-menu');
+    dropdowns.forEach(dropdown => {
+        dropdown.addEventListener('show.bs.dropdown', function() {
+            if (window.innerWidth <= 576) {
+                // Force dropdown to be full width on mobile
+                this.style.position = 'fixed';
+                this.style.left = '1rem';
+                this.style.right = '1rem';
+                this.style.width = 'auto';
+                this.style.transform = 'none';
+            }
+        });
+    });
+}
+
+// Initialize responsive tables
+function initializeResponsiveTables() {
+    const tables = document.querySelectorAll('.table-responsive table');
+    tables.forEach(table => {
+        // Add horizontal scroll indicators on mobile
+        if (window.innerWidth <= 768) {
+            const wrapper = table.closest('.table-responsive');
+            if (wrapper) {
+                wrapper.addEventListener('scroll', function() {
+                    const scrollLeft = this.scrollLeft;
+                    const scrollWidth = this.scrollWidth;
+                    const clientWidth = this.clientWidth;
+                    
+                    // Add visual indicators for scrollable content
+                    if (scrollLeft > 0) {
+                        this.classList.add('scroll-left');
+                    } else {
+                        this.classList.remove('scroll-left');
+                    }
+                    
+                    if (scrollLeft < scrollWidth - clientWidth - 1) {
+                        this.classList.add('scroll-right');
+                    } else {
+                        this.classList.remove('scroll-right');
+                    }
+                });
+            }
+        }
+    });
+}
+
+// Initialize mobile navigation
+function initializeMobileNavigation() {
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    
+    if (navbarToggler && navbarCollapse) {
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 992 && 
+                !navbarToggler.contains(e.target) && 
+                !navbarCollapse.contains(e.target) && 
+                navbarCollapse.classList.contains('show')) {
+                
+                const collapseInstance = bootstrap.Collapse.getInstance(navbarCollapse);
+                if (collapseInstance) {
+                    collapseInstance.hide();
+                }
+            }
+        });
+        
+        // Close mobile menu when clicking on a nav link
+        const navLinks = navbarCollapse.querySelectorAll('.nav-link:not(.dropdown-toggle)');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 992) {
+                    const collapseInstance = bootstrap.Collapse.getInstance(navbarCollapse);
+                    if (collapseInstance) {
+                        collapseInstance.hide();
+                    }
+                }
+            });
+        });
+    }
+}
+
+// Initialize touch events for mobile
+function initializeTouchEvents() {
+    // Add swipe gesture for mobile navigation
+    let touchStartX = 0;
+    let touchStartY = 0;
+    
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    });
+    
+    document.addEventListener('touchend', function(e) {
+        if (window.innerWidth <= 768) {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            
+            // Horizontal swipe detection
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+                if (deltaX > 0) {
+                    // Swipe right - could trigger back navigation or drawer open
+                    handleSwipeRight();
+                } else {
+                    // Swipe left - could trigger forward navigation or drawer close
+                    handleSwipeLeft();
+                }
+            }
+        }
+    });
+}
+
+// Handle window resize events
+function handleWindowResize() {
+    const width = window.innerWidth;
+    
+    // Adjust card layouts
+    adjustCardLayouts(width);
+    
+    // Adjust table displays
+    adjustTableDisplays(width);
+    
+    // Adjust modal sizes
+    adjustModalSizes(width);
+    
+    // Update navigation state
+    updateNavigationState(width);
+}
+
+// Adjust card layouts based on screen size
+function adjustCardLayouts(width) {
+    const dashboardCards = document.querySelectorAll('.dashboard-card');
+    dashboardCards.forEach(card => {
+        if (width <= 576) {
+            card.classList.add('mobile-card');
+        } else {
+            card.classList.remove('mobile-card');
+        }
+    });
+}
+
+// Adjust table displays
+function adjustTableDisplays(width) {
+    const responsiveTables = document.querySelectorAll('.table-responsive');
+    responsiveTables.forEach(table => {
+        if (width <= 768) {
+            table.style.fontSize = '0.875rem';
+        } else {
+            table.style.fontSize = '';
+        }
+    });
+}
+
+// Adjust modal sizes
+function adjustModalSizes(width) {
+    const modals = document.querySelectorAll('.modal-dialog');
+    modals.forEach(modal => {
+        if (width <= 576) {
+            modal.classList.add('modal-fullscreen-sm-down');
+        } else {
+            modal.classList.remove('modal-fullscreen-sm-down');
+        }
+    });
+}
+
+// Update navigation state
+function updateNavigationState(width) {
+    const navbar = document.querySelector('.navbar');
+    if (navbar) {
+        if (width <= 992) {
+            navbar.classList.add('mobile-nav');
+        } else {
+            navbar.classList.remove('mobile-nav');
+        }
+    }
+}
+
+// Handle swipe gestures
+function handleSwipeRight() {
+    // Could implement drawer opening or back navigation
+    console.log('Swipe right detected');
+}
+
+function handleSwipeLeft() {
+    // Could implement drawer closing or forward navigation
+    console.log('Swipe left detected');
+}
+
+// Touch-friendly button size adjustment
+function adjustTouchTargets() {
+    if ('ontouchstart' in window) {
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(btn => {
+            btn.style.minHeight = '44px';
+            btn.style.minWidth = '44px';
+        });
+    }
+}
+
+// Initialize touch targets on load
+document.addEventListener('DOMContentLoaded', adjustTouchTargets);
+
 // Export functions for global use
 window.GrievanceSystem = {
     showAlert,
     updateGrievanceStatus,
     handleFileUpload,
-    performSearch
+    initializeResponsiveFeatures,
+    handleWindowResize
 };

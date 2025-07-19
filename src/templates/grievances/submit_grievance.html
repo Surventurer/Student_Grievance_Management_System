@@ -10,6 +10,15 @@
     padding-left: 20px;
     margin-bottom: 25px;
 }
+
+@media (max-width: 575.98px) {
+    .form-section {
+        border-left-width: 2px;
+        padding-left: 15px;
+        margin-bottom: 20px;
+    }
+}
+
 .required-field {
     color: #dc3545;
 }
@@ -19,7 +28,16 @@
     border-radius: 5px;
     padding: 10px;
     margin-top: 10px;
+    font-size: 0.9rem;
 }
+
+@media (max-width: 575.98px) {
+    .category-info {
+        padding: 8px;
+        font-size: 0.85rem;
+    }
+}
+
 .char-counter {
     font-size: 0.875rem;
     color: #6c757d;
@@ -33,6 +51,14 @@
     padding: 15px;
     margin-top: 20px;
 }
+
+@media (max-width: 575.98px) {
+    .otp-section {
+        padding: 10px;
+        border-radius: 4px;
+    }
+}
+
 .readonly-field {
     background-color: #f8f9fa;
     border: 1px solid #e9ecef;
@@ -40,14 +66,46 @@
 .department-field {
     transition: all 0.3s ease;
 }
+
+/* Mobile form improvements */
+@media (max-width: 575.98px) {
+    .form-check {
+        margin-bottom: 1rem;
+    }
+    
+    .form-check-input {
+        transform: scale(1.2);
+    }
+    
+    .form-check-label {
+        margin-left: 0.5rem;
+        font-size: 1rem;
+    }
+    
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-group .btn {
+        border-radius: 4px !important;
+        margin-bottom: 0.5rem;
+    }
+}
 </style>
 
 <div class="row">
     <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1><i class="fas fa-file-alt"></i> Submit Grievance</h1>
-            <a href="{% url 'students:dashboard' %}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+            <h1 class="mb-0 mb-md-0">
+                <i class="fas fa-file-alt me-2 d-none d-sm-inline"></i> 
+                Submit Grievance
+            </h1>
+            <a href="{% url 'students:dashboard' %}" class="btn btn-secondary btn-sm mt-2 mt-md-0">
+                <i class="fas fa-arrow-left me-1"></i> 
+                <span class="d-none d-sm-inline">Back to Dashboard</span>
+                <span class="d-sm-none">Back</span>
             </a>
         </div>
     </div>
@@ -57,7 +115,10 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h5 class="card-title mb-0">Grievance Submission Form</h5>
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-edit me-2 d-none d-sm-inline"></i>
+                    Grievance Submission Form
+                </h5>
             </div>
             <div class="card-body">
                 <form method="post" id="grievanceForm" enctype="multipart/form-data">
@@ -67,19 +128,34 @@
                     <div class="form-section">
                         <div class="mb-3">
                             <label class="form-label fw-bold">
+                                <i class="fas fa-tags me-2 d-none d-sm-inline"></i>
                                 Category <span class="required-field">*</span>
                             </label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="category_type" id="academic" value="academic" checked>
-                                <label class="form-check-label" for="academic">
-                                    Academic
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="category_type" id="non_academic" value="non_academic">
-                                <label class="form-check-label" for="non_academic">
-                                    Non-Academic
-                                </label>
+                            <div class="row">
+                                <div class="col-sm-6 col-12">
+                                    <div class="form-check p-3 border rounded mb-2">
+                                        <input class="form-check-input" type="radio" name="category_type" id="academic" value="academic" checked>
+                                        <label class="form-check-label fw-bold" for="academic">
+                                            <i class="fas fa-graduation-cap me-2 text-primary"></i>
+                                            Academic
+                                        </label>
+                                        <div class="text-muted small mt-1">
+                                            Issues related to studies, exams, faculty
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-12">
+                                    <div class="form-check p-3 border rounded mb-2">
+                                        <input class="form-check-input" type="radio" name="category_type" id="non_academic" value="non_academic">
+                                        <label class="form-check-label fw-bold" for="non_academic">
+                                            <i class="fas fa-building me-2 text-success"></i>
+                                            Non-Academic
+                                        </label>
+                                        <div class="text-muted small mt-1">
+                                            Infrastructure, hostel, transport issues
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -88,16 +164,21 @@
                     <div class="form-section">
                         <div class="mb-3">
                             <label for="department" class="form-label fw-bold">
+                                <i class="fas fa-university me-2 d-none d-sm-inline"></i>
                                 Department <span class="required-field">*</span>
                             </label>
                             
                             <!-- Academic Department (Read-only) -->
                             <div id="academic_department" class="department-field">
-                                <div class="form-control-plaintext border rounded p-2 bg-light">
+                                <div class="form-control readonly-field">
+                                    <i class="fas fa-lock me-2 text-muted"></i>
                                     {% if student_profile and student_profile.department %}{{ student_profile.department }}{% else %}Department not set{% endif %}
                                 </div>
                                 <input type="hidden" name="academic_department" value="{% if student_profile %}{{ student_profile.department }}{% endif %}">
-                                <div class="form-text">For academic grievances, your registered department will be used automatically</div>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    For academic grievances, your registered department will be used automatically
+                                </div>
                             </div>
                             
                             <!-- Non-Academic Department (Selectable) -->

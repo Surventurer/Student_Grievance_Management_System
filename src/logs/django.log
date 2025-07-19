@@ -11853,3 +11853,81 @@ Not Found: /favicon.ico
 "GET /admin-panel/manage/ HTTP/1.1" 200 15310
 "GET / HTTP/1.1" 302 0
 "GET /auth/login/ HTTP/1.1" 200 4768
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 29549
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 29433
+"GET /admin-panel/manage/schools/create/ HTTP/1.1" 200 18418
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3576
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /static/css/style.css HTTP/1.1" 200 24187
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4209
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /static/css/style.css HTTP/1.1" 200 24187
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4209
+"GET /static/js/main.js HTTP/1.1" 200 17849
+"POST /auth/login/ HTTP/1.1" 200 7988
+"GET /static/css/style.css HTTP/1.1" 200 24187
+"GET /static/js/main.js HTTP/1.1" 200 17849
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4209
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 33100
+"GET /static/css/style.css HTTP/1.1" 200 24187
+"GET /static/js/main.js HTTP/1.1" 200 17849
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4209
+- Broken pipe from ('127.0.0.1', 58936)
+"GET /admin-panel/grievances/ HTTP/1.1" 200 182867
+"GET /static/css/style.css HTTP/1.1" 200 24187
+"GET /static/js/main.js HTTP/1.1" 200 17849
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4209
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 58
+"GET /admin-panel/manage/ HTTP/1.1" 200 18580
+"GET /static/css/style.css HTTP/1.1" 200 24187
+"GET /static/js/main.js HTTP/1.1" 200 17849
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4209
+"GET /admin-panel/reports/dashboard/ HTTP/1.1" 200 59220
+"GET /static/css/style.css HTTP/1.1" 200 24187
+"GET /static/js/main.js HTTP/1.1" 200 17849
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4209
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4209
+"GET /static/css/style.css HTTP/1.1" 200 24187
+"GET /static/js/main.js HTTP/1.1" 200 17849
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 18484
+"GET /static/css/style.css HTTP/1.1" 200 24187
+"GET /static/js/main.js HTTP/1.1" 200 17849
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4209
+"GET /students/grievances/ HTTP/1.1" 200 18907
+"GET /static/css/style.css HTTP/1.1" 200 24187
+"GET /static/js/main.js HTTP/1.1" 200 17849
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4209
+"GET /students/grievances/82754eab-14a9-4aad-86dd-96823945fa59/ HTTP/1.1" 200 25667
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4209
+"GET /static/css/style.css HTTP/1.1" 200 24187
+"GET /static/js/main.js HTTP/1.1" 200 17849
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET /static/css/style.css HTTP/1.1" 200 24187
+"GET /static/js/main.js HTTP/1.1" 200 17849
+Not Found: /.well-known/appspecific/com.chrome.devtools.json
+"GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 4209
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 18484
+"GET /students/profile/ HTTP/1.1" 200 20821
+"GET /students/profile/ HTTP/1.1" 200 20821
+"GET /students/profile/ HTTP/1.1" 200 20821
+"GET /students/profile/ HTTP/1.1" 200 20821
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224

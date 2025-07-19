@@ -1,5 +1,6 @@
 /* Custom styles for Student Grievance Management System */
 
+/* Base Styles */
 body {
     background-color: #f8f9fa;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -7,8 +8,14 @@ body {
 
 .navbar-brand {
     font-weight: bold;
-}
-
+    font-size: 1.1rem;
+}/* Alert Styles */
+.alert {
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}Card Styles */
 .card {
     border: none;
     border-radius: 10px;
@@ -22,6 +29,7 @@ body {
     font-weight: 600;
 }
 
+/* Button Styles */
 .btn {
     border-radius: 6px;
     padding: 8px 16px;
@@ -37,6 +45,7 @@ body {
     border-color: #0056b3;
 }
 
+/* Table Styles */
 .table th {
     font-weight: 600;
     border-top: none;
@@ -48,9 +57,61 @@ body {
     border-color: #454d55 !important;
 }
 
+/* Badge Styles */
 .badge {
     font-size: 0.875em;
     padding: 4px 8px;
+}
+
+/* RESPONSIVE NAVIGATION */
+.navbar {
+    padding: 0.75rem 0;
+}
+
+.navbar-nav .nav-link {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    margin: 0 0.125rem;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Mobile Navigation Improvements */
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        background-color: rgba(52, 58, 64, 0.95);
+        border-radius: 8px;
+        margin-top: 1rem;
+        padding: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .navbar-nav {
+        text-align: center;
+    }
+    
+    .navbar-nav .nav-link {
+        padding: 0.75rem 1rem;
+        margin: 0.25rem 0;
+        border-radius: 6px;
+        display: block;
+    }
+    
+    .navbar-text {
+        text-align: center;
+        padding: 0.75rem 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
 }
 
 /* Notification Dropdown Styles */
@@ -58,10 +119,34 @@ body {
     border: none;
     border-radius: 10px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    max-width: 350px;
+    min-width: 280px;
+}
+
+/* Mobile-first dropdown improvements */
+@media (max-width: 575.98px) {
+    .dropdown-menu {
+        position: fixed !important;
+        left: 1rem !important;
+        right: 1rem !important;
+        top: auto !important;
+        transform: none !important;
+        width: auto !important;
+        max-width: none !important;
+        min-width: auto !important;
+        margin: 0 !important;
+        z-index: 1050;
+    }
+    
+    .dropdown-menu.show {
+        display: block !important;
+    }
 }
 
 .dropdown-item {
     transition: background-color 0.2s ease;
+    word-wrap: break-word;
+    white-space: normal;
 }
 
 .dropdown-item:hover {
@@ -109,14 +194,101 @@ body {
     transform: translateX(-10px);
 }
 
+/* RESPONSIVE LAYOUT SYSTEM */
+
+/* Container improvements for mobile */
+@media (max-width: 575.98px) {
+    .container, .container-fluid {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    main.container {
+        margin-top: 1rem;
+    }
+    
+    main.container-fluid {
+        margin-top: 1rem;
+        padding: 0 1rem;
+    }
+}
+
+/* Grid System Enhancements */
+.row {
+    margin-left: -0.75rem;
+    margin-right: -0.75rem;
+}
+
+.row > * {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+}
+
+/* Mobile-first card adjustments */
+@media (max-width: 575.98px) {
+    .row {
+        margin-left: -0.5rem;
+        margin-right: -0.5rem;
+    }
+    
+    .row > * {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+        border-radius: 8px;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .card-header {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
+}
+
+/* Tablet adjustments */
+@media (min-width: 576px) and (max-width: 991.98px) {
+    .card {
+        margin-bottom: 1.5rem;
+    }
+    
+    .card-body {
+        padding: 1.25rem;
+    }
+}
+
+/* Alert Styles */
 .alert {
     border-radius: 6px;
     margin-bottom: 20px;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
+/* Mobile alert adjustments */
+@media (max-width: 575.98px) {
+    .alert {
+        margin-bottom: 1rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+    }
+    
+    .alert .btn-close {
+        padding: 0.5rem;
+    }
+}
+
+/* Form Styles */
 .form-control {
     border-radius: 6px;
     border: 1px solid #ced4da;
+    font-size: 1rem;
+    transition: all 0.3s ease;
 }
 
 .form-control:focus {
@@ -124,16 +296,57 @@ body {
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
+/* Mobile form improvements */
+@media (max-width: 575.98px) {
+    .form-control {
+        font-size: 16px; /* Prevents zoom on iOS */
+        border-radius: 4px;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border-radius: 4px;
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn-group .btn,
+    .btn-toolbar .btn {
+        width: auto;
+        margin-bottom: 0;
+    }
+}
+
+/* Tablet form adjustments */
+@media (min-width: 576px) and (max-width: 991.98px) {
+    .form-control {
+        font-size: 1rem;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+    }
+}
+
+/* Sidebar Styles */
 .sidebar {
     background-color: #343a40;
     min-height: calc(100vh - 56px);
     padding: 20px 0;
+    transition: all 0.3s ease;
 }
 
 .sidebar .nav-link {
     color: #fff;
     padding: 10px 20px;
     border-radius: 0;
+    transition: all 0.3s ease;
 }
 
 .sidebar .nav-link:hover {
@@ -144,20 +357,212 @@ body {
     background-color: #007bff;
 }
 
+/* Mobile sidebar - convert to horizontal on mobile */
+@media (max-width: 767.98px) {
+    .sidebar {
+        min-height: auto;
+        padding: 10px 0;
+        background-color: #495057;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    
+    .sidebar .nav {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding: 0 10px;
+    }
+    
+    .sidebar .nav-link {
+        white-space: nowrap;
+        padding: 8px 15px;
+        margin: 0 2px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+    }
+    
+    .sidebar .nav-item {
+        flex-shrink: 0;
+    }
+}
+
+/* Dashboard Card Styles */
 .dashboard-card {
     transition: transform 0.2s ease-in-out;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 .dashboard-card:hover {
     transform: translateY(-2px);
 }
 
+/* Mobile dashboard adjustments */
+@media (max-width: 575.98px) {
+    .dashboard-card {
+        margin-bottom: 1rem;
+    }
+    
+    .dashboard-card .card-body {
+        padding: 1rem;
+        text-align: center;
+    }
+    
+    .dashboard-card h5 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .dashboard-card h3, .dashboard-card h2 {
+        font-size: 1.75rem;
+        margin-bottom: 0;
+    }
+}
+
+/* Stats card improvements for mobile */
+.stats-card {
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+@media (max-width: 575.98px) {
+    .stats-card {
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .stats-number {
+        font-size: 2rem !important;
+        margin-bottom: 0.25rem;
+    }
+    
+    .stats-label {
+        font-size: 0.9rem;
+    }
+    
+    .stats-icon {
+        font-size: 1.5rem !important;
+    }
+}
+
+/* Status Badge Styles */
 .status-badge {
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
+/* Mobile badge adjustments */
+@media (max-width: 575.98px) {
+    .status-badge, .badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+/* TABLE RESPONSIVENESS */
+.table-responsive {
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Mobile table improvements */
+@media (max-width: 767.98px) {
+    .table-responsive {
+        font-size: 0.875rem;
+        border: 1px solid #dee2e6;
+    }
+    
+    .table th {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+    
+    .table td {
+        padding: 0.5rem 0.75rem;
+        vertical-align: middle;
+        word-break: break-word;
+    }
+    
+    /* Stack table content on very small screens */
+    @media (max-width: 575.98px) {
+        .table-stack {
+            display: none;
+        }
+        
+        .table-cards {
+            display: block !important;
+        }
+        
+        .table-card {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .table-card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+        
+        .table-card-row:last-child {
+            border-bottom: none;
+        }
+        
+        .table-card-label {
+            font-weight: 600;
+            color: #495057;
+            flex: 0 0 35%;
+            font-size: 0.85rem;
+        }
+        
+        .table-card-value {
+            flex: 1;
+            text-align: right;
+            font-size: 0.9rem;
+        }
+    }
+}
+
+/* Action buttons in tables */
+.action-btn {
+    padding: 0.25rem 0.5rem;
+    margin: 0 0.125rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+@media (max-width: 575.98px) {
+    .action-btn {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8rem;
+        margin: 0.125rem;
+        display: inline-block;
+        min-width: auto;
+    }
+    
+    .btn-group-vertical .action-btn {
+        display: block;
+        width: 100%;
+        margin: 0.25rem 0;
+    }
+}
+
+/* Timeline Styles */
 .timeline {
     position: relative;
     padding-left: 30px;
@@ -189,12 +594,36 @@ body {
     background-color: #007bff;
 }
 
+/* Mobile timeline adjustments */
+@media (max-width: 575.98px) {
+    .timeline {
+        padding-left: 20px;
+    }
+    
+    .timeline::before {
+        left: 10px;
+    }
+    
+    .timeline-item::before {
+        left: 6px;
+        width: 6px;
+        height: 6px;
+    }
+    
+    .timeline-item {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* FILE UPLOAD RESPONSIVENESS */
 .file-upload-area {
     border: 2px dashed #ced4da;
     border-radius: 8px;
     padding: 40px;
     text-align: center;
     transition: border-color 0.3s ease;
+    cursor: pointer;
 }
 
 .file-upload-area:hover {
@@ -206,6 +635,27 @@ body {
     background-color: #f8f9fa;
 }
 
+/* Mobile file upload adjustments */
+@media (max-width: 575.98px) {
+    .file-upload-area {
+        padding: 20px;
+        font-size: 0.9rem;
+        border-radius: 6px;
+    }
+    
+    .file-upload-area i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .file-upload-area .btn {
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        margin-top: 0.5rem;
+    }
+}
+
+/* GRIEVANCE STATUS STYLES */
 .grievance-status {
     display: inline-block;
     padding: 4px 12px;
@@ -213,6 +663,7 @@ body {
     font-size: 0.875em;
     font-weight: 500;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 
 .grievance-status.pending {
@@ -235,6 +686,16 @@ body {
     color: #721c24;
 }
 
+/* Mobile status adjustments */
+@media (max-width: 575.98px) {
+    .grievance-status {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 16px;
+    }
+}
+
+/* COMMENT THREAD RESPONSIVENESS */
 .comment-thread {
     max-height: 400px;
     overflow-y: auto;
@@ -250,6 +711,7 @@ body {
     padding: 12px;
     margin-bottom: 10px;
     border-left: 4px solid #007bff;
+    word-wrap: break-word;
 }
 
 .comment-item.admin {
@@ -262,6 +724,27 @@ body {
     margin-bottom: 5px;
 }
 
+/* Mobile comment adjustments */
+@media (max-width: 575.98px) {
+    .comment-thread {
+        max-height: 300px;
+        padding: 10px;
+        border-radius: 6px;
+    }
+    
+    .comment-item {
+        padding: 8px;
+        margin-bottom: 8px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+    }
+    
+    .comment-meta {
+        font-size: 0.8rem;
+    }
+}
+
+/* Priority Styles */
 .priority-high {
     color: #dc3545;
 }
@@ -274,17 +757,139 @@ body {
     color: #28a745;
 }
 
-@media (max-width: 768px) {
-    .sidebar {
-        min-height: auto;
+/* COMPREHENSIVE RESPONSIVE DESIGN */
+
+/* Mobile First - Extra Small devices (phones, 576px and down) */
+@media (max-width: 575.98px) {
+    /* Typography */
+    h1 { font-size: 1.75rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1.1rem; }
+    h5 { font-size: 1rem; }
+    
+    /* Spacing */
+    .mt-4, .my-4 { margin-top: 1.5rem !important; }
+    .mb-4, .my-4 { margin-bottom: 1.5rem !important; }
+    .pt-4, .py-4 { padding-top: 1.5rem !important; }
+    .pb-4, .py-4 { padding-bottom: 1.5rem !important; }
+    
+    /* Grid adjustments */
+    .col-md-3, .col-md-4, .col-md-6, .col-md-8, .col-md-9, .col-lg-3, .col-lg-4, .col-lg-6, .col-lg-8, .col-lg-9 {
+        margin-bottom: 1rem;
     }
     
-    .card {
-        margin-bottom: 15px;
+    /* Button improvements */
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-group .btn {
+        border-radius: 4px !important;
+        margin-bottom: 0.25rem;
+    }
+    
+    /* Modal improvements */
+    .modal-dialog {
+        margin: 1rem;
+        max-width: calc(100vw - 2rem);
+    }
+    
+    .modal-body {
+        padding: 1rem;
+    }
+    
+    .modal-header, .modal-footer {
+        padding: 0.75rem 1rem;
+    }
+    
+    /* List groups */
+    .list-group-item {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
     }
 }
 
-/* Loading spinner */
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    /* Card adjustments */
+    .card-columns {
+        column-count: 1;
+    }
+    
+    /* Button groups */
+    .btn-toolbar {
+        justify-content: center;
+    }
+    
+    /* Tables */
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    /* Sidebar adjustments for tablets */
+    .sidebar {
+        min-height: auto;
+        padding: 15px 0;
+    }
+    
+    .sidebar .nav-link {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+    
+    /* Card columns */
+    .card-columns {
+        column-count: 2;
+        column-gap: 1.25rem;
+    }
+    
+    /* Dashboard adjustments */
+    .dashboard-card h3 {
+        font-size: 2rem;
+    }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+    /* Optimize for desktop */
+    .card-columns {
+        column-count: 3;
+        column-gap: 1.5rem;
+    }
+    
+    /* Enhanced hover effects */
+    .card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Better dropdown positioning */
+    .dropdown-menu {
+        min-width: 250px;
+    }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1140px;
+    }
+    
+    /* Enhanced admin panel layout */
+    .admin-layout {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 2rem;
+    }
+}
+
+/* Loading Spinner - Responsive */
 .spinner {
     border: 4px solid #f3f3f3;
     border-top: 4px solid #007bff;
@@ -300,15 +905,121 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-/* Print styles */
+/* Mobile spinner */
+@media (max-width: 575.98px) {
+    .spinner {
+        width: 30px;
+        height: 30px;
+        border-width: 3px;
+        margin: 15px auto;
+    }
+}
+
+/* Print Styles */
 @media print {
-    .navbar, .sidebar, .btn {
+    .navbar, .sidebar, .btn, .dropdown, .modal {
         display: none !important;
     }
     
     .card {
         border: 1px solid #000 !important;
         box-shadow: none !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    body {
+        font-size: 12pt;
+        line-height: 1.4;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        page-break-after: avoid;
+    }
+    
+    .table {
+        border-collapse: collapse !important;
+    }
+    
+    .table th, .table td {
+        border: 1px solid #000 !important;
+    }
+}
+
+/* UTILITY CLASSES FOR RESPONSIVE DESIGN */
+
+/* Show/Hide utilities */
+.d-mobile-none { display: block; }
+.d-mobile-block { display: none; }
+
+@media (max-width: 575.98px) {
+    .d-mobile-none { display: none !important; }
+    .d-mobile-block { display: block !important; }
+    .d-mobile-flex { display: flex !important; }
+    .d-mobile-inline { display: inline !important; }
+    .d-mobile-inline-block { display: inline-block !important; }
+}
+
+/* Text utilities */
+@media (max-width: 575.98px) {
+    .text-mobile-center { text-align: center !important; }
+    .text-mobile-left { text-align: left !important; }
+    .text-mobile-right { text-align: right !important; }
+}
+
+/* Spacing utilities for mobile */
+@media (max-width: 575.98px) {
+    .m-mobile-0 { margin: 0 !important; }
+    .mt-mobile-0 { margin-top: 0 !important; }
+    .mb-mobile-0 { margin-bottom: 0 !important; }
+    .ml-mobile-0, .mx-mobile-0 { margin-left: 0 !important; }
+    .mr-mobile-0, .mx-mobile-0 { margin-right: 0 !important; }
+    
+    .p-mobile-1 { padding: 0.25rem !important; }
+    .p-mobile-2 { padding: 0.5rem !important; }
+    .p-mobile-3 { padding: 1rem !important; }
+}
+
+/* ACCESSIBILITY IMPROVEMENTS */
+
+/* Focus indicators */
+.btn:focus, .form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .card {
+        border: 2px solid #000;
+    }
+    
+    .btn {
+        border-width: 2px;
+    }
+    
+    .table th, .table td {
+        border-width: 2px;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .notification-badge {
+        animation: none;
+    }
+}
+
+/* Dark mode preferences */
+@media (prefers-color-scheme: dark) {
+    /* This can be extended for full dark mode support */
+    .card {
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
     }
 }
 
@@ -361,4 +1072,99 @@ input[type="checkbox"]:indeterminate {
 
 .table tbody tr:hover .grievance-checkbox {
     transform: scale(1.3);
+}
+
+/* Grievance List Mobile Card Styles */
+.grievance-mobile-card {
+    transition: all 0.3s ease;
+    border: 1px solid #dee2e6;
+}
+
+.grievance-mobile-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.grievance-mobile-card .card-header {
+    padding: 0.75rem;
+    background-color: #f8f9fa;
+}
+
+.grievance-mobile-card .card-body {
+    padding: 1rem;
+}
+
+.grievance-mobile-card .form-check-input {
+    transform: scale(1.2);
+}
+
+.grievance-mobile-card .badge {
+    font-size: 0.7rem;
+}
+
+/* Mobile pagination styles */
+@media (max-width: 767.98px) {
+    .pagination .page-link {
+        padding: 0.375rem 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .pagination .page-item .page-link {
+        border-radius: 4px;
+    }
+}
+
+/* Enhanced mobile card selection feedback */
+.grievance-mobile-card.selected {
+    border-color: #007bff !important;
+    background-color: rgba(13, 110, 253, 0.05) !important;
+}
+
+.grievance-mobile-card .form-check-input:checked + * {
+    color: #007bff;
+}
+
+/* Touch-friendly targets for mobile */
+@media (max-width: 575.98px) {
+    .grievance-mobile-card .btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .grievance-mobile-card .form-check-input {
+        min-height: 20px;
+        min-width: 20px;
+    }
+    
+    .bulk-actions .btn-group .btn {
+        flex: 1;
+        min-height: 44px;
+    }
+}
+
+/* Responsive modal enhancements */
+@media (max-width: 575.98px) {
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+    
+    .modal-content {
+        border-radius: 8px;
+    }
+    
+    .modal-header {
+        padding: 1rem;
+    }
+    
+    .modal-body {
+        padding: 1rem;
+    }
+    
+    .modal-footer {
+        padding: 1rem;
+    }
+    
+    .modal-footer .btn {
+        min-height: 44px;
+    }
 }

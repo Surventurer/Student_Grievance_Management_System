@@ -97,6 +97,142 @@
         padding: 1.5rem;
         margin-top: 1rem;
     }
+
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+        .detail-card {
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+        
+        .container-fluid {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        /* Header adjustments */
+        .page-header-mobile {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+        
+        .page-header-mobile .btn {
+            margin-top: 1rem;
+            width: 100%;
+        }
+        
+        /* Timeline mobile adjustments */
+        .timeline {
+            padding-left: 1.5rem;
+        }
+        
+        .timeline::before {
+            left: 0.25rem;
+        }
+        
+        .timeline-item::before {
+            left: -1.5rem;
+        }
+        
+        /* Action buttons mobile */
+        .action-buttons {
+            text-align: center;
+        }
+        
+        .action-buttons .btn {
+            width: 100%;
+            margin: 0.25rem 0;
+        }
+        
+        /* Status badge mobile */
+        .status-badge {
+            padding: 0.75rem 1.25rem;
+            font-size: 1rem;
+        }
+        
+        /* Attachment cards mobile */
+        .attachment-card-mobile {
+            margin-bottom: 1rem;
+        }
+        
+        .attachment-card-mobile .btn {
+            width: 100%;
+            margin: 0.25rem 0;
+        }
+        
+        /* Comment form mobile */
+        .comment-form-buttons {
+            flex-direction: column;
+        }
+        
+        .comment-form-buttons .btn {
+            width: 100%;
+            margin: 0.25rem 0;
+        }
+    }
+
+    /* Tablet adjustments */
+    @media (min-width: 768px) and (max-width: 991.98px) {
+        .detail-card {
+            padding: 1.75rem;
+        }
+        
+        .action-buttons .btn {
+            width: 100%;
+            margin: 0.25rem 0;
+        }
+    }
+
+    /* Touch targets for mobile */
+    @media (max-width: 575.98px) {
+        .btn {
+            min-height: 44px;
+            padding: 0.75rem 1rem;
+        }
+        
+        .form-control {
+            min-height: 44px;
+        }
+        
+        /* Larger touch targets for attachment actions */
+        .attachment-actions .btn {
+            min-height: 40px;
+            min-width: 80px;
+        }
+    }
+
+    /* Enhanced mobile layout */
+    @media (max-width: 575.98px) {
+        .info-row {
+            padding: 0.75rem 0;
+        }
+        
+        .label {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .value {
+            font-size: 0.95rem;
+        }
+        
+        .timeline-item {
+            padding: 0.75rem;
+            font-size: 0.9rem;
+        }
+        
+        .comment-box {
+            padding: 1rem;
+        }
+        
+        h5 {
+            font-size: 1.1rem;
+        }
+        
+        h6 {
+            font-size: 1rem;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -105,17 +241,19 @@
     <!-- Page Header -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
+            <div class="d-flex justify-content-between align-items-center page-header-mobile">
+                <div class="mb-2 mb-md-0">
                     <h1 class="h3 mb-0 text-gray-800">
                         <i class="fas fa-eye me-2"></i>Grievance Details
                     </h1>
                     <p class="text-muted mb-0">ID: {{ grievance.grievance_id }}</p>
                 </div>
-                <div>
+                <div class="header-actions">
                     <a href="{% url 'admin_panel:grievance_list' %}" 
                        class="btn btn-outline-primary">
-                        <i class="fas fa-arrow-left me-2"></i>Back to List
+                        <i class="fas fa-arrow-left me-2"></i>
+                        <span class="d-none d-sm-inline">Back to List</span>
+                        <span class="d-sm-none">Back</span>
                     </a>
                 </div>
             </div>
@@ -178,13 +316,14 @@
                     <i class="fas fa-paperclip me-2 text-secondary"></i>Supporting Documents
                 </h5>
                 
-                <div class="row">
+                <!-- Desktop Grid View -->
+                <div class="row d-none d-md-flex">
                     {% for attachment in grievance.attachments.all %}
                     <div class="col-md-6 col-lg-4 mb-3">
-                        <div class="card border">
+                        <div class="card border attachment-card">
                             <div class="card-body text-center">
                                 <i class="fas fa-file fa-2x text-muted mb-2"></i>
-                                <h6 class="card-title text-truncate">{{ attachment.file_name }}</h6>
+                                <h6 class="card-title text-truncate" title="{{ attachment.file_name }}">{{ attachment.file_name }}</h6>
                                 <p class="card-text">
                                     <small class="text-muted">
                                         <strong>Type:</strong> {{ attachment.file_type }}<br>
@@ -199,6 +338,45 @@
                                     <a href="{{ attachment.file.url }}" class="btn btn-sm btn-primary" download="{{ attachment.file_name }}">
                                         <i class="fas fa-download"></i> Download
                                     </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Mobile List View -->
+                <div class="d-md-none">
+                    {% for attachment in grievance.attachments.all %}
+                    <div class="card border mb-3 attachment-card-mobile">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start">
+                                <div class="me-3">
+                                    <i class="fas fa-file fa-2x text-muted"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="card-title mb-2">{{ attachment.file_name }}</h6>
+                                    <div class="row text-muted small">
+                                        <div class="col-6">
+                                            <strong>Type:</strong> {{ attachment.file_type }}
+                                        </div>
+                                        <div class="col-6">
+                                            <strong>Size:</strong> {{ attachment.file_size|filesizeformat }}
+                                        </div>
+                                        <div class="col-12 mt-1">
+                                            <strong>Uploaded:</strong> {{ attachment.uploaded_at|date:"M d, Y H:i" }}
+                                        </div>
+                                    </div>
+                                    <div class="attachment-actions mt-3">
+                                        <div class="d-grid gap-2 d-sm-flex">
+                                            <a href="{{ attachment.file.url }}" class="btn btn-outline-primary btn-sm flex-sm-fill" target="_blank">
+                                                <i class="fas fa-eye me-1"></i>View
+                                            </a>
+                                            <a href="{{ attachment.file.url }}" class="btn btn-primary btn-sm flex-sm-fill" download="{{ attachment.file_name }}">
+                                                <i class="fas fa-download me-1"></i>Download
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -266,12 +444,16 @@
                                   placeholder="Enter your response or comments..." required></textarea>
                         <div class="form-text">This response will be visible to the student</div>
                     </div>
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-comment me-2"></i>Add Public Response
+                    <div class="d-flex gap-2 comment-form-buttons">
+                        <button type="submit" class="btn btn-success flex-fill">
+                            <i class="fas fa-comment me-2"></i>
+                            <span class="d-none d-sm-inline">Add Public Response</span>
+                            <span class="d-sm-none">Public</span>
                         </button>
-                        <button type="button" class="btn btn-outline-warning" onclick="submitInternalNote()">
-                            <i class="fas fa-sticky-note me-2"></i>Add Internal Note
+                        <button type="button" class="btn btn-outline-warning flex-fill" onclick="submitInternalNote()">
+                            <i class="fas fa-sticky-note me-2"></i>
+                            <span class="d-none d-sm-inline">Add Internal Note</span>
+                            <span class="d-sm-none">Internal</span>
                         </button>
                     </div>
                 </form>
@@ -294,13 +476,19 @@
                 </div>
                 
                 {% if grievance.status == 'pending' %}
-                <div class="action-buttons text-center">
-                    <button class="btn btn-success" onclick="updateGrievanceStatus('{{ grievance.id }}', 'resolved')">
-                        <i class="fas fa-check me-2"></i>Mark as Resolved
-                    </button>
-                    <button class="btn btn-danger" onclick="updateGrievanceStatus('{{ grievance.id }}', 'rejected')">
-                        <i class="fas fa-times me-2"></i>Mark as Rejected
-                    </button>
+                <div class="action-buttons">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success" onclick="updateGrievanceStatus('{{ grievance.id }}', 'resolved')">
+                            <i class="fas fa-check me-2"></i>
+                            <span class="d-none d-sm-inline">Mark as Resolved</span>
+                            <span class="d-sm-none">Resolve</span>
+                        </button>
+                        <button class="btn btn-danger" onclick="updateGrievanceStatus('{{ grievance.id }}', 'rejected')">
+                            <i class="fas fa-times me-2"></i>
+                            <span class="d-none d-sm-inline">Mark as Rejected</span>
+                            <span class="d-sm-none">Reject</span>
+                        </button>
+                    </div>
                 </div>
                 {% endif %}
             </div>
@@ -338,9 +526,13 @@
                 </div>
                 
                 <div class="text-center mt-3">
-                    <a href="{% url 'admin_panel:student_detail' grievance.student.id %}" class="btn btn-outline-info btn-sm">
-                        <i class="fas fa-eye me-2"></i>View Student Profile
-                    </a>
+                    <div class="d-grid">
+                        <a href="{% url 'admin_panel:student_detail' grievance.student.id %}" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-eye me-2"></i>
+                            <span class="d-none d-sm-inline">View Student Profile</span>
+                            <span class="d-sm-none">View Profile</span>
+                        </a>
+                    </div>
                 </div>
                 {% else %}
                 <div class="text-center py-4">
