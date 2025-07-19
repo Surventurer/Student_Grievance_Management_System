@@ -13,6 +13,8 @@ urlpatterns = [
     path('grievances/<uuid:grievance_id>/', views.grievance_detail_view, name='grievance_detail'),
     path('grievances/<uuid:grievance_id>/update-status/', views.update_grievance_status, name='update_grievance_status'),
     path('grievances/<uuid:grievance_id>/add-response/', views.add_admin_response, name='add_admin_response'),
+    path('api/grievance-stats/', views.grievance_stats_api, name='grievance_stats_api'),
+    path('api/bulk-delete-grievances/', views.bulk_delete_grievances, name='bulk_delete_grievances'),
     
     # Student Management
     path('students/', views.student_list, name='student_list'),

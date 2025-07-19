@@ -38,9 +38,14 @@ body {
 }
 
 .table th {
-    background-color: #f8f9fa;
     font-weight: 600;
     border-top: none;
+}
+
+.table-dark th {
+    background-color: #212529 !important;
+    color: #ffffff !important;
+    border-color: #454d55 !important;
 }
 
 .badge {
@@ -305,4 +310,55 @@ body {
         border: 1px solid #000 !important;
         box-shadow: none !important;
     }
+}
+
+/* Bulk Actions Styles */
+.grievance-checkbox {
+    transform: scale(1.2);
+    margin: 0 auto;
+    display: block;
+}
+
+#bulkActionsCard {
+    border-left: 4px solid #dc3545;
+    background-color: #fff3f3;
+    transition: all 0.3s ease;
+}
+
+#bulkActionsCard .card-body {
+    padding: 0.75rem 1rem;
+}
+
+#selectedCount {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.table-dark th input[type="checkbox"] {
+    transform: scale(1.3);
+    accent-color: #ffffff;
+}
+
+/* Indeterminate checkbox styling */
+input[type="checkbox"]:indeterminate {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+/* Modal improvements */
+.modal-header.bg-danger {
+    border-bottom: 1px solid #dc3545;
+}
+
+.alert-warning {
+    border-left: 4px solid #ffc107;
+}
+
+/* Hover effects for table rows with checkboxes */
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.table tbody tr:hover .grievance-checkbox {
+    transform: scale(1.3);
 }

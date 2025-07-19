@@ -513,7 +513,7 @@ def grievance_list_advanced(request):
     # Filtering
     status_filter = request.GET.get('status')
     category_filter = request.GET.get('category')
-    search_query = request.GET.get('search')
+    search_query = request.GET.get('search', '').strip()
     date_from = request.GET.get('date_from')
     date_to = request.GET.get('date_to')
     
@@ -524,13 +524,22 @@ def grievance_list_advanced(request):
         grievances = grievances.filter(category_id=category_filter)
     
     if search_query:
-        grievances = grievances.filter(
-            Q(title__icontains=search_query) |
-            Q(description__icontains=search_query) |
-            Q(student__user__first_name__icontains=search_query) |
-            Q(student__user__last_name__icontains=search_query) |
-            Q(student__student_id__icontains=search_query)
-        )
+        # Enhanced search - search by ID, Title, or Category as shown in the image
+        # Include search by grievance_id property (GRV-XXXXXXXX format)
+        search_q = Q(title__icontains=search_query) | \
+                   Q(description__icontains=search_query) | \
+                   Q(category__name__icontains=search_query) | \
+                   Q(student__name__icontains=search_query) | \
+                   Q(student__student_id__icontains=search_query) | \
+                   Q(student__user__email__icontains=search_query)
+        
+        # If search query looks like a grievance ID (contains GRV or is alphanumeric)
+        if 'GRV' in search_query.upper() or search_query.replace('-', '').isalnum():
+            # Extract the UUID part from GRV-XXXXXXXX format
+            clean_query = search_query.upper().replace('GRV-', '').replace('GRV', '')
+            search_q |= Q(id__icontains=clean_query)
+        
+        grievances = grievances.filter(search_q)
     
     if date_from:
         grievances = grievances.filter(submitted_at__date__gte=date_from)
@@ -556,3 +565,85 @@ def grievance_list_advanced(request):
     }
     
     return render(request, 'admin_panel/grievance_list.html', context)
+
+
+@login_required
+def grievance_stats_api(request):
+    """API endpoint to get grievance statistics for the dashboard"""
+    if not request.user.is_admin:
+        return JsonResponse({'error': 'Access denied'}, status=403)
+    
+    try:
+        stats = {
+            'total': Grievance.objects.count(),
+            'pending': Grievance.objects.filter(status='pending').count(),
+            'resolved': Grievance.objects.filter(status='resolved').count(),
+            'rejected': Grievance.objects.filter(status='rejected').count(),
+        }
+        return JsonResponse(stats)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def bulk_delete_grievances(request):
+    """API endpoint to bulk delete grievances"""
+    if not request.user.is_admin:
+        return JsonResponse({'error': 'Access denied - Admin privileges required'}, status=403)
+    
+    try:
+        data = json.loads(request.body)
+        grievance_ids = data.get('grievance_ids', [])
+        
+        if not grievance_ids:
+            return JsonResponse({'error': 'No grievance IDs provided'}, status=400)
+        
+        # Validate that all IDs are valid UUIDs and grievances exist
+        grievances_to_delete = Grievance.objects.filter(id__in=grievance_ids)
+        
+        if not grievances_to_delete.exists():
+            return JsonResponse({'error': 'No valid grievances found'}, status=404)
+        
+        # Log the deletion for audit trail
+        deleted_grievance_info = []
+        for grievance in grievances_to_delete:
+            deleted_grievance_info.append({
+                'id': str(grievance.id),
+                'grievance_id': grievance.grievance_id,
+                'title': grievance.title,
+                'student_email': grievance.student.user.email if grievance.student else 'Unknown',
+                'status': grievance.status,
+                'submitted_at': grievance.submitted_at.isoformat()
+            })
+            
+            # Create audit log entry
+            try:
+                AuditLog.objects.create(
+                    user=request.user,
+                    action='DELETE_GRIEVANCE',
+                    resource_type='Grievance',
+                    resource_id=str(grievance.id),
+                    details=f'Bulk deleted grievance: {grievance.grievance_id} - {grievance.title}',
+                    ip_address=request.META.get('REMOTE_ADDR', ''),
+                    user_agent=request.META.get('HTTP_USER_AGENT', '')[:255]
+                )
+            except Exception as e:
+                print(f"Error creating audit log: {e}")
+        
+        # Perform the bulk deletion
+        deleted_count = grievances_to_delete.count()
+        grievances_to_delete.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'deleted_count': deleted_count,
+            'deleted_grievances': deleted_grievance_info,
+            'message': f'Successfully deleted {deleted_count} grievance(s)'
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+    except Exception as e:
+        print(f"Error in bulk_delete_grievances: {e}")
+        return JsonResponse({'error': 'An error occurred while deleting grievances'}, status=500)
