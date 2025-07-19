@@ -665,3 +665,127 @@ def verify_email_view(request):
             messages.error(request, 'An error occurred. Please try again.')
     
     return render(request, 'authentication/verify_email.html')
+
+
+def verify_student_email_view(request):
+    """View for students to verify their email using Student ID and OTP"""
+    if request.method == 'POST':
+        student_id = request.POST.get('student_id')
+        otp = request.POST.get('otp')
+        
+        if not student_id or not otp:
+            messages.error(request, 'Please provide both Student ID and OTP.')
+            return render(request, 'authentication/verify_student_email.html')
+        
+        try:
+            # Find student by student_id
+            from apps.students.models import StudentProfile
+            student_profile = StudentProfile.objects.select_related('user').get(student_id=student_id)
+            user = student_profile.user
+            
+            # Check if already verified
+            if user.is_email_verified:
+                messages.info(request, 'Your email is already verified! You can log in.')
+                return redirect('authentication:login_view')
+            
+            # Find valid OTP
+            verification = EmailVerification.objects.filter(
+                user=user,
+                otp=otp,
+                is_used=False
+            ).order_by('-created_at').first()
+            
+            if not verification:
+                messages.error(request, 'Invalid OTP or Student ID. Please check and try again.')
+                return render(request, 'authentication/verify_student_email.html')
+            
+            if verification.is_expired:
+                messages.error(request, 'OTP has expired. Please contact admin for a new verification code.')
+                return render(request, 'authentication/verify_student_email.html')
+            
+            # Mark OTP as used and verify email
+            verification.is_used = True
+            verification.save()
+            
+            user.is_email_verified = True
+            user.save()
+            
+            messages.success(request, f'Email verified successfully! Welcome {student_profile.name}! You can now log in.')
+            return redirect('authentication:login_view')
+            
+        except StudentProfile.DoesNotExist:
+            messages.error(request, 'Student ID not found. Please check your Student ID and try again.')
+        except Exception as e:
+            messages.error(request, 'An error occurred. Please try again.')
+    
+    return render(request, 'authentication/verify_student_email.html')
+
+
+def resend_verification_otp_view(request):
+    """Resend verification OTP for a student"""
+    if request.method == 'POST':
+        student_id = request.POST.get('student_id')
+        
+        if not student_id:
+            messages.error(request, 'Please provide Student ID.')
+            return render(request, 'authentication/verify_student_email.html')
+        
+        try:
+            from apps.students.models import StudentProfile
+            from datetime import timedelta
+            from django.utils import timezone
+            from django.core.mail import send_mail
+            from django.conf import settings
+            
+            student_profile = StudentProfile.objects.select_related('user').get(student_id=student_id)
+            user = student_profile.user
+            
+            if user.is_email_verified:
+                messages.info(request, 'Your email is already verified!')
+                return redirect('authentication:login_view')
+            
+            # Generate new OTP
+            otp = generate_otp()
+            expires_at = timezone.now() + timedelta(minutes=30)
+            
+            # Mark old OTPs as used
+            EmailVerification.objects.filter(user=user, is_used=False).update(is_used=True)
+            
+            # Create new verification
+            EmailVerification.objects.create(
+                user=user,
+                otp=otp,
+                expires_at=expires_at
+            )
+            
+            # Send email
+            try:
+                send_mail(
+                    subject='New Email Verification OTP - Student Grievance System',
+                    message=f'''
+Dear {student_profile.name},
+
+Here is your new email verification OTP:
+
+Student ID: {student_id}
+New OTP: {otp}
+
+This OTP will expire in 30 minutes.
+
+Best regards,
+Student Grievance Management System
+                    ''',
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    fail_silently=True
+                )
+                messages.success(request, f'New verification OTP sent to {user.email}')
+            except Exception as e:
+                messages.error(request, 'Error sending email. Please try again later.')
+                
+        except StudentProfile.DoesNotExist:
+            messages.error(request, 'Student ID not found.')
+        except Exception as e:
+            messages.error(request, 'An error occurred. Please try again.')
+    
+    return render(request, 'authentication/verify_student_email.html')

@@ -8303,3 +8303,58 @@ Watching for file changes with StatReloader
 "GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
 C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
 Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/students/ HTTP/1.1" 200 82446
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"POST /admin-panel/api/student-actions/ HTTP/1.1" 200 228
+"GET /admin-panel/students/ HTTP/1.1" 200 77719
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/api/departments/?school=12 HTTP/1.1" 200 254
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\authentication\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Bad Request: /admin-panel/api/add-student/
+"POST /admin-panel/api/add-student/ HTTP/1.1" 400 48
+"POST /admin-panel/api/add-student/ HTTP/1.1" 200 164
+"GET /admin-panel/students/ HTTP/1.1" 200 82446
+"GET /static/css/style.css HTTP/1.1" 304 0
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /auth/verify-student-email/?id=84a54dd3-2208-427a-b9c2-a7743cfaa094&vscodeBrowserReqId=1752948757443 HTTP/1.1" 200 7158
+"GET /auth/login/?id=84a54dd3-2208-427a-b9c2-a7743cfaa094&vscodeBrowserReqId=1752948762339 HTTP/1.1" 200 3077
+"GET /admin/students/?id=84a54dd3-2208-427a-b9c2-a7743cfaa094&vscodeBrowserReqId=1752948767241 HTTP/1.1" 302 0
+"GET /admin/login/?next=/admin/students/%3Fid%3D84a54dd3-2208-427a-b9c2-a7743cfaa094%26vscodeBrowserReqId%3D1752948767241 HTTP/1.1" 200 4346
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3576
+"GET /auth/verify-student-email/ HTTP/1.1" 200 7158
+"POST /auth/verify-student-email/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3599
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 10735
+"GET /grievances/submit/ HTTP/1.1" 200 33088
+"GET /grievances/api/categories/?type=academic HTTP/1.1" 200 4130
+"GET /students/api/departments/ HTTP/1.1" 200 5107
+"POST /grievances/send-otp/ HTTP/1.1" 200 17
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"POST /grievances/verify-otp/ HTTP/1.1" 200 17
+"POST /grievances/submit/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 12516
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3576
+"POST /auth/login/ HTTP/1.1" 200 7340
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 20136
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 19855
+"GET /admin-panel/grievances/82754eab-14a9-4aad-86dd-96823945fa59/ HTTP/1.1" 200 16844
+"GET /media/grievance_attachments/Screenshot_2025-07-16_194128.png HTTP/1.1" 200 3333
+"GET /media/grievance_attachments/Screenshot_2025-07-16_194128.png HTTP/1.1" 200 3333
+"GET /admin-panel/grievances/ HTTP/1.1" 200 41850
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/grievances/82754eab-14a9-4aad-86dd-96823945fa59/ HTTP/1.1" 200 16844
+"GET /admin-panel/students/ HTTP/1.1" 200 82441
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader

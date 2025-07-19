@@ -956,6 +956,61 @@ def add_student_api(request):
             department=department_name
         )
         
+        # Send email verification OTP
+        try:
+            from apps.authentication.models import EmailVerification
+            from datetime import timedelta
+            from django.utils import timezone
+            import random
+            import string
+            from django.core.mail import send_mail
+            from django.conf import settings
+            
+            # Generate OTP
+            otp = ''.join(random.choices(string.digits, k=6))
+            expires_at = timezone.now() + timedelta(minutes=30)  # 30 minutes expiry
+            
+            # Create EmailVerification record
+            EmailVerification.objects.create(
+                user=user,
+                otp=otp,
+                expires_at=expires_at
+            )
+            
+            # Send email (if configured)
+            try:
+                send_mail(
+                    subject='Email Verification - Student Grievance System',
+                    message=f'''
+Dear {name},
+
+Your student account has been created successfully!
+
+Student ID: {student_id}
+Email: {email}
+Verification OTP: {otp}
+
+To verify your email and activate your account:
+1. Go to the login page
+2. Click "Verify Email"
+3. Enter your Student ID: {student_id}
+4. Enter this OTP: {otp}
+
+This OTP will expire in 30 minutes.
+
+Best regards,
+Student Grievance Management System
+                    ''',
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[email],
+                    fail_silently=True
+                )
+            except Exception as e:
+                print(f"Error sending verification email: {e}")
+                
+        except Exception as e:
+            print(f"Error creating verification OTP: {e}")
+        
         # Log the action
         try:
             AuditLog.objects.create(

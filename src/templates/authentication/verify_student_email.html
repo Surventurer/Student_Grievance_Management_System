@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Verify Student Email - Student Grievance Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .verification-form {
+        max-width: 400px;
+        margin: 2rem auto;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        background: white;
+    }
+    
+    .verification-icon {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .verification-icon i {
+        font-size: 3rem;
+        color: #28a745;
+    }
+    
+    .form-control:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+    
+    .btn-verify {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        border: none;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .btn-verify:hover {
+        background: linear-gradient(135deg, #218838, #1e7e34);
+        transform: translateY(-2px);
+    }
+    
+    .verification-info {
+        background: #f8f9fa;
+        border-left: 4px solid #17a2b8;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        border-radius: 0 5px 5px 0;
+    }
+    
+    .resend-section {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e9ecef;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="verification-form">
+                <div class="verification-icon">
+                    <i class="fas fa-envelope-open-text"></i>
+                </div>
+                
+                <h3 class="text-center mb-4">Verify Your Email</h3>
+                
+                <div class="verification-info">
+                    <h6><i class="fas fa-info-circle text-info me-2"></i>Email Verification Required</h6>
+                    <p class="mb-0 small">Please enter your Student ID and the OTP sent to your email address to verify your account.</p>
+                </div>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            <i class="fas fa-{% if message.tags == 'error' %}exclamation-triangle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <form method="post" action="{% url 'authentication:verify_student_email' %}" id="verificationForm">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="student_id" class="form-label">
+                            <i class="fas fa-user me-2"></i>Student ID
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="student_id" 
+                               name="student_id" 
+                               placeholder="Enter your Student ID"
+                               required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="otp" class="form-label">
+                            <i class="fas fa-key me-2"></i>Verification OTP
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="otp" 
+                               name="otp" 
+                               placeholder="Enter 6-digit OTP"
+                               maxlength="6"
+                               pattern="[0-9]{6}"
+                               required>
+                        <div class="form-text">Check your email for the 6-digit verification code.</div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-verify btn-primary w-100">
+                        <i class="fas fa-check-circle me-2"></i>Verify Email
+                    </button>
+                </form>
+                
+                <div class="resend-section">
+                    <p class="text-muted small">Didn't receive the OTP?</p>
+                    <form method="post" action="{% url 'authentication:resend_verification_otp' %}" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="student_id" id="resend_student_id">
+                        <button type="submit" class="btn btn-outline-secondary btn-sm" id="resendBtn">
+                            <i class="fas fa-redo me-1"></i>Resend OTP
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <a href="{% url 'authentication:login_view' %}" class="btn btn-link text-decoration-none">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const studentIdInput = document.getElementById('student_id');
+    const resendStudentIdInput = document.getElementById('resend_student_id');
+    const resendBtn = document.getElementById('resendBtn');
+    const otpInput = document.getElementById('otp');
+    
+    // Auto-update hidden student ID for resend form
+    studentIdInput.addEventListener('input', function() {
+        resendStudentIdInput.value = this.value;
+        resendBtn.disabled = !this.value.trim();
+    });
+    
+    // Format OTP input (numbers only)
+    otpInput.addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '').slice(0, 6);
+    });
+    
+    // Auto-submit when OTP is 6 digits
+    otpInput.addEventListener('input', function() {
+        if (this.value.length === 6 && studentIdInput.value.trim()) {
+            // Optional: Auto-submit when OTP is complete
+            // document.getElementById('verificationForm').submit();
+        }
+    });
+    
+    // Initialize resend button state
+    resendBtn.disabled = !studentIdInput.value.trim();
+});
+</script>
+{% endblock %}
