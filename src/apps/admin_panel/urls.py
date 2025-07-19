@@ -20,6 +20,10 @@ urlpatterns = [
     path('students/', views.student_list, name='student_list'),
     path('students/api/', views.manage_students, name='manage_students'),
     path('students/<int:student_id>/', views.student_detail_view, name='student_detail'),
+    path('api/student-stats/', views.student_stats_api, name='student_stats_api'),
+    path('api/student-actions/', views.student_actions_api, name='student_actions_api'),
+    path('api/departments/', views.departments_api, name='departments_api'),
+    path('api/add-student/', views.add_student_api, name='add_student_api'),
     
     # Category Management
     path('categories/', views.manage_categories_view, name='manage_categories'),

@@ -7870,3 +7870,436 @@ Watching for file changes with StatReloader
 "GET /auth/logout/ HTTP/1.1" 302 0
 "GET /auth/login/ HTTP/1.1" 200 3568
 "GET /static/css/style.css HTTP/1.1" 304 0
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3069
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4098
+"POST /auth/login/ HTTP/1.1" 200 7340
+"GET /static/css/style.css HTTP/1.1" 304 0
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 20091
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 19810
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/students/ HTTP/1.1" 200 79225
+Not Found: /admin-panel/api/student-stats/
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 404 8945
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/students/?search=a HTTP/1.1" 200 74850
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 66
+"GET /admin-panel/students/?search=a HTTP/1.1" 200 74850
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 66
+"GET /admin-panel/students/?search=a%40example.com HTTP/1.1" 200 30446
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 66
+"GET /admin-panel/students/?search=a%40example.com HTTP/1.1" 200 30446
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 66
+"GET /admin-panel/students/?search= HTTP/1.1" 200 79225
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 66
+"GET /admin-panel/students/?search=a%40gmail.com HTTP/1.1" 200 38665
+"GET /static/css/style.css HTTP/1.1" 304 0
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 66
+"GET /admin-panel/students/?search=a%40gmail.com HTTP/1.1" 200 38665
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 66
+"GET /admin-panel/students/?search=aaa%40gmail.com HTTP/1.1" 200 34216
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 66
+"GET /admin-panel/students/?search= HTTP/1.1" 200 79225
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 66
+"GET /admin-panel/students/?search= HTTP/1.1" 200 79225
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 66
+"GET /admin-panel/students/12/ HTTP/1.1" 200 14688
+"GET /admin-panel/students/ HTTP/1.1" 200 79225
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 66
+"GET /admin-panel/students/12/ HTTP/1.1" 200 21221
+"GET /admin-panel/grievances/4cf6d2d0-1cee-4ce4-bc52-3ebcb718f668/ HTTP/1.1" 200 19327
+"GET /admin-panel/grievances/ HTTP/1.1" 200 38300
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/students/ HTTP/1.1" 200 79225
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 66
+"GET /admin-panel/students/12/ HTTP/1.1" 200 21221
+"GET /admin-panel/students/ HTTP/1.1" 200 79225
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 66
+"POST /admin-panel/api/student-actions/ HTTP/1.1" 200 219
+"GET /admin-panel/students/ HTTP/1.1" 200 74772
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 66
+"GET /admin-panel/students/12/ HTTP/1.1" 200 21221
+Not Found: /admin-panel/student-actions/
+"POST /admin-panel/student-actions/ HTTP/1.1" 404 9522
+Not Found: /admin-panel/student-actions/
+"POST /admin-panel/student-actions/ HTTP/1.1" 404 9522
+"GET /admin-panel/students/ HTTP/1.1" 200 74772
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 66
+"POST /admin-panel/api/student-actions/ HTTP/1.1" 200 250
+"GET /admin-panel/students/ HTTP/1.1" 200 70255
+"GET /static/css/style.css HTTP/1.1" 304 0
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/students/12/ HTTP/1.1" 200 21221
+"GET /admin-panel/students/ HTTP/1.1" 200 70255
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/students/12/ HTTP/1.1" 200 21221
+"GET /admin-panel/grievances/4cf6d2d0-1cee-4ce4-bc52-3ebcb718f668/ HTTP/1.1" 200 19327
+"GET /admin-panel/grievances/ HTTP/1.1" 200 38300
+"GET /static/css/style.css HTTP/1.1" 304 0
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/students/ HTTP/1.1" 200 73764
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/students/ HTTP/1.1" 200 73764
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/students/ HTTP/1.1" 200 82071
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/students/?id=44e91129-f9b4-4097-994c-0116b1843d87&vscodeBrowserReqId=1752947347458 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/students/%3Fid%3D44e91129-f9b4-4097-994c-0116b1843d87%26vscodeBrowserReqId%3D1752947347458 HTTP/1.1" 200 3069
+"GET /admin-panel/students/?id=44e91129-f9b4-4097-994c-0116b1843d87&vscodeBrowserReqId=1752947402597 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/students/%3Fid%3D44e91129-f9b4-4097-994c-0116b1843d87%26vscodeBrowserReqId%3D1752947402597 HTTP/1.1" 200 3069
+"GET /admin-panel/students/?id=44e91129-f9b4-4097-994c-0116b1843d87&vscodeBrowserReqId=1752947403096 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/students/%3Fid%3D44e91129-f9b4-4097-994c-0116b1843d87%26vscodeBrowserReqId%3D1752947403096 HTTP/1.1" 200 3069
+"GET /admin-panel/students/?id=44e91129-f9b4-4097-994c-0116b1843d87&vscodeBrowserReqId=1752947403312 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/students/%3Fid%3D44e91129-f9b4-4097-994c-0116b1843d87%26vscodeBrowserReqId%3D1752947403312 HTTP/1.1" 200 3069
+Internal Server Error: /admin-panel/students/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 162, in student_list
+    from students.models import School
+ModuleNotFoundError: No module named 'students'
+"GET /admin-panel/students/ HTTP/1.1" 500 80671
+Internal Server Error: /admin-panel/students/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 162, in student_list
+    from students.models import School
+ModuleNotFoundError: No module named 'students'
+"GET /admin-panel/students/ HTTP/1.1" 500 80671
+Internal Server Error: /admin-panel/students/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 162, in student_list
+    from students.models import School
+ModuleNotFoundError: No module named 'students'
+"GET /admin-panel/students/ HTTP/1.1" 500 81239
+Internal Server Error: /admin-panel/students/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 162, in student_list
+    from students.models import School
+ModuleNotFoundError: No module named 'students'
+"GET /admin-panel/students/ HTTP/1.1" 500 81239
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Internal Server Error: /admin-panel/students/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 162, in student_list
+    from students.models import School
+ModuleNotFoundError: No module named 'students'
+"GET /admin-panel/students/ HTTP/1.1" 500 81239
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Internal Server Error: /admin-panel/students/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 162, in student_list
+    from students.models import School
+ModuleNotFoundError: No module named 'students'
+"GET /admin-panel/students/ HTTP/1.1" 500 81239
+Internal Server Error: /admin-panel/students/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 162, in student_list
+    from students.models import School
+ModuleNotFoundError: No module named 'students'
+"GET /admin-panel/students/ HTTP/1.1" 500 81239
+Internal Server Error: /admin-panel/students/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 162, in student_list
+    from students.models import School
+ModuleNotFoundError: No module named 'students'
+"GET /admin-panel/students/ HTTP/1.1" 500 81239
+Internal Server Error: /admin-panel/students/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 162, in student_list
+    from students.models import School
+ModuleNotFoundError: No module named 'students'
+"GET /admin-panel/students/ HTTP/1.1" 500 81239
+Internal Server Error: /admin-panel/students/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 162, in student_list
+    from students.models import School
+ModuleNotFoundError: No module named 'students'
+"GET /admin-panel/students/ HTTP/1.1" 500 81239
+Internal Server Error: /admin-panel/students/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 162, in student_list
+    from students.models import School
+ModuleNotFoundError: No module named 'students'
+"GET /admin-panel/students/ HTTP/1.1" 500 81239
+Internal Server Error: /admin-panel/students/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 162, in student_list
+    from students.models import School
+ModuleNotFoundError: No module named 'students'
+"GET /admin-panel/students/ HTTP/1.1" 500 81239
+Internal Server Error: /admin-panel/students/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 162, in student_list
+    from students.models import School
+ModuleNotFoundError: No module named 'students'
+"GET /admin-panel/students/ HTTP/1.1" 500 81239
+Internal Server Error: /admin-panel/students/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 162, in student_list
+    from students.models import School
+ModuleNotFoundError: No module named 'students'
+"GET /admin-panel/students/ HTTP/1.1" 500 81239
+Internal Server Error: /admin-panel/students/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 162, in student_list
+    from students.models import School
+ModuleNotFoundError: No module named 'students'
+"GET /admin-panel/students/ HTTP/1.1" 500 81239
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/students/ HTTP/1.1" 200 82703
+"GET /static/css/style.css HTTP/1.1" 304 0
+Internal Server Error: /admin-panel/api/student-stats/
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 500 413
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/students/?id=2626998f-0a07-476d-8171-b3bb2845d400&vscodeBrowserReqId=1752947595940 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/students/%3Fid%3D2626998f-0a07-476d-8171-b3bb2845d400%26vscodeBrowserReqId%3D1752947595940 HTTP/1.1" 200 3069
+"POST /admin-panel/api/student-actions/ HTTP/1.1" 200 249
+"GET /admin-panel/students/ HTTP/1.1" 200 76859
+Internal Server Error: /admin-panel/api/student-stats/
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 500 413
+"GET /admin-panel/students/ HTTP/1.1" 200 76859
+Internal Server Error: /admin-panel/api/student-stats/
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 500 413
+"GET /admin-panel/api/departments/?school=12 HTTP/1.1" 200 254
+Internal Server Error: /admin-panel/api/add-student/
+"POST /admin-panel/api/add-student/ HTTP/1.1" 500 39
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/students/?id=2626998f-0a07-476d-8171-b3bb2845d400&vscodeBrowserReqId=1752947811994 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/students/%3Fid%3D2626998f-0a07-476d-8171-b3bb2845d400%26vscodeBrowserReqId%3D1752947811994 HTTP/1.1" 200 3069
+"GET /admin-panel/students/ HTTP/1.1" 200 76859
+Internal Server Error: /admin-panel/api/student-stats/
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 500 413
+"GET /admin-panel/api/departments/?school=12 HTTP/1.1" 200 254
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Internal Server Error: /admin-panel/api/add-student/
+"POST /admin-panel/api/add-student/ HTTP/1.1" 500 65
+"GET /admin-panel/students/?id=2626998f-0a07-476d-8171-b3bb2845d400&vscodeBrowserReqId=1752947889536 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/students/%3Fid%3D2626998f-0a07-476d-8171-b3bb2845d400%26vscodeBrowserReqId%3D1752947889536 HTTP/1.1" 200 3069
+"GET /admin-panel/students/ HTTP/1.1" 200 76466
+"GET /static/css/style.css HTTP/1.1" 304 0
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/students/ HTTP/1.1" 200 76466
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/students/ HTTP/1.1" 200 76466
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/students/?id=2626998f-0a07-476d-8171-b3bb2845d400&vscodeBrowserReqId=1752948085346 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/students/%3Fid%3D2626998f-0a07-476d-8171-b3bb2845d400%26vscodeBrowserReqId%3D1752948085346 HTTP/1.1" 200 3069
+"GET /admin-panel/students/ HTTP/1.1" 200 76254
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/students/ HTTP/1.1" 200 76254
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/students/ HTTP/1.1" 200 76254
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/students/ HTTP/1.1" 200 76254
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/api/departments/?school=12 HTTP/1.1" 200 254
+"POST /admin-panel/api/add-student/ HTTP/1.1" 200 164
+"GET /admin-panel/students/ HTTP/1.1" 200 80981
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/students/?status=active HTTP/1.1" 200 81125
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/students/?status=suspended HTTP/1.1" 200 39147
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/students/?status=active HTTP/1.1" 200 81125
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"POST /admin-panel/api/student-actions/ HTTP/1.1" 200 288
+"GET /admin-panel/students/?status=active HTTP/1.1" 200 76368
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/students/?status=suspended HTTP/1.1" 200 43212
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/students/?status= HTTP/1.1" 200 80986
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/students/?search=Sara HTTP/1.1" 200 43595
+"GET /static/css/style.css HTTP/1.1" 304 0
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/students/?search= HTTP/1.1" 200 82425
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/students/?search= HTTP/1.1" 200 82425
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3568
+"GET /admin-panel/students/?id=2626998f-0a07-476d-8171-b3bb2845d400&vscodeBrowserReqId=1752948279282 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/students/%3Fid%3D2626998f-0a07-476d-8171-b3bb2845d400%26vscodeBrowserReqId%3D1752948279282 HTTP/1.1" 200 3069
+"POST /auth/login/ HTTP/1.1" 200 3566
+"GET /auth/verify-email/ HTTP/1.1" 200 2968
+"GET /auth/login/ HTTP/1.1" 200 3069
+"POST /auth/login/ HTTP/1.1" 200 7340
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 20091
+"GET /admin-panel/students/ HTTP/1.1" 200 82446
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+C:\Users\Abhinav\Desktop\Grievance portal\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader

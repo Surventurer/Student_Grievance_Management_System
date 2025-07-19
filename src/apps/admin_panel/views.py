@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Avg
 from django.utils import timezone
 from django.core.paginator import Paginator
 from django.views.decorators.http import require_http_methods
@@ -115,17 +115,59 @@ def grievance_list(request):
 
 @login_required
 def student_list(request):
-    """Student list view"""
+    """Enhanced Student list view with search, filtering, and pagination"""
     if not request.user.is_admin:
         messages.error(request, 'Access denied')
         return redirect('authentication:login')
     
+    # Get filter parameters
+    search_query = request.GET.get('search', '')
+    status_filter = request.GET.get('status', '')
+    department_filter = request.GET.get('department', '')
+    
+    # Base queryset with related data
     students = StudentProfile.objects.select_related('user').annotate(
         grievance_count=Count('grievances')
-    ).order_by('student_id')
+    )
+    
+    # Apply search filter
+    if search_query:
+        students = students.filter(
+            Q(student_id__icontains=search_query) |
+            Q(name__icontains=search_query) |
+            Q(user__email__icontains=search_query) |
+            Q(department__icontains=search_query) |
+            Q(school__icontains=search_query)
+        )
+    
+    # Apply status filter
+    if status_filter == 'active':
+        students = students.filter(user__is_active=True)
+    elif status_filter == 'suspended':
+        students = students.filter(user__is_active=False)
+    
+    # Apply department filter
+    if department_filter:
+        students = students.filter(department__icontains=department_filter)
+    
+    # Order by student ID
+    students = students.order_by('student_id')
+    
+    # Pagination
+    paginator = Paginator(students, 20)  # 20 students per page
+    page_number = request.GET.get('page')
+    students_page = paginator.get_page(page_number)
+    
+    # Get schools for the add student form
+    from apps.students.models import School
+    schools = School.objects.all().order_by('name')
     
     context = {
-        'students': students,
+        'students': students_page,
+        'schools': schools,
+        'search_query': search_query,
+        'status_filter': status_filter,
+        'department_filter': department_filter,
     }
     
     return render(request, 'admin_panel/student_list.html', context)
@@ -349,8 +391,12 @@ def update_grievance_status(request, grievance_id):
             # Create audit log
             AuditLog.objects.create(
                 user=request.user,
-                action=f'Update Grievance Status',
-                description=f'Changed grievance {grievance.grievance_id} status to {new_status}'
+                action='update',
+                target_model='Grievance',
+                target_id=str(grievance.id),
+                description=f'Changed grievance {grievance.grievance_id} status to {new_status}',
+                ip_address=request.META.get('REMOTE_ADDR', ''),
+                user_agent=request.META.get('HTTP_USER_AGENT', '')[:255]
             )
             
             return JsonResponse({'success': True, 'status': new_status})
@@ -621,10 +667,10 @@ def bulk_delete_grievances(request):
             try:
                 AuditLog.objects.create(
                     user=request.user,
-                    action='DELETE_GRIEVANCE',
-                    resource_type='Grievance',
-                    resource_id=str(grievance.id),
-                    details=f'Bulk deleted grievance: {grievance.grievance_id} - {grievance.title}',
+                    action='delete',
+                    target_model='Grievance',
+                    target_id=str(grievance.id),
+                    description=f'Bulk deleted grievance: {grievance.grievance_id} - {grievance.title}',
                     ip_address=request.META.get('REMOTE_ADDR', ''),
                     user_agent=request.META.get('HTTP_USER_AGENT', '')[:255]
                 )
@@ -647,3 +693,294 @@ def bulk_delete_grievances(request):
     except Exception as e:
         print(f"Error in bulk_delete_grievances: {e}")
         return JsonResponse({'error': 'An error occurred while deleting grievances'}, status=500)
+
+
+@login_required
+def student_detail_view(request, student_id):
+    """Student detail view"""
+    if not request.user.is_admin:
+        messages.error(request, 'Access denied')
+        return redirect('authentication:login')
+    
+    try:
+        student = StudentProfile.objects.select_related('user').get(id=student_id)
+        
+        # Get student's grievances
+        grievances = Grievance.objects.filter(student=student).select_related('category').order_by('-submitted_at')
+        
+        # Get statistics
+        grievance_stats = grievances.aggregate(
+            total=Count('id'),
+            pending=Count('id', filter=Q(status='pending')),
+            resolved=Count('id', filter=Q(status='resolved')),
+            rejected=Count('id', filter=Q(status='rejected'))
+        )
+        
+        context = {
+            'student': student,
+            'grievances': grievances,
+            'grievance_stats': grievance_stats,
+        }
+        
+        return render(request, 'admin_panel/student_detail.html', context)
+        
+    except StudentProfile.DoesNotExist:
+        messages.error(request, 'Student not found')
+        return redirect('admin_panel:student_list')
+
+
+@login_required
+def student_stats_api(request):
+    """API endpoint to get student statistics"""
+    if not request.user.is_admin:
+        return JsonResponse({'error': 'Access denied'}, status=403)
+    
+    try:
+        total_students = StudentProfile.objects.count()
+        active_students = StudentProfile.objects.filter(user__is_active=True).count()
+        suspended_students = StudentProfile.objects.filter(user__is_active=False).count()
+        
+        # Calculate average grievances per student
+        avg_grievances = StudentProfile.objects.annotate(
+            grievance_count=Count('grievances')
+        ).aggregate(
+            avg=Avg('grievance_count')
+        )['avg']
+        
+        stats = {
+            'total': total_students,
+            'active': active_students,
+            'suspended': suspended_students,
+            'avg_grievances': round(avg_grievances, 1) if avg_grievances else 0,
+        }
+        return JsonResponse(stats)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def student_actions_api(request):
+    """API endpoint to perform bulk actions on students (suspend/activate/delete)"""
+    if not request.user.is_admin:
+        return JsonResponse({'error': 'Access denied - Admin privileges required'}, status=403)
+    
+    try:
+        data = json.loads(request.body)
+        action = data.get('action', '')
+        student_ids = data.get('student_ids', [])
+        
+        if not action or not student_ids:
+            return JsonResponse({'error': 'Action and student IDs are required'}, status=400)
+        
+        if action not in ['suspend', 'activate', 'delete']:
+            return JsonResponse({'error': 'Invalid action. Must be suspend, activate, or delete'}, status=400)
+        
+        # Get students to operate on
+        students = StudentProfile.objects.filter(id__in=student_ids).select_related('user')
+        
+        if not students.exists():
+            return JsonResponse({'error': 'No valid students found'}, status=404)
+        
+        affected_students = []
+        
+        if action == 'delete':
+            # Complete deletion including all related data
+            for student in students:
+                affected_students.append({
+                    'id': student.id,
+                    'student_id': student.student_id,
+                    'name': student.name or student.user.email,
+                    'email': student.user.email,
+                    'grievance_count': student.grievances.count()
+                })
+                
+                # Log the deletion
+                try:
+                    AuditLog.objects.create(
+                        user=request.user,
+                        action='delete',
+                        target_model='StudentProfile',
+                        target_id=str(student.id),
+                        description=f'Deleted student: {student.student_id} - {student.name or student.user.email}',
+                        ip_address=request.META.get('REMOTE_ADDR', ''),
+                        user_agent=request.META.get('HTTP_USER_AGENT', '')[:255]
+                    )
+                except Exception as e:
+                    print(f"Error creating audit log: {e}")
+                
+                # Delete user (will cascade to student profile and grievances)
+                student.user.delete()
+            
+            affected_count = len(affected_students)
+            
+        elif action in ['suspend', 'activate']:
+            # Suspend or activate students
+            new_status = action == 'activate'
+            
+            for student in students:
+                affected_students.append({
+                    'id': student.id,
+                    'student_id': student.student_id,
+                    'name': student.name or student.user.email,
+                    'email': student.user.email,
+                    'old_status': 'Active' if student.user.is_active else 'Suspended',
+                    'new_status': 'Active' if new_status else 'Suspended'
+                })
+                
+                # Update status
+                student.user.is_active = new_status
+                student.user.save()
+                
+                # Log the action
+                try:
+                    AuditLog.objects.create(
+                        user=request.user,
+                        action='update',
+                        target_model='StudentProfile',
+                        target_id=str(student.id),
+                        description=f'{action.title()}d student: {student.student_id} - {student.name or student.user.email}',
+                        ip_address=request.META.get('REMOTE_ADDR', ''),
+                        user_agent=request.META.get('HTTP_USER_AGENT', '')[:255]
+                    )
+                except Exception as e:
+                    print(f"Error creating audit log: {e}")
+            
+            affected_count = students.count()
+        
+        return JsonResponse({
+            'success': True,
+            'action': action,
+            'affected_count': affected_count,
+            'affected_students': affected_students,
+            'message': f'Successfully {action}d {affected_count} student(s)'
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+    except Exception as e:
+        print(f"Error in student_actions_api: {e}")
+        return JsonResponse({'error': f'An error occurred while trying to {action} students'}, status=500)
+
+
+@login_required
+def departments_api(request):
+    """API endpoint to get departments by school"""
+    if not request.user.is_admin:
+        return JsonResponse({'error': 'Access denied'}, status=403)
+    
+    school_id = request.GET.get('school')
+    if school_id:
+        from apps.students.models import Department
+        departments = Department.objects.filter(school_id=school_id).values('id', 'name')
+        return JsonResponse({'departments': list(departments)})
+    else:
+        from apps.students.models import Department
+        departments = Department.objects.all().values('id', 'name')
+        return JsonResponse({'departments': list(departments)})
+
+
+@login_required
+def add_student_api(request):
+    """API endpoint to add a new student"""
+    if not request.user.is_admin:
+        return JsonResponse({'error': 'Access denied'}, status=403)
+    
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    try:
+        from django.contrib.auth import get_user_model
+        from apps.students.models import School, Department
+        import uuid
+        
+        User = get_user_model()
+        
+        # Get form data
+        email = request.POST.get('email')
+        student_id = request.POST.get('student_id')
+        name = request.POST.get('name')
+        contact_no = request.POST.get('contact_no')
+        school_id = request.POST.get('school')
+        department_id = request.POST.get('department')
+        year_of_study = request.POST.get('year_of_study')
+        password = request.POST.get('password')
+        address = request.POST.get('address')
+        
+        # Validate required fields
+        if not all([email, student_id, name, password]):
+            return JsonResponse({'error': 'Required fields missing'}, status=400)
+        
+        # Check if user already exists
+        if User.objects.filter(email=email).exists():
+            return JsonResponse({'error': 'User with this email already exists'}, status=400)
+        
+        # Check if student ID already exists
+        if StudentProfile.objects.filter(student_id=student_id).exists():
+            return JsonResponse({'error': 'Student ID already exists'}, status=400)
+        
+        # Create user
+        user = User.objects.create_user(
+            email=email,
+            password=password,
+            role='student',
+            is_active=True
+        )
+        
+        # Get school and department names
+        school_name = ''
+        department_name = ''
+        if school_id:
+            try:
+                from apps.students.models import School
+                school = School.objects.get(id=school_id)
+                school_name = school.name
+            except School.DoesNotExist:
+                pass
+        
+        if department_id:
+            try:
+                from apps.students.models import Department
+                department = Department.objects.get(id=department_id)
+                department_name = department.name
+            except Department.DoesNotExist:
+                pass
+        
+        # Create student profile
+        student_profile = StudentProfile.objects.create(
+            user=user,
+            student_id=student_id,
+            name=name,
+            contact_no=contact_no or '',
+            school=school_name,
+            department=department_name
+        )
+        
+        # Log the action
+        try:
+            AuditLog.objects.create(
+                user=request.user,
+                action='create',
+                target_model='StudentProfile',
+                target_id=str(student_profile.id),
+                description=f'Added new student: {student_id} - {name} ({email})',
+                ip_address=request.META.get('REMOTE_ADDR', ''),
+                user_agent=request.META.get('HTTP_USER_AGENT', '')[:255]
+            )
+        except Exception as e:
+            print(f"Error creating audit log: {e}")
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Student added successfully',
+            'student_id': student_profile.id,
+            'student': {
+                'id': student_profile.id,
+                'student_id': student_profile.student_id,
+                'name': student_profile.name,
+                'email': user.email
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
