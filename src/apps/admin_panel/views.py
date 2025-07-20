@@ -17,84 +17,66 @@ import json
 
 from apps.grievances.models import Grievance, Category, GrievanceComment, AuditLog, CategoryAssignment
 from apps.students.models import StudentProfile, AdminProfile
+from apps.authentication.decorators import admin_required, superadmin_required, permission_required
+from apps.admin_panel.permissions import (
+    filter_grievances_by_access, filter_students_by_access, can_access_all_data,
+    can_manage_system_settings, can_manage_categories, can_manage_auto_assignment,
+    can_view_audit_logs, can_view_system_reports, department_access_required
+)
 
 
-@login_required
+@admin_required
 def admin_dashboard(request):
-    """Admin dashboard view"""
-    print(f"Admin dashboard accessed by: {request.user.email}")
-    print(f"User is admin: {getattr(request.user, 'is_admin', False)}")
-    
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
-        messages.error(request, 'Access denied - Admin privileges required')
-        return redirect('authentication:login')
+    """Admin dashboard view with role-based data filtering"""
+    user = request.user
     
     try:
-        # Get basic statistics with error handling
-        total_grievances = Grievance.objects.count()
-        pending_grievances = Grievance.objects.filter(status='pending').count()
-        resolved_grievances = Grievance.objects.filter(status='resolved').count()
-        rejected_grievances = Grievance.objects.filter(status='rejected').count()
+        # Get all grievances first, then filter based on access
+        all_grievances = Grievance.objects.select_related('student', 'category', 'assigned_to')
+        accessible_grievances = filter_grievances_by_access(user, all_grievances)
         
-        print(f"Statistics: Total={total_grievances}, Pending={pending_grievances}")
+        # Calculate statistics from accessible grievances
+        total_grievances = accessible_grievances.count()
+        pending_grievances = accessible_grievances.filter(status='pending').count()
+        resolved_grievances = accessible_grievances.filter(status='resolved').count()
+        rejected_grievances = accessible_grievances.filter(status='rejected').count()
+        recent_grievances = accessible_grievances.order_by('-submitted_at')[:10]
         
-        # Get recent grievances with proper error handling
-        recent_grievances = []
-        try:
-            recent_grievances = Grievance.objects.select_related('student', 'category').order_by('-submitted_at')[:5]
-            print(f"Recent grievances count: {len(list(recent_grievances))}")
-        except Exception as e:
-            print(f"Error getting recent grievances: {e}")
-        
-        # Get category statistics with error handling
-        category_stats = []
-        try:
+        # Get category statistics based on accessible grievances
+        if can_access_all_data(user):
+            category_stats = Category.objects.annotate(count=Count('grievances')).order_by('-count')[:5]
+        else:
+            # Get categories for accessible grievances only
+            accessible_grievance_ids = accessible_grievances.values_list('id', flat=True)
             category_stats = Category.objects.annotate(
-                count=Count('grievances')
-            ).order_by('-count')[:5]
-            print(f"Category stats count: {len(list(category_stats))}")
-        except Exception as e:
-            print(f"Error getting category stats: {e}")
+                count=Count('grievances', filter=Q(grievances__id__in=accessible_grievance_ids))
+            ).filter(count__gt=0).order_by('-count')[:5]
         
-        # Enhanced monthly stats for chart visualization
+        # Monthly statistics for chart visualization
         current_year = timezone.now().year
         monthly_stats = []
         
         for month_num in range(1, 13):
-            try:
-                # Get actual data from database
-                month_grievances = Grievance.objects.filter(
-                    submitted_at__year=current_year,
-                    submitted_at__month=month_num
-                )
-                
-                total_count = month_grievances.count()
-                resolved_count = month_grievances.filter(status='resolved').count()
-                pending_count = month_grievances.filter(status='pending').count()
-                rejected_count = month_grievances.filter(status='rejected').count()
-                
-                monthly_stats.append({
-                    'month': datetime(current_year, month_num, 1).strftime('%B'),
-                    'month_name': datetime(current_year, month_num, 1).strftime('%B %Y'),
-                    'count': total_count,  # Keep for backward compatibility
-                    'total': total_count,
-                    'resolved': resolved_count,
-                    'pending': pending_count,
-                    'rejected': rejected_count,
-                })
-            except Exception as e:
-                print(f"Error calculating stats for month {month_num}: {e}")
-                # Fallback with zero values
-                monthly_stats.append({
-                    'month': datetime(current_year, month_num, 1).strftime('%B'),
-                    'month_name': datetime(current_year, month_num, 1).strftime('%B %Y'),
-                    'count': 0,
-                    'total': 0,
-                    'resolved': 0,
-                    'pending': 0,
-                    'rejected': 0,
-                })
+            month_data = accessible_grievances.filter(
+                submitted_at__year=current_year,
+                submitted_at__month=month_num
+            ).aggregate(
+                total=Count('id'),
+                pending=Count('id', filter=Q(status='pending')),
+                resolved=Count('id', filter=Q(status='resolved')),
+                rejected=Count('id', filter=Q(status='rejected'))
+            )
+            
+            monthly_stats.append({
+                'month': month_num,
+                'month_name': datetime(current_year, month_num, 1).strftime('%b'),
+                'total': month_data['total'] or 0,
+                'pending': month_data['pending'] or 0,
+                'resolved': month_data['resolved'] or 0,
+                'rejected': month_data['rejected'] or 0,
+            })
         
+        # Add user role information to context
         context = {
             'total_grievances': total_grievances,
             'pending_grievances': pending_grievances,
@@ -103,16 +85,21 @@ def admin_dashboard(request):
             'recent_grievances': recent_grievances,
             'category_stats': category_stats,
             'monthly_stats': monthly_stats,
-            'monthly_stats_json': json.dumps(monthly_stats),  # Add JSON for Chart.js
+            'monthly_stats_json': json.dumps(monthly_stats),
+            'user_role': user.role,
+            'is_superadmin': user.role == 'superadmin',
+            'is_dept_admin': user.role == 'admin',
+            'is_officer': user.role == 'officer',
+            'can_manage_categories': can_manage_categories(user),
+            'can_manage_auto_assignment': can_manage_auto_assignment(user),
+            'can_view_audit_logs': can_view_audit_logs(user),
+            'can_view_system_reports': can_view_system_reports(user),
         }
         
-        print("Rendering admin dashboard template...")
         return render(request, 'admin_panel/dashboard_working.html', context)
         
     except Exception as e:
         print(f"Error in admin dashboard: {e}")
-        import traceback
-        traceback.print_exc()
         messages.error(request, f'Error loading dashboard: {str(e)}')
         return render(request, 'admin_panel/dashboard_working.html', {
             'total_grievances': 0,
@@ -126,32 +113,94 @@ def admin_dashboard(request):
 
 
 @login_required
+@department_access_required
 def grievance_list(request):
-    """Grievance list view"""
-    if not request.user.is_admin:
-        messages.error(request, 'Access denied')
-        return redirect('authentication:login')
+    """Grievance list view with role-based filtering"""
+    user = request.user
     
-    grievances = Grievance.objects.select_related('student__user', 'category').order_by('-submitted_at')
-    categories = Category.objects.all()
+    # Get all grievances and filter based on user's access level
+    all_grievances = Grievance.objects.select_related('student__user', 'category')
+    accessible_grievances = filter_grievances_by_access(user, all_grievances)
+    
+    # Order and get categories for filtering
+    grievances = accessible_grievances.order_by('-submitted_at')
+    
+    # Get categories that are relevant to the user's accessible grievances
+    if can_access_all_data(user):
+        categories = Category.objects.all()
+    else:
+        # Only show categories that have grievances the user can access
+        accessible_category_ids = accessible_grievances.values_list('category_id', flat=True).distinct()
+        categories = Category.objects.filter(id__in=accessible_category_ids)
     
     context = {
         'grievances': grievances,
         'categories': categories,
+        'user_role': user.role,
+        'can_manage_categories': can_manage_categories(user),
     }
     
     return render(request, 'admin_panel/grievance_list.html', context)
 
 
 @login_required
+@department_access_required  
 def student_list(request):
-    """Enhanced Student list view with search, filtering, and pagination"""
-    if not request.user.is_admin:
-        messages.error(request, 'Access denied')
-        return redirect('authentication:login')
+    """Enhanced Student list view with search, filtering, and role-based access"""
+    user = request.user
     
     # Get filter parameters
     search_query = request.GET.get('search', '')
+    status_filter = request.GET.get('status', '')
+    department_filter = request.GET.get('department', '')
+    
+    # Get all students and filter based on user's access level
+    all_students = StudentProfile.objects.select_related('user')
+    accessible_students = filter_students_by_access(user, all_students)
+    
+    # Apply additional filters
+    students = accessible_students
+    
+    if search_query:
+        students = students.filter(
+            Q(name__icontains=search_query) |
+            Q(student_id__icontains=search_query) |
+            Q(user__email__icontains=search_query) |
+            Q(department__icontains=search_query)
+        )
+    
+    if status_filter:
+        if status_filter == 'active':
+            students = students.filter(user__is_active=True)
+        elif status_filter == 'inactive':
+            students = students.filter(user__is_active=False)
+    
+    # Department filter - only apply if user can see multiple departments
+    if department_filter and can_access_all_data(user):
+        students = students.filter(department__icontains=department_filter)
+    
+    # Get departments for filter dropdown (only departments the user can access)
+    if can_access_all_data(user):
+        departments = StudentProfile.objects.values_list('department', flat=True).distinct().order_by('department')
+    else:
+        departments = accessible_students.values_list('department', flat=True).distinct().order_by('department')
+    
+    # Pagination
+    paginator = Paginator(students.order_by('student_id'), 20)
+    page_number = request.GET.get('page')
+    students_page = paginator.get_page(page_number)
+    
+    context = {
+        'students': students_page,
+        'departments': departments,
+        'search_query': search_query,
+        'status_filter': status_filter,
+        'department_filter': department_filter,
+        'user_role': user.role,
+        'can_access_all_data': can_access_all_data(user),
+    }
+    
+    return render(request, 'admin_panel/student_list.html', context)
     status_filter = request.GET.get('status', '')
     department_filter = request.GET.get('department', '')
     
@@ -205,16 +254,20 @@ def student_list(request):
 
 @login_required
 def reports(request):
-    """Reports view"""
+    """Reports view with role-based data access"""
     if not request.user.is_admin:
         messages.error(request, 'Access denied')
         return redirect('authentication:login')
     
-    # Get basic statistics
-    total_grievances = Grievance.objects.count()
-    pending_count = Grievance.objects.filter(status='pending').count()
-    resolved_count = Grievance.objects.filter(status='resolved').count()
-    rejected_count = Grievance.objects.filter(status='rejected').count()
+    # Get grievances based on user's access level
+    all_grievances = Grievance.objects.all()
+    accessible_grievances = filter_grievances_by_access(request.user, all_grievances)
+    
+    # Get basic statistics from accessible grievances
+    total_grievances = accessible_grievances.count()
+    pending_count = accessible_grievances.filter(status='pending').count()
+    resolved_count = accessible_grievances.filter(status='resolved').count()
+    rejected_count = accessible_grievances.filter(status='rejected').count()
     
     # Calculate resolution rate
     resolution_rate = (resolved_count / total_grievances * 100) if total_grievances > 0 else 0
@@ -365,9 +418,9 @@ def reports_api(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def audit_logs(request):
-    """Get audit logs API"""
-    if not request.user.is_superadmin:
-        return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)
+    """Get audit logs API - Superadmin only"""
+    if not can_view_audit_logs(request.user):
+        return Response({'error': 'Access denied - Superadmin privileges required'}, status=status.HTTP_403_FORBIDDEN)
     
     logs = AuditLog.objects.all().order_by('-timestamp')[:50]
     
@@ -384,19 +437,31 @@ def audit_logs(request):
 
 
 @login_required
+@department_access_required
 def grievance_detail_view(request, grievance_id):
-    """Detailed view of a specific grievance"""
-    if not request.user.is_admin:
-        messages.error(request, 'Access denied')
-        return redirect('authentication:login')
+    """Detailed view of a specific grievance with role-based access control"""
+    user = request.user
     
-    grievance = get_object_or_404(Grievance, id=grievance_id)
-    
-    context = {
-        'grievance': grievance,
-    }
-    
-    return render(request, 'admin_panel/grievance_detail.html', context)
+    try:
+        grievance = get_object_or_404(Grievance, id=grievance_id)
+        
+        # Check if user can access this grievance
+        from apps.admin_panel.permissions import can_access_grievance
+        if not can_access_grievance(user, grievance):
+            messages.error(request, 'Access denied - You can only view grievances from your department or assigned to you')
+            return redirect('admin_panel:grievance_list')
+        
+        context = {
+            'grievance': grievance,
+            'user_role': user.role,
+            'can_manage_categories': can_manage_categories(user),
+        }
+        
+        return render(request, 'admin_panel/grievance_detail.html', context)
+        
+    except Grievance.DoesNotExist:
+        messages.error(request, 'Grievance not found')
+        return redirect('admin_panel:grievance_list')
 
 
 @login_required
@@ -530,38 +595,11 @@ def toggle_category_status(request, category_id):
 
 
 @login_required
-def student_detail_view(request, student_id):
-    """Detailed view of a specific student"""
-    if not request.user.is_admin:
-        messages.error(request, 'Access denied')
-        return redirect('authentication:login')
-    
-    student = get_object_or_404(StudentProfile, id=student_id)
-    student_grievances = Grievance.objects.filter(student=student).order_by('-submitted_at')
-    
-    # Pagination for grievances
-    paginator = Paginator(student_grievances, 10)
-    page_number = request.GET.get('page')
-    grievances = paginator.get_page(page_number)
-    
-    context = {
-        'student': student,
-        'grievances': grievances,
-        'total_grievances': student_grievances.count(),
-        'pending_grievances': student_grievances.filter(status='pending').count(),
-        'resolved_grievances': student_grievances.filter(status='resolved').count(),
-        'rejected_grievances': student_grievances.filter(status='rejected').count(),
-    }
-    
-    return render(request, 'admin_panel/student_detail.html', context)
-
-
-@login_required
 def audit_logs_view(request):
-    """Enhanced view for audit logs with filtering"""
-    if not request.user.is_admin:
-        messages.error(request, 'Access denied - Admin privileges required')
-        return redirect('authentication:login')
+    """Enhanced view for audit logs with filtering - Superadmin only"""
+    if not can_view_audit_logs(request.user):
+        messages.error(request, 'Access denied - Superadmin privileges required for audit logs')
+        return redirect('admin_panel:dashboard')
     
     # Get all audit logs
     logs = AuditLog.objects.select_related('user').order_by('-timestamp')
@@ -792,19 +830,26 @@ def bulk_delete_grievances(request):
 
 
 @login_required
+@department_access_required
 def student_detail_view(request, student_id):
-    """Student detail view"""
-    if not request.user.is_admin:
-        messages.error(request, 'Access denied')
-        return redirect('authentication:login')
+    """Student detail view with role-based access control"""
+    user = request.user
     
     try:
         student = StudentProfile.objects.select_related('user').get(id=student_id)
         
-        # Get student's grievances
-        grievances = Grievance.objects.filter(student=student).select_related('category').order_by('-submitted_at')
+        # Check if user can access this student
+        from apps.admin_panel.permissions import can_access_student
+        if not can_access_student(user, student):
+            messages.error(request, 'Access denied - You can only view students from your department')
+            return redirect('admin_panel:student_list')
         
-        # Get statistics
+        # Get student's grievances that the user can access
+        all_grievances = Grievance.objects.filter(student=student).select_related('category')
+        accessible_grievances = filter_grievances_by_access(user, all_grievances)
+        grievances = accessible_grievances.order_by('-submitted_at')
+        
+        # Get statistics from accessible grievances
         grievance_stats = grievances.aggregate(
             total=Count('id'),
             pending=Count('id', filter=Q(status='pending')),
@@ -1377,10 +1422,10 @@ def download_monthly_stats_csv(request):
 
 @login_required
 def auto_assign_management(request):
-    """Main view for managing auto-assignment of grievances"""
-    if not request.user.role in ['admin', 'superadmin']:
-        messages.error(request, 'Access denied - Admin privileges required')
-        return redirect('authentication:login')
+    """Main view for managing auto-assignment of grievances - Superadmin only"""
+    if not can_manage_auto_assignment(request.user):
+        messages.error(request, 'Access denied - Superadmin privileges required for auto-assignment management')
+        return redirect('admin_panel:dashboard')
     
     # Get all categories with their assignments
     categories = Category.objects.filter(is_active=True).prefetch_related('assignments__assigned_admin')
@@ -1750,10 +1795,10 @@ def crud_management(request):
 # Category CRUD Views
 @login_required
 def category_management(request):
-    """Category management view"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
-        messages.error(request, 'Access denied - Admin privileges required')
-        return redirect('authentication:login')
+    """Category management view - Superadmin only"""
+    if not can_manage_categories(request.user):
+        messages.error(request, 'Access denied - Superadmin privileges required for category management')
+        return redirect('admin_panel:dashboard')
     
     # Get search and filter parameters
     search = request.GET.get('search', '')

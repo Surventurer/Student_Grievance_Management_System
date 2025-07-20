@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import superadmin_views
 
 app_name = 'admin_panel'
 
@@ -69,4 +70,19 @@ urlpatterns = [
     path('manage/departments/create/', views.department_create, name='department_create'),
     path('manage/departments/<int:department_id>/edit/', views.department_edit, name='department_edit'),
     path('manage/departments/<int:department_id>/delete/', views.department_delete, name='department_delete'),
+    
+    # ============================================================================
+    # SUPERADMIN-ONLY URLS - Require highest level permissions
+    # ============================================================================
+    
+    # User Management (Superadmin Only)
+    path('superadmin/users/', superadmin_views.user_management, name='user_management'),
+    path('superadmin/users/<int:user_id>/update-role/', superadmin_views.update_user_role, name='update_user_role'),
+    path('superadmin/users/<int:user_id>/toggle-status/', superadmin_views.toggle_user_status, name='toggle_user_status'),
+    path('superadmin/users/create-admin/', superadmin_views.create_admin_user, name='create_admin_user'),
+    
+    # System Settings (Superadmin Only)
+    path('superadmin/settings/', superadmin_views.system_settings, name='system_settings'),
+    path('superadmin/audit-logs/', superadmin_views.audit_logs_view, name='superadmin_audit_logs'),
+    path('superadmin/permissions/', superadmin_views.role_permissions_matrix, name='role_permissions'),
 ]

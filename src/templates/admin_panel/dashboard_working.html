@@ -1,7 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Admin Dashboard - Student Grievance System{% endblock %}
+{% block title %}
+{% if user.role == 'superadmin' %}
+    Superadmin Dashboard - Student Grievance System
+{% elif user.role == 'admin' %}
+    Department Admin Dashboard - Student Grievance System
+{% elif user.role == 'officer' %}
+    Grievance Officer Dashboard - Student Grievance System
+{% else %}
+    Dashboard - Student Grievance System
+{% endif %}
+{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -130,7 +140,16 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h1 class="h3 mb-0 text-gray-800">
-                        <i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard
+                        <i class="fas fa-tachometer-alt me-2"></i>
+                        {% if user.role == 'superadmin' %}
+                            Superadmin Dashboard
+                        {% elif user.role == 'admin' %}
+                            Department Admin Dashboard
+                        {% elif user.role == 'officer' %}
+                            Grievance Officer Dashboard
+                        {% else %}
+                            Dashboard
+                        {% endif %}
                     </h1>
                     <!-- <p class="text-muted mb-0">Welcome back! Here's what's happening with your grievance system.</p> -->
                 </div>
@@ -294,12 +313,20 @@
                     <a href="{% url 'admin_panel:student_list' %}" class="btn btn-outline-info">
                         <i class="fas fa-users me-2"></i>Manage Students
                     </a>
+                    {% if can_manage_categories %}
                     <a href="{% url 'admin_panel:manage_categories' %}" class="btn btn-outline-warning">
                         <i class="fas fa-tags me-2"></i>Manage Categories
                     </a>
+                    {% endif %}
+                    {% if can_view_system_reports %}
                     <a href="{% url 'admin_panel:reports' %}" class="btn btn-outline-success">
                         <i class="fas fa-chart-bar me-2"></i>View Reports
                     </a>
+                    {% else %}
+                    <a href="{% url 'admin_panel:reports' %}" class="btn btn-outline-success">
+                        <i class="fas fa-chart-bar me-2"></i>View Department Reports
+                    </a>
+                    {% endif %}
                 </div>
             </div>
         </div>

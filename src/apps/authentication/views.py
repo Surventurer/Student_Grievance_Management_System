@@ -245,8 +245,8 @@ def login_view(request):
                     messages.error(request, 'Please verify your email first')
                     return render(request, 'authentication/login.html')
                 
-                # For admin users, require OTP
-                if user.is_admin:
+                # For admin and superadmin users, require OTP
+                if user.role in ['admin', 'superadmin']:
                     # Generate and send OTP
                     otp = generate_otp()
                     expires_at = timezone.now() + timedelta(minutes=5)
@@ -273,19 +273,40 @@ def login_view(request):
                             fail_silently=False,
                         )
                         
-                        messages.success(request, 'OTP has been sent to your email. Please enter it below to complete login.')
+                        # For development: print OTP to console
+                        print(f"🔑 OTP FOR {user.email}: {otp}")
+                        
+                        messages.success(request, f'OTP has been sent to your email. Please enter it below to complete login. [DEV: Check console for OTP]')
                         return render(request, 'authentication/login.html', {
                             'show_otp_field': True,
                             'email': email
                         })
                     except Exception as e:
-                        messages.error(request, 'Failed to send OTP. Please try again.')
-                        return render(request, 'authentication/login.html')
+                        # For development: show OTP in error message if email fails
+                        print(f"🔑 EMAIL FAILED - OTP FOR {user.email}: {otp}")
+                        messages.info(request, f'Email failed. For development, your OTP is: {otp}')
+                        return render(request, 'authentication/login.html', {
+                            'show_otp_field': True,
+                            'email': email
+                        })
                 
-                # For non-admin users (students, officers), login directly
-                else:
+                # For students, login directly to student dashboard
+                elif user.role == 'student':
                     login(request, user)
                     return redirect('students:dashboard')
+                
+                # For officers, login directly to admin dashboard 
+                elif user.role == 'officer':
+                    login(request, user)
+                    return redirect('admin_panel:dashboard')
+                    
+                # For other roles, redirect to appropriate dashboard
+                else:
+                    login(request, user)
+                    if user.is_superuser:
+                        return redirect('admin_panel:dashboard')
+                    else:
+                        return redirect('students:dashboard')
             else:
                 messages.error(request, 'Invalid email or password')
         

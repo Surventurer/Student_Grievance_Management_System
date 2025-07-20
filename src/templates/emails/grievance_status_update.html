@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grievance Status Update</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #28a745;
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+        }
+        .content {
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 0 0 8px 8px;
+        }
+        .status-update {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+        }
+        .button {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-resolved {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        .status-rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            font-size: 14px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎓 Student Grievance System</h1>
+        <h2>Grievance Status Update</h2>
+    </div>
+    
+    <div class="content">
+        <p>Dear {{ student.name|default:"Student" }},</p>
+        
+        <p>We have an update on your submitted grievance.</p>
+        
+        <div class="status-update">
+            <h3>📋 Grievance Update</h3>
+            <p><strong>Title:</strong> {{ grievance.title }}</p>
+            <p><strong>Grievance ID:</strong> {{ grievance.grievance_id }}</p>
+            <p><strong>Current Status:</strong> 
+                <span class="status-badge status-{{ grievance.status }}">
+                    {{ grievance.get_status_display }}
+                </span>
+            </p>
+            <p><strong>Last Updated:</strong> {{ grievance.updated_at|date:"F d, Y g:i A" }}</p>
+            
+            {% if grievance.assigned_to %}
+            <p><strong>Assigned To:</strong> {{ grievance.assigned_to.user.first_name }} {{ grievance.assigned_to.user.last_name }}</p>
+            <p><strong>Department:</strong> {{ grievance.assigned_to.department }}</p>
+            {% endif %}
+            
+            {% if grievance.status == 'resolved' %}
+            <div style="margin-top: 15px; padding: 15px; background-color: #d4edda; border-radius: 5px;">
+                <strong>✅ Resolution Details:</strong>
+                <p>Your grievance has been resolved. Please check the system for detailed information and provide your feedback.</p>
+            </div>
+            {% elif grievance.status == 'pending' %}
+            <div style="margin-top: 15px; padding: 15px; background-color: #fff3cd; border-radius: 5px;">
+                <strong>⏳ Status: Under Review</strong>
+                <p>Your grievance is currently being reviewed by our team. We will update you as soon as there is progress.</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <p>You can view the complete details and any new messages by logging into the system.</p>
+        
+        <a href="http://localhost:8000/students/grievances/{{ grievance.id }}/" class="button">
+            View Grievance Details
+        </a>
+        
+        {% if grievance.status == 'resolved' %}
+        <div style="margin-top: 20px; padding: 15px; background-color: #d1ecf1; border-radius: 5px; border: 1px solid #bee5eb;">
+            <strong>📝 Feedback Requested:</strong>
+            <p>Please provide your feedback on the resolution to help us improve our service.</p>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="footer">
+        <p>This is an automated notification from the Student Grievance Management System.</p>
+        <p>If you have any questions, please contact support or log into the system.</p>
+        <p><strong>Need Help?</strong> Visit our FAQ section or contact support.</p>
+    </div>
+</body>
+</html>

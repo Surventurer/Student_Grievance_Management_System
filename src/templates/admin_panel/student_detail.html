@@ -174,35 +174,23 @@
                 
                 <div class="info-row">
                     <div class="label">Phone Number</div>
-                    <div class="value">{{ student.phone_number|default:"Not provided" }}</div>
+                    <div class="value">{{ student.contact_no|default:"Not provided" }}</div>
                 </div>
                 
                 <div class="info-row">
                     <div class="label">Department</div>
-                    <div class="value">{{ student.department.name|default:"Not assigned" }}</div>
+                    <div class="value">{{ student.department|default:"Not assigned" }}</div>
                 </div>
                 
                 <div class="info-row">
                     <div class="label">School</div>
-                    <div class="value">{{ student.school.name|default:"Not assigned" }}</div>
-                </div>
-                
-                <div class="info-row">
-                    <div class="label">Year of Study</div>
-                    <div class="value">{{ student.year_of_study|default:"Not specified" }}</div>
+                    <div class="value">{{ student.school|default:"Not assigned" }}</div>
                 </div>
                 
                 <div class="info-row">
                     <div class="label">Joined Date</div>
                     <div class="value">{{ student.user.date_joined|date:"M d, Y" }}</div>
                 </div>
-                
-                {% if student.address %}
-                <div class="info-row">
-                    <div class="label">Address</div>
-                    <div class="value">{{ student.address }}</div>
-                </div>
-                {% endif %}
             </div>
         </div>
         
@@ -211,25 +199,25 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <div class="stats-card total">
-                        <div class="stats-number">{{ total_grievances }}</div>
+                        <div class="stats-number">{{ grievance_stats.total|default:0 }}</div>
                         <div class="stats-label">Total Grievances</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="stats-card pending">
-                        <div class="stats-number">{{ pending_grievances }}</div>
+                        <div class="stats-number">{{ grievance_stats.pending|default:0 }}</div>
                         <div class="stats-label">Pending</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="stats-card resolved">
-                        <div class="stats-number">{{ resolved_grievances }}</div>
+                        <div class="stats-number">{{ grievance_stats.resolved|default:0 }}</div>
                         <div class="stats-label">Resolved</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="stats-card rejected">
-                        <div class="stats-number">{{ rejected_grievances }}</div>
+                        <div class="stats-number">{{ grievance_stats.rejected|default:0 }}</div>
                         <div class="stats-label">Rejected</div>
                     </div>
                 </div>
@@ -245,9 +233,9 @@
                     <h5 class="card-title mb-0">
                         <i class="fas fa-clipboard-list me-2 text-primary"></i>Student Grievances
                     </h5>
-                    {% if total_grievances > 0 %}
+                    {% if grievance_stats.total > 0 %}
                     <div class="text-muted">
-                        Showing {{ grievances.start_index }}–{{ grievances.end_index }} of {{ total_grievances }}
+                        Showing grievance records ({{ grievance_stats.total }} total)
                     </div>
                     {% endif %}
                 </div>
