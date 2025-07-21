@@ -88,8 +88,29 @@ def permission_required(permission):
             if not request.user.is_authenticated:
                 return redirect('authentication:login')
             
-            if not request.user.has_permission(permission):
+            # Check if user has the required permission
+            if not hasattr(request.user, 'has_permission') or not request.user.has_permission(permission):
                 messages.error(request, f'Access denied - {permission} permission required')
+                return redirect('authentication:login')
+            
+            return view_func(request, *args, **kwargs)
+        return _wrapped_view
+    return decorator
+
+
+def role_required(allowed_roles):
+    """Decorator to check if user has one of the allowed roles"""
+    if isinstance(allowed_roles, str):
+        allowed_roles = [allowed_roles]
+    
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            if not request.user.is_authenticated:
+                return redirect('authentication:login')
+            
+            if request.user.role not in allowed_roles:
+                messages.error(request, f'Access denied - Required roles: {", ".join(allowed_roles)}')
                 return redirect('authentication:login')
             
             return view_func(request, *args, **kwargs)
@@ -134,8 +155,28 @@ def api_permission_required(permission):
             if not request.user.is_authenticated:
                 return JsonResponse({'error': 'Authentication required'}, status=401)
             
-            if not request.user.has_permission(permission):
+            # Check if user has the required permission
+            if not hasattr(request.user, 'has_permission') or not request.user.has_permission(permission):
                 return JsonResponse({'error': f'{permission} permission required'}, status=403)
+            
+            return view_func(request, *args, **kwargs)
+        return _wrapped_view
+    return decorator
+
+
+def api_role_required(allowed_roles):
+    """API decorator to check if user has one of the allowed roles"""
+    if isinstance(allowed_roles, str):
+        allowed_roles = [allowed_roles]
+    
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            if not request.user.is_authenticated:
+                return JsonResponse({'error': 'Authentication required'}, status=401)
+            
+            if request.user.role not in allowed_roles:
+                return JsonResponse({'error': f'Required roles: {", ".join(allowed_roles)}'}, status=403)
             
             return view_func(request, *args, **kwargs)
         return _wrapped_view

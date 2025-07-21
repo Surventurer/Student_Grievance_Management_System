@@ -25,6 +25,38 @@
     padding: 3rem;
     color: #6c757d;
 }
+
+/* Bulk delete styling */
+.user-checkbox {
+    cursor: pointer;
+}
+
+#select-all {
+    cursor: pointer;
+}
+
+#bulk-delete-btn {
+    transition: all 0.3s ease;
+}
+
+#bulk-delete-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+#selected-count {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Row hover effect for selected items */
+tr:has(.user-checkbox:checked) {
+    background-color: rgba(220, 53, 69, 0.05) !important;
+}
+
+tr:has(.user-checkbox:checked) td {
+    border-color: rgba(220, 53, 69, 0.2);
+}
 </style>
 {% endblock %}
 
@@ -36,8 +68,8 @@
             <p class="text-muted">Superadmin-only access • Manage all users and roles</p>
         </div>
         <div class="btn-group">
-            <a href="{% url 'admin_panel:create_admin_user' %}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Create Admin User
+            <a href="{% url 'admin_panel:create_user' %}" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i> Create User
             </a>
             <a href="{% url 'admin_panel:role_permissions' %}" class="btn btn-outline-info">
                 <i class="fas fa-shield-alt"></i> Role Permissions
@@ -175,8 +207,19 @@
 
     <!-- Users Table -->
     <div class="card">
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">👤 All Users ({{ users.paginator.count }} total)</h5>
+            <div class="d-flex align-items-center gap-2">
+                <div class="btn-group" role="group" style="display: none;" id="bulk-actions">
+                    <button id="bulk-delete-btn" class="btn btn-danger btn-sm" onclick="bulkDeleteUsers()">
+                        <i class="fas fa-trash-alt"></i> Delete Selected
+                    </button>
+                    <button id="bulk-deactivate-btn" class="btn btn-warning btn-sm" onclick="bulkDeactivateUsers()">
+                        <i class="fas fa-ban"></i> Deactivate Selected
+                    </button>
+                </div>
+                <span id="selected-count" class="text-muted small" style="display: none;"></span>
+            </div>
         </div>
         <div class="card-body">
             {% if users %}
@@ -184,6 +227,9 @@
                     <table class="table table-hover">
                         <thead class="table-light">
                             <tr>
+                                <th>
+                                    <input type="checkbox" id="select-all" class="form-check-input" onchange="toggleSelectAll()">
+                                </th>
                                 <th>Email</th>
                                 <th>Name/ID</th>
                                 <th>Role</th>
@@ -195,7 +241,15 @@
                         </thead>
                         <tbody>
                             {% for user in users %}
-                            <tr>
+                            <tr data-user-id="{{ user.id }}">
+                                <td>
+                                    {% if user.id != request.user.id %}
+                                        <input type="checkbox" class="form-check-input user-checkbox" 
+                                               value="{{ user.id }}" onchange="updateBulkDeleteButton()">
+                                    {% else %}
+                                        <i class="fas fa-user-shield text-muted" title="Cannot select own account"></i>
+                                    {% endif %}
+                                </td>
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div class="me-2">
@@ -368,6 +422,193 @@ function toggleUserStatus(userId, userEmail, isActive) {
         });
     }
 }
+
+// Bulk delete functionality
+function toggleSelectAll() {
+    const selectAllCheckbox = document.getElementById('select-all');
+    const userCheckboxes = document.querySelectorAll('.user-checkbox');
+    
+    userCheckboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+    });
+    
+    updateBulkDeleteButton();
+}
+
+function updateBulkDeleteButton() {
+    const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+    const bulkActions = document.getElementById('bulk-actions');
+    const selectedCount = document.getElementById('selected-count');
+    const selectAllCheckbox = document.getElementById('select-all');
+    const totalCheckboxes = document.querySelectorAll('.user-checkbox');
+    
+    if (checkedBoxes.length > 0) {
+        bulkActions.style.display = 'inline-block';
+        selectedCount.style.display = 'inline';
+        selectedCount.textContent = `${checkedBoxes.length} selected`;
+    } else {
+        bulkActions.style.display = 'none';
+        selectedCount.style.display = 'none';
+    }
+    
+    // Update select-all checkbox state
+    if (checkedBoxes.length === 0) {
+        selectAllCheckbox.indeterminate = false;
+        selectAllCheckbox.checked = false;
+    } else if (checkedBoxes.length === totalCheckboxes.length) {
+        selectAllCheckbox.indeterminate = false;
+        selectAllCheckbox.checked = true;
+    } else {
+        selectAllCheckbox.indeterminate = true;
+    }
+}
+
+function bulkDeleteUsers() {
+    const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+    
+    if (checkedBoxes.length === 0) {
+        alert('Please select users to delete.');
+        return;
+    }
+    
+    const userIds = Array.from(checkedBoxes).map(checkbox => parseInt(checkbox.value));
+    const count = userIds.length;
+    
+    // Show confirmation dialog
+    const confirmMessage = `Are you sure you want to permanently delete ${count} user${count > 1 ? 's' : ''}? 
+
+⚠️  This action will:
+• Delete the user account permanently
+• Remove associated profiles and grievances
+• Preserve audit logs and comments (but anonymize them)
+
+This action cannot be undone!`;
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    // Disable button and show loading state
+    const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+    const originalText = bulkDeleteBtn.innerHTML;
+    bulkDeleteBtn.disabled = true;
+    bulkDeleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+    
+    fetch('/admin-panel/superadmin/users/bulk-delete/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+            user_ids: userIds
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Successfully deleted ${data.deleted_count} user(s)!`);
+            
+            // Remove deleted rows from the table
+            if (data.deleted_users) {
+                data.deleted_users.forEach(user => {
+                    const row = document.querySelector(`tr[data-user-id="${user.id}"]`);
+                    if (row) {
+                        row.remove();
+                    }
+                });
+            }
+            
+            // Reset checkboxes and buttons
+            document.getElementById('select-all').checked = false;
+            updateBulkDeleteButton();
+            
+            // Reload the page to update counts
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Bulk delete error:', error);
+        alert('Error deleting users: ' + error.message);
+    })
+    .finally(() => {
+        // Re-enable button
+        bulkDeleteBtn.disabled = false;
+        bulkDeleteBtn.innerHTML = originalText;
+    });
+}
+
+function bulkDeactivateUsers() {
+    const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+    
+    if (checkedBoxes.length === 0) {
+        alert('Please select users to deactivate.');
+        return;
+    }
+    
+    const userIds = Array.from(checkedBoxes).map(checkbox => parseInt(checkbox.value));
+    const count = userIds.length;
+    
+    // Show confirmation dialog
+    const confirmMessage = `Are you sure you want to deactivate ${count} user${count > 1 ? 's' : ''}? This is a safer alternative to deletion - users will be disabled but their data will remain intact.`;
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    // Disable button and show loading state
+    const bulkDeactivateBtn = document.getElementById('bulk-deactivate-btn');
+    const originalText = bulkDeactivateBtn.innerHTML;
+    bulkDeactivateBtn.disabled = true;
+    bulkDeactivateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deactivating...';
+    
+    fetch('/admin-panel/superadmin/users/bulk-deactivate/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+            user_ids: userIds
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Successfully deactivated ${data.deactivated_count} user(s)`);
+            
+            // Reset checkboxes and buttons
+            document.getElementById('select-all').checked = false;
+            updateBulkDeleteButton();
+            
+            // Reload the page to update the user list
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Bulk deactivate error:', error);
+        alert('Error deactivating users: ' + error.message);
+    })
+    .finally(() => {
+        // Re-enable button
+        bulkDeactivateBtn.disabled = false;
+        bulkDeactivateBtn.innerHTML = originalText;
+    });
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Add event listeners to existing checkboxes
+    document.querySelectorAll('.user-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', updateBulkDeleteButton);
+    });
+});
 </script>
 
 <!-- CSRF Token -->

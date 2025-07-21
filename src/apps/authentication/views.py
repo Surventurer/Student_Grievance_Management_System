@@ -292,21 +292,33 @@ def login_view(request):
                 
                 # For students, login directly to student dashboard
                 elif user.role == 'student':
-                    login(request, user)
-                    return redirect('students:dashboard')
+                    # Ensure student has a profile
+                    try:
+                        student_profile = user.student_profile
+                        login(request, user)
+                        log_login_action(user, request, success=True)
+                        return redirect('students:dashboard')
+                    except:
+                        messages.error(request, 'Student profile not found. Please contact administrator.')
+                        return render(request, 'authentication/login.html')
                 
                 # For officers, login directly to admin dashboard 
                 elif user.role == 'officer':
-                    login(request, user)
-                    return redirect('admin_panel:dashboard')
+                    # Ensure officer has an admin profile
+                    try:
+                        admin_profile = user.admin_profile
+                        login(request, user)
+                        log_login_action(user, request, success=True)
+                        return redirect('admin_panel:dashboard')
+                    except:
+                        messages.error(request, 'Officer profile not found. Please contact administrator.')
+                        return render(request, 'authentication/login.html')
                     
-                # For other roles, redirect to appropriate dashboard
+                # For other roles, redirect appropriately 
                 else:
                     login(request, user)
-                    if user.is_superuser:
-                        return redirect('admin_panel:dashboard')
-                    else:
-                        return redirect('students:dashboard')
+                    log_login_action(user, request, success=True)
+                    return redirect('admin_panel:dashboard')
             else:
                 messages.error(request, 'Invalid email or password')
         

@@ -79,8 +79,8 @@ class StudentProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='student_profile')
     name = models.CharField(max_length=100, blank=True, null=True)  # Full name of the student (nullable for migration)
     student_id = models.CharField(max_length=50, unique=True)  # Student enrollment Id
-    school = models.CharField(max_length=200, blank=True, null=True)  # Name of the School (optional, not in doc)
-    department = models.CharField(max_length=100)  # Department name
+    school = models.CharField(max_length=200)  # Name of the School (required)
+    department = models.CharField(max_length=100)  # Department name (required)
     contact_no = models.CharField(max_length=15, blank=True, null=True)  # Contact number (nullable for migration)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -103,14 +103,14 @@ class AdminProfile(models.Model):
     
     ROLE_LEVEL_CHOICES = [
         ('superadmin', 'Super Admin'),
+        ('admin', 'Department Admin'),  # Updated to match User model
         ('officer', 'Grievance Officer'),
-        ('dept_admin', 'Department Admin'),
     ]
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='admin_profile')
     role_level = models.CharField(max_length=20, choices=ROLE_LEVEL_CHOICES)
-    department = models.CharField(max_length=100, blank=True, null=True)
+    department = models.CharField(max_length=100)  # Department is required for admin/officers
     employee_id = models.CharField(max_length=50, unique=True)
     phone = models.CharField(max_length=15, blank=True, null=True)
     office_location = models.CharField(max_length=100, blank=True, null=True)
@@ -118,7 +118,34 @@ class AdminProfile(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"{self.user.get_full_name()} - {self.role_level}"
+        return f"{self.user.get_full_name()} - {self.get_role_level_display()}"
+    
+    def save(self, *args, **kwargs):
+        """Ensure user role matches admin role_level"""
+        if self.user_id:
+            # Sync user role with admin role_level
+            self.user.role = self.role_level
+            self.user.save()
+        super().save(*args, **kwargs)
+    
+    @property
+    def can_manage_department(self):
+        """Check if admin can manage department-level operations"""
+        return self.role_level in ['superadmin', 'admin']
+    
+    @property 
+    def can_assign_grievances(self):
+        """Check if admin can assign grievances"""
+        return self.role_level in ['superadmin', 'admin']
+    
+    @property
+    def accessible_departments(self):
+        """Get list of departments this admin can access"""
+        if self.role_level == 'superadmin':
+            return Department.objects.all()
+        elif self.role_level == 'admin' and self.department:
+            return Department.objects.filter(name=self.department)
+        return Department.objects.none()
     
     class Meta:
         verbose_name = "Admin Profile"

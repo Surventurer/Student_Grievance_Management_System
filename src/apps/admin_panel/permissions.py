@@ -17,10 +17,15 @@ def get_user_department(user):
         return None  # Superadmin has access to all departments
     
     try:
-        admin_profile = AdminProfile.objects.get(user=user)
-        return admin_profile.department
-    except AdminProfile.DoesNotExist:
-        return None
+        if hasattr(user, 'admin_profile') and user.admin_profile:
+            return user.admin_profile.department
+        elif hasattr(user, 'student_profile') and user.student_profile:
+            return user.student_profile.department
+    except Exception as e:
+        # Handle case where profile doesn't exist
+        print(f"Error getting user department: {e}")
+        
+    return None
 
 
 def can_access_all_data(user):
@@ -73,17 +78,26 @@ def can_access_grievance(user, grievance):
     # Department admin can access grievances from their department
     if user.role == 'admin':
         user_dept = get_user_department(user)
-        return user_dept and (
-            grievance.department == user_dept or 
-            grievance.student.department == user_dept
-        )
+        if user_dept:
+            return (grievance.department == user_dept or 
+                   grievance.student.department == user_dept)
     
     # Officers can access grievances assigned to them
     if user.role == 'officer':
         try:
-            admin_profile = AdminProfile.objects.get(user=user)
-            return grievance.assigned_to == admin_profile
-        except AdminProfile.DoesNotExist:
+            if hasattr(user, 'admin_profile') and user.admin_profile:
+                return grievance.assigned_to == user.admin_profile
+        except Exception as e:
+            print(f"Error checking officer access: {e}")
+            return False
+    
+    # Students can access their own grievances
+    if user.role == 'student':
+        try:
+            if hasattr(user, 'student_profile') and user.student_profile:
+                return grievance.student == user.student_profile
+        except Exception as e:
+            print(f"Error checking student access: {e}")
             return False
     
     return False
@@ -97,17 +111,28 @@ def can_access_student(user, student):
     # Department admin can access students from their department
     if user.role == 'admin':
         user_dept = get_user_department(user)
-        return user_dept and student.department == user_dept
+        if user_dept:
+            return student.department == user_dept
     
     # Officers can access students who have grievances assigned to them
     if user.role == 'officer':
         try:
-            admin_profile = AdminProfile.objects.get(user=user)
-            return Grievance.objects.filter(
-                student=student, 
-                assigned_to=admin_profile
-            ).exists()
-        except AdminProfile.DoesNotExist:
+            if hasattr(user, 'admin_profile') and user.admin_profile:
+                return Grievance.objects.filter(
+                    student=student, 
+                    assigned_to=user.admin_profile
+                ).exists()
+        except Exception as e:
+            print(f"Error checking officer student access: {e}")
+            return False
+    
+    # Students can access their own profile
+    if user.role == 'student':
+        try:
+            if hasattr(user, 'student_profile') and user.student_profile:
+                return student == user.student_profile
+        except Exception as e:
+            print(f"Error checking student self access: {e}")
             return False
     
     return False
@@ -128,9 +153,18 @@ def filter_grievances_by_access(user, queryset):
     
     if user.role == 'officer':
         try:
-            admin_profile = AdminProfile.objects.get(user=user)
-            return queryset.filter(assigned_to=admin_profile)
-        except AdminProfile.DoesNotExist:
+            if hasattr(user, 'admin_profile') and user.admin_profile:
+                return queryset.filter(assigned_to=user.admin_profile)
+        except Exception as e:
+            print(f"Error filtering grievances for officer: {e}")
+            pass
+    
+    if user.role == 'student':
+        try:
+            if hasattr(user, 'student_profile') and user.student_profile:
+                return queryset.filter(student=user.student_profile)
+        except Exception as e:
+            print(f"Error filtering grievances for student: {e}")
             pass
     
     return queryset.none()
@@ -148,13 +182,22 @@ def filter_students_by_access(user, queryset):
     
     if user.role == 'officer':
         try:
-            admin_profile = AdminProfile.objects.get(user=user)
-            # Officers can see students who have grievances assigned to them
-            student_ids = Grievance.objects.filter(
-                assigned_to=admin_profile
-            ).values_list('student_id', flat=True).distinct()
-            return queryset.filter(id__in=student_ids)
-        except AdminProfile.DoesNotExist:
+            if hasattr(user, 'admin_profile') and user.admin_profile:
+                # Officers can see students who have grievances assigned to them
+                student_ids = Grievance.objects.filter(
+                    assigned_to=user.admin_profile
+                ).values_list('student_id', flat=True).distinct()
+                return queryset.filter(id__in=student_ids)
+        except Exception as e:
+            print(f"Error filtering students for officer: {e}")
+            pass
+    
+    if user.role == 'student':
+        try:
+            if hasattr(user, 'student_profile') and user.student_profile:
+                return queryset.filter(id=user.student_profile.id)
+        except Exception as e:
+            print(f"Error filtering students for student: {e}")
             pass
     
     return queryset.none()

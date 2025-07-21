@@ -79,7 +79,63 @@ class User(AbstractBaseUser, PermissionsMixin):
         """Get full name from student profile if available, otherwise return email"""
         if hasattr(self, 'student_profile') and self.student_profile:
             return self.student_profile.name or self.email
+        if hasattr(self, 'admin_profile') and self.admin_profile:
+            return f"{self.admin_profile.user.email} ({self.admin_profile.role_level})"
         return self.email
+
+    def has_permission(self, permission):
+        """Check if user has specific permission based on role"""
+        permission_map = {
+            'superadmin': [
+                'view_all_data', 'manage_users', 'manage_system', 'manage_categories',
+                'view_audit_logs', 'manage_auto_assignment', 'delete_users', 
+                'modify_roles', 'system_backup', 'database_access'
+            ],
+            'admin': [
+                'view_department_data', 'manage_department_students', 'manage_department_grievances',
+                'assign_grievances', 'view_department_reports', 'manage_department_categories'
+            ],
+            'officer': [
+                'view_assigned_grievances', 'update_grievance_status', 'add_comments',
+                'view_assigned_students', 'update_own_profile'
+            ],
+            'student': [
+                'submit_grievances', 'view_own_grievances', 'update_own_profile',
+                'provide_feedback', 'upload_documents'
+            ]
+        }
+        
+        user_permissions = permission_map.get(self.role, [])
+        return permission in user_permissions
+    
+    @property
+    def role_display(self):
+        """Get human-readable role display"""
+        return self.get_role_display()
+    
+    def can_access_grievance(self, grievance):
+        """Check if user can access a specific grievance"""
+        if self.role == 'superadmin':
+            return True
+        elif self.role == 'admin':
+            try:
+                admin_profile = self.admin_profile
+                return (grievance.student.department == admin_profile.department or 
+                       grievance.department == admin_profile.department)
+            except:
+                return False
+        elif self.role == 'officer':
+            try:
+                admin_profile = self.admin_profile
+                return grievance.assigned_to == admin_profile
+            except:
+                return False
+        elif self.role == 'student':
+            try:
+                return grievance.student == self.student_profile
+            except:
+                return False
+        return False
 
 
 class EmailVerification(models.Model):

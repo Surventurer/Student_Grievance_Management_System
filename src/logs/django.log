@@ -21397,3 +21397,917 @@ Watching for file changes with StatReloader
 /Users/abhinavrajpati/Desktop/Student_Grievance_Management_System/src/apps/admin_panel/urls.py changed, reloading.
 Watching for file changes with StatReloader
 Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3725
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4098
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /auth/verify-student-email/ HTTP/1.1" 200 7806
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /auth/forgot-password/ HTTP/1.1" 200 4749
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /auth/ HTTP/1.1" 200 3725
+"POST /auth/ HTTP/1.1" 200 8379
+"POST /auth/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 32217
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 31936
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 31936
+"GET /admin-panel/grievances/ HTTP/1.1" 200 60852
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 91943
+"GET /admin-panel/superadmin/settings/ HTTP/1.1" 200 28905
+"GET /admin-panel/superadmin/permissions/ HTTP/1.1" 200 30624
+"GET /admin-panel/audit-logs/ HTTP/1.1" 200 57196
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 1838, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 862, in do_for
+    nodelist_loop = parser.parse(
+                    ^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 861, in do_for
+    sequence = parser.compile_filter(bits[in_index + 1])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 609, in compile_filter
+    return FilterExpression(token, self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 705, in __init__
+    filter_func = parser.find_filter(filter_name)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 615, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'split'
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 344297
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 31936
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 31936
+"GET /admin-panel/grievances/ HTTP/1.1" 200 60852
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 91943
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"POST /auth/ HTTP/1.1" 200 4504
+"POST /auth/ HTTP/1.1" 200 8379
+"POST /auth/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 32217
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 31936
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 31936
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 31936
+"GET /admin-panel/dashboard/ HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3725
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4098
+"GET /auth/student-registration/ HTTP/1.1" 200 9136
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /auth/forgot-password/ HTTP/1.1" 200 4749
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /auth/verify-student-email/ HTTP/1.1" 200 7806
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /auth/student-registration/ HTTP/1.1" 200 9136
+"GET /auth/student-registration/ HTTP/1.1" 200 9237
+"GET /auth/ HTTP/1.1" 200 3725
+"POST /auth/ HTTP/1.1" 200 4504
+"POST /auth/ HTTP/1.1" 200 8379
+"POST /auth/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 32217
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 91943
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"POST /auth/login/ HTTP/1.1" 200 4217
+"GET /auth/forgot-password/ HTTP/1.1" 200 4749
+"POST /auth/forgot-password/ HTTP/1.1" 302 0
+"GET /auth/forgot-password/ HTTP/1.1" 200 5508
+"GET /auth/reset-password/mIhQx5oXv4MlNFmwgggHXZjiQBp3lbRUcQJWCXwKRvgP1TRF53/ HTTP/1.1" 200 8025
+"POST /auth/reset-password/mIhQx5oXv4MlNFmwgggHXZjiQBp3lbRUcQJWCXwKRvgP1TRF53/ HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 4590
+"POST /auth/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 22310
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 32217
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 91943
+Internal Server Error: /admin-panel/superadmin/users/create-admin/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\decorators.py", line 19, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py", line 335, in create_admin_user
+    return render(request, 'admin_panel/superadmin/create_admin_user.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: admin_panel/superadmin/create_admin_user.html
+"GET /admin-panel/superadmin/users/create-admin/ HTTP/1.1" 500 92925
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET /auth/forgot-password/ HTTP/1.1" 200 4749
+"POST /auth/forgot-password/ HTTP/1.1" 302 0
+"GET /auth/forgot-password/ HTTP/1.1" 200 5508
+"GET /auth/reset-password/DFotFrATIsvHhGA1OpPoiscGnrR3uBUNKN6pbR9E1cCLp5Tsuw/ HTTP/1.1" 200 8025
+"POST /auth/reset-password/DFotFrATIsvHhGA1OpPoiscGnrR3uBUNKN6pbR9E1cCLp5Tsuw/ HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 4590
+"POST /auth/ HTTP/1.1" 200 8391
+"POST /auth/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 28792
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 32217
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 91943
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 91943
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 91943
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"POST /auth/login/ HTTP/1.1" 200 8025
+"GET /auth/login/ HTTP/1.1" 200 3725
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 32217
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 91943
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 91943
+"GET /static/css/style.css HTTP/1.1" 200 24187
+"GET /static/js/main.js HTTP/1.1" 200 17849
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 91943
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 92595
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 97975
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 102512
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 102512
+"GET /admin-panel/superadmin/users/?id=4c2b7bd4-546a-4283-a1ff-0b4a246c0632&vscodeBrowserReqId=1753090341515 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /auth/ HTTP/1.1" 200 8958
+"GET /static/js/main.js HTTP/1.1" 200 17849
+"GET /static/css/style.css HTTP/1.1" 200 24187
+Internal Server Error: /admin-panel/superadmin/users/bulk-delete/
+"POST /admin-panel/superadmin/users/bulk-delete/ HTTP/1.1" 500 61
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 103808
+Internal Server Error: /admin-panel/superadmin/users/bulk-delete/
+"POST /admin-panel/superadmin/users/bulk-delete/ HTTP/1.1" 500 72
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 104132
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 104132
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 104132
+"GET /admin-panel/superadmin/users/?id=6a1b43c7-720a-465c-a4aa-9713ec879a6e&vscodeBrowserReqId=1753090724691 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 106237
+Internal Server Error: /admin-panel/superadmin/users/bulk-delete/
+"POST /admin-panel/superadmin/users/bulk-delete/ HTTP/1.1" 500 72
+"POST /admin-panel/superadmin/users/bulk-deactivate/ HTTP/1.1" 200 922
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 106248
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\grievances\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\grievances\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\grievances\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\grievances\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\notifications\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\decorators.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\decorators.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\permissions.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\permissions.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\permissions.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\permissions.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\permissions.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\grievances\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\config\settings.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /static/css/style.css HTTP/1.1" 304 0
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 25903
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 25622
+"GET /admin-panel/grievances/ HTTP/1.1" 200 31732
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 72785
+Internal Server Error: /admin-panel/superadmin/users/create-admin/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\decorators.py", line 19, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py", line 338, in create_admin_user
+    return render(request, 'admin_panel/superadmin/create_admin_user.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: admin_panel/superadmin/create_admin_user.html
+"GET /admin-panel/superadmin/users/create-admin/ HTTP/1.1" 500 95434
+"GET /admin-panel/superadmin/permissions/ HTTP/1.1" 200 30624
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 72785
+"GET /admin-panel/superadmin/permissions/ HTTP/1.1" 200 30624
+"GET /admin-panel/superadmin/settings/ HTTP/1.1" 200 28904
+"GET /admin-panel/audit-logs/ HTTP/1.1" 200 17467
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 25622
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 72785
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4924
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 14830
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/profile/ HTTP/1.1" 200 20940
+"GET /students/profile/ HTTP/1.1" 200 20940
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+Watching for file changes with StatReloader
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4924
+"GET /auth/login/ HTTP/1.1" 200 4425
+"GET /auth/login/ HTTP/1.1" 200 4425
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 25903
+"GET /admin-panel/categories/ HTTP/1.1" 200 28369
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 25622
+"GET /admin-panel/reports/ HTTP/1.1" 200 32745
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 25622
+"GET /admin-panel/grievances/ HTTP/1.1" 200 31732
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 72785
+"POST /admin-panel/superadmin/users/bulk-delete/ HTTP/1.1" 200 167
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67346
+"POST /admin-panel/superadmin/users/7/toggle-status/ HTTP/1.1" 200 81
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67347
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4924
+"GET /static/css/style.css HTTP/1.1" 304 0
+"GET /static/js/main.js HTTP/1.1" 304 0
+"POST /auth/login/ HTTP/1.1" 200 4917
+"POST /auth/login/ HTTP/1.1" 200 4917
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 14841
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /grievances/submit/ HTTP/1.1" 200 38298
+"GET /students/api/departments/ HTTP/1.1" 200 1407
+"GET /grievances/api/categories/?type=academic HTTP/1.1" 200 451
+"GET /grievances/api/categories/?type=non_academic HTTP/1.1" 200 490
+"GET /students/api/departments/ HTTP/1.1" 200 1407
+"GET /grievances/api/categories/?type=academic HTTP/1.1" 200 451
+"GET /grievances/api/categories/?type=non_academic HTTP/1.1" 200 490
+"GET /students/api/departments/ HTTP/1.1" 200 1407
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"POST /grievances/send-otp/ HTTP/1.1" 200 17
+"POST /grievances/verify-otp/ HTTP/1.1" 200 17
+"POST /grievances/submit/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 18901
+"GET /students/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/ HTTP/1.1" 200 24638
+"POST /students/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/add-response/ HTTP/1.1" 302 0
+"GET /students/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/ HTTP/1.1" 200 25613
+"GET /students/grievances/ HTTP/1.1" 200 19150
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4924
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 28251
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67347
+"POST /admin-panel/superadmin/users/7/toggle-status/ HTTP/1.1" 200 78
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67346
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4924
+"POST /auth/login/ HTTP/1.1" 200 8025
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 25636
+"GET /admin-panel/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/ HTTP/1.1" 200 22089
+"POST /admin-panel/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/add-response/ HTTP/1.1" 200 148
+"GET /admin-panel/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/ HTTP/1.1" 200 22912
+"GET /admin-panel/grievances/ HTTP/1.1" 200 36606
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4924
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 28251
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67346
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4924
+"POST /auth/login/ HTTP/1.1" 200 8025
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 23084
+"GET /admin-panel/students/ HTTP/1.1" 200 59445
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/students/ HTTP/1.1" 200 59445
+"GET /admin-panel/api/student-stats/ HTTP/1.1" 200 64
+"GET /admin-panel/reports/dashboard/ HTTP/1.1" 200 36735
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4924
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 28251
+"GET /admin-panel/grievances/ HTTP/1.1" 200 38011
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/ HTTP/1.1" 200 24317
+"POST /admin-panel/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/add-response/ HTTP/1.1" 200 148
+"GET /admin-panel/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/ HTTP/1.1" 200 25141
+"PATCH /admin-panel/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/update-status/ HTTP/1.1" 200 39
+"GET /admin-panel/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/ HTTP/1.1" 200 24207
+"GET /admin-panel/grievances/ HTTP/1.1" 200 38027
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/grievances/ HTTP/1.1" 200 38027
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 27971
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67346
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4924
+"POST /auth/login/ HTTP/1.1" 200 4917
+"GET /auth/forgot-password/ HTTP/1.1" 200 4749
+"POST /auth/forgot-password/ HTTP/1.1" 302 0
+"GET /auth/forgot-password/ HTTP/1.1" 200 5508
+"GET /auth/reset-password/HmJyAt7fR7May0NZ5vNIcEqPNOKjNgMwEOosFAEFQVjOLOezfi/ HTTP/1.1" 200 8025
+"POST /auth/reset-password/HmJyAt7fR7May0NZ5vNIcEqPNOKjNgMwEOosFAEFQVjOLOezfi/ HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 5290
+"POST /auth/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 22300
+"GET /admin-panel/grievances/ HTTP/1.1" 200 36117
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/ HTTP/1.1" 302 0
+"GET /admin-panel/grievances/ HTTP/1.1" 200 36463
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/ HTTP/1.1" 302 0
+"GET /admin-panel/grievances/ HTTP/1.1" 200 36463
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/ HTTP/1.1" 302 0
+"GET /admin-panel/grievances/ HTTP/1.1" 200 36463
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/ HTTP/1.1" 302 0
+"GET /admin-panel/grievances/ HTTP/1.1" 200 36463
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/ HTTP/1.1" 302 0
+"GET /admin-panel/grievances/ HTTP/1.1" 200 36463
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/ HTTP/1.1" 302 0
+"GET /admin-panel/grievances/ HTTP/1.1" 200 36463
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/grievances/ HTTP/1.1" 200 36117
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/grievances/ HTTP/1.1" 200 36117
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 22300
+"GET /admin-panel/grievances/ HTTP/1.1" 200 36117
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/grievances/ HTTP/1.1" 200 36117
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4924
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 28252
+"GET /admin-panel/grievances/ HTTP/1.1" 200 38027
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67346
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4924
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /static/css/style.css HTTP/1.1" 304 0
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 22300
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4924
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 28252
+"GET /admin-panel/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/ HTTP/1.1" 200 24207
+"GET /admin-panel/grievances/ HTTP/1.1" 200 38027
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 27971
+"GET /admin-panel/grievances/ HTTP/1.1" 200 38027
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67346
+"GET /admin-panel/superadmin/permissions/ HTTP/1.1" 200 30624
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67346
+"GET /admin-panel/grievances/ HTTP/1.1" 200 38027
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67346
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67339
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67339
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 18392
+"POST /admin-panel/superadmin/users/create/ HTTP/1.1" 302 0
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 19090
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\models.py changed, reloading.
+Watching for file changes with StatReloader
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 18741
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 27971
+"GET /admin-panel/grievances/ HTTP/1.1" 200 38027
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67339
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 18741
+"POST /admin-panel/superadmin/users/create/ HTTP/1.1" 302 0
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 19457
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67339
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67339
+Not Found: /admin-panel/admin
+"GET /admin-panel/admin HTTP/1.1" 404 20048
+"GET /admin/ HTTP/1.1" 200 15783
+"GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+"GET /static/admin/css/base.css HTTP/1.1" 304 0
+"GET /static/admin/js/theme.js HTTP/1.1" 304 0
+"GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+"GET /static/admin/css/dashboard.css HTTP/1.1" 304 0
+"GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+"GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+"GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 304 0
+"GET /static/admin/img/icon-addlink.svg HTTP/1.1" 304 0
+"GET /static/admin/img/icon-changelink.svg HTTP/1.1" 304 0
+"GET /admin/authentication/user/ HTTP/1.1" 200 23806
+"GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+"GET /static/admin/css/changelists.css HTTP/1.1" 304 0
+"GET /static/admin/js/admin/RelatedObjectLookups.js HTTP/1.1" 304 0
+"GET /static/admin/js/vendor/jquery/jquery.js HTTP/1.1" 304 0
+"GET /static/admin/js/core.js HTTP/1.1" 304 0
+"GET /static/admin/js/vendor/xregexp/xregexp.js HTTP/1.1" 304 0
+"GET /static/admin/js/urlify.js HTTP/1.1" 304 0
+"GET /static/admin/js/actions.js HTTP/1.1" 304 0
+"GET /static/admin/js/prepopulate.js HTTP/1.1" 304 0
+"GET /static/admin/img/search.svg HTTP/1.1" 304 0
+"GET /static/admin/img/icon-yes.svg HTTP/1.1" 304 0
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /static/admin/js/filters.js HTTP/1.1" 304 0
+"GET /static/admin/img/tooltag-add.svg HTTP/1.1" 304 0
+"GET /static/admin/img/sorting-icons.svg HTTP/1.1" 304 0
+"GET /admin/authentication/passwordreset/ HTTP/1.1" 200 18831
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/authentication/emailverification/ HTTP/1.1" 200 16638
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/authentication/adminloginotp/ HTTP/1.1" 200 23709
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/grievances/category/ HTTP/1.1" 200 23685
+"GET /static/admin/css/forms.css HTTP/1.1" 304 0
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /static/admin/css/widgets.css HTTP/1.1" 304 0
+"GET /admin/grievances/grievanceotpverification/ HTTP/1.1" 200 19146
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+Internal Server Error: /admin/grievances/grievance/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\admin\options.py", line 719, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\views\decorators\cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\admin\sites.py", line 246, in inner
+    return view(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\admin\options.py", line 2163, in changelist_view
+    "selection_note": _("0 of %(cnt)s selected") % {"cnt": len(cl.result_list)},
+                                                           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 366, in __len__
+    self._fetch_all()
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1949, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1610, in execute_sql
+    sql, params = self.as_sql()
+                  ^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 766, in as_sql
+    extra_select, order_by, group_by = self.pre_sql_setup(
+                                       ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 85, in pre_sql_setup
+    self.setup_query(with_col_aliases=with_col_aliases)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 74, in setup_query
+    self.select, self.klass_info, self.annotation_col_map = self.get_select(
+                                                            ^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 299, in get_select
+    related_klass_infos = self.get_related_selections(select, select_mask)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1396, in get_related_selections
+    raise FieldError(
+django.core.exceptions.FieldError: Invalid field name(s) given in select_related: 'assigned_admin'. Choices are: student, category, assigned_to, feedback
+"GET /admin/grievances/grievance/ HTTP/1.1" 500 174953
+"GET /admin/grievances/grievanceotpverification/ HTTP/1.1" 200 19146
+"GET /admin/students/adminprofile/ HTTP/1.1" 200 22765
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/students/department/ HTTP/1.1" 200 21284
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET /admin/students/studentprofile/ HTTP/1.1" 200 19506
+"GET /admin/jsi18n/ HTTP/1.1" 200 3342
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 9658
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67339
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 18741
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67339
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 18741
+"POST /admin-panel/superadmin/users/create/ HTTP/1.1" 302 0
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 19457
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 23527
+"GET /static/js/main.js HTTP/1.1" 304 0
+"GET /static/css/style.css HTTP/1.1" 304 0
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 23527
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 23527
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 23527
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 23527
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 23527
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 23527
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 23527
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 23527
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 27971
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 27971
+"GET /admin-panel/grievances/ HTTP/1.1" 200 38027
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67339
+"GET /admin-panel/superadmin/settings/ HTTP/1.1" 200 28904
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67339
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67339
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67339
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67339
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 23527
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67339
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 23527
+"POST /admin-panel/superadmin/users/create/ HTTP/1.1" 302 0
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 24335
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+"POST /admin-panel/superadmin/users/create/ HTTP/1.1" 302 0
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 26085
+"POST /admin-panel/superadmin/users/create/ HTTP/1.1" 302 0
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25943
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4924
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\role_validator.py changed, reloading.
+Watching for file changes with StatReloader

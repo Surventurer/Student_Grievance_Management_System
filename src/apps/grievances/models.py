@@ -136,7 +136,10 @@ class Grievance(models.Model):
         assignment_reason = "No assignment found"
         
         # Try to get department from student profile
-        student_department = self.student.department if hasattr(self.student, 'department') else None
+        try:
+            student_department = self.student.department if hasattr(self.student, 'department') else None
+        except Exception:
+            student_department = None
         
         # Step 1: Try to find specific department assignment
         if student_department:
@@ -162,14 +165,18 @@ class Grievance(models.Model):
             title_lower = self.title.lower()
             
             for assignment in assignments_with_keywords:
-                keywords = [k.strip().lower() for k in assignment.auto_assign_keywords.split(',')]
-                for keyword in keywords:
-                    if keyword and (keyword in description_lower or keyword in title_lower):
-                        assigned_admin = assignment.assigned_admin
-                        assignment_reason = f"Keyword match: '{keyword}' → {assignment.department}"
+                try:
+                    keywords = [k.strip().lower() for k in assignment.auto_assign_keywords.split(',')]
+                    for keyword in keywords:
+                        if keyword and (keyword in description_lower or keyword in title_lower):
+                            assigned_admin = assignment.assigned_admin
+                            assignment_reason = f"Keyword match: '{keyword}' → {assignment.department}"
+                            break
+                    if assigned_admin:
                         break
-                if assigned_admin:
-                    break
+                except Exception as e:
+                    print(f"Error processing keywords for assignment {assignment.id}: {e}")
+                    continue
         
         # Step 3: Fallback to category default admin
         if not assigned_admin and self.category.default_admin:
@@ -178,14 +185,17 @@ class Grievance(models.Model):
         
         # Step 4: Fallback to any available admin for the department
         if not assigned_admin and student_department:
-            fallback_admin = AdminProfile.objects.filter(
-                department__iexact=student_department,
-                role_level__in=['officer', 'dept_admin']
-            ).first()
-            
-            if fallback_admin:
-                assigned_admin = fallback_admin
-                assignment_reason = f"Department fallback: {student_department}"
+            try:
+                fallback_admin = AdminProfile.objects.filter(
+                    department__iexact=student_department,
+                    role_level__in=['admin', 'officer']
+                ).first()
+                
+                if fallback_admin:
+                    assigned_admin = fallback_admin
+                    assignment_reason = f"Department fallback: {student_department}"
+            except Exception as e:
+                print(f"Error finding fallback admin: {e}")
         
         # Assign and save
         if assigned_admin:
@@ -194,8 +204,7 @@ class Grievance(models.Model):
             
             # Create audit log for auto-assignment
             try:
-                request = None  # We'll need to pass request context later
-                # For now, we'll create a simple log entry
+                # Import here to avoid circular imports
                 from apps.grievances.models import AuditLog
                 AuditLog.objects.create(
                     user=assigned_admin.user,
@@ -240,7 +249,7 @@ class GrievanceComment(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     grievance = models.ForeignKey(Grievance, on_delete=models.CASCADE, related_name='comments')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     comment_type = models.CharField(max_length=20, choices=COMMENT_TYPES, default='comment')
     message = models.TextField()
     is_internal = models.BooleanField(default=False)  # Only visible to admins
@@ -260,7 +269,7 @@ class GrievanceStatusHistory(models.Model):
     grievance = models.ForeignKey(Grievance, on_delete=models.CASCADE, related_name='status_history')
     previous_status = models.CharField(max_length=20)
     new_status = models.CharField(max_length=20)
-    changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     reason = models.TextField(blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     
@@ -279,7 +288,7 @@ class GrievanceAssignmentHistory(models.Model):
     grievance = models.ForeignKey(Grievance, on_delete=models.CASCADE, related_name='assignment_history')
     previous_assignee = models.ForeignKey(AdminProfile, on_delete=models.SET_NULL, null=True, blank=True, related_name='previous_assignments')
     new_assignee = models.ForeignKey(AdminProfile, on_delete=models.SET_NULL, null=True, blank=True, related_name='new_assignments')
-    assigned_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    assigned_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     reason = models.TextField(blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     
@@ -323,7 +332,7 @@ class AuditLog(models.Model):
     ]
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     action = models.CharField(max_length=20, choices=ACTION_TYPES)
     target_model = models.CharField(max_length=50)  # Model name
     target_id = models.CharField(max_length=100)  # ID of affected object

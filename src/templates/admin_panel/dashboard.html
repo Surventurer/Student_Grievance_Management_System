@@ -161,17 +161,15 @@
                 <div class="mb-2 mb-md-0">
                     <h1 class="h3 mb-0 text-gray-800">
                         <i class="fas fa-tachometer-alt me-2"></i>
-                        {% if request.user.is_superadmin %}
+                        {% if user_role == 'superadmin' %}
                             Super Admin Dashboard
-                        {% elif request.user.is_admin %}
-                            {% if request.user.admin_profile.department == 'cs' %}
-                                CS Admin Dashboard
-                            {% elif request.user.admin_profile.department == 'ba' %}
-                                BA Admin Dashboard
+                        {% elif user_role == 'admin' %}
+                            {% if user_department %}
+                                {{ user_department|upper }} Admin Dashboard
                             {% else %}
                                 Admin Dashboard
                             {% endif %}
-                        {% elif request.user.is_officer %}
+                        {% elif user_role == 'officer' %}
                             Officer Dashboard
                         {% else %}
                             Admin Dashboard
@@ -179,11 +177,11 @@
                     </h1>
                     <p class="text-muted mb-0 d-none d-sm-block">
                         Welcome back, {{ request.user.get_display_name }}! 
-                        {% if request.user.is_superadmin %}
+                        {% if user_role == 'superadmin' %}
                             You have complete system access.
-                        {% elif request.user.is_admin %}
-                            Managing {{ request.user.admin_profile.department|upper }} department grievances.
-                        {% elif request.user.is_officer %}
+                        {% elif user_role == 'admin' %}
+                            Managing {% if user_department %}{{ user_department|upper }}{% else %}department{% endif %} grievances.
+                        {% elif user_role == 'officer' %}
                             Handle your assigned grievances efficiently.
                         {% else %}
                             Here's what's happening with your grievance system.
@@ -191,13 +189,16 @@
                     </p>
                 </div>
                 <div class="btn-group">
-                    {% if request.user.is_superadmin %}
+                    {% if user_role == 'superadmin' %}
                         <a href="{% url 'admin_panel:user_management' %}" class="btn btn-outline-danger btn-sm">
                             <i class="fas fa-users-cog me-1"></i>
                             <span class="d-none d-sm-inline">Users</span>
                         </a>
                         <a href="{% url 'admin_panel:system_settings' %}" class="btn btn-outline-warning btn-sm">
                             <i class="fas fa-cog me-1"></i>
+                            <span class="d-none d-sm-inline">Settings</span>
+                        </a>
+                    {% endif %}
                             <span class="d-none d-sm-inline">Settings</span>
                         </a>
                     {% endif %}
@@ -211,7 +212,7 @@
     </div>
 
     <!-- Role-Specific Alert -->
-    {% if request.user.is_superadmin %}
+    {% if user_role == 'superadmin' %}
     <div class="row mb-3">
         <div class="col-12">
             <div class="alert alert-info d-flex align-items-center" role="alert">
@@ -224,18 +225,18 @@
             </div>
         </div>
     </div>
-    {% elif request.user.is_admin %}
+    {% elif user_role == 'admin' %}
     <div class="row mb-3">
         <div class="col-12">
             <div class="alert alert-warning d-flex align-items-center" role="alert">
                 <i class="fas fa-user-shield me-2"></i>
                 <div>
-                    <strong>Department Admin:</strong> You can manage {{ request.user.admin_profile.department|upper }} department grievances and users.
+                    <strong>Department Admin:</strong> You can manage {% if user_department %}{{ user_department|upper }}{% else %}department{% endif %} grievances and users.
                 </div>
             </div>
         </div>
     </div>
-    {% elif request.user.is_officer %}
+    {% elif user_role == 'officer' %}
     <div class="row mb-3">
         <div class="col-12">
             <div class="alert alert-primary d-flex align-items-center" role="alert">
@@ -457,18 +458,18 @@
                     <!-- Common Actions for All Roles -->
                     <a href="{% url 'admin_panel:grievance_list' %}" class="btn btn-outline-primary">
                         <i class="fas fa-list me-2"></i>
-                        {% if request.user.is_superadmin %}
+                        {% if user_role == 'superadmin' %}
                             All Grievances
-                        {% elif request.user.is_admin %}
+                        {% elif user_role == 'admin' %}
                             Department Grievances
-                        {% elif request.user.is_officer %}
+                        {% elif user_role == 'officer' %}
                             My Assigned Grievances
                         {% else %}
                             Manage Grievances
                         {% endif %}
                     </a>
                     
-                    {% if request.user.is_superadmin %}
+                    {% if user_role == 'superadmin' %}
                         <!-- Superadmin Only Actions -->
                         <a href="{% url 'admin_panel:user_management' %}" class="btn btn-outline-danger">
                             <i class="fas fa-users-cog me-2"></i>Manage All Users
@@ -483,7 +484,7 @@
                             <i class="fas fa-history me-2"></i>Audit Logs
                         </a>
                         
-                    {% elif request.user.is_admin %}
+                    {% elif user_role == 'admin' %}
                         <!-- Department Admin Actions -->
                         <a href="{% url 'admin_panel:student_list' %}" class="btn btn-outline-info">
                             <i class="fas fa-users me-2"></i>Department Students
