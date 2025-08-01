@@ -11,11 +11,11 @@ from django.core.paginator import Paginator
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction, connection
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 
 from apps.authentication.decorators import superadmin_required
-from apps.authentication.models import User
+from apps.authentication.models import User, TemporaryRegistration, AdminLoginOTP
 from apps.students.models import StudentProfile, AdminProfile, Department, School
 from apps.grievances.models import Grievance, Category, AuditLog
 
@@ -23,8 +23,19 @@ from apps.grievances.models import Grievance, Category, AuditLog
 @superadmin_required
 def user_management(request):
     """User management view - Superadmin only"""
-    # Get all users with their profiles
+    # Get all verified users with their profiles
     users = User.objects.all().order_by('-created_at')
+    
+    # Check if we should show unverified students (temporary registrations)
+    # Hidden field ensures '0' is sent when checkbox is unchecked
+    # Checkbox sends '1' when checked (overrides hidden field)
+    show_unverified = request.GET.get('show_unverified', '1') == '1'
+    
+    # Get all temporary registrations (unverified users) only if checkbox is checked
+    if show_unverified:
+        temp_registrations = TemporaryRegistration.objects.all().order_by('-created_at')
+    else:
+        temp_registrations = TemporaryRegistration.objects.none()
     
     # Add search functionality
     search_query = request.GET.get('search', '')
@@ -34,22 +45,64 @@ def user_management(request):
             Q(student_profile__name__icontains=search_query) |
             Q(student_profile__student_id__icontains=search_query)
         )
+        if show_unverified:
+            temp_registrations = temp_registrations.filter(
+                Q(email__icontains=search_query) |
+                Q(name__icontains=search_query) |
+                Q(student_id__icontains=search_query)
+            )
     
-    # Add role filter
+    # Add role filter (only applies to verified users)
     role_filter = request.GET.get('role', '')
     if role_filter:
         users = users.filter(role=role_filter)
+        # If filtering by role other than student, exclude temp registrations
+        if role_filter != 'student':
+            temp_registrations = temp_registrations.none()
+    
+    # Create a combined list of users and temporary registrations
+    all_users = []
+    
+    # Add verified users
+    for user in users:
+        user.is_temporary = False
+        user.user_type = 'verified'
+        all_users.append(user)
+    
+    # Add temporary registrations (only if show_unverified is True)
+    for temp_reg in temp_registrations:
+        temp_reg.is_temporary = True
+        temp_reg.user_type = 'temporary'
+        temp_reg.role = 'student'  # All temp registrations are students
+        temp_reg.is_active = not temp_reg.is_expired
+        temp_reg.is_email_verified = temp_reg.is_verified
+        # Add methods as attributes instead of lambdas
+        temp_reg.get_role_display = 'Student (Unverified)'
+        temp_reg.get_display_name = temp_reg.name
+        temp_reg.created_at = temp_reg.created_at
+        temp_reg.id = f"temp_{temp_reg.id}"  # Prefix to distinguish from real users
+        all_users.append(temp_reg)
+    
+    # Sort all users by creation date (newest first)
+    all_users.sort(key=lambda x: x.created_at, reverse=True)
     
     # Pagination
-    paginator = Paginator(users, 20)
+    paginator = Paginator(all_users, 20)
     page = request.GET.get('page')
-    users = paginator.get_page(page)
+    users_page = paginator.get_page(page)
+    
+    # Exclude superadmin from role choices since there's only one
+    filtered_role_choices = [
+        (role_code, role_name) for role_code, role_name in User.ROLE_CHOICES 
+        if role_code != 'superadmin'
+    ]
     
     context = {
-        'users': users,
+        'users': users_page,
         'search_query': search_query,
         'role_filter': role_filter,
-        'role_choices': User.ROLE_CHOICES,
+        'show_unverified': show_unverified,
+        'role_choices': filtered_role_choices,
         'total_users': User.objects.count(),
         'active_users': User.objects.filter(is_active=True).count(),
         'verified_users': User.objects.filter(is_email_verified=True).count(),
@@ -57,6 +110,8 @@ def user_management(request):
         'admins_count': User.objects.filter(role='admin').count(),
         'officers_count': User.objects.filter(role='officer').count(),
         'superadmins_count': User.objects.filter(role='superadmin').count(),
+        'temp_registrations_count': TemporaryRegistration.objects.count(),
+        'unverified_temp_count': TemporaryRegistration.objects.filter(is_verified=False).count(),
     }
     
     return render(request, 'admin_panel/superadmin/user_management.html', context)
@@ -143,6 +198,249 @@ def toggle_user_status(request, user_id):
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+@superadmin_required
+def system_settings(request):
+    """System settings view - Superadmin only"""
+    import django
+    from django.conf import settings
+    
+    context = {
+        'django_version': django.get_version(),
+        'debug': settings.DEBUG,
+        'total_users': User.objects.count(),
+        'total_grievances': Grievance.objects.count(),
+    }
+    
+    return render(request, 'admin_panel/superadmin/system_settings.html', context)
+
+
+@superadmin_required
+def role_permissions(request):
+    """Role permissions overview - Superadmin only"""
+    context = {
+        'superadmin_count': User.objects.filter(role='superadmin').count(),
+        'admin_count': User.objects.filter(role='admin').count(),
+        'officer_count': User.objects.filter(role='officer').count(),
+        'student_count': User.objects.filter(role='student').count(),
+        'role_choices': User.ROLE_CHOICES,
+    }
+    return render(request, 'admin_panel/superadmin/role_permissions.html', context)
+
+
+@superadmin_required
+def audit_logs_view(request):
+    """Audit logs view - Superadmin only"""
+    logs = AuditLog.objects.select_related('user').order_by('-timestamp')
+    paginator = Paginator(logs, 50)
+    page = request.GET.get('page')
+    logs = paginator.get_page(page)
+    
+    context = {
+        'logs': logs,
+        'total_logs': AuditLog.objects.count(),
+    }
+    return render(request, 'admin_panel/superadmin/audit_logs.html', context)
+
+
+@superadmin_required
+def create_user(request):
+    """Create new user - Superadmin only"""
+    if request.method == 'POST':
+        # Implementation here
+        pass
+    
+    context = {
+        'role_choices': [
+            ('student', 'Student'),
+            ('admin', 'Department Admin'), 
+            ('officer', 'Grievance Officer')
+        ],
+    }
+    return render(request, 'admin_panel/superadmin/create_user.html', context)
+
+
+@superadmin_required
+def create_admin_user(request):
+    """Legacy function - redirect to create_user"""
+    return redirect('admin_panel:create_user')
+
+
+@superadmin_required
+def role_permissions_matrix(request):
+    """Role permissions matrix - Superadmin only"""
+    return render(request, 'admin_panel/superadmin/role_permissions.html', {})
+
+
+@superadmin_required
+@require_http_methods(["POST"])
+def bulk_delete_users(request):
+    """Bulk delete users - Superadmin only"""
+    try:
+        data = json.loads(request.body)
+        user_ids = data.get('user_ids', [])
+        
+        if not user_ids:
+            return JsonResponse({'error': 'No users selected'}, status=400)
+        
+        # Check if trying to delete own account
+        if request.user.id in [int(uid) for uid in user_ids]:
+            return JsonResponse({'error': 'Cannot delete your own account'}, status=400)
+        
+        users_to_delete = User.objects.filter(id__in=user_ids)
+        deleted_count = users_to_delete.delete()[0]
+        
+        return JsonResponse({
+            'success': True,
+            'deleted_count': deleted_count,
+            'message': f'Successfully deleted {deleted_count} user(s)'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+
+
+@superadmin_required
+@require_http_methods(["POST"])
+def bulk_deactivate_users(request):
+    """Bulk deactivate users - Superadmin only"""
+    try:
+        data = json.loads(request.body)
+        user_ids = data.get('user_ids', [])
+        
+        if not user_ids:
+            return JsonResponse({'error': 'No users selected'}, status=400)
+        
+        users_to_deactivate = User.objects.filter(id__in=user_ids, is_active=True)
+        
+        for user in users_to_deactivate:
+            user.is_active = False
+            user.save()
+        
+        return JsonResponse({
+            'success': True,
+            'deactivated_count': len(user_ids),
+            'message': f'Successfully deactivated {len(user_ids)} user(s)'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+
+
+@superadmin_required
+@require_http_methods(["POST"])
+def delete_temporary_registration(request, temp_id):
+    """Delete a temporary registration - Superadmin only"""
+    try:
+        temp_registration = get_object_or_404(TemporaryRegistration, id=temp_id)
+        
+        temp_info = {
+            'id': temp_registration.id,
+            'email': temp_registration.email,
+            'student_id': temp_registration.student_id,
+            'name': temp_registration.name
+        }
+        
+        temp_registration.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Successfully deleted temporary registration for {temp_info["name"]}',
+            'deleted_registration': temp_info
+        })
+        
+    except TemporaryRegistration.DoesNotExist:
+        return JsonResponse({'error': 'Temporary registration not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+
+
+@superadmin_required
+@require_http_methods(["POST"])
+def approve_temporary_registration(request, temp_id):
+    """Approve a temporary registration - Superadmin only"""
+    try:
+        temp_registration = get_object_or_404(TemporaryRegistration, id=temp_id)
+        
+        # Check if registration is already expired
+        if temp_registration.is_expired:
+            return JsonResponse({'error': 'Registration has expired and cannot be approved'}, status=400)
+        
+        # Create the actual user
+        user, student_profile = temp_registration.create_actual_user()
+        temp_registration.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Successfully approved registration for {student_profile.name}',
+            'user_id': user.id,
+        })
+        
+    except TemporaryRegistration.DoesNotExist:
+        return JsonResponse({'error': 'Temporary registration not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+
+
+@superadmin_required
+def get_temporary_registration_details(request, temp_id):
+    """Get temporary registration details - Superadmin only"""
+    try:
+        temp_registration = get_object_or_404(TemporaryRegistration, id=temp_id)
+        
+        details = {
+            'id': temp_registration.id,
+            'name': temp_registration.name,
+            'student_id': temp_registration.student_id,
+            'email': temp_registration.email,
+            'contact_no': temp_registration.contact_no,
+            'school': temp_registration.school,
+            'department': temp_registration.department,
+            'created_at': temp_registration.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'expires_at': temp_registration.expires_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'is_expired': temp_registration.is_expired,
+            'is_verified': temp_registration.is_verified,
+        }
+        
+        return JsonResponse({
+            'success': True,
+            'registration': details
+        })
+        
+    except TemporaryRegistration.DoesNotExist:
+        return JsonResponse({'error': 'Temporary registration not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+
+
+@superadmin_required
+@require_http_methods(["POST"])
+def clear_failed_login_attempts(request):
+    """Clear failed login attempts - Superadmin only"""
+    try:
+        data = json.loads(request.body)
+        user_id = data.get('user_id')
+        
+        if user_id:
+            user = get_object_or_404(User, id=user_id)
+            # Clear AdminLoginOTP records for this user
+            deleted_count = AdminLoginOTP.objects.filter(user=user).delete()[0]
+            message = f'Cleared failed login attempts for {user.email}. Cleaned {deleted_count} OTP records.'
+        else:
+            # Clear all old AdminLoginOTP records
+            deleted_count = AdminLoginOTP.objects.filter(
+                created_at__lt=timezone.now() - timedelta(hours=1)
+            ).delete()[0]
+            message = f'Cleared all failed login attempts. Cleaned {deleted_count} old OTP records.'
+        
+        return JsonResponse({
+            'success': True,
+            'message': message
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
 
 
 @superadmin_required

@@ -216,10 +216,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Format Student ID input (uppercase, alphanumeric)
+    // Format Student ID input (alphanumeric, allowing both upper and lower case)
     if (studentIdInput) {
         studentIdInput.addEventListener('input', function() {
-            this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            this.value = this.value.replace(/[^A-Za-z0-9]/g, '');
         });
     }
     

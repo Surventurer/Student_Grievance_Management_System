@@ -84,6 +84,11 @@ urlpatterns = [
     path('superadmin/users/bulk-delete/', superadmin_views.bulk_delete_users, name='bulk_delete_users'),
     path('superadmin/users/bulk-deactivate/', superadmin_views.bulk_deactivate_users, name='bulk_deactivate_users'),
     
+    # Temporary Registration Management (Superadmin Only)
+    path('superadmin/temp-registrations/<int:temp_id>/approve/', superadmin_views.approve_temporary_registration, name='approve_temp_registration'),
+    path('superadmin/temp-registrations/<int:temp_id>/delete/', superadmin_views.delete_temporary_registration, name='delete_temp_registration'),
+    path('superadmin/temp-registrations/<int:temp_id>/details/', superadmin_views.get_temporary_registration_details, name='temp_registration_details'),
+    
     # System Settings (Superadmin Only)
     path('superadmin/settings/', superadmin_views.system_settings, name='system_settings'),
     path('superadmin/audit-logs/', superadmin_views.audit_logs_view, name='superadmin_audit_logs'),

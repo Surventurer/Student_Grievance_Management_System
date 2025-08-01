@@ -22507,3 +22507,288 @@ Watching for file changes with StatReloader
 "GET /admin-panel/superadmin/users/ HTTP/1.1" 200 62114
 C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\urls.py changed, reloading.
 Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/?id=0c35b9ef-658c-4806-93e6-ee77e3d8b71c&vscodeBrowserReqId=1754078952208 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3725
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4098
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 28252
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 84195
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/?id=0c35b9ef-658c-4806-93e6-ee77e3d8b71c&vscodeBrowserReqId=1754079329927 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/?show_unverified=0&id=0c35b9ef-658c-4806-93e6-ee77e3d8b71c&vscodeBrowserReqId=1754079336129 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 86293
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 86293
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 86293
+"POST /admin-panel/superadmin/temp-registrations/5/delete/ HTTP/1.1" 200 205
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 82410
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 82410
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 82410
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 82410
+"GET /admin-panel/superadmin/temp-registrations/6/details/ HTTP/1.1" 200 321
+"POST /admin-panel/superadmin/users/bulk-delete/ HTTP/1.1" 200 278
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 64930
+"GET /admin-panel/superadmin/temp-registrations/4/details/ HTTP/1.1" 200 334
+"GET /admin-panel/superadmin/temp-registrations/6/details/ HTTP/1.1" 200 321
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 64930
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 64930
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 62567
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 62567
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 62567
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 62567
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 62567
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET /auth/verify-student-email/ HTTP/1.1" 200 8691
+"POST /auth/verify-student-email/ HTTP/1.1" 200 10429
+"POST /auth/verify-student-email/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4255
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 25903
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 64942
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET /auth/student-registration/ HTTP/1.1" 200 9309
+"GET /auth/load-departments/?school_id=3 HTTP/1.1" 200 173
+"POST /auth/student-registration/ HTTP/1.1" 302 0
+"GET /auth/verify-email/ HTTP/1.1" 200 4407
+"GET /auth/login/ HTTP/1.1" 200 3725
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 25903
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 68400
+"GET /admin-panel/superadmin/temp-registrations/7/details/ HTTP/1.1" 200 323
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 68400
+"POST /admin-panel/superadmin/temp-registrations/4/delete/ HTTP/1.1" 200 201
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 64918
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 64918
+"GET /admin-panel/superadmin/users/?show_unverified=0&id=0c35b9ef-658c-4806-93e6-ee77e3d8b71c&vscodeBrowserReqId=1754079751655 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 64918
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 64918
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 68821
+"POST /admin-panel/superadmin/temp-registrations/12/approve/ HTTP/1.1" 200 97
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 70777
+"POST /admin-panel/superadmin/temp-registrations/11/delete/ HTTP/1.1" 200 205
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 67297
+"POST /admin-panel/superadmin/users/bulk-delete/ HTTP/1.1" 200 226
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 55627
+"GET /admin-panel/superadmin/users/?show_unverified=1&id=0c35b9ef-658c-4806-93e6-ee77e3d8b71c&vscodeBrowserReqId=1754079958057 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/?show_unverified=0&id=0c35b9ef-658c-4806-93e6-ee77e3d8b71c&vscodeBrowserReqId=1754079963710 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 55804
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role= HTTP/1.1" 200 55802
+"GET /admin-panel/superadmin/users/?id=0c35b9ef-658c-4806-93e6-ee77e3d8b71c&vscodeBrowserReqId=1754080036993 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 55804
+"GET /admin-panel/superadmin/users/?show_unverified=0&id=0c35b9ef-658c-4806-93e6-ee77e3d8b71c&vscodeBrowserReqId=1754080041886 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET /auth/student-registration/ HTTP/1.1" 200 9309
+"GET /admin-panel/superadmin/users/?show_unverified=1&id=0c35b9ef-658c-4806-93e6-ee77e3d8b71c&vscodeBrowserReqId=1754080046516 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /auth/load-departments/?school_id=3 HTTP/1.1" 200 173
+"POST /auth/student-registration/ HTTP/1.1" 302 0
+"GET /auth/verify-email/ HTTP/1.1" 200 4407
+"GET /auth/login/ HTTP/1.1" 200 3725
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 25903
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 59265
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role= HTTP/1.1" 200 55802
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 59265
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 59657
+"POST /admin-panel/superadmin/temp-registrations/13/approve/ HTTP/1.1" 200 89
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 61622
+"POST /admin-panel/superadmin/users/25/update-role/ HTTP/1.1" 200 76
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 61510
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3725
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4098
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 25903
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 61510
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role= HTTP/1.1" 200 61508
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 61510
+"POST /admin-panel/superadmin/users/bulk-delete/ HTTP/1.1" 200 159
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 55804
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25277
+"POST /admin-panel/superadmin/users/create/ HTTP/1.1" 302 0
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 26085
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 55804
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25277
+"POST /admin-panel/superadmin/users/create/ HTTP/1.1" 302 0
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 26085
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 55804
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET /auth/student-registration/ HTTP/1.1" 200 9309
+"GET /auth/load-departments/?school_id=3 HTTP/1.1" 200 173
+"POST /auth/student-registration/ HTTP/1.1" 302 0
+"GET /auth/verify-email/ HTTP/1.1" 200 4407
+"GET /auth/login/ HTTP/1.1" 200 3725
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 25903
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 59657
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role= HTTP/1.1" 200 55802
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 59657
+"GET /admin-panel/superadmin/temp-registrations/14/details/ HTTP/1.1" 200 324
+"POST /admin-panel/superadmin/temp-registrations/14/approve/ HTTP/1.1" 200 89
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 61622
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 58758
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role= HTTP/1.1" 200 58756
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 58758
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 58758
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 58758
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 58758
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 58758
+Bad Request: /admin-panel/superadmin/users/1/update-role/
+"POST /admin-panel/superadmin/users/1/update-role/ HTTP/1.1" 400 40
+"POST /admin-panel/superadmin/users/2/toggle-status/ HTTP/1.1" 200 81
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 59568
+"POST /admin-panel/superadmin/users/2/toggle-status/ HTTP/1.1" 200 78
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 59567
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 59567
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 59821
+"GET /admin-panel/superadmin/permissions/ HTTP/1.1" 200 30624
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 60347
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 60347
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 60347
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 60347
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 60347
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 60347
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4098
+"POST /auth/ HTTP/1.1" 200 4504
+"POST /auth/ HTTP/1.1" 200 4504
+"POST /auth/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 14845
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET /admin-panel/superadmin/users/?id=110ad9c9-599a-4774-b361-800ce83b2af7&vscodeBrowserReqId=1754081660408 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 60347
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET /auth/student-registration/ HTTP/1.1" 200 9309
+"GET /auth/load-departments/?school_id=2 HTTP/1.1" 200 173
+"POST /auth/student-registration/ HTTP/1.1" 200 10564
+"GET /auth/ HTTP/1.1" 200 3725
+"POST /auth/ HTTP/1.1" 200 8379
+"POST /auth/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 25903
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 60347
+"GET /admin-panel/superadmin/users/?id=110ad9c9-599a-4774-b361-800ce83b2af7&vscodeBrowserReqId=1754081803606 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/?id=110ad9c9-599a-4774-b361-800ce83b2af7&vscodeBrowserReqId=1754081833139 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 60347
+"POST /admin-panel/superadmin/users/26/update-role/ HTTP/1.1" 200 73
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 60229
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET /auth/student-registration/ HTTP/1.1" 200 9309
+"GET /auth/load-departments/?school_id=3 HTTP/1.1" 200 173
+"POST /auth/student-registration/ HTTP/1.1" 302 0
+"GET /auth/verify-email/ HTTP/1.1" 200 4407
+"GET /auth/login/ HTTP/1.1" 200 3725
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 25903
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 64080
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role= HTTP/1.1" 200 60227
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 64080
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25277
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 64080
+"GET /admin-panel/superadmin/temp-registrations/15/details/ HTTP/1.1" 200 316
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET /auth/login/ HTTP/1.1" 200 3725
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4098
+"GET /auth/student-registration/ HTTP/1.1" 200 9309
+"GET /auth/load-departments/?school_id=2 HTTP/1.1" 200 173
+"POST /auth/student-registration/ HTTP/1.1" 302 0
+"GET /auth/verify-email/ HTTP/1.1" 200 4411
+"POST /auth/verify-email/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4249
+"POST /auth/login/ HTTP/1.1" 200 4217
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 14814
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET /auth/student-registration/ HTTP/1.1" 200 9309
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /auth/verify-student-email/ HTTP/1.1" 200 8691
+"POST /auth/verify-student-email/ HTTP/1.1" 200 9544
+"GET /auth/login/ HTTP/1.1" 200 3725
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 25903
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 69256
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET /auth/verify-student-email/ HTTP/1.1" 200 8691
+"GET /auth/verify-student-email/ HTTP/1.1" 200 8705
+"POST /auth/verify-student-email/ HTTP/1.1" 200 10397
+"POST /auth/verify-student-email/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4246
