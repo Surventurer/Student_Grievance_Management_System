@@ -22311,3 +22311,199 @@ Watching for file changes with StatReloader
 "GET /auth/login/ HTTP/1.1" 200 4924
 C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\role_validator.py changed, reloading.
 Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4425
+"GET /static/css/style.css HTTP/1.1" 304 0
+"GET /static/js/main.js HTTP/1.1" 304 0
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4098
+"GET /auth/login/ HTTP/1.1" 200 4425
+"POST /auth/login/ HTTP/1.1" 200 4917
+"POST /auth/login/ HTTP/1.1" 200 4917
+"GET /auth/verify-student-email/ HTTP/1.1" 200 7806
+"GET /auth/login/ HTTP/1.1" 200 4425
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 28252
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67339
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 27971
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67339
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 27971
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67339
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25277
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67339
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25277
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 67339
+"POST /admin-panel/superadmin/users/bulk-delete/ HTTP/1.1" 200 362
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 45837
+"GET /admin-panel/grievances/ HTTP/1.1" 200 38027
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/ HTTP/1.1" 200 24176
+"GET /admin-panel/grievances/ HTTP/1.1" 200 38027
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 27971
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 45837
+"GET /admin-panel/superadmin/users/?search=superadmin%40system.com&role= HTTP/1.1" 200 24187
+"GET /admin-panel/superadmin/users/?search=superadmin&role= HTTP/1.1" 200 24176
+"GET /admin-panel/superadmin/users/?search=admin&role= HTTP/1.1" 200 35062
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 45837
+"GET /admin-panel/superadmin/users/?search=&role=superadmin HTTP/1.1" 200 29711
+"GET /admin-panel/superadmin/users/?search=&role= HTTP/1.1" 200 45837
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4924
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 18571
+"GET /students/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/ HTTP/1.1" 200 32321
+"POST /students/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/submit-feedback/ HTTP/1.1" 302 0
+"GET /students/grievances/8af531f4-13a6-44f1-8c1b-29a8b00b7a92/ HTTP/1.1" 200 30162
+"GET /students/grievances/ HTTP/1.1" 200 19151
+"GET /students/profile/ HTTP/1.1" 200 20949
+"GET /api/grievances/submit/ HTTP/1.1" 200 38302
+"GET /grievances/api/categories/?type=academic HTTP/1.1" 200 451
+"GET /students/api/departments/ HTTP/1.1" 200 1407
+"GET /grievances/api/categories/?type=non_academic HTTP/1.1" 200 490
+"GET /students/api/departments/ HTTP/1.1" 200 1407
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4924
+"GET /auth/forgot-password/ HTTP/1.1" 200 4749
+"GET /auth/ HTTP/1.1" 200 4425
+"GET /auth/verify-student-email/ HTTP/1.1" 200 7806
+"GET /auth/login/ HTTP/1.1" 200 4425
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 18571
+"GET /students/profile/ HTTP/1.1" 200 20949
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4924
+"GET /auth/verify-student-email/ HTTP/1.1" 200 7806
+"GET /auth/login/ HTTP/1.1" 200 4425
+"GET /auth/student-registration/ HTTP/1.1" 200 9309
+"GET /auth/load-departments/?school_id=1 HTTP/1.1" 200 172
+"POST /auth/student-registration/ HTTP/1.1" 302 0
+"GET /auth/verify-email/ HTTP/1.1" 200 4446
+"GET /auth/login/ HTTP/1.1" 200 4425
+"GET /auth/verify-student-email/ HTTP/1.1" 200 7806
+"POST /auth/verify-student-email/ HTTP/1.1" 200 8593
+"GET /admin-panel/superadmin/users/?id=07deb559-fb12-42eb-9594-a2e4c31c12f4&vscodeBrowserReqId=1754070150066 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 4425
+"GET /auth/login/ HTTP/1.1" 200 4425
+"GET /auth/login/ HTTP/1.1" 200 4425
+"GET /auth/verify-student-email/ HTTP/1.1" 200 7806
+"GET /auth/login/ HTTP/1.1" 200 4425
+"GET /auth/student-registration/ HTTP/1.1" 200 9309
+"GET /auth/ HTTP/1.1" 200 4425
+"POST /auth/ HTTP/1.1" 200 8379
+"POST /auth/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 28252
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 45837
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4924
+"POST /auth/login/ HTTP/1.1" 200 4917
+"GET /auth/student-registration/ HTTP/1.1" 200 9309
+"GET /auth/load-departments/?school_id=1 HTTP/1.1" 200 172
+"POST /auth/student-registration/ HTTP/1.1" 200 10654
+"GET /auth/ HTTP/1.1" 200 4425
+"GET /auth/verify-student-email/ HTTP/1.1" 200 7806
+"GET /auth/login/ HTTP/1.1" 200 4425
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /auth/student-registration/ HTTP/1.1" 200 9309
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /auth/forgot-password/ HTTP/1.1" 200 4749
+"GET /auth/ HTTP/1.1" 200 3725
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+"POST /auth/ HTTP/1.1" 200 8379
+"POST /auth/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 28252
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 45837
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 45837
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 45837
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET /auth/student-registration/ HTTP/1.1" 200 9309
+"GET /auth/load-departments/?school_id=1 HTTP/1.1" 200 172
+"POST /auth/student-registration/ HTTP/1.1" 200 10654
+"POST /auth/student-registration/ HTTP/1.1" 302 0
+"GET /auth/verify-email/ HTTP/1.1" 200 4417
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /auth/student-registration/ HTTP/1.1" 200 9309
+"GET /auth/load-departments/?school_id=1 HTTP/1.1" 200 172
+"POST /auth/student-registration/ HTTP/1.1" 200 10608
+"POST /auth/student-registration/ HTTP/1.1" 200 10654
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /auth/verify-student-email/ HTTP/1.1" 200 7806
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /auth/verify-student-email/ HTTP/1.1" 200 7806
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /auth/student-registration/ HTTP/1.1" 200 9309
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /auth/student-registration/ HTTP/1.1" 200 9309
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /auth/verify-student-email/ HTTP/1.1" 200 7376
+"GET /auth/verify-student-email/ HTTP/1.1" 200 7376
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\urls.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /auth/verify-student-email/ HTTP/1.1" 200 8691
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /auth/verify-student-email/ HTTP/1.1" 200 8691
+"POST /auth/verify-student-email/ HTTP/1.1" 200 10393
+"POST /auth/verify-student-email/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4248
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 14799
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 28252
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 51243
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET /auth/verify-student-email/ HTTP/1.1" 200 8691
+"POST /auth/verify-student-email/ HTTP/1.1" 200 10493
+"GET /auth/clear-verification-session/ HTTP/1.1" 302 0
+"GET /auth/verify-student-email/ HTTP/1.1" 200 9461
+"POST /auth/verify-student-email/ HTTP/1.1" 200 10493
+"POST /auth/verify-student-email/ HTTP/1.1" 200 10493
+"POST /auth/verify-student-email/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4260
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 28252
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 56711
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET /auth/student-registration/ HTTP/1.1" 200 9309
+"GET /auth/load-departments/?school_id=2 HTTP/1.1" 200 173
+"POST /auth/student-registration/ HTTP/1.1" 302 0
+"GET /auth/verify-email/ HTTP/1.1" 200 4419
+"POST /auth/verify-email/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4249
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 14810
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 28252
+"GET /admin-panel/superadmin/settings/ HTTP/1.1" 200 28903
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 62114
+"POST /admin-panel/superadmin/users/22/toggle-status/ HTTP/1.1" 200 81
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 62115
+"POST /admin-panel/superadmin/users/22/toggle-status/ HTTP/1.1" 200 78
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 62114
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\urls.py changed, reloading.
+Watching for file changes with StatReloader

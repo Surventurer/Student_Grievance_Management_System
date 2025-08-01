@@ -9,7 +9,7 @@
         <div class="card">
             <div class="card-body">
                 <h2 class="card-title text-center mb-4">Email Verification</h2>
-                <p class="text-center text-muted mb-4">Please enter the OTP sent to your email address</p>
+                <p class="text-center text-muted mb-4">Please enter your Student ID and the OTP sent to your email address</p>
                 
                 {% if messages %}
                     {% for message in messages %}
@@ -24,9 +24,9 @@
                     {% csrf_token %}
                     
                     <div class="mb-3">
-                        <label for="user_id" class="form-label">Registration ID</label>
-                        <input type="number" class="form-control" id="user_id" name="user_id" required>
-                        <div class="form-text">Enter your Registration ID (provided during registration)</div>
+                        <label for="student_id" class="form-label">Student ID</label>
+                        <input type="text" class="form-control" id="student_id" name="student_id" required>
+                        <div class="form-text">Enter your Student ID (provided during registration)</div>
                     </div>
                     
                     <div class="mb-3">

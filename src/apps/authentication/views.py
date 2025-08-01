@@ -620,9 +620,9 @@ def student_registration(request):
                         [temp_registration.email],
                         fail_silently=False,
                     )
-                    messages.success(request, f'Registration initiated! Please check your email ({temp_registration.email}) for verification OTP. Your Registration ID is: {temp_registration.id}')
+                    messages.success(request, f'Registration initiated! Please check your email ({temp_registration.email}) for verification OTP. Your Student ID is: {temp_registration.student_id}')
                 except Exception as email_error:
-                    messages.warning(request, f'Registration saved! However, we could not send the verification email. Your Registration ID is: {temp_registration.id}. Please contact support.')
+                    messages.warning(request, f'Registration saved! However, we could not send the verification email. Your Student ID is: {temp_registration.student_id}. Please contact support.')
                 
                 # Redirect to email verification page
                 return redirect('authentication:verify_email_view')
@@ -670,12 +670,12 @@ def load_departments(request):
 def verify_email_view(request):
     """Web view for email verification"""
     if request.method == 'POST':
-        registration_id = request.POST.get('user_id')  # Actually registration ID now
+        student_id = request.POST.get('student_id')  # Changed from registration_id to student_id
         otp = request.POST.get('otp')
         
         try:
-            # Look for temporary registration instead of user
-            temp_registration = TemporaryRegistration.objects.get(id=registration_id, is_verified=False)
+            # Look for temporary registration by student_id instead of id
+            temp_registration = TemporaryRegistration.objects.get(student_id=student_id, is_verified=False)
             
             if temp_registration.otp != otp:
                 messages.error(request, 'Invalid OTP. Please check and try again.')
@@ -701,7 +701,7 @@ def verify_email_view(request):
                 messages.error(request, 'An error occurred while creating your account. Please try again.')
             
         except TemporaryRegistration.DoesNotExist:
-            messages.error(request, 'Registration not found or already verified. Please check your Registration ID.')
+            messages.error(request, 'Registration not found or already verified. Please check your Student ID.')
         except Exception as e:
             messages.error(request, 'An error occurred. Please try again.')
     
@@ -709,55 +709,234 @@ def verify_email_view(request):
 
 
 def verify_student_email_view(request):
-    """View for students to verify their email using Student ID and OTP"""
+    """View for students to verify their email using Student ID and OTP
+    
+    This view handles two scenarios:
+    1. Students with temporary registration data (didn't verify after initial registration)
+    2. Students with permanent accounts who need email verification
+    """
     if request.method == 'POST':
+        action = request.POST.get('action', 'verify')
         student_id = request.POST.get('student_id')
+        email = request.POST.get('email')
         otp = request.POST.get('otp')
         
-        if not student_id or not otp:
-            messages.error(request, 'Please provide both Student ID and OTP.')
-            return render(request, 'authentication/verify_student_email.html')
-        
-        try:
-            # Find student by student_id
-            from apps.students.models import StudentProfile
-            student_profile = StudentProfile.objects.select_related('user').get(student_id=student_id)
-            user = student_profile.user
-            
-            # Check if already verified
-            if user.is_email_verified:
-                messages.info(request, 'Your email is already verified! You can log in.')
-                return redirect('authentication:login_view')
-            
-            # Find valid OTP
-            verification = EmailVerification.objects.filter(
-                user=user,
-                otp=otp,
-                is_used=False
-            ).order_by('-created_at').first()
-            
-            if not verification:
-                messages.error(request, 'Invalid OTP or Student ID. Please check and try again.')
+        if action == 'send_otp':
+            # Step 1: Send OTP for students with temporary registration
+            if not student_id or not email:
+                messages.error(request, 'Please provide both Student ID and Email.')
                 return render(request, 'authentication/verify_student_email.html')
             
-            if verification.is_expired:
-                messages.error(request, 'OTP has expired. Please contact admin for a new verification code.')
+            try:
+                # First check if there's temporary registration data
+                temp_registration = TemporaryRegistration.objects.get(
+                    student_id=student_id, 
+                    email=email, 
+                    is_verified=False
+                )
+                
+                # Generate new OTP and update expiry
+                from datetime import timedelta
+                from django.utils import timezone
+                
+                new_otp = generate_otp()
+                temp_registration.otp = new_otp
+                temp_registration.expires_at = timezone.now() + timedelta(minutes=30)
+                temp_registration.save()
+                
+                # Send OTP via email
+                try:
+                    send_mail(
+                        subject='Email Verification OTP - Student Grievance System',
+                        message=f'''
+Dear {temp_registration.name},
+
+Here is your email verification OTP:
+
+Student ID: {student_id}
+OTP: {new_otp}
+
+This OTP will expire in 30 minutes.
+
+Please use this OTP to complete your account verification.
+
+Best regards,
+Student Grievance Management System
+                        ''',
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[email],
+                        fail_silently=False
+                    )
+                    messages.success(request, f'Verification OTP sent to {email}. Please check your email and enter the OTP below.')
+                    # Store data in session for the next step
+                    request.session['verification_student_id'] = student_id
+                    request.session['verification_email'] = email
+                    request.session['verification_type'] = 'temporary'
+                    
+                except Exception as email_error:
+                    messages.error(request, 'Error sending email. Please try again later.')
+                    
+            except TemporaryRegistration.DoesNotExist:
+                # Check if it's an existing permanent account
+                try:
+                    from apps.students.models import StudentProfile
+                    student_profile = StudentProfile.objects.select_related('user').get(student_id=student_id)
+                    
+                    if student_profile.user.email != email:
+                        messages.error(request, 'Student ID and email do not match our records.')
+                        return render(request, 'authentication/verify_student_email.html')
+                    
+                    if student_profile.user.is_email_verified:
+                        messages.info(request, 'Your email is already verified! You can log in.')
+                        return redirect('authentication:login_view')
+                    
+                    # Generate OTP for existing user
+                    from datetime import timedelta
+                    from django.utils import timezone
+                    
+                    new_otp = generate_otp()
+                    expires_at = timezone.now() + timedelta(minutes=30)
+                    
+                    # Mark old OTPs as used
+                    EmailVerification.objects.filter(user=student_profile.user, is_used=False).update(is_used=True)
+                    
+                    # Create new verification
+                    EmailVerification.objects.create(
+                        user=student_profile.user,
+                        otp=new_otp,
+                        expires_at=expires_at
+                    )
+                    
+                    # Send email
+                    try:
+                        send_mail(
+                            subject='Email Verification OTP - Student Grievance System',
+                            message=f'''
+Dear {student_profile.name},
+
+Here is your email verification OTP:
+
+Student ID: {student_id}
+OTP: {new_otp}
+
+This OTP will expire in 30 minutes.
+
+Best regards,
+Student Grievance Management System
+                            ''',
+                            from_email=settings.DEFAULT_FROM_EMAIL,
+                            recipient_list=[email],
+                            fail_silently=False
+                        )
+                        messages.success(request, f'Verification OTP sent to {email}. Please check your email and enter the OTP below.')
+                        # Store data in session for the next step
+                        request.session['verification_student_id'] = student_id
+                        request.session['verification_email'] = email
+                        request.session['verification_type'] = 'permanent'
+                        
+                    except Exception as email_error:
+                        messages.error(request, 'Error sending email. Please try again later.')
+                        
+                except StudentProfile.DoesNotExist:
+                    messages.error(request, 'No registration found with this Student ID and email. Please check your details or register first.')
+                    
+            except Exception as e:
+                messages.error(request, 'An error occurred. Please try again.')
+                
+        elif action == 'verify':
+            # Step 2: Verify OTP and complete registration/verification
+            if not otp:
+                messages.error(request, 'Please provide the OTP.')
                 return render(request, 'authentication/verify_student_email.html')
             
-            # Mark OTP as used and verify email
-            verification.is_used = True
-            verification.save()
+            # Get verification details from session
+            session_student_id = request.session.get('verification_student_id')
+            session_email = request.session.get('verification_email')
+            verification_type = request.session.get('verification_type')
             
-            user.is_email_verified = True
-            user.save()
+            if not session_student_id or not session_email:
+                messages.error(request, 'Session expired. Please request a new OTP.')
+                return render(request, 'authentication/verify_student_email.html')
             
-            messages.success(request, f'Email verified successfully! Welcome {student_profile.name}! You can now log in.')
-            return redirect('authentication:login_view')
-            
-        except StudentProfile.DoesNotExist:
-            messages.error(request, 'Student ID not found. Please check your Student ID and try again.')
-        except Exception as e:
-            messages.error(request, 'An error occurred. Please try again.')
+            try:
+                if verification_type == 'temporary':
+                    # Handle temporary registration verification
+                    temp_registration = TemporaryRegistration.objects.get(
+                        student_id=session_student_id,
+                        email=session_email,
+                        is_verified=False
+                    )
+                    
+                    if temp_registration.otp != otp:
+                        messages.error(request, 'Invalid OTP. Please check and try again.')
+                        return render(request, 'authentication/verify_student_email.html')
+                    
+                    if temp_registration.is_expired:
+                        messages.error(request, 'OTP has expired. Please request a new OTP.')
+                        return render(request, 'authentication/verify_student_email.html')
+                    
+                    # Create actual user and student profile
+                    try:
+                        user, student_profile = temp_registration.create_actual_user()
+                        
+                        # Mark temp registration as verified and delete it
+                        temp_registration.is_verified = True
+                        temp_registration.delete()  # Clean up after successful verification
+                        
+                        # Clear session data
+                        request.session.pop('verification_student_id', None)
+                        request.session.pop('verification_email', None)
+                        request.session.pop('verification_type', None)
+                        
+                        messages.success(request, f'Account created successfully! Welcome {student_profile.name}! You can now log in.')
+                        return redirect('authentication:login_view')
+                        
+                    except Exception as creation_error:
+                        messages.error(request, 'An error occurred while creating your account. Please try again.')
+                        
+                elif verification_type == 'permanent':
+                    # Handle existing user email verification
+                    from apps.students.models import StudentProfile
+                    student_profile = StudentProfile.objects.select_related('user').get(student_id=session_student_id)
+                    user = student_profile.user
+                    
+                    # Find valid OTP
+                    verification = EmailVerification.objects.filter(
+                        user=user,
+                        otp=otp,
+                        is_used=False
+                    ).order_by('-created_at').first()
+                    
+                    if not verification:
+                        messages.error(request, 'Invalid OTP. Please check and try again.')
+                        return render(request, 'authentication/verify_student_email.html')
+                    
+                    if verification.is_expired:
+                        messages.error(request, 'OTP has expired. Please request a new OTP.')
+                        return render(request, 'authentication/verify_student_email.html')
+                    
+                    # Mark OTP as used and verify email
+                    verification.is_used = True
+                    verification.save()
+                    
+                    user.is_email_verified = True
+                    user.save()
+                    
+                    # Clear session data
+                    request.session.pop('verification_student_id', None)
+                    request.session.pop('verification_email', None)
+                    request.session.pop('verification_type', None)
+                    
+                    messages.success(request, f'Email verified successfully! Welcome {student_profile.name}! You can now log in.')
+                    return redirect('authentication:login_view')
+                    
+                else:
+                    messages.error(request, 'Invalid verification type. Please start over.')
+                    
+            except (TemporaryRegistration.DoesNotExist, StudentProfile.DoesNotExist):
+                messages.error(request, 'Registration not found. Please request a new OTP.')
+            except Exception as e:
+                messages.error(request, 'An error occurred. Please try again.')
     
     return render(request, 'authentication/verify_student_email.html')
 
@@ -830,3 +1009,12 @@ Student Grievance Management System
             messages.error(request, 'An error occurred. Please try again.')
     
     return render(request, 'authentication/verify_student_email.html')
+
+
+def clear_verification_session(request):
+    """Clear verification session data and redirect to verify student email page"""
+    request.session.pop('verification_student_id', None)
+    request.session.pop('verification_email', None)
+    request.session.pop('verification_type', None)
+    messages.info(request, 'Session cleared. You can start the verification process again.')
+    return redirect('authentication:verify_student_email')

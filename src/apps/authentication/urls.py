@@ -19,6 +19,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout_view'),
     path('verify-email/', views.verify_email_view, name='verify_email_view'),
     path('verify-student-email/', views.verify_student_email_view, name='verify_student_email'),
+    path('clear-verification-session/', views.clear_verification_session, name='clear_verification_session'),
     path('resend-verification-otp/', views.resend_verification_otp_view, name='resend_verification_otp'),
     path('forgot-password/', views.forgot_password_view, name='forgot_password_view'),
     path('reset-password/<str:token>/', views.reset_password_view, name='reset_password_view'),
