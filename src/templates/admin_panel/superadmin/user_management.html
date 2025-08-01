@@ -479,6 +479,14 @@ tr:has(.user-checkbox:checked) td {
                                     {% elif user.is_student and user.student_profile %}
                                         <div>{{ user.student_profile.name|default:"No Name" }}</div>
                                         <small class="text-muted">{{ user.student_profile.student_id }}</small>
+                                    {% elif user.role == 'admin' and user.admin_profile %}
+                                        <div>{{ user.get_display_name }}</div>
+                                        <small class="text-muted">{{ user.admin_profile.employee_id }}</small>
+                                    {% elif user.role == 'officer' and user.admin_profile %}
+                                        <div>{{ user.get_display_name }}</div>
+                                        <small class="text-muted">{{ user.admin_profile.employee_id }}</small>
+                                    {% elif user.role == 'superadmin' %}
+                                        {{ user.get_display_name }}
                                     {% else %}
                                         {{ user.get_display_name }}
                                     {% endif %}

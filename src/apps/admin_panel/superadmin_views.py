@@ -566,6 +566,13 @@ def create_user(request):
     """Create new user of any role (except superadmin) - Superadmin only"""
     if request.method == 'POST':
         try:
+            # Debug: Print all POST data
+            print("=== CREATE_USER DEBUG ===")
+            print("All POST data:")
+            for key, value in request.POST.items():
+                print(f"  {key}: '{value}'")
+            print("========================")
+            
             email = request.POST.get('email')
             role = request.POST.get('role')
             password = request.POST.get('password', 'default123')  # Default password

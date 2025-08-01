@@ -23211,3 +23211,67 @@ Watching for file changes with StatReloader
 "GET /admin-panel/superadmin/users/ HTTP/1.1" 200 94986
 "GET /admin-panel/superadmin/users/?show_unverified=0&search=2025&role=&show_unverified=1 HTTP/1.1" 200 72506
 "GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 94986
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=student&show_unverified=1 HTTP/1.1" 200 79655
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 94986
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25277
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 94986
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25277
+"POST /admin-panel/superadmin/users/create/ HTTP/1.1" 302 0
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 26085
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25277
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25277
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25277
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25277
+"GET /admin-panel/superadmin/users/create/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754089280289 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"POST /admin-panel/superadmin/users/create/ HTTP/1.1" 302 0
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 26087
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/create/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754089319861 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25283
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25283
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25283
+"POST /admin-panel/superadmin/users/create/ HTTP/1.1" 302 0
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 101613
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25283
+"POST /admin-panel/superadmin/users/create/ HTTP/1.1" 302 0
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 107827
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25283
+"POST /admin-panel/superadmin/users/create/ HTTP/1.1" 302 0
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 114053
+"POST /admin-panel/superadmin/users/bulk-delete/ HTTP/1.1" 200 156
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 107502
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25283
+"POST /admin-panel/superadmin/users/create/ HTTP/1.1" 302 0
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 114045
+"GET /admin-panel/superadmin/users/33/details/ HTTP/1.1" 200 540
+"GET /admin-panel/superadmin/users/33/details/ HTTP/1.1" 200 540
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25283
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25589
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 113718
+"GET /admin-panel/superadmin/users/create/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754089596635 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET /auth/forgot-password/ HTTP/1.1" 200 4749
+"POST /auth/forgot-password/ HTTP/1.1" 302 0
+"GET /auth/forgot-password/ HTTP/1.1" 200 5508
+"GET /auth/reset-password/DDqYu4eynQc5uyvcBpNagYcaAGExeBYlsdHEKz2O3EzjwfSamz/ HTTP/1.1" 200 8025
+"POST /auth/reset-password/DDqYu4eynQc5uyvcBpNagYcaAGExeBYlsdHEKz2O3EzjwfSamz/ HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 4590
+"POST /auth/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 22290
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 28236
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 113718
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 113718
+Not Found: /superadmin/user-management/
+"GET /superadmin/user-management/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754089784530 HTTP/1.1" 404 4223
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 114094

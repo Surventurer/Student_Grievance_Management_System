@@ -39,6 +39,9 @@
                         <strong>Creating Users:</strong> Fill in the basic information first, then select a role. 
                         Additional fields will appear based on the selected role. All fields marked with 
                         <span class="text-danger">*</span> are required.
+                        <br><br>
+                        <strong>Default Password:</strong> All new users will be created with the password 
+                        <code>default123</code>. Users should change this password after their first login.
                     </div>
 
                     <!-- Messages -->
@@ -75,6 +78,10 @@
                             <div class="col-md-6 mb-3">
                                 <label for="password" class="form-label">Password</label>
                                 <input type="password" class="form-control" id="password" name="password" value="default123">
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-info-circle"></i> Default password: <strong>default123</strong> 
+                                    (Users can change this after first login)
+                                </small>
                             </div>
                         </div>
 
@@ -129,7 +136,7 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="admin_department" class="form-label">Department <span class="text-danger">*</span></label>
-                                    <select class="form-control" id="admin_department" name="department" required>
+                                    <select class="form-control" id="admin_department" name="admin_department" required>
                                         <option value="">Select Department</option>
                                         {% for department in departments %}
                                             <option value="{{ department.name }}">{{ department.name }}</option>
