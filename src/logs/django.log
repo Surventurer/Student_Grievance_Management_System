@@ -22792,3 +22792,80 @@ Not Found: /favicon.ico
 "POST /auth/verify-student-email/ HTTP/1.1" 200 10397
 "POST /auth/verify-student-email/ HTTP/1.1" 302 0
 "GET /auth/login/ HTTP/1.1" 200 4246
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3725
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4098
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3725
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4098
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /static/css/style.css HTTP/1.1" 200 24187
+"GET /static/js/main.js HTTP/1.1" 200 17849
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4100
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /static/css/style.css HTTP/1.1" 200 24187
+"GET /static/js/main.js HTTP/1.1" 200 17849
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4100
+"GET /auth/verify-student-email/ HTTP/1.1" 200 8705
+"GET /auth/login/ HTTP/1.1" 200 3725
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 25903
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 25622
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 70573
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 14845
+"GET /grievances/submit/ HTTP/1.1" 200 38322
+"GET /grievances/api/categories/?type=academic HTTP/1.1" 200 451
+"GET /students/api/departments/ HTTP/1.1" 200 1407
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"POST /grievances/send-otp/ HTTP/1.1" 200 17
+"POST /grievances/verify-otp/ HTTP/1.1" 200 17
+"POST /grievances/submit/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 18879
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 28235
+"GET /admin-panel/grievances/6ac7844e-c0c1-43b4-ba85-0251d01c1cf6/ HTTP/1.1" 200 27131
+"GET /media/grievance_attachments/Argusoft_exam_link.pdf HTTP/1.1" 200 87134
+"POST /admin-panel/grievances/6ac7844e-c0c1-43b4-ba85-0251d01c1cf6/add-response/ HTTP/1.1" 200 148
+"GET /admin-panel/grievances/6ac7844e-c0c1-43b4-ba85-0251d01c1cf6/ HTTP/1.1" 200 28120
+"POST /auth/login/ HTTP/1.1" 200 4217
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 20248
+"GET /students/grievances/6ac7844e-c0c1-43b4-ba85-0251d01c1cf6/ HTTP/1.1" 200 27041
+"POST /students/grievances/6ac7844e-c0c1-43b4-ba85-0251d01c1cf6/add-response/ HTTP/1.1" 302 0
+"GET /students/grievances/6ac7844e-c0c1-43b4-ba85-0251d01c1cf6/ HTTP/1.1" 200 28254
+"GET /admin-panel/grievances/6ac7844e-c0c1-43b4-ba85-0251d01c1cf6/ HTTP/1.1" 200 28926
+"GET /admin-panel/grievances/ HTTP/1.1" 200 37994
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/grievances/6ac7844e-c0c1-43b4-ba85-0251d01c1cf6/ HTTP/1.1" 200 28926
+"PATCH /admin-panel/grievances/6ac7844e-c0c1-43b4-ba85-0251d01c1cf6/update-status/ HTTP/1.1" 200 39
+"GET /admin-panel/grievances/6ac7844e-c0c1-43b4-ba85-0251d01c1cf6/ HTTP/1.1" 200 27992
+"GET /students/grievances/6ac7844e-c0c1-43b4-ba85-0251d01c1cf6/ HTTP/1.1" 200 32568
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 27955
+- Broken pipe from ('192.168.1.4', 60500)
+- Broken pipe from ('192.168.1.4', 60484)
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\config\settings.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\config\settings.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\config\settings.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 8958
