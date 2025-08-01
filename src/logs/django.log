@@ -22869,3 +22869,223 @@ C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\config\settings
 Watching for file changes with StatReloader
 "GET / HTTP/1.1" 302 0
 "GET /auth/login/ HTTP/1.1" 200 8958
+Watching for file changes with StatReloader
+"GET /auth/login/ HTTP/1.1" 200 8958
+"GET /auth/login/ HTTP/1.1" 200 8958
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 28236
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 27955
+"GET /admin-panel/grievances/ HTTP/1.1" 200 38010
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 70573
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25277
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754083987344 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 75799
+Internal Server Error: /admin-panel/superadmin/users/1/details/
+"GET /admin-panel/superadmin/users/1/details/ HTTP/1.1" 500 198
+Internal Server Error: /admin-panel/superadmin/users/2/details/
+"GET /admin-panel/superadmin/users/2/details/ HTTP/1.1" 500 198
+Internal Server Error: /admin-panel/superadmin/users/27/details/
+"GET /admin-panel/superadmin/users/27/details/ HTTP/1.1" 500 198
+Internal Server Error: /admin-panel/superadmin/users/26/details/
+"GET /admin-panel/superadmin/users/26/details/ HTTP/1.1" 500 198
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 75799
+Internal Server Error: /admin-panel/superadmin/users/28/details/
+"GET /admin-panel/superadmin/users/28/details/ HTTP/1.1" 500 68
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Internal Server Error: /admin-panel/superadmin/users/28/details/
+"GET /admin-panel/superadmin/users/28/details/ HTTP/1.1" 500 68
+Internal Server Error: /admin-panel/superadmin/users/27/details/
+"GET /admin-panel/superadmin/users/27/details/ HTTP/1.1" 500 68
+"GET /admin-panel/superadmin/users/5/details/ HTTP/1.1" 200 397
+"GET /admin-panel/superadmin/users/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754084288282 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+Internal Server Error: /admin-panel/superadmin/users/21/details/
+"GET /admin-panel/superadmin/users/21/details/ HTTP/1.1" 500 68
+"GET /admin-panel/superadmin/users/26/details/ HTTP/1.1" 200 378
+"GET /admin-panel/superadmin/users/26/details/ HTTP/1.1" 200 378
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 18549
+"GET /students/profile/ HTTP/1.1" 200 20972
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+- Broken pipe from ('192.168.1.4', 60802)
+"GET /students/profile/ HTTP/1.1" 200 20972
+"GET /students/profile/ HTTP/1.1" 200 20972
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /admin-panel/superadmin/users/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754084582837 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 87677
+Internal Server Error: /admin-panel/superadmin/users/28/details/
+"GET /admin-panel/superadmin/users/28/details/ HTTP/1.1" 500 68
+Internal Server Error: /admin-panel/superadmin/users/27/details/
+"GET /admin-panel/superadmin/users/27/details/ HTTP/1.1" 500 68
+"GET /admin-panel/superadmin/users/26/details/ HTTP/1.1" 200 378
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+Internal Server Error: /admin-panel/superadmin/users/27/details/
+"GET /admin-panel/superadmin/users/27/details/ HTTP/1.1" 500 68
+Internal Server Error: /admin-panel/superadmin/users/28/details/
+"GET /admin-panel/superadmin/users/28/details/ HTTP/1.1" 500 68
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /admin-panel/superadmin/users/27/details/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754084878295 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 87677
+Internal Server Error: /admin-panel/superadmin/users/28/details/
+"GET /admin-panel/superadmin/users/28/details/ HTTP/1.1" 500 68
+Internal Server Error: /admin-panel/superadmin/users/28/details/
+"GET /admin-panel/superadmin/users/28/details/ HTTP/1.1" 500 68
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 87975
+"GET /admin-panel/superadmin/users/26/details/ HTTP/1.1" 200 378
+Internal Server Error: /admin-panel/superadmin/users/27/details/
+"GET /admin-panel/superadmin/users/27/details/ HTTP/1.1" 500 68
+Internal Server Error: /admin-panel/superadmin/users/28/details/
+"GET /admin-panel/superadmin/users/28/details/ HTTP/1.1" 500 68
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Not Found: /admin-panel/user-management/
+"GET /admin-panel/user-management/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754085641726 HTTP/1.1" 404 21484
+Not Found: /admin-panel/get-user-details/27/
+"GET /admin-panel/get-user-details/27/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754086541597 HTTP/1.1" 404 21496
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 88080
+Not Found: /admin-panel/get-user-details/28/
+"GET /admin-panel/get-user-details/28/ HTTP/1.1" 404 21419
+Not Found: /admin-panel/get-user-details/28/
+"GET /admin-panel/get-user-details/28/ HTTP/1.1" 404 21419
+Not Found: /admin-panel/get-user-details/28/
+"GET /admin-panel/get-user-details/28/ HTTP/1.1" 404 21419
+"GET /admin-panel/superadmin/users/27/details/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754086595951 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+Not Found: /admin-panel/get-user-details/28/
+"GET /admin-panel/get-user-details/28/ HTTP/1.1" 404 21419
+"GET /admin-panel/superadmin/users/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754086610735 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+Not Found: /admin-panel/get-user-details/28/
+"GET /admin-panel/get-user-details/28/ HTTP/1.1" 404 21419
+Not Found: /admin-panel/get-user-details/27/
+"GET /admin-panel/get-user-details/27/ HTTP/1.1" 404 21419
+Not Found: /admin-panel/get-user-details/1/
+"GET /admin-panel/get-user-details/1/ HTTP/1.1" 404 21416
+Not Found: /admin-panel/get-user-details/2/
+"GET /admin-panel/get-user-details/2/ HTTP/1.1" 404 21416
+Not Found: /admin-panel/get-user-details/26/
+"GET /admin-panel/get-user-details/26/ HTTP/1.1" 404 21419
+Not Found: /admin-panel/get-user-details/21/
+"GET /admin-panel/get-user-details/21/ HTTP/1.1" 404 21419
+Not Found: /admin-panel/get-user-details/5/
+"GET /admin-panel/get-user-details/5/ HTTP/1.1" 404 21416
+"GET /admin-panel/superadmin/users/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754086730451 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Not Found: /admin-panel/get-user-details/26/
+"GET /admin-panel/get-user-details/26/ HTTP/1.1" 404 21419
+Not Found: /test_api.html
+"GET /test_api.html?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754086820684 HTTP/1.1" 404 4183
+Not Found: /test_api.html
+"GET /test_api.html HTTP/1.1" 404 4106
+Not Found: /test_api.html
+"GET /test_api.html HTTP/1.1" 404 4106
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754086857090 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/27/details/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754086867738 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+Not Found: /admin-panel/get-user-details/27/
+"GET /admin-panel/get-user-details/27/ HTTP/1.1" 404 21419
+Not Found: /admin-panel/get-user-details/27/
+"GET /admin-panel/get-user-details/27/ HTTP/1.1" 404 21419
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 88377
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/27/details/ HTTP/1.1" 200 535
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/27/details/ HTTP/1.1" 200 535
+"GET /admin-panel/superadmin/users/28/details/ HTTP/1.1" 200 495
+"GET /admin-panel/superadmin/users/27/details/ HTTP/1.1" 200 535
+"GET /admin-panel/superadmin/users/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754086971005 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/26/details/ HTTP/1.1" 200 378
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25277
+Not Found: /test_user_details.html
+"GET /test_user_details.html?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754087022197 HTTP/1.1" 404 4210
+Not Found: /test_user_details.html
+"GET /test_user_details.html HTTP/1.1" 404 4133
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 88793
+"GET /admin-panel/superadmin/users/5/details/ HTTP/1.1" 200 545
+"GET /admin-panel/superadmin/users/2/details/ HTTP/1.1" 200 545
+"GET /admin-panel/superadmin/users/1/details/ HTTP/1.1" 200 400
+"GET /admin-panel/superadmin/users/26/details/ HTTP/1.1" 200 378
+"GET /admin-panel/superadmin/users/26/details/ HTTP/1.1" 200 378
+"GET /admin-panel/superadmin/users/26/details/ HTTP/1.1" 200 378
+"GET /admin-panel/superadmin/users/26/details/ HTTP/1.1" 200 378
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/21/details/ HTTP/1.1" 200 576

@@ -79,6 +79,7 @@ urlpatterns = [
     path('superadmin/users/', superadmin_views.user_management, name='user_management'),
     path('superadmin/users/<int:user_id>/update-role/', superadmin_views.update_user_role, name='update_user_role'),
     path('superadmin/users/<int:user_id>/toggle-status/', superadmin_views.toggle_user_status, name='toggle_user_status'),
+    path('superadmin/users/<int:user_id>/details/', superadmin_views.get_user_details, name='get_user_details'),
     path('superadmin/users/create/', superadmin_views.create_user, name='create_user'),
     path('superadmin/users/create-admin/', superadmin_views.create_admin_user, name='create_admin_user'),  # Legacy redirect
     path('superadmin/users/bulk-delete/', superadmin_views.bulk_delete_users, name='bulk_delete_users'),

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test User Details API</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #ffe6e6; border-left: 4px solid #ff0000; }
+        .success { background: #e6ffe6; border-left: 4px solid #00ff00; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Test User Details API</h1>
+    <p>Click the button below to test the user details API for student ID 27:</p>
+    
+    <button onclick="testUserDetails()">Test Student Details (ID: 27)</button>
+    <button onclick="testUserDetails28()">Test Student Details (ID: 28)</button>
+    
+    <div id="result" class="result">
+        Results will appear here...
+    </div>
+
+    <script>
+        function testUserDetails() {
+            testAPI(27);
+        }
+        
+        function testUserDetails28() {
+            testAPI(28);
+        }
+        
+        function testAPI(userId) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<p>Testing API for user ID ${userId}...</p>`;
+            
+            fetch(`/admin-panel/superadmin/users/${userId}/details/`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error('Authentication required. Please log in as superadmin.');
+                    } else if (response.status === 403) {
+                        throw new Error('Access denied. Super Admin privileges required.');
+                    } else {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('API Response:', data);
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = `
+                    <h3>✅ Success!</h3>
+                    <p><strong>User:</strong> ${data.user.email}</p>
+                    <p><strong>Role:</strong> ${data.user.role_display}</p>
+                    <p><strong>Name:</strong> ${data.user.name}</p>
+                    ${data.user.student_profile ? `
+                        <h4>Student Profile:</h4>
+                        <ul>
+                            <li><strong>Student ID:</strong> ${data.user.student_profile.student_id}</li>
+                            <li><strong>School:</strong> ${data.user.student_profile.school}</li>
+                            <li><strong>Department:</strong> ${data.user.student_profile.department}</li>
+                            <li><strong>Contact:</strong> ${data.user.student_profile.contact_no}</li>
+                        </ul>
+                    ` : ''}
+                    <details>
+                        <summary>Raw JSON Response</summary>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </details>
+                `;
+            })
+            .catch(error => {
+                console.error('API Error:', error);
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h3>❌ Error!</h3>
+                    <p>${error.message}</p>
+                    <p><em>Check browser console for more details.</em></p>
+                `;
+            });
+        }
+        
+        // Helper function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>

@@ -14,7 +14,7 @@ from django.db import transaction, connection
 from datetime import datetime, timedelta
 import json
 
-from apps.authentication.decorators import superadmin_required
+from apps.authentication.decorators import superadmin_required, api_superadmin_required
 from apps.authentication.models import User, TemporaryRegistration, AdminLoginOTP
 from apps.students.models import StudentProfile, AdminProfile, Department, School
 from apps.grievances.models import Grievance, Category, AuditLog
@@ -929,3 +929,95 @@ def bulk_deactivate_users(request):
         return JsonResponse({'error': 'Invalid JSON data'}, status=400)
     except Exception as e:
         return JsonResponse({'error': f'An unexpected error occurred: {str(e)}'}, status=500)
+
+
+@api_superadmin_required
+def get_user_details(request, user_id):
+    """Get detailed information about a permanent user - Superadmin only"""
+    print(f"=== GET_USER_DETAILS CALLED ===")
+    print(f"User ID: {user_id}")
+    print(f"Request user: {request.user}")
+    print(f"Request method: {request.method}")
+    
+    try:
+        from apps.students.models import StudentProfile, AdminProfile
+        
+        print(f"Fetching details for user ID: {user_id}")
+        user = get_object_or_404(User, id=user_id)
+        print(f"Found user: {user.email}, role: {user.role}")
+        
+        # Basic user information
+        user_details = {
+            'id': user.id,
+            'email': user.email,
+            'role': user.role,
+            'role_display': user.get_role_display(),
+            'is_active': user.is_active,
+            'is_email_verified': user.is_email_verified,
+            'is_staff': user.is_staff,
+            'is_superuser': user.is_superuser,
+            'date_joined': user.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'last_login': user.last_login.strftime('%Y-%m-%d %H:%M:%S') if user.last_login else None,
+            'failed_login_attempts': getattr(user, 'failed_login_attempts', 0),
+            'last_failed_login': getattr(user, 'last_failed_login', None),
+            'name': None,
+            'student_profile': None,
+            'admin_profile': None,
+        }
+        
+        # Add student profile information if user is a student
+        if user.role == 'student':
+            print("User is a student, looking for StudentProfile...")
+            try:
+                student_profile = StudentProfile.objects.get(user=user)
+                print(f"Found student profile: {student_profile.name}")
+                user_details['student_profile'] = {
+                    'student_id': student_profile.student_id,
+                    'name': student_profile.name,
+                    'school': student_profile.school,  # school is CharField, not ForeignKey
+                    'department': student_profile.department,  # department is CharField, not ForeignKey
+                    'contact_no': student_profile.contact_no,
+                }
+                user_details['name'] = student_profile.name
+                print(f"Student profile details: {user_details['student_profile']}")
+            except StudentProfile.DoesNotExist:
+                print("StudentProfile not found!")
+                user_details['student_profile'] = None
+        
+        # Add admin profile information if user is an admin or officer
+        elif user.role in ['admin', 'officer']:
+            print("User is an admin/officer, looking for AdminProfile...")
+            try:
+                admin_profile = AdminProfile.objects.get(user=user)
+                print(f"Found admin profile: role_level={admin_profile.role_level}, department={admin_profile.department}")
+                user_details['admin_profile'] = {
+                    'employee_id': admin_profile.employee_id,
+                    'department': admin_profile.department,
+                    'phone': admin_profile.phone,
+                    'office_location': admin_profile.office_location,
+                    'role_level': admin_profile.get_role_level_display(),
+                }
+                user_details['name'] = f"{admin_profile.get_role_level_display()} ({admin_profile.employee_id})"
+                print(f"Admin profile details: {user_details['admin_profile']}")
+            except AdminProfile.DoesNotExist:
+                print("AdminProfile not found!")
+                user_details['admin_profile'] = None
+        
+        # For other roles, try to get name from related profiles or use email
+        if not user_details['name']:
+            user_details['name'] = user.email.split('@')[0].title()
+        
+        print(f"Final user_details: {user_details}")
+        return JsonResponse({
+            'success': True,
+            'user': user_details
+        })
+        
+    except User.DoesNotExist:
+        print(f"User with ID {user_id} not found!")
+        return JsonResponse({'error': 'User not found'}, status=404)
+    except Exception as e:
+        print(f"Error in get_user_details: {str(e)}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
+        return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)

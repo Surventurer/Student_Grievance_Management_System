@@ -572,6 +572,12 @@ tr:has(.user-checkbox:checked) td {
                                                 {% endif %}
                                             </button>
                                             {% endif %}
+                                            
+                                            <!-- View Details Button -->
+                                            <button class="btn btn-outline-info" 
+                                                    onclick="viewUserDetails({{ user.id }}, '{{ user.email }}')">
+                                                <i class="fas fa-eye"></i> Details
+                                            </button>
                                         </div>
                                     {% endif %}
                                 </td>
@@ -947,6 +953,273 @@ Expires: ${details.expires_at}`;
     })
     .catch(error => {
         alert('Error fetching registration details: ' + error);
+    });
+}
+
+// Function for viewing permanent user details
+function viewUserDetails(userId, email) {
+    console.log('Fetching details for user ID:', userId);
+    fetch(`/admin-panel/superadmin/users/${userId}/details/`, {
+        method: 'GET',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error('Authentication required. Please log in again.');
+            } else if (response.status === 403) {
+                throw new Error('Access denied. Super Admin privileges required.');
+            } else {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        if (data.success && data.user) {
+            const details = data.user;
+            console.log('User details:', details);
+            console.log('Student profile in details:', details.student_profile);
+            showUserDetailsModal(details);
+        } else {
+            console.error('API response missing user data:', data);
+            alert('Failed to load user details: Invalid response format');
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching user details:', error);
+        alert('Error fetching user details: ' + error);
+    });
+}
+
+// Function to show user details in a modal
+function showUserDetailsModal(details) {
+    console.log('showUserDetailsModal called with details:', details);
+    console.log('Student profile check:', details.student_profile);
+    console.log('Admin profile check:', details.admin_profile);
+    
+    // Create modal HTML
+    let modalContent = `
+        <div class="modal fade" id="userDetailsModal" tabindex="-1" aria-labelledby="userDetailsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="userDetailsModalLabel">
+                            <i class="fas fa-user-circle me-2"></i>User Profile Details
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <!-- Basic Information -->
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Basic Information</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row mb-2">
+                                            <div class="col-4"><strong>Full Name:</strong></div>
+                                            <div class="col-8">${details.name || 'N/A'}</div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-4"><strong>Email:</strong></div>
+                                            <div class="col-8">${details.email}</div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-4"><strong>Role:</strong></div>
+                                            <div class="col-8">
+                                                <span class="badge bg-primary">${details.role_display}</span>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-4"><strong>User ID:</strong></div>
+                                            <div class="col-8">${details.id}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Account Status -->
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Account Status</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row mb-2">
+                                            <div class="col-5"><strong>Active:</strong></div>
+                                            <div class="col-7">
+                                                <span class="badge ${details.is_active ? 'bg-success' : 'bg-danger'}">
+                                                    ${details.is_active ? 'Yes' : 'No'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-5"><strong>Email Verified:</strong></div>
+                                            <div class="col-7">
+                                                <span class="badge ${details.is_email_verified ? 'bg-success' : 'bg-warning'}">
+                                                    ${details.is_email_verified ? 'Yes' : 'No'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-5"><strong>Staff Status:</strong></div>
+                                            <div class="col-7">
+                                                <span class="badge ${details.is_staff ? 'bg-info' : 'bg-secondary'}">
+                                                    ${details.is_staff ? 'Yes' : 'No'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-5"><strong>Member Since:</strong></div>
+                                            <div class="col-7">${new Date(details.date_joined).toLocaleDateString()}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    `;
+
+    // Add role-specific information
+    if (details.student_profile) {
+        modalContent += `
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header bg-success text-white">
+                                        <h6 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Student Profile</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="row mb-2">
+                                                    <div class="col-4"><strong>Student ID:</strong></div>
+                                                    <div class="col-8">${details.student_profile.student_id || 'N/A'}</div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-4"><strong>School:</strong></div>
+                                                    <div class="col-8">${details.student_profile.school || 'N/A'}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="row mb-2">
+                                                    <div class="col-4"><strong>Department:</strong></div>
+                                                    <div class="col-8">${details.student_profile.department || 'N/A'}</div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-4"><strong>Contact No:</strong></div>
+                                                    <div class="col-8">${details.student_profile.contact_no || 'N/A'}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+        `;
+    }
+
+    if (details.admin_profile) {
+        modalContent += `
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header bg-warning text-dark">
+                                        <h6 class="mb-0"><i class="fas fa-user-tie me-2"></i>Admin Profile</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="row mb-2">
+                                                    <div class="col-5"><strong>Employee ID:</strong></div>
+                                                    <div class="col-7">${details.admin_profile.employee_id || 'N/A'}</div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-5"><strong>Department:</strong></div>
+                                                    <div class="col-7">${details.admin_profile.department || 'N/A'}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="row mb-2">
+                                                    <div class="col-5"><strong>Phone:</strong></div>
+                                                    <div class="col-7">${details.admin_profile.phone || 'N/A'}</div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-5"><strong>Office:</strong></div>
+                                                    <div class="col-7">${details.admin_profile.office_location || 'N/A'}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+        `;
+    }
+
+    modalContent += `
+                        <!-- Activity Information -->
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header bg-info text-white">
+                                        <h6 class="mb-0"><i class="fas fa-clock me-2"></i>Activity Information</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="row mb-2">
+                                                    <div class="col-5"><strong>Last Login:</strong></div>
+                                                    <div class="col-7">${details.last_login ? new Date(details.last_login).toLocaleString() : 'Never'}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="row mb-2">
+                                                    <div class="col-6"><strong>Failed Attempts:</strong></div>
+                                                    <div class="col-6">
+                                                        <span class="badge ${details.failed_login_attempts > 0 ? 'bg-warning' : 'bg-success'}">
+                                                            ${details.failed_login_attempts || 0}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Remove existing modal if any
+    const existingModal = document.getElementById('userDetailsModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // Add modal to page
+    document.body.insertAdjacentHTML('beforeend', modalContent);
+
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('userDetailsModal'));
+    modal.show();
+
+    // Clean up when modal is hidden
+    document.getElementById('userDetailsModal').addEventListener('hidden.bs.modal', function () {
+        this.remove();
     });
 }
 </script>
