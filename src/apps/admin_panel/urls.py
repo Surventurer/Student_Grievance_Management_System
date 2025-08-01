@@ -79,6 +79,7 @@ urlpatterns = [
     path('superadmin/users/', superadmin_views.user_management, name='user_management'),
     path('superadmin/users/<int:user_id>/update-role/', superadmin_views.update_user_role, name='update_user_role'),
     path('superadmin/users/<int:user_id>/toggle-status/', superadmin_views.toggle_user_status, name='toggle_user_status'),
+    path('superadmin/users/<int:user_id>/update-deactivation-reason/', superadmin_views.update_deactivation_reason, name='update_deactivation_reason'),
     path('superadmin/users/<int:user_id>/details/', superadmin_views.get_user_details, name='get_user_details'),
     path('superadmin/users/<int:user_id>/edit/', superadmin_views.edit_user, name='edit_user'),
     path('superadmin/users/schools-departments/', superadmin_views.get_schools_departments, name='get_schools_departments'),
@@ -86,6 +87,7 @@ urlpatterns = [
     path('superadmin/users/create-admin/', superadmin_views.create_admin_user, name='create_admin_user'),  # Legacy redirect
     path('superadmin/users/bulk-delete/', superadmin_views.bulk_delete_users, name='bulk_delete_users'),
     path('superadmin/users/bulk-deactivate/', superadmin_views.bulk_deactivate_users, name='bulk_deactivate_users'),
+    path('superadmin/users/bulk-activate/', superadmin_views.bulk_activate_users, name='bulk_activate_users'),
     
     # Temporary Registration Management (Superadmin Only)
     path('superadmin/temp-registrations/<int:temp_id>/approve/', superadmin_views.approve_temporary_registration, name='approve_temp_registration'),

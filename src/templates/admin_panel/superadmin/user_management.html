@@ -96,6 +96,24 @@
     box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
 }
 
+#bulk-deactivate-btn {
+    transition: all 0.3s ease;
+}
+
+#bulk-deactivate-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
+}
+
+#bulk-activate-btn {
+    transition: all 0.3s ease;
+}
+
+#bulk-activate-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(25, 135, 84, 0.3);
+}
+
 #selected-count {
     font-size: 0.875rem;
     font-weight: 500;
@@ -416,6 +434,9 @@ tr:has(.user-checkbox:checked) td {
                     <button id="bulk-deactivate-btn" class="btn btn-warning btn-sm" onclick="bulkDeactivateUsers()">
                         <i class="fas fa-ban"></i> Deactivate Selected
                     </button>
+                    <button id="bulk-activate-btn" class="btn btn-success btn-sm" onclick="bulkActivateUsers()">
+                        <i class="fas fa-check-circle"></i> Activate Selected
+                    </button>
                 </div>
                 <span id="selected-count" class="text-muted small" style="display: none;"></span>
             </div>
@@ -433,6 +454,7 @@ tr:has(.user-checkbox:checked) td {
                                 <th>Name/ID</th>
                                 <th>Role</th>
                                 <th>Status</th>
+                                <th>Deactivation Reason</th>
                                 <th>Department</th>
                                 <th>Joined</th>
                                 <th>Actions</th>
@@ -515,6 +537,32 @@ tr:has(.user-checkbox:checked) td {
                                         <span class="badge bg-success">Active</span>
                                     {% else %}
                                         <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if not user.is_active %}
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-grow-1">
+                                                {% if user.deactivation_reason %}
+                                                    <small class="text-muted" title="{{ user.deactivation_reason }}">
+                                                        {% if user.deactivation_reason|length > 30 %}
+                                                            {{ user.deactivation_reason|truncatechars:30 }}
+                                                        {% else %}
+                                                            {{ user.deactivation_reason }}
+                                                        {% endif %}
+                                                    </small>
+                                                {% else %}
+                                                    <small class="text-muted">No reason provided</small>
+                                                {% endif %}
+                                            </div>
+                                            <button class="btn btn-outline-secondary btn-sm ms-2" 
+                                                    onclick="viewDeactivationReason({{ user.id }}, '{{ user.email }}', '{{ user.deactivation_reason|escapejs }}')"
+                                                    title="Edit deactivation reason">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
                                     {% endif %}
                                 </td>
                                 <td>
@@ -674,12 +722,30 @@ function updateUserRole(userId, newRole, roleName) {
 
 function toggleUserStatus(userId, userEmail, isActive) {
     const action = isActive ? 'deactivate' : 'activate';
+    let deactivationReason = '';
+    
+    // If deactivating, prompt for reason
+    if (isActive) {
+        deactivationReason = prompt(`Please provide a reason for deactivating ${userEmail}:`, '');
+        if (deactivationReason === null) {
+            return; // User cancelled
+        }
+        if (deactivationReason.trim() === '') {
+            alert('A reason is required when deactivating a user.');
+            return;
+        }
+    }
+    
     if (confirm(`Are you sure you want to ${action} ${userEmail}?`)) {
+        const formData = new FormData();
+        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+        if (!isActive || deactivationReason) {
+            formData.append('deactivation_reason', deactivationReason);
+        }
+        
         fetch(`/admin-panel/superadmin/users/${userId}/toggle-status/`, {
             method: 'POST',
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-            }
+            body: formData
         })
         .then(response => response.json())
         .then(data => {
@@ -871,6 +937,66 @@ function bulkDeactivateUsers() {
         // Re-enable button
         bulkDeactivateBtn.disabled = false;
         bulkDeactivateBtn.innerHTML = originalText;
+    });
+}
+
+function bulkActivateUsers() {
+    const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+    
+    if (checkedBoxes.length === 0) {
+        alert('Please select users to activate.');
+        return;
+    }
+    
+    const userIds = Array.from(checkedBoxes).map(checkbox => parseInt(checkbox.value));
+    const count = userIds.length;
+    
+    // Show confirmation dialog
+    const confirmMessage = `Are you sure you want to activate ${count} user${count > 1 ? 's' : ''}? This will restore their access to the system.`;
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    // Disable button and show loading state
+    const bulkActivateBtn = document.getElementById('bulk-activate-btn');
+    const originalText = bulkActivateBtn.innerHTML;
+    bulkActivateBtn.disabled = true;
+    bulkActivateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Activating...';
+    
+    fetch('/admin-panel/superadmin/users/bulk-activate/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+            user_ids: userIds
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Successfully activated ${data.activated_count} user(s)`);
+            
+            // Reset checkboxes and buttons
+            document.getElementById('select-all').checked = false;
+            updateBulkDeleteButton();
+            
+            // Reload the page to update the user list
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Bulk activate error:', error);
+        alert('Error activating users: ' + error.message);
+    })
+    .finally(() => {
+        // Re-enable button
+        bulkActivateBtn.disabled = false;
+        bulkActivateBtn.innerHTML = originalText;
     });
 }
 
@@ -1687,7 +1813,83 @@ function getCsrfToken() {
     console.log('CSRF token found:', token ? 'Yes' : 'No');
     return token || '';
 }
+
+// Function to view/edit deactivation reason
+function viewDeactivationReason(userId, userEmail, currentReason) {
+    document.getElementById('deactivationUserId').value = userId;
+    document.getElementById('deactivationUserEmail').textContent = userEmail;
+    document.getElementById('deactivationReasonText').value = currentReason || '';
+    
+    const modal = new bootstrap.Modal(document.getElementById('deactivationReasonModal'));
+    modal.show();
+}
+
+// Function to save deactivation reason
+function saveDeactivationReason() {
+    const userId = document.getElementById('deactivationUserId').value;
+    const reason = document.getElementById('deactivationReasonText').value.trim();
+    
+    if (!reason) {
+        alert('Please provide a deactivation reason.');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', getCsrfToken());
+    formData.append('deactivation_reason', reason);
+    
+    fetch(`/admin-panel/superadmin/users/${userId}/update-deactivation-reason/`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('deactivationReasonModal'));
+            modal.hide();
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        alert('Error updating reason: ' + error);
+    });
+}
 </script>
+
+<!-- Deactivation Reason Modal -->
+<div class="modal fade" id="deactivationReasonModal" tabindex="-1" aria-labelledby="deactivationReasonModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deactivationReasonModalLabel">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                    Deactivation Reason
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3">
+                    <strong>User:</strong> <span id="deactivationUserEmail"></span>
+                </p>
+                <div class="mb-3">
+                    <label for="deactivationReasonText" class="form-label">Deactivation Reason</label>
+                    <textarea class="form-control" id="deactivationReasonText" rows="4" 
+                              placeholder="Enter the reason for deactivating this account..."></textarea>
+                    <div class="form-text">This reason will be shown to the user when they try to log in.</div>
+                </div>
+                <input type="hidden" id="deactivationUserId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" onclick="saveDeactivationReason()">
+                    <i class="fas fa-save me-1"></i>Save Reason
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- CSRF Token -->
 <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">

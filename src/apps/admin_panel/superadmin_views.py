@@ -174,16 +174,31 @@ def toggle_user_status(request, user_id):
         if user.id == request.user.id:
             return JsonResponse({'error': 'Cannot deactivate your own account'}, status=400)
         
-        user.is_active = not user.is_active
+        new_status = not user.is_active
+        
+        # If deactivating, get the reason
+        if not new_status:  # deactivating (making is_active = False)
+            deactivation_reason = request.POST.get('deactivation_reason', '').strip()
+            if not deactivation_reason:
+                return JsonResponse({'error': 'Deactivation reason is required'}, status=400)
+            user.deactivation_reason = deactivation_reason
+        else:  # activating (making is_active = True)
+            user.deactivation_reason = None  # Clear reason when reactivating
+        
+        user.is_active = new_status
         user.save()
         
         status_text = 'activated' if user.is_active else 'deactivated'
         
-        # Create audit log
+        # Create audit log with reason if deactivating
+        description = f'User {user.email} {status_text}'
+        if not user.is_active and user.deactivation_reason:
+            description += f' - Reason: {user.deactivation_reason}'
+            
         AuditLog.objects.create(
             user=request.user,
             action='status_change',
-            description=f'User {user.email} {status_text}',
+            description=description,
             target_model='User',
             target_id=str(user_id),
             ip_address=request.META.get('REMOTE_ADDR'),
@@ -194,6 +209,42 @@ def toggle_user_status(request, user_id):
             'success': True,
             'message': f'User {status_text} successfully',
             'is_active': user.is_active
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@superadmin_required  
+def update_deactivation_reason(request, user_id):
+    """Update deactivation reason for a user - Superadmin only"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST method allowed'}, status=405)
+        
+    try:
+        user = get_object_or_404(User, id=user_id)
+        
+        deactivation_reason = request.POST.get('deactivation_reason', '').strip()
+        if not deactivation_reason:
+            return JsonResponse({'error': 'Deactivation reason is required'}, status=400)
+        
+        user.deactivation_reason = deactivation_reason
+        user.save()
+        
+        # Create audit log
+        AuditLog.objects.create(
+            user=request.user,
+            action='deactivation_reason_update',
+            description=f'Updated deactivation reason for {user.email}: {deactivation_reason}',
+            target_model='User',
+            target_id=str(user_id),
+            ip_address=request.META.get('REMOTE_ADDR'),
+            user_agent=request.META.get('HTTP_USER_AGENT', '')
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Deactivation reason updated successfully'
         })
         
     except Exception as e:
@@ -930,6 +981,72 @@ def bulk_deactivate_users(request):
             'deactivated_count': len(deactivated_users_info),
             'deactivated_users': deactivated_users_info,
             'message': f'Successfully deactivated {len(deactivated_users_info)} user(s)'
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': f'An unexpected error occurred: {str(e)}'}, status=500)
+
+
+@superadmin_required
+@require_http_methods(["POST"])
+def bulk_activate_users(request):
+    """Bulk activate users - Superadmin only"""
+    try:
+        # Parse the JSON body
+        data = json.loads(request.body)
+        user_ids = data.get('user_ids', [])
+        
+        if not user_ids:
+            return JsonResponse({'error': 'No users selected'}, status=400)
+        
+        # Validate that user_ids is a list of integers
+        try:
+            user_ids = [int(uid) for uid in user_ids]
+        except (ValueError, TypeError):
+            return JsonResponse({'error': 'Invalid user IDs provided'}, status=400)
+        
+        # Get users to activate (only inactive users)
+        users_to_activate = User.objects.filter(id__in=user_ids, is_active=False)
+        
+        if not users_to_activate.exists():
+            return JsonResponse({'error': 'No valid inactive users found to activate'}, status=400)
+        
+        activated_users_info = []
+        
+        with transaction.atomic():
+            for user in users_to_activate:
+                # Store user info before activation
+                user_info = {
+                    'id': user.id,
+                    'email': user.email,
+                    'role': user.role
+                }
+                
+                # Activate the user and clear deactivation reason
+                user.is_active = True
+                user.deactivation_reason = None  # Clear the deactivation reason
+                user.save()
+                
+                # Create audit log
+                AuditLog.objects.create(
+                    user=request.user,
+                    action='update',
+                    description=f'Bulk activated user {user.email} (Role: {user.get_role_display()})',
+                    target_model='User',
+                    target_id=str(user.id),
+                    ip_address=request.META.get('REMOTE_ADDR'),
+                    user_agent=request.META.get('HTTP_USER_AGENT', '')
+                )
+                
+                activated_users_info.append(user_info)
+        
+        return JsonResponse({
+            'success': True,
+            'activated_count': len(activated_users_info),
+            'activated_users': activated_users_info,
+            'message': f'Successfully activated {len(activated_users_info)} user(s)'
         })
         
     except json.JSONDecodeError:
