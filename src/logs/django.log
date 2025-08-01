@@ -23089,3 +23089,125 @@ Watching for file changes with StatReloader
 Watching for file changes with StatReloader
 Watching for file changes with StatReloader
 "GET /admin-panel/superadmin/users/21/details/ HTTP/1.1" 200 576
+"GET /admin-panel/superadmin/users/1/details/ HTTP/1.1" 200 400
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 92002
+"GET /admin-panel/superadmin/users/5/details/ HTTP/1.1" 200 545
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+"POST /admin-panel/superadmin/users/28/update-role/ HTTP/1.1" 200 71
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 111008
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/28/details/ HTTP/1.1" 200 364
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754087388870 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/28/details/ HTTP/1.1" 200 364
+Not Found: /test_edit_user.html
+"GET /test_edit_user.html?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754087442331 HTTP/1.1" 404 4201
+"GET /admin-panel/superadmin/users/1/details/ HTTP/1.1" 200 400
+"GET /admin-panel/superadmin/users/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754087447218 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 111008
+"GET /admin-panel/superadmin/users/1/details/ HTTP/1.1" 200 400
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 111797
+"GET /admin-panel/superadmin/users/28/details/ HTTP/1.1" 200 364
+"GET /admin-panel/superadmin/users/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754087592841 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+Not Found: /test_superadmin_protection.html
+"GET /test_superadmin_protection.html HTTP/1.1" 404 4160
+"GET /admin-panel/superadmin/users/21/details/ HTTP/1.1" 200 576
+"GET /admin-panel/superadmin/users/28/details/ HTTP/1.1" 200 364
+"GET /admin-panel/superadmin/users/28/details/ HTTP/1.1" 200 364
+"GET /admin-panel/superadmin/users/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754087761105 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754087914625 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 114792
+"GET /admin-panel/superadmin/users/28/details/ HTTP/1.1" 200 364
+"GET /admin-panel/superadmin/users/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754088097024 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754088139416 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754088164199 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115296
+"GET /admin-panel/superadmin/users/28/details/ HTTP/1.1" 200 364
+"GET /admin-panel/superadmin/users/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754088271002 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115355
+"GET /admin-panel/superadmin/users/28/details/ HTTP/1.1" 200 364
+"POST /admin-panel/superadmin/users/28/edit/ HTTP/1.1" 200 221
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115380
+"GET /admin-panel/superadmin/users/28/details/ HTTP/1.1" 200 529
+"GET /admin-panel/superadmin/users/26/details/ HTTP/1.1" 200 378
+"POST /admin-panel/superadmin/users/26/edit/ HTTP/1.1" 200 237
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115396
+"GET /admin-panel/superadmin/users/1/details/ HTTP/1.1" 200 400
+Bad Request: /admin-panel/superadmin/users/1/edit/
+"POST /admin-panel/superadmin/users/1/edit/ HTTP/1.1" 400 47
+Bad Request: /admin-panel/superadmin/users/1/edit/
+"POST /admin-panel/superadmin/users/1/edit/ HTTP/1.1" 400 47
+"GET /admin-panel/superadmin/users/2/details/ HTTP/1.1" 200 545
+"POST /admin-panel/superadmin/users/2/edit/ HTTP/1.1" 200 232
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115401
+"GET /admin-panel/superadmin/users/5/details/ HTTP/1.1" 200 545
+"GET /admin-panel/superadmin/users/28/details/ HTTP/1.1" 200 529
+"GET /admin-panel/superadmin/users/27/details/ HTTP/1.1" 200 535
+"GET /admin-panel/superadmin/users/21/details/ HTTP/1.1" 200 576
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115817
+"GET /admin-panel/superadmin/users/1/details/ HTTP/1.1" 200 400
+"GET /admin-panel/superadmin/users/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754088587737 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115817
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115817
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115817
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115817
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115817
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115817
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115817
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115817
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115817
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115817
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115817
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115817
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115817
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115817
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115517
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 115517
+"GET /admin-panel/superadmin/users/2/details/ HTTP/1.1" 200 552
+"GET /admin-panel/superadmin/users/?id=bfca5fe3-ec50-4980-817c-5542423081c3&vscodeBrowserReqId=1754088683532 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 113731
+"GET /admin-panel/superadmin/users/2/details/ HTTP/1.1" 200 552
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET /auth/student-registration/ HTTP/1.1" 200 9309
+"GET /auth/load-departments/?school_id=2 HTTP/1.1" 200 173
+"POST /auth/student-registration/ HTTP/1.1" 302 0
+"GET /auth/verify-email/ HTTP/1.1" 200 4407
+"GET /auth/login/ HTTP/1.1" 200 3725
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 28236
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 117583
+"POST /admin-panel/superadmin/temp-registrations/17/approve/ HTTP/1.1" 200 87
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 120038
+"GET /admin-panel/superadmin/users/29/details/ HTTP/1.1" 200 512
+"POST /admin-panel/superadmin/users/29/edit/ HTTP/1.1" 200 237
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 119951
+"POST /admin-panel/superadmin/users/bulk-delete/ HTTP/1.1" 200 320
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 94986
+"GET /admin-panel/grievances/ HTTP/1.1" 200 38010
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/grievances/6ac7844e-c0c1-43b4-ba85-0251d01c1cf6/ HTTP/1.1" 200 27992
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 94986
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=2025&role=&show_unverified=1 HTTP/1.1" 200 72506
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 94986

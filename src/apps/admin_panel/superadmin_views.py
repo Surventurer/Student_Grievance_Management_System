@@ -1021,3 +1021,188 @@ def get_user_details(request, user_id):
         import traceback
         print(f"Traceback: {traceback.format_exc()}")
         return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+
+
+@api_superadmin_required
+def edit_user(request, user_id):
+    """Edit user profile and role - Superadmin only"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST method allowed'}, status=405)
+    
+    try:
+        import json
+        from apps.students.models import StudentProfile, AdminProfile
+        
+        print(f"=== EDIT_USER CALLED ===")
+        print(f"User ID: {user_id}")
+        print(f"Request user: {request.user}")
+        
+        user = get_object_or_404(User, id=user_id)
+        print(f"Found user: {user.email}, current role: {user.role}")
+        
+        # Parse JSON data
+        try:
+            data = json.loads(request.body)
+            print(f"Received data: {data}")
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+        
+        # Get the new role and basic info
+        new_role = data.get('role', user.role)
+        is_active = data.get('is_active', user.is_active)
+        is_verified = data.get('is_email_verified', user.is_email_verified)
+        
+        print(f"New role: {new_role}, Active: {is_active}, Verified: {is_verified}")
+        
+        # Prevent role changes for superadmin users
+        if user.role == 'superadmin' and new_role != 'superadmin':
+            return JsonResponse({'error': 'Super Admin role cannot be changed'}, status=400)
+        
+        # Prevent changing other users to superadmin role
+        if user.role != 'superadmin' and new_role == 'superadmin':
+            return JsonResponse({'error': 'Cannot change user to Super Admin role'}, status=400)
+        
+        # Update basic user information
+        user.role = new_role
+        user.is_active = is_active
+        user.is_email_verified = is_verified
+        user.save()
+        
+        print(f"Updated user basic info")
+        
+        # Handle role-specific profile updates
+        if new_role == 'student':
+            student_data = data.get('student_profile', {})
+            print(f"Processing student profile data: {student_data}")
+            
+            # Get or create student profile
+            student_profile, created = StudentProfile.objects.get_or_create(
+                user=user,
+                defaults={
+                    'name': student_data.get('name', ''),
+                    'student_id': student_data.get('student_id', ''),
+                    'school': student_data.get('school', ''),
+                    'department': student_data.get('department', ''),
+                    'contact_no': student_data.get('contact_no', ''),
+                }
+            )
+            
+            if not created:
+                # Update existing profile
+                student_profile.name = student_data.get('name', student_profile.name)
+                student_profile.student_id = student_data.get('student_id', student_profile.student_id)
+                student_profile.school = student_data.get('school', student_profile.school)
+                student_profile.department = student_data.get('department', student_profile.department)
+                student_profile.contact_no = student_data.get('contact_no', student_profile.contact_no)
+                student_profile.save()
+            
+            print(f"{'Created' if created else 'Updated'} student profile")
+            
+            # Remove admin profile if it exists (role changed from admin to student)
+            try:
+                admin_profile = AdminProfile.objects.get(user=user)
+                admin_profile.delete()
+                print("Removed existing admin profile")
+            except AdminProfile.DoesNotExist:
+                pass
+                
+        elif new_role in ['admin', 'officer']:
+            admin_data = data.get('admin_profile', {})
+            print(f"Processing admin profile data: {admin_data}")
+            
+            # Get or create admin profile
+            admin_profile, created = AdminProfile.objects.get_or_create(
+                user=user,
+                defaults={
+                    'role_level': new_role,
+                    'department': admin_data.get('department', ''),
+                    'employee_id': admin_data.get('employee_id', ''),
+                    'phone': admin_data.get('phone', ''),
+                    'office_location': admin_data.get('office_location', ''),
+                }
+            )
+            
+            if not created:
+                # Update existing profile
+                admin_profile.role_level = new_role
+                admin_profile.department = admin_data.get('department', admin_profile.department)
+                admin_profile.employee_id = admin_data.get('employee_id', admin_profile.employee_id)
+                admin_profile.phone = admin_data.get('phone', admin_profile.phone)
+                admin_profile.office_location = admin_data.get('office_location', admin_profile.office_location)
+                admin_profile.save()
+            
+            print(f"{'Created' if created else 'Updated'} admin profile")
+            
+            # Remove student profile if it exists (role changed from student to admin)
+            try:
+                student_profile = StudentProfile.objects.get(user=user)
+                student_profile.delete()
+                print("Removed existing student profile")
+            except StudentProfile.DoesNotExist:
+                pass
+        
+        elif new_role == 'superadmin':
+            # For superadmin, we might just update the name if provided
+            name = data.get('name')
+            if name:
+                # We could store this in a separate field or handle it differently
+                print(f"Updated superadmin name: {name}")
+            
+            # Remove both student and admin profiles for superadmin
+            try:
+                student_profile = StudentProfile.objects.get(user=user)
+                student_profile.delete()
+                print("Removed existing student profile for superadmin")
+            except StudentProfile.DoesNotExist:
+                pass
+                
+            try:
+                admin_profile = AdminProfile.objects.get(user=user)
+                admin_profile.delete()
+                print("Removed existing admin profile for superadmin")
+            except AdminProfile.DoesNotExist:
+                pass
+        
+        print(f"Successfully updated user {user.email} to role {new_role}")
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'User profile updated successfully. Role changed to {new_role}.',
+            'user': {
+                'id': user.id,
+                'email': user.email,
+                'role': user.role,
+                'role_display': user.get_role_display(),
+                'is_active': user.is_active,
+                'is_email_verified': user.is_email_verified
+            }
+        })
+        
+    except User.DoesNotExist:
+        print(f"User with ID {user_id} not found!")
+        return JsonResponse({'error': 'User not found'}, status=404)
+    except Exception as e:
+        print(f"Error in edit_user: {str(e)}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
+        return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+
+
+@api_superadmin_required
+def get_schools_departments(request):
+    """Get list of schools and departments for dropdowns - Superadmin only"""
+    try:
+        from apps.students.models import School, Department
+        
+        schools = list(School.objects.filter(is_active=True).values('id', 'name'))
+        departments = list(Department.objects.filter(is_active=True).values('id', 'name', 'school_id'))
+        
+        return JsonResponse({
+            'success': True,
+            'schools': schools,
+            'departments': departments
+        })
+        
+    except Exception as e:
+        print(f"Error in get_schools_departments: {str(e)}")
+        return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)

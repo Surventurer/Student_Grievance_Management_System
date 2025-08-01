@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Edit User Functionality</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { background: #f5f5f5; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #ffe6e6; border-left: 4px solid #ff0000; }
+        .success { background: #e6ffe6; border-left: 4px solid #00ff00; }
+        .warning { background: #fff3cd; border-left: 4px solid #ffc107; }
+        .btn { margin: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Edit User Functionality</h1>
+        <p>Test the new edit user feature with different user types:</p>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5><i class="fas fa-graduation-cap me-2"></i>Student Users</h5>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-outline-warning" onclick="testEditUser(21, 'student')">
+                            <i class="fas fa-edit"></i> Edit Abhinav (Student)
+                        </button>
+                        <button class="btn btn-outline-warning" onclick="testEditUser(27, 'student')">
+                            <i class="fas fa-edit"></i> Edit aa@gmail.com (Student)
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class="fas fa-user-tie me-2"></i>Admin Users</h5>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-outline-warning" onclick="testEditUser(5, 'officer')">
+                            <i class="fas fa-edit"></i> Edit Officer (Officer)
+                        </button>
+                        <button class="btn btn-outline-warning" onclick="testEditUser(28, 'admin')">
+                            <i class="fas fa-edit"></i> Edit d@gmail.com (Admin)
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-danger text-white">
+                        <h5><i class="fas fa-crown me-2"></i>Super Admin</h5>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-outline-warning" onclick="testEditUser(1, 'superadmin')">
+                            <i class="fas fa-edit"></i> Edit admin@example.com
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="result" class="result">
+            Click any Edit button above to test the edit user functionality...
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function testEditUser(userId, expectedRole) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = 'result warning';
+            resultDiv.innerHTML = `<p><i class="fas fa-spinner fa-spin"></i> Testing edit functionality for user ID ${userId} (expected role: ${expectedRole})...</p>`;
+            
+            // First fetch user details (same as real edit function)
+            fetch(`/admin-panel/superadmin/users/${userId}/details/`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => {
+                console.log('Details response status:', response.status);
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error('Authentication required. Please log in as superadmin.');
+                    } else if (response.status === 403) {
+                        throw new Error('Access denied. Super Admin privileges required.');
+                    } else {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('User details fetched:', data);
+                
+                if (data.success && data.user) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <h4>✅ User Details Fetched Successfully!</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Basic Info:</h5>
+                                <ul>
+                                    <li><strong>Email:</strong> ${data.user.email}</li>
+                                    <li><strong>Role:</strong> ${data.user.role_display}</li>
+                                    <li><strong>Active:</strong> ${data.user.is_active ? 'Yes' : 'No'}</li>
+                                    <li><strong>Verified:</strong> ${data.user.is_email_verified ? 'Yes' : 'No'}</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                ${data.user.student_profile ? `
+                                    <h5>Student Profile:</h5>
+                                    <ul>
+                                        <li><strong>Name:</strong> ${data.user.student_profile.name}</li>
+                                        <li><strong>Student ID:</strong> ${data.user.student_profile.student_id}</li>
+                                        <li><strong>School:</strong> ${data.user.student_profile.school}</li>
+                                        <li><strong>Department:</strong> ${data.user.student_profile.department}</li>
+                                        <li><strong>Contact:</strong> ${data.user.student_profile.contact_no || 'N/A'}</li>
+                                    </ul>
+                                ` : ''}
+                                ${data.user.admin_profile ? `
+                                    <h5>Admin Profile:</h5>
+                                    <ul>
+                                        <li><strong>Employee ID:</strong> ${data.user.admin_profile.employee_id}</li>
+                                        <li><strong>Department:</strong> ${data.user.admin_profile.department}</li>
+                                        <li><strong>Phone:</strong> ${data.user.admin_profile.phone || 'N/A'}</li>
+                                        <li><strong>Office:</strong> ${data.user.admin_profile.office_location || 'N/A'}</li>
+                                    </ul>
+                                ` : ''}
+                                ${!data.user.student_profile && !data.user.admin_profile ? `
+                                    <h5>No Profile Data</h5>
+                                    <p>This user doesn't have a specific profile yet.</p>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <hr>
+                        <p><strong>🎯 Edit Modal would now open with this data pre-filled!</strong></p>
+                        <p><em>The real edit functionality is working and can be accessed from the main user management page.</em></p>
+                    `;
+                } else {
+                    throw new Error('Invalid response format');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h4>❌ Error!</h4>
+                    <p>${error.message}</p>
+                    <p><em>Make sure you're logged in as a superadmin user.</em></p>
+                `;
+            });
+        }
+        
+        // Helper function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>

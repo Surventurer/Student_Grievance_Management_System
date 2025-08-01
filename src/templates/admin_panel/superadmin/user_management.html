@@ -541,7 +541,8 @@ tr:has(.user-checkbox:checked) td {
                                         </div>
                                     {% else %}
                                         <div class="btn-group btn-group-sm">
-                                            <!-- Role Change Dropdown -->
+                                            <!-- Role Change Dropdown (hidden for superadmin) -->
+                                            {% if user.role != 'superadmin' %}
                                             <div class="dropdown">
                                                 <button class="btn btn-outline-primary dropdown-toggle" type="button" 
                                                         data-bs-toggle="dropdown">
@@ -560,6 +561,7 @@ tr:has(.user-checkbox:checked) td {
                                                     {% endfor %}
                                                 </ul>
                                             </div>
+                                            {% endif %}
                                             
                                             <!-- Status Toggle -->
                                             {% if user.id != request.user.id %}
@@ -573,11 +575,19 @@ tr:has(.user-checkbox:checked) td {
                                             </button>
                                             {% endif %}
                                             
-                                            <!-- View Details Button -->
-                                            <button class="btn btn-outline-info" 
+                                            <!-- View Details Button (hidden for superadmin) -->
+                                            {% if user.role != 'superadmin' %}
+                                            <button class="btn btn-outline-info btn-sm" 
                                                     onclick="viewUserDetails({{ user.id }}, '{{ user.email }}')">
                                                 <i class="fas fa-eye"></i> Details
                                             </button>
+                                            
+                                            <!-- Edit User Button (hidden for superadmin) -->
+                                            <button class="btn btn-outline-warning btn-sm" 
+                                                    onclick="editUser({{ user.id }}, '{{ user.email }}', '{{ user.role }}')">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </button>
+                                            {% endif %}
                                         </div>
                                     {% endif %}
                                 </td>
@@ -1221,6 +1231,453 @@ function showUserDetailsModal(details) {
     document.getElementById('userDetailsModal').addEventListener('hidden.bs.modal', function () {
         this.remove();
     });
+}
+
+// Function to edit user details
+function editUser(userId, email, role) {
+    console.log('Opening edit modal for user:', userId, email, role);
+    
+    // Store the user ID for form submission
+    window.currentEditUserId = userId;
+    
+    // First fetch the current user details
+    fetch(`/admin-panel/superadmin/users/${userId}/details/`, {
+        method: 'GET',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error('Authentication required. Please log in again.');
+            } else if (response.status === 403) {
+                throw new Error('Access denied. Super Admin privileges required.');
+            } else {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('User data for editing:', data);
+        if (data.success && data.user) {
+            showEditUserModal(data.user);
+        } else {
+            console.error('API response missing user data:', data);
+            alert('Failed to load user details for editing');
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching user details for editing:', error);
+        alert('Error loading user details: ' + error.message);
+    });
+}
+
+// Function to show edit user modal
+function showEditUserModal(userDetails) {
+    console.log('Creating edit modal for user:', userDetails);
+    
+    // Create edit modal HTML
+    let modalContent = `
+        <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title" id="editUserModalLabel">
+                            <i class="fas fa-edit me-2"></i>Edit User Profile
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="editUserForm">
+                        <div class="modal-body">
+                            <div class="row">
+                                <!-- Basic Information -->
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0"><i class="fas fa-user me-2"></i>Basic Information</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="edit_email" class="form-label">Email *</label>
+                                                <input type="email" class="form-control" id="edit_email" 
+                                                       value="${userDetails.email}" required readonly>
+                                                <small class="text-muted">Email cannot be changed</small>
+                                            </div>
+                                            
+                                            <div class="mb-3" id="roleSelectionDiv" style="display: ${userDetails.role === 'superadmin' ? 'none' : 'block'}">
+                                                <label for="edit_role" class="form-label">Role *</label>
+                                                <select class="form-select" id="edit_role" required onchange="handleRoleChange()">
+                                                    <option value="student" ${userDetails.role === 'student' ? 'selected' : ''}>Student</option>
+                                                    <option value="admin" ${userDetails.role === 'admin' ? 'selected' : ''}>Admin</option>
+                                                    <option value="officer" ${userDetails.role === 'officer' ? 'selected' : ''}>Officer</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="mb-3" id="superadminRoleDiv" style="display: ${userDetails.role === 'superadmin' ? 'block' : 'none'}">
+                                                <label class="form-label">Role</label>
+                                                <input type="text" class="form-control" value="Super Admin" readonly>
+                                                <small class="text-muted">Super Admin role cannot be changed</small>
+                                                <input type="hidden" id="edit_role_hidden" value="${userDetails.role}">
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label class="form-label">Account Status</label>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="edit_is_active" 
+                                                           ${userDetails.is_active ? 'checked' : ''}>
+                                                    <label class="form-check-label" for="edit_is_active">
+                                                        Active Account
+                                                    </label>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="edit_is_verified" 
+                                                           ${userDetails.is_email_verified ? 'checked' : ''}>
+                                                    <label class="form-check-label" for="edit_is_verified">
+                                                        Email Verified
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Role-specific Information -->
+                                <div class="col-md-6">
+                                    <div id="studentProfileCard" class="card h-100" style="display: ${userDetails.role === 'student' ? 'block' : 'none'}">
+                                        <div class="card-header bg-success text-white">
+                                            <h6 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Student Profile</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="edit_student_name" class="form-label">Full Name *</label>
+                                                <input type="text" class="form-control" id="edit_student_name" 
+                                                       value="${userDetails.student_profile?.name || ''}" required>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="edit_student_id" class="form-label">Student ID *</label>
+                                                <input type="text" class="form-control" id="edit_student_id" 
+                                                       value="${userDetails.student_profile?.student_id || ''}" required>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="edit_school" class="form-label">School *</label>
+                                                <input type="text" class="form-control" id="edit_school" 
+                                                       value="${userDetails.student_profile?.school || ''}" required>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="edit_department" class="form-label">Department *</label>
+                                                <input type="text" class="form-control" id="edit_department" 
+                                                       value="${userDetails.student_profile?.department || ''}" required>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="edit_contact_no" class="form-label">Contact Number</label>
+                                                <input type="tel" class="form-control" id="edit_contact_no" 
+                                                       value="${userDetails.student_profile?.contact_no || ''}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="adminProfileCard" class="card h-100" style="display: ${userDetails.role === 'admin' || userDetails.role === 'officer' ? 'block' : 'none'}">
+                                        <div class="card-header bg-primary text-white">
+                                            <h6 class="mb-0"><i class="fas fa-user-tie me-2"></i>Admin Profile</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="edit_admin_name" class="form-label">Full Name</label>
+                                                <input type="text" class="form-control" id="edit_admin_name" 
+                                                       value="${userDetails.name || ''}">
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="edit_employee_id" class="form-label">Employee ID</label>
+                                                <input type="text" class="form-control" id="edit_employee_id" 
+                                                       value="${userDetails.admin_profile?.employee_id || ''}">
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="edit_admin_department" class="form-label">Department</label>
+                                                <input type="text" class="form-control" id="edit_admin_department" 
+                                                       value="${userDetails.admin_profile?.department || ''}">
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="edit_phone" class="form-label">Phone</label>
+                                                <input type="tel" class="form-control" id="edit_phone" 
+                                                       value="${userDetails.admin_profile?.phone || ''}">
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="edit_office_location" class="form-label">Office Location</label>
+                                                <input type="text" class="form-control" id="edit_office_location" 
+                                                       value="${userDetails.admin_profile?.office_location || ''}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="superadminProfileCard" class="card h-100" style="display: ${userDetails.role === 'superadmin' ? 'block' : 'none'}">
+                                        <div class="card-header bg-danger text-white">
+                                            <h6 class="mb-0"><i class="fas fa-crown me-2"></i>Super Admin Profile</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="alert alert-warning">
+                                                <i class="fas fa-shield-alt me-2"></i>
+                                                <strong>Protected Account:</strong> Super Admin is a unique role with full system access. Role cannot be changed for security reasons.
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="edit_superadmin_name" class="form-label">Display Name</label>
+                                                <input type="text" class="form-control" id="edit_superadmin_name" 
+                                                       value="${userDetails.name || 'Super Administrator'}" 
+                                                       placeholder="Super Administrator">
+                                                <small class="text-muted">Optional display name for the super admin account</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </button>
+                            <button type="button" class="btn btn-warning" id="saveUserButton">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Remove existing modal if any
+    const existingModal = document.getElementById('editUserModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // Add modal to page
+    document.body.insertAdjacentHTML('beforeend', modalContent);
+
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+    modal.show();
+
+    // Add button click event listener
+    const saveButton = document.getElementById('saveUserButton');
+    if (saveButton) {
+        saveButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            console.log('Save button clicked');
+            handleFormSubmit(event);
+        });
+        console.log('Save button click event listener added');
+    } else {
+        console.error('Save button not found');
+    }
+
+    // Clean up when modal is hidden
+    document.getElementById('editUserModal').addEventListener('hidden.bs.modal', function () {
+        this.remove();
+    });
+
+    // Add form submission handler
+    document.getElementById('editUserForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        console.log('Form submitted, calling saveUserChanges...');
+        saveUserChanges(userDetails.id);
+    });
+}
+
+// Function to handle role change in edit modal
+function handleRoleChange() {
+    const roleElement = document.getElementById('edit_role');
+    const role = roleElement ? roleElement.value : 'superadmin'; // Default to superadmin if no dropdown
+    
+    // Hide all profile cards
+    document.getElementById('studentProfileCard').style.display = 'none';
+    document.getElementById('adminProfileCard').style.display = 'none';
+    document.getElementById('superadminProfileCard').style.display = 'none';
+    
+    // Show appropriate card based on role
+    if (role === 'student') {
+        document.getElementById('studentProfileCard').style.display = 'block';
+    } else if (role === 'admin' || role === 'officer') {
+        document.getElementById('adminProfileCard').style.display = 'block';
+    } else if (role === 'superadmin') {
+        document.getElementById('superadminProfileCard').style.display = 'block';
+    }
+}
+
+// Function to handle form submission
+function handleFormSubmit(event) {
+    event.preventDefault(); // Prevent default form submission
+    console.log('Form submitted, calling saveUserChanges...');
+    
+    // Get the user ID from the current edit modal data
+    const userId = window.currentEditUserId; // We'll set this when opening the modal
+    if (userId) {
+        saveUserChanges(userId);
+    } else {
+        console.error('No user ID available for saving changes');
+        alert('Error: Unable to identify user for saving changes');
+    }
+}
+
+// Function to save user changes
+function saveUserChanges(userId) {
+    console.log('saveUserChanges called with userId:', userId);
+    
+    try {
+        // Get form data based on current role
+        const roleElement = document.getElementById('edit_role');
+        const hiddenRoleElement = document.getElementById('edit_role_hidden');
+        const role = roleElement ? roleElement.value : hiddenRoleElement.value;
+        const isActive = document.getElementById('edit_is_active').checked;
+        const isVerified = document.getElementById('edit_is_verified').checked;
+        
+        console.log('Form values:', { role, isActive, isVerified });
+        
+        const formData = {
+            role: role,
+            is_active: isActive,
+            is_email_verified: isVerified
+        };
+        
+        console.log('Base form data:', formData);
+    
+    // Add role-specific data
+    if (role === 'student') {
+        formData.student_profile = {
+            name: document.getElementById('edit_student_name').value,
+            student_id: document.getElementById('edit_student_id').value,
+            school: document.getElementById('edit_school').value,
+            department: document.getElementById('edit_department').value,
+            contact_no: document.getElementById('edit_contact_no').value
+        };
+    } else if (role === 'admin' || role === 'officer') {
+        formData.admin_profile = {
+            name: document.getElementById('edit_admin_name').value,
+            employee_id: document.getElementById('edit_employee_id').value,
+            department: document.getElementById('edit_admin_department').value,
+            phone: document.getElementById('edit_phone').value,
+            office_location: document.getElementById('edit_office_location').value,
+            role_level: role
+        };
+    } else if (role === 'superadmin') {
+        formData.name = document.getElementById('edit_superadmin_name').value;
+    }
+    
+    console.log('Form data to submit:', formData);
+    
+    // Add loading state to save button
+    const saveButton = document.getElementById('saveUserButton');
+    if (!saveButton) {
+        console.error('Save button not found');
+        alert('Error: Save button not found');
+        return;
+    }
+    
+    const originalText = saveButton.innerHTML;
+    saveButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+    saveButton.disabled = true;
+    
+    // Submit the changes
+    fetch(`/admin-panel/superadmin/users/${userId}/edit/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => {
+        console.log('Save response status:', response.status);
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error('Authentication required. Please log in again.');
+            } else if (response.status === 403) {
+                throw new Error('Access denied. Super Admin privileges required.');
+            } else {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Save response:', data);
+        
+        // Restore button state
+        saveButton.innerHTML = originalText;
+        saveButton.disabled = false;
+        
+        if (data.success) {
+            console.log('User profile updated successfully');
+            
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+            modal.hide();
+            
+            // Reload the page to show updated data
+            window.location.reload();
+        } else {
+            alert('Error saving changes: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error saving user changes:', error);
+        
+        // Restore button state
+        saveButton.innerHTML = originalText;
+        saveButton.disabled = false;
+        
+        alert('Error saving changes: ' + error.message);
+    });
+    
+    } catch (error) {
+        console.error('Error in saveUserChanges:', error);
+        alert('Error preparing save data: ' + error.message);
+    }
+}
+
+// Helper function to get CSRF token
+function getCsrfToken() {
+    // Try multiple methods to get CSRF token
+    let token = null;
+    
+    // Method 1: From hidden input
+    const tokenInput = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (tokenInput) {
+        token = tokenInput.value;
+    }
+    
+    // Method 2: From cookie
+    if (!token) {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'csrftoken') {
+                token = decodeURIComponent(value);
+                break;
+            }
+        }
+    }
+    
+    // Method 3: From meta tag (if exists)
+    if (!token) {
+        const metaTag = document.querySelector('meta[name="csrf-token"]');
+        if (metaTag) {
+            token = metaTag.getAttribute('content');
+        }
+    }
+    
+    console.log('CSRF token found:', token ? 'Yes' : 'No');
+    return token || '';
 }
 </script>
 
