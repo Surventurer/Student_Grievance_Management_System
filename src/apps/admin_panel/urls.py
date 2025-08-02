@@ -21,8 +21,26 @@ urlpatterns = [
     path('audit-logs/', views.audit_logs_view, name='audit_logs'),
     path('audit-logs/api/', views.audit_logs, name='audit_logs_api'),
     
-    # Student Management
-    path('students/', views.student_list, name='student_list'),
+    # User Management (Department-specific)
+    path('users/', views.department_users_list, name='department_users'),
+    path('users/<int:user_id>/details/', views.get_department_user_details, name='get_department_user_details'),
+    path('users/<int:user_id>/toggle-status/', views.toggle_department_user_status, name='toggle_department_user_status'),
+    path('users/bulk-action/', views.bulk_department_users_action, name='bulk_department_users_action'),
+    path('users/<int:user_id>/edit/', views.edit_department_user, name='edit_department_user'),
+    path('users/<int:user_id>/update-role/', views.update_department_user_role, name='update_department_user_role'),
+    path('users/bulk-activate/', views.bulk_activate_department_users, name='bulk_activate_department_users'),
+    path('users/bulk-deactivate/', views.bulk_deactivate_department_users, name='bulk_deactivate_department_users'),
+    path('users/bulk-delete/', views.bulk_delete_department_users, name='bulk_delete_department_users'),
+    path('users/create/', views.create_department_user, name='create_department_user'),
+    
+    # Legacy student routes (for backward compatibility)
+    path('students/', views.department_users_list, name='student_list'),
+    path('students/<int:student_id>/', views.student_detail_view, name='student_detail'),
+    
+    # Profile Management
+    path('profile/', views.admin_profile_view, name='profile'),
+    path('profile/update-contact/', views.update_admin_contact_view, name='update_admin_contact'),
+    path('profile/change-password/', views.change_admin_password_view, name='change_admin_password'),
     
     # Reports
     path('reports/', views.reports_dashboard, name='reports_dashboard'),

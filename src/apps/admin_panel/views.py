@@ -17,6 +17,8 @@ import json
 
 from apps.grievances.models import Grievance, Category, GrievanceComment, AuditLog, CategoryAssignment
 from apps.students.models import StudentProfile, AdminProfile
+from apps.authentication.models import User
+from apps.authentication.decorators import dept_admin_required
 from apps.authentication.decorators import admin_required, superadmin_required, permission_required, role_required
 from apps.admin_panel.permissions import (
     filter_grievances_by_access, filter_students_by_access, can_access_all_data,
@@ -152,112 +154,111 @@ def grievance_list(request):
 
 @login_required
 @department_access_required  
-def student_list(request):
-    """Student list view with department-based access control"""
+def department_users_list(request):
+    """Department users list view with CRUD operations for students and officers"""
     user = request.user
+    
+    # Only admin and superadmin can access this view
+    if not user.is_admin_or_officer:
+        messages.error(request, 'Access denied')
+        return redirect('authentication:login')
     
     # Get filter parameters
     search_query = request.GET.get('search', '')
     status_filter = request.GET.get('status', '')
-    department_filter = request.GET.get('department', '')
+    role_filter = request.GET.get('role', '')
     
-    # Get accessible students based on user's department assignment
-    accessible_students = user.get_accessible_students().select_related('user')
+    # Get all users (students and officers) from user's department
+    if user.is_superadmin:
+        # Superadmin can see all users
+        all_users = User.objects.all()
+    else:
+        # Department admin can only see users from their department
+        user_department = user.department_name
+        if not user_department:
+            messages.error(request, 'You are not assigned to any department')
+            return redirect('admin_panel:dashboard')
+        
+        # Use Q objects to filter users from the department instead of union
+        department_filter = Q(
+            role='student',
+            student_profile__department=user_department
+        ) | Q(
+            role='officer',
+            admin_profile__department=user_department
+        ) | Q(
+            role='admin',
+            admin_profile__department=user_department
+        )
+        
+        all_users = User.objects.filter(department_filter)
     
-    # Apply additional filters
-    students = accessible_students
+    # Apply select_related and filters
+    users = all_users.select_related('student_profile', 'admin_profile')
     
     if search_query:
-        students = students.filter(
-            Q(name__icontains=search_query) |
-            Q(student_id__icontains=search_query) |
-            Q(user__email__icontains=search_query) |
-            Q(department__icontains=search_query)
+        users = users.filter(
+            Q(email__icontains=search_query) |
+            Q(student_profile__name__icontains=search_query) |
+            Q(student_profile__student_id__icontains=search_query) |
+            Q(admin_profile__employee_id__icontains=search_query)
         )
     
     if status_filter:
         if status_filter == 'active':
-            students = students.filter(user__is_active=True)
+            users = users.filter(is_active=True)
         elif status_filter == 'inactive':
-            students = students.filter(user__is_active=False)
+            users = users.filter(is_active=False)
     
-    # Department filter - only apply if user can see multiple departments (superadmin)
-    if department_filter and user.is_superadmin:
-        students = students.filter(department__icontains=department_filter)
+    if role_filter:
+        users = users.filter(role=role_filter)
     
-    # Get departments for filter dropdown (only departments the user can access)
+    # Pagination
+    paginator = Paginator(users.order_by('-created_at'), 20)
+    page_number = request.GET.get('page')
+    users_page = paginator.get_page(page_number)
+    
+    # Calculate statistics
+    total_users = users.count()
+    active_users = users.filter(is_active=True).count()
+    student_count = users.filter(role='student').count()
+    officer_count = users.filter(role='officer').count()
+    admin_count = users.filter(role='admin').count()
+    
+    # Get role choices - department admins can only create students and officers
     if user.is_superadmin:
-        departments = StudentProfile.objects.values_list('department', flat=True).distinct().order_by('department')
+        role_choices = [
+            (role_code, role_name) for role_code, role_name in User.ROLE_CHOICES 
+            if role_code != 'superadmin'
+        ]
     else:
-        departments = accessible_students.values_list('department', flat=True).distinct().order_by('department')
-    
-    # Pagination
-    paginator = Paginator(students.order_by('student_id'), 20)
-    page_number = request.GET.get('page')
-    students_page = paginator.get_page(page_number)
-    
-    context = {
-        'students': students_page,
-        'departments': departments,
-        'search_query': search_query,
-        'status_filter': status_filter,
-        'department_filter': department_filter,
-        'user_role': user.role,
-        'assigned_department': user.assigned_department,
-        'department_name': user.department_name,
-        'can_access_all_data': user.is_superadmin,
-    }
-    
-    return render(request, 'admin_panel/student_list.html', context)
-    status_filter = request.GET.get('status', '')
-    department_filter = request.GET.get('department', '')
-    
-    # Base queryset with related data
-    students = StudentProfile.objects.select_related('user').annotate(
-        grievance_count=Count('grievances')
-    )
-    
-    # Apply search filter
-    if search_query:
-        students = students.filter(
-            Q(student_id__icontains=search_query) |
-            Q(name__icontains=search_query) |
-            Q(user__email__icontains=search_query) |
-            Q(department__icontains=search_query) |
-            Q(school__icontains=search_query)
-        )
-    
-    # Apply status filter
-    if status_filter == 'active':
-        students = students.filter(user__is_active=True)
-    elif status_filter == 'suspended':
-        students = students.filter(user__is_active=False)
-    
-    # Apply department filter
-    if department_filter:
-        students = students.filter(department__icontains=department_filter)
-    
-    # Order by student ID
-    students = students.order_by('student_id')
-    
-    # Pagination
-    paginator = Paginator(students, 20)  # 20 students per page
-    page_number = request.GET.get('page')
-    students_page = paginator.get_page(page_number)
-    
-    # Get schools for the add student form (only active schools)
-    from apps.students.models import School
-    schools = School.objects.filter(is_active=True).order_by('name')
+        # Department admins can only create students and officers
+        role_choices = [
+            ('student', 'Student'),
+            ('officer', 'Grievance Officer')
+        ]
     
     context = {
-        'students': students_page,
-        'schools': schools,
+        'users': users_page,
         'search_query': search_query,
         'status_filter': status_filter,
-        'department_filter': department_filter,
+        'role_filter': role_filter,
+        'role_choices': role_choices,
+        'user_department': user.department_name,
+        'can_create_users': user.is_admin or user.is_superadmin,
+        'can_edit_users': user.is_admin or user.is_superadmin,
+        'total_users': total_users,
+        'active_users': active_users,
+        'student_count': student_count,
+        'officer_count': officer_count,
+        'admin_count': admin_count,
     }
     
-    return render(request, 'admin_panel/student_list.html', context)
+    return render(request, 'admin_panel/department_users.html', context)
+
+
+# Legacy function name for backward compatibility
+student_list = department_users_list
 
 
 @login_required
@@ -3244,5 +3245,735 @@ def bulk_delete_departments(request):
             'deleted_count': deleted_count
         })
         
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+# ============================================================================
+# ADMIN PROFILE MANAGEMENT VIEWS
+# ============================================================================
+
+@login_required
+@role_required(['admin', 'officer', 'superadmin'])
+def admin_profile_view(request):
+    """Admin profile view - similar to student profile but for admin/officer users"""
+    
+    try:
+        # Get admin profile - handle both admin and officer roles
+        if hasattr(request.user, 'admin_profile'):
+            admin_profile = request.user.admin_profile
+        else:
+            # If no admin profile exists, we might need to create one or handle gracefully
+            messages.error(request, 'Admin profile not found. Please contact system administrator.')
+            return redirect('admin_panel:dashboard')
+    except AdminProfile.DoesNotExist:
+        messages.error(request, 'Admin profile not found. Please contact system administrator.')
+        return redirect('admin_panel:dashboard')
+    
+    return render(request, 'admin_panel/profile.html', {
+        'admin_profile': admin_profile,
+        'user_role': request.user.role,
+        'user_department': request.user.department_name
+    })
+
+
+@login_required
+@role_required(['admin', 'officer', 'superadmin'])
+def update_admin_contact_view(request):
+    """Update admin contact information"""
+    
+    try:
+        admin_profile = request.user.admin_profile
+    except AdminProfile.DoesNotExist:
+        messages.error(request, 'Admin profile not found')
+        return redirect('admin_panel:dashboard')
+    
+    if request.method == 'POST':
+        phone = request.POST.get('phone', '').strip()
+        office_location = request.POST.get('office_location', '').strip()
+        
+        # Validate phone number
+        if phone and not phone.replace('+', '').replace('-', '').replace(' ', '').isdigit():
+            messages.error(request, 'Phone number should contain only digits, spaces, hyphens, and plus sign')
+            return redirect('admin_panel:profile')
+        
+        if phone and (len(phone.replace('+', '').replace('-', '').replace(' ', '')) < 10 or 
+                     len(phone.replace('+', '').replace('-', '').replace(' ', '')) > 15):
+            messages.error(request, 'Phone number should be between 10-15 digits')
+            return redirect('admin_panel:profile')
+        
+        # Update contact information
+        admin_profile.phone = phone
+        admin_profile.office_location = office_location
+        admin_profile.save()
+        
+        # Create audit log
+        AuditLog.objects.create(
+            user=request.user,
+            action='update_profile',
+            description=f'Updated contact information',
+            target_model='AdminProfile',
+            target_id=str(admin_profile.id)
+        )
+        
+        messages.success(request, 'Contact information updated successfully')
+        return redirect('admin_panel:profile')
+    
+    return redirect('admin_panel:profile')
+
+
+@login_required
+@role_required(['admin', 'officer', 'superadmin'])
+def change_admin_password_view(request):
+    """Change password for admin/officer users"""
+    
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_password1 = request.POST.get('new_password1')
+        new_password2 = request.POST.get('new_password2')
+        
+        # Validate current password
+        if not request.user.check_password(current_password):
+            messages.error(request, 'Current password is incorrect')
+            return redirect('admin_panel:profile')
+        
+        # Validate new passwords match
+        if new_password1 != new_password2:
+            messages.error(request, 'New passwords do not match')
+            return redirect('admin_panel:profile')
+        
+        # Validate password strength
+        if len(new_password1) < 8:
+            messages.error(request, 'Password must be at least 8 characters long')
+            return redirect('admin_panel:profile')
+        
+        # Check if password contains common weak patterns
+        if new_password1.lower() in ['password', '12345678', 'qwerty123']:
+            messages.error(request, 'Password is too common. Please choose a stronger password')
+            return redirect('admin_panel:profile')
+        
+        # Update password
+        request.user.set_password(new_password1)
+        request.user.save()
+        
+        # Create audit log
+        AuditLog.objects.create(
+            user=request.user,
+            action='change_password',
+            description=f'Changed password',
+            target_model='User',
+            target_id=str(request.user.id)
+        )
+        
+        messages.success(request, 'Password changed successfully. Please login again.')
+        return redirect('authentication:login')
+    
+    return redirect('admin_panel:profile')
+
+
+# ============================================================================
+# DEPARTMENT USER CRUD OPERATIONS
+# ============================================================================
+
+@login_required
+@role_required(['admin', 'superadmin'])
+def edit_department_user(request, user_id):
+    """Edit department user (student or officer)"""
+    user = get_object_or_404(User, id=user_id)
+    
+    # Check if user can edit this user (department admin can only edit users from their department)
+    if not request.user.is_superadmin:
+        user_department = request.user.department_name
+        if user.role == 'student' and hasattr(user, 'student_profile'):
+            if user.student_profile.department != user_department:
+                messages.error(request, 'Access denied - You can only edit users from your department')
+                return redirect('admin_panel:department_users')
+        elif user.role in ['admin', 'officer'] and hasattr(user, 'admin_profile'):
+            if user.admin_profile.department != user_department:
+                messages.error(request, 'Access denied - You can only edit users from your department')
+                return redirect('admin_panel:department_users')
+    
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        
+        # Update user fields
+        user.email = data.get('email', user.email)
+        user.is_active = data.get('is_active', user.is_active)
+        user.role = data.get('role', user.role)
+        
+        # Update profile fields based on role
+        if user.role == 'student' and hasattr(user, 'student_profile'):
+            profile = user.student_profile
+            profile.name = data.get('name', profile.name)
+            profile.student_id = data.get('student_id', profile.student_id)
+            profile.department = data.get('department', profile.department)
+            profile.school = data.get('school', profile.school)
+            profile.contact_no = data.get('contact_no', profile.contact_no)
+            profile.save()
+        elif user.role in ['admin', 'officer'] and hasattr(user, 'admin_profile'):
+            profile = user.admin_profile
+            profile.employee_id = data.get('employee_id', profile.employee_id)
+            profile.department = data.get('department', profile.department)
+            profile.phone = data.get('phone', profile.phone)
+            profile.office_location = data.get('office_location', profile.office_location)
+            profile.save()
+        
+        user.save()
+        
+        # Create audit log
+        AuditLog.objects.create(
+            user=request.user,
+            action='edit_user',
+            description=f'Edited user: {user.email}',
+            target_model='User',
+            target_id=str(user.id)
+        )
+        
+        return JsonResponse({'success': True, 'message': 'User updated successfully'})
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+@login_required
+@role_required(['admin', 'superadmin'])
+def toggle_department_user_status(request, user_id):
+    """Toggle user active/inactive status"""
+    user = get_object_or_404(User, id=user_id)
+    
+    # Check department access
+    if not request.user.is_superadmin:
+        user_department = request.user.department_name
+        if user.role == 'student' and hasattr(user, 'student_profile'):
+            if user.student_profile.department != user_department:
+                return JsonResponse({'error': 'Access denied'}, status=403)
+        elif user.role in ['admin', 'officer'] and hasattr(user, 'admin_profile'):
+            if user.admin_profile.department != user_department:
+                return JsonResponse({'error': 'Access denied'}, status=403)
+    
+    # Toggle status
+    user.is_active = not user.is_active
+    user.save()
+    
+    # Create audit log
+    action = 'activate_user' if user.is_active else 'deactivate_user'
+    status_text = 'activated' if user.is_active else 'deactivated'
+    
+    AuditLog.objects.create(
+        user=request.user,
+        action=action,
+        description=f'User {status_text}: {user.email}',
+        target_model='User',
+        target_id=str(user.id)
+    )
+    
+    return JsonResponse({
+        'success': True, 
+        'message': f'User {status_text} successfully',
+        'is_active': user.is_active
+    })
+
+
+@login_required
+@role_required(['admin', 'superadmin'])
+def update_department_user_role(request, user_id):
+    """Update user role"""
+    user = get_object_or_404(User, id=user_id)
+    
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        new_role = data.get('role')
+        
+        if new_role not in [choice[0] for choice in User.ROLE_CHOICES]:
+            return JsonResponse({'error': 'Invalid role'}, status=400)
+        
+        # Check department access
+        if not request.user.is_superadmin:
+            user_department = request.user.department_name
+            if user.role == 'student' and hasattr(user, 'student_profile'):
+                if user.student_profile.department != user_department:
+                    return JsonResponse({'error': 'Access denied'}, status=403)
+            elif user.role in ['admin', 'officer'] and hasattr(user, 'admin_profile'):
+                if user.admin_profile.department != user_department:
+                    return JsonResponse({'error': 'Access denied'}, status=403)
+        
+        old_role = user.role
+        user.role = new_role
+        user.save()
+        
+        # Create audit log
+        AuditLog.objects.create(
+            user=request.user,
+            action='update_user_role',
+            description=f'Changed user role from {old_role} to {new_role}: {user.email}',
+            target_model='User',
+            target_id=str(user.id)
+        )
+        
+        return JsonResponse({'success': True, 'message': 'User role updated successfully'})
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+@login_required
+@role_required(['admin', 'superadmin'])
+def bulk_activate_department_users(request):
+    """Bulk activate users"""
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user_ids = data.get('user_ids', [])
+        
+        if not user_ids:
+            return JsonResponse({'error': 'No users selected'}, status=400)
+        
+        # Filter users by department access if not superadmin
+        users = User.objects.filter(id__in=user_ids)
+        if not request.user.is_superadmin:
+            user_department = request.user.department_name
+            accessible_users = []
+            for user in users:
+                if user.role == 'student' and hasattr(user, 'student_profile'):
+                    if user.student_profile.department == user_department:
+                        accessible_users.append(user)
+                elif user.role in ['admin', 'officer'] and hasattr(user, 'admin_profile'):
+                    if user.admin_profile.department == user_department:
+                        accessible_users.append(user)
+            users = accessible_users
+        
+        # Activate users
+        activated_count = 0
+        user_emails = []
+        for user in users:
+            if not user.is_active:
+                user.is_active = True
+                user.save()
+                activated_count += 1
+                user_emails.append(user.email)
+        
+        # Create audit log
+        AuditLog.objects.create(
+            user=request.user,
+            action='bulk_activate_users',
+            description=f'Bulk activated {activated_count} users: {", ".join(user_emails)}',
+            target_model='User',
+            target_id=str(user_ids)
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Successfully activated {activated_count} user(s)',
+            'activated_count': activated_count
+        })
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+@login_required
+@role_required(['admin', 'superadmin'])
+def bulk_deactivate_department_users(request):
+    """Bulk deactivate users"""
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user_ids = data.get('user_ids', [])
+        
+        if not user_ids:
+            return JsonResponse({'error': 'No users selected'}, status=400)
+        
+        # Filter users by department access if not superadmin
+        users = User.objects.filter(id__in=user_ids)
+        if not request.user.is_superadmin:
+            user_department = request.user.department_name
+            accessible_users = []
+            for user in users:
+                if user.role == 'student' and hasattr(user, 'student_profile'):
+                    if user.student_profile.department == user_department:
+                        accessible_users.append(user)
+                elif user.role in ['admin', 'officer'] and hasattr(user, 'admin_profile'):
+                    if user.admin_profile.department == user_department:
+                        accessible_users.append(user)
+            users = accessible_users
+        
+        # Deactivate users
+        deactivated_count = 0
+        user_emails = []
+        for user in users:
+            if user.is_active:
+                user.is_active = False
+                user.save()
+                deactivated_count += 1
+                user_emails.append(user.email)
+        
+        # Create audit log
+        AuditLog.objects.create(
+            user=request.user,
+            action='bulk_deactivate_users',
+            description=f'Bulk deactivated {deactivated_count} users: {", ".join(user_emails)}',
+            target_model='User',
+            target_id=str(user_ids)
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Successfully deactivated {deactivated_count} user(s)',
+            'deactivated_count': deactivated_count
+        })
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+@login_required
+@role_required(['admin', 'superadmin'])
+def bulk_delete_department_users(request):
+    """Bulk delete users (soft delete by deactivation)"""
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user_ids = data.get('user_ids', [])
+        
+        if not user_ids:
+            return JsonResponse({'error': 'No users selected'}, status=400)
+        
+        # Filter users by department access if not superadmin
+        users = User.objects.filter(id__in=user_ids)
+        if not request.user.is_superadmin:
+            user_department = request.user.department_name
+            accessible_users = []
+            for user in users:
+                if user.role == 'student' and hasattr(user, 'student_profile'):
+                    if user.student_profile.department == user_department:
+                        accessible_users.append(user)
+                elif user.role in ['admin', 'officer'] and hasattr(user, 'admin_profile'):
+                    if user.admin_profile.department == user_department:
+                        accessible_users.append(user)
+            users = accessible_users
+        
+        # Soft delete users (deactivate them)
+        deleted_count = 0
+        user_emails = []
+        for user in users:
+            if user.is_active:
+                user.is_active = False
+                user.save()
+                deleted_count += 1
+                user_emails.append(user.email)
+        
+        # Create audit log
+        AuditLog.objects.create(
+            user=request.user,
+            action='bulk_delete_users',
+            description=f'Bulk deleted (deactivated) {deleted_count} users: {", ".join(user_emails)}',
+            target_model='User',
+            target_id=str(user_ids)
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Successfully deleted {deleted_count} user(s)',
+            'deleted_count': deleted_count
+        })
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+@login_required
+@role_required(['admin', 'superadmin'])
+@dept_admin_required
+def create_department_user(request):
+    """Create new department user - Department admins can only create students and officers"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+        
+        # Validate required fields
+        email = data.get('email', '').strip()
+        role = data.get('role', '').strip()
+        
+        if not email or not role:
+            return JsonResponse({'error': 'Email and role are required'}, status=400)
+        
+        # Department admins can only create students and officers, not other admins
+        if role not in ['student', 'officer']:
+            return JsonResponse({'error': 'You can only create students and officers'}, status=400)
+        
+        if User.objects.filter(email=email).exists():
+            return JsonResponse({'error': 'User with this email already exists'}, status=400)
+        
+        # Get admin's department
+        try:
+            admin_profile = AdminProfile.objects.get(user=request.user)
+            department = admin_profile.department
+        except AdminProfile.DoesNotExist:
+            return JsonResponse({'error': 'Admin profile not found'}, status=400)
+        
+        # Create user with default password
+        user = User.objects.create_user(
+            email=email,
+            password='TempPassword123!',  # User should change this on first login
+            role=role,
+            is_active=True,
+            is_email_verified=True
+        )
+        
+        # Create profile based on role
+        if role == 'student':
+            from apps.students.models import StudentProfile
+            StudentProfile.objects.create(
+                user=user,
+                name=data.get('name', '').strip(),
+                student_id=data.get('student_id', '').strip(),
+                department=department,  # Use admin's department
+                school=data.get('school', '').strip(),
+                contact_no=data.get('contact_no', '').strip()
+            )
+        elif role == 'officer':
+            AdminProfile.objects.create(
+                user=user,
+                role_level='officer',
+                department=department,  # Use admin's department
+                employee_id=data.get('employee_id', '').strip(),
+                phone=data.get('phone', '').strip(),
+                office_location=data.get('office_location', '').strip()
+            )
+        
+        return JsonResponse({
+            'success': True, 
+            'message': f'User created successfully. Default password: TempPassword123!'
+        })
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+@dept_admin_required
+def get_department_user_details(request, user_id):
+    """Get detailed information about a department user"""
+    try:
+        from apps.students.models import StudentProfile, AdminProfile
+        
+        # Get the current admin's department
+        admin_profile = AdminProfile.objects.get(user=request.user)
+        department = admin_profile.department
+        
+        # Check if user belongs to the same department
+        user = get_object_or_404(User, id=user_id)
+        
+        # Verify user is in the same department
+        user_belongs_to_dept = False
+        if user.role == 'student':
+            try:
+                student_profile = StudentProfile.objects.get(user=user)
+                user_belongs_to_dept = student_profile.department == department
+            except StudentProfile.DoesNotExist:
+                pass
+        elif user.role in ['admin', 'officer']:
+            try:
+                user_admin_profile = AdminProfile.objects.get(user=user)
+                user_belongs_to_dept = user_admin_profile.department == department
+            except AdminProfile.DoesNotExist:
+                pass
+        
+        if not user_belongs_to_dept:
+            return JsonResponse({'error': 'User not found in your department'}, status=404)
+        
+        # Basic user information
+        user_details = {
+            'id': user.id,
+            'email': user.email,
+            'role': user.role,
+            'role_display': user.get_role_display(),
+            'is_active': user.is_active,
+            'is_email_verified': user.is_email_verified,
+            'date_joined': user.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'last_login': user.last_login.strftime('%Y-%m-%d %H:%M:%S') if user.last_login else None,
+            'deactivation_reason': user.deactivation_reason,
+            'name': None,
+            'student_profile': None,
+            'admin_profile': None,
+        }
+        
+        # Add student profile information if user is a student
+        if user.role == 'student':
+            try:
+                student_profile = StudentProfile.objects.get(user=user)
+                user_details['student_profile'] = {
+                    'student_id': student_profile.student_id,
+                    'name': student_profile.name,
+                    'school': student_profile.school,
+                    'department': student_profile.department,
+                    'contact_no': student_profile.contact_no,
+                }
+                user_details['name'] = student_profile.name
+            except StudentProfile.DoesNotExist:
+                user_details['student_profile'] = None
+        
+        # Add admin profile information if user is an admin or officer
+        elif user.role in ['admin', 'officer']:
+            try:
+                user_admin_profile = AdminProfile.objects.get(user=user)
+                user_details['admin_profile'] = {
+                    'employee_id': user_admin_profile.employee_id,
+                    'department': user_admin_profile.department,
+                    'phone': user_admin_profile.phone,
+                    'office_location': user_admin_profile.office_location,
+                    'role_level': user_admin_profile.get_role_level_display(),
+                }
+                user_details['name'] = f"{user_admin_profile.get_role_level_display()} ({user_admin_profile.employee_id})"
+            except AdminProfile.DoesNotExist:
+                user_details['admin_profile'] = None
+        
+        # For other roles, try to get name from email
+        if not user_details['name']:
+            user_details['name'] = user.email.split('@')[0].title()
+        
+        return JsonResponse({
+            'success': True,
+            'user': user_details
+        })
+        
+    except AdminProfile.DoesNotExist:
+        return JsonResponse({'error': 'Admin profile not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@dept_admin_required
+@require_http_methods(["POST"])
+def toggle_department_user_status(request, user_id):
+    """Toggle department user active status"""
+    try:
+        from apps.students.models import StudentProfile, AdminProfile
+        
+        # Get the current admin's department
+        admin_profile = AdminProfile.objects.get(user=request.user)
+        department = admin_profile.department
+        
+        user = get_object_or_404(User, id=user_id)
+        
+        # Prevent deactivating self
+        if user.id == request.user.id:
+            return JsonResponse({'error': 'Cannot deactivate your own account'}, status=400)
+        
+        # Verify user is in the same department
+        user_belongs_to_dept = False
+        if user.role == 'student':
+            try:
+                student_profile = StudentProfile.objects.get(user=user)
+                user_belongs_to_dept = student_profile.department == department
+            except StudentProfile.DoesNotExist:
+                pass
+        elif user.role in ['admin', 'officer']:
+            try:
+                user_admin_profile = AdminProfile.objects.get(user=user)
+                user_belongs_to_dept = user_admin_profile.department == department
+            except AdminProfile.DoesNotExist:
+                pass
+        
+        if not user_belongs_to_dept:
+            return JsonResponse({'error': 'User not found in your department'}, status=404)
+        
+        new_status = not user.is_active
+        
+        # If deactivating, get the reason
+        if not new_status:  # deactivating (making is_active = False)
+            deactivation_reason = request.POST.get('deactivation_reason', '').strip()
+            if not deactivation_reason:
+                return JsonResponse({'error': 'Deactivation reason is required'}, status=400)
+            user.deactivation_reason = deactivation_reason
+        else:  # activating (making is_active = True)
+            user.deactivation_reason = None  # Clear reason when reactivating
+        
+        user.is_active = new_status
+        user.save()
+        
+        status_text = 'activated' if user.is_active else 'deactivated'
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'User {status_text} successfully',
+            'is_active': user.is_active
+        })
+        
+    except AdminProfile.DoesNotExist:
+        return JsonResponse({'error': 'Admin profile not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@dept_admin_required
+def bulk_department_users_action(request):
+    """Handle bulk actions for department users"""
+    print(f"bulk_department_users_action called with method: {request.method}")
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    action = request.POST.get('action')
+    user_ids = request.POST.getlist('user_ids[]')
+    print(f"Action: {action}, User IDs: {user_ids}")
+    
+    if not action or not user_ids:
+        return JsonResponse({'error': 'Action and user IDs are required'}, status=400)
+    
+    try:
+        from apps.students.models import StudentProfile, AdminProfile
+        
+        admin_profile = AdminProfile.objects.get(user=request.user)
+        department = admin_profile.department
+        
+        # Get users from the same department (excluding self)
+        department_users = []
+        for user_id in user_ids:
+            if int(user_id) == request.user.id:
+                continue  # Skip self
+                
+            try:
+                user = User.objects.get(id=user_id)
+                user_belongs_to_dept = False
+                
+                if user.role == 'student':
+                    try:
+                        student_profile = StudentProfile.objects.get(user=user)
+                        user_belongs_to_dept = student_profile.department == department
+                    except StudentProfile.DoesNotExist:
+                        pass
+                elif user.role in ['admin', 'officer']:
+                    try:
+                        user_admin_profile = AdminProfile.objects.get(user=user)
+                        user_belongs_to_dept = user_admin_profile.department == department
+                    except AdminProfile.DoesNotExist:
+                        pass
+                
+                if user_belongs_to_dept:
+                    department_users.append(user)
+            except User.DoesNotExist:
+                continue
+        
+        if not department_users:
+            return JsonResponse({'error': 'No valid users found for this action'}, status=400)
+        
+        count = len(department_users)
+        
+        if action == 'activate':
+            for user in department_users:
+                user.is_active = True
+                user.deactivation_reason = None
+                user.save()
+            message = f'Successfully activated {count} users'
+        elif action == 'deactivate':
+            reason = request.POST.get('reason', 'Bulk deactivation by department admin')
+            for user in department_users:
+                user.is_active = False
+                user.deactivation_reason = reason
+                user.save()
+            message = f'Successfully deactivated {count} users'
+        elif action == 'delete':
+            for user in department_users:
+                user.delete()
+            message = f'Successfully deleted {count} users'
+        else:
+            return JsonResponse({'error': 'Invalid action'}, status=400)
+        
+        return JsonResponse({'success': True, 'message': message})
+        
+    except AdminProfile.DoesNotExist:
+        return JsonResponse({'error': 'Admin profile not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
