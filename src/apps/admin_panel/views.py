@@ -629,6 +629,7 @@ def update_category(request):
         
         category.name = name
         category.category_type = category_type
+        category.description = f"{name} category"  # Auto-generate description
         category.save()
         
         return JsonResponse({
@@ -1989,6 +1990,13 @@ def category_management(request):
     page_number = request.GET.get('page')
     categories = paginator.get_page(page_number)
     
+    # Process keywords for each category (after pagination)
+    for category in categories:
+        if hasattr(category, 'keywords') and category.keywords:
+            category.keyword_list = [kw.strip() for kw in category.keywords.split(',') if kw.strip()]
+        else:
+            category.keyword_list = []
+    
     context = {
         'categories': categories,
         'search': search,
@@ -2010,7 +2018,6 @@ def category_create(request):
     if request.method == 'POST':
         try:
             name = request.POST.get('name', '').strip()
-            description = request.POST.get('description', '').strip()
             category_type = request.POST.get('category_type')
             keywords = request.POST.get('keywords', '').strip()
             is_active = request.POST.get('is_active') == 'on'
@@ -2033,7 +2040,7 @@ def category_create(request):
             
             category = Category.objects.create(
                 name=name,
-                description=description,
+                description=f"{name} category",  # Auto-generate description
                 category_type=category_type,
                 keywords=keywords,
                 is_active=is_active,
@@ -2075,7 +2082,6 @@ def category_edit(request, category_id):
     if request.method == 'POST':
         try:
             name = request.POST.get('name', '').strip()
-            description = request.POST.get('description', '').strip()
             category_type = request.POST.get('category_type')
             keywords = request.POST.get('keywords', '').strip()
             is_active = request.POST.get('is_active') == 'on'
@@ -2103,7 +2109,7 @@ def category_edit(request, category_id):
             
             # Update category
             category.name = name
-            category.description = description
+            category.description = f"{name} category"  # Auto-generate description
             category.category_type = category_type
             category.keywords = keywords
             category.is_active = is_active
