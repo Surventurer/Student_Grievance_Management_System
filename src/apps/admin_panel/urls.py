@@ -21,6 +21,12 @@ urlpatterns = [
     path('audit-logs/', views.audit_logs_view, name='audit_logs'),
     path('audit-logs/api/', views.audit_logs, name='audit_logs_api'),
     
+    # Student Management
+    path('students/', views.student_list, name='student_list'),
+    
+    # Reports
+    path('reports/', views.reports_dashboard, name='reports_dashboard'),
+    
     # CRUD Management
     path('manage/', views.crud_management, name='crud_management'),
     
@@ -46,6 +52,14 @@ urlpatterns = [
     path('manage/departments/create/', views.department_create, name='department_create'),
     path('manage/departments/<int:department_id>/edit/', views.department_edit, name='department_edit'),
     path('manage/departments/<int:department_id>/delete/', views.department_delete, name='department_delete'),
+    path('manage/departments/bulk-activate/', views.bulk_activate_departments, name='bulk_activate_departments'),
+    path('manage/departments/bulk-deactivate/', views.bulk_deactivate_departments, name='bulk_deactivate_departments'),
+    path('manage/departments/bulk-delete/', views.bulk_delete_departments, name='bulk_delete_departments'),
+    
+    # API endpoints
+    path('api/users/search/', views.users_search_api, name='users_search_api'),
+    path('api/departments/', views.departments_api, name='departments_api'),
+    path('api/users/<int:user_id>/hod-assignment/', views.user_hod_assignment_api, name='user_hod_assignment_api'),
     
     # ============================================================================
     # SUPERADMIN-ONLY URLS - Core functionalities only

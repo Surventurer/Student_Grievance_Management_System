@@ -209,7 +209,7 @@
             <div class="col-md-3">
                 <label for="search" class="form-label">Search Departments</label>
                 <input type="text" class="form-control" id="search" name="search" 
-                       placeholder="Department name, code..." value="{{ request.GET.search }}">
+                       placeholder="Department name..." value="{{ request.GET.search }}">
             </div>
             <div class="col-md-2">
                 <label for="school" class="form-label">School</label>
@@ -244,12 +244,21 @@
                     <option value="name" {% if request.GET.sort == 'name' %}selected{% endif %}>Name</option>
                     <option value="-created_at" {% if request.GET.sort == '-created_at' %}selected{% endif %}>Newest First</option>
                     <option value="created_at" {% if request.GET.sort == 'created_at' %}selected{% endif %}>Oldest First</option>
-                    <option value="school__name" {% if request.GET.sort == 'school__name' %}selected{% endif %}>School Name</option>
+                    <option value="school" {% if request.GET.sort == 'school' %}selected{% endif %}>School Name</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="per_page" class="form-label">Items Per Page</label>
+                <select class="form-select" id="per_page" name="per_page">
+                    <option value="10" {% if request.GET.per_page == '10' %}selected{% endif %}>10</option>
+                    <option value="25" {% if request.GET.per_page == '25' %}selected{% endif %}>25</option>
+                    <option value="50" {% if request.GET.per_page == '50' %}selected{% endif %}>50</option>
+                    <option value="100" {% if request.GET.per_page == '100' %}selected{% endif %}>100</option>
                 </select>
             </div>
             <div class="col-md-1 d-flex align-items-end">
                 <button type="submit" class="btn btn-primary me-2">
-                    <i class="fas fa-search"></i>
+                    <i class="fas fa-search"></i> Filter
                 </button>
                 <a href="{% url 'admin_panel:department_management' %}" class="btn btn-outline-secondary">
                     <i class="fas fa-undo"></i>
@@ -300,9 +309,6 @@
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <div class="flex-grow-1">
                             <h6 class="mb-1">{{ department.name }}</h6>
-                            {% if department.code %}
-                            <small class="opacity-75">Code: {{ department.code }}</small>
-                            {% endif %}
                         </div>
                         <input type="checkbox" class="form-check-input department-checkbox ms-2" 
                                value="{{ department.id }}" style="border-color: rgba(255,255,255,0.5);">
@@ -310,9 +316,9 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="school-badge">{{ department.school.name|truncatechars:20 }}</span>
                         {% if department.is_active %}
-                        <i class="fas fa-circle text-light" title="Active"></i>
+                        <span class="badge bg-success">Active</span>
                         {% else %}
-                        <i class="fas fa-circle text-secondary" title="Inactive"></i>
+                        <span class="badge bg-secondary">Inactive</span>
                         {% endif %}
                     </div>
                 </div>
@@ -324,8 +330,16 @@
                         <div class="d-flex align-items-center">
                             <i class="fas fa-user-tie text-primary me-2"></i>
                             <div>
-                                <strong>{{ department.head_of_department.get_full_name }}</strong>
+                                <strong>
+                                    <a href="{% url 'admin_panel:get_user_details' department.head_of_department.id %}" 
+                                       class="text-decoration-none text-primary" 
+                                       title="View HOD Details"
+                                       onclick="showUserDetails({{ department.head_of_department.id }}); return false;">
+                                        {{ department.head_of_department.get_full_name }}
+                                    </a>
+                                </strong>
                                 <br><small class="text-muted">{{ department.head_of_department.email }}</small>
+                                <br><span class="badge bg-success">{{ department.head_of_department.role|title }}</span>
                             </div>
                         </div>
                     </div>
@@ -333,11 +347,6 @@
                     <div class="text-center text-muted py-2">
                         <i class="fas fa-user-slash me-1"></i>No HOD Assigned
                     </div>
-                    {% endif %}
-                    
-                    <!-- Description -->
-                    {% if department.description %}
-                    <p class="small text-muted mb-2">{{ department.description|truncatechars:100 }}</p>
                     {% endif %}
                     
                     <!-- Grievance Statistics -->
@@ -362,10 +371,17 @@
                            class="btn btn-sm btn-outline-primary" title="Edit">
                             <i class="fas fa-edit"></i>
                         </a>
-                        <button class="btn btn-sm btn-outline-info" title="View Details" 
-                                onclick="showDepartmentDetails('{{ department.id }}')">
-                            <i class="fas fa-eye"></i>
+                        {% if department.is_active %}
+                        <button class="btn btn-sm btn-outline-warning deactivate-single-btn" 
+                                data-id="{{ department.id }}" data-name="{{ department.name }}" title="Deactivate">
+                            <i class="fas fa-toggle-off"></i>
                         </button>
+                        {% else %}
+                        <button class="btn btn-sm btn-outline-success activate-single-btn" 
+                                data-id="{{ department.id }}" data-name="{{ department.name }}" title="Activate">
+                            <i class="fas fa-toggle-on"></i>
+                        </button>
+                        {% endif %}
                         <button class="btn btn-sm btn-outline-danger delete-btn" 
                                 data-id="{{ department.id }}" data-name="{{ department.name }}" title="Delete">
                             <i class="fas fa-trash"></i>
@@ -455,10 +471,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form method="post" id="deleteForm" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Delete Department</button>
-                </form>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Department</button>
             </div>
         </div>
     </div>
@@ -484,18 +497,115 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Delete confirmation
+    let currentDepartmentId = null;
+    
     document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', function() {
-            const deptId = this.dataset.id;
+            currentDepartmentId = this.dataset.id;
             const deptName = this.dataset.name;
             
             document.getElementById('deleteName').textContent = deptName;
-            document.getElementById('deleteForm').action = `/admin-panel/departments/${deptId}/delete/`;
-            
             new bootstrap.Modal(document.getElementById('deleteModal')).show();
         });
     });
     
+    // Handle individual delete confirmation
+    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+        if (currentDepartmentId) {
+            fetch(`/admin-panel/manage/departments/${currentDepartmentId}/delete/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+                modal.hide();
+                
+                if (data.success) {
+                    location.reload();
+                } else {
+                    showAlert('error', data.error);
+                }
+            })
+            .catch(error => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+                modal.hide();
+                showAlert('error', 'An error occurred while deleting the department');
+                console.error('Error:', error);
+            });
+        }
+    });
+    
+    // Handle individual activate buttons
+    document.querySelectorAll('.activate-single-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const deptId = this.dataset.id;
+            const deptName = this.dataset.name;
+            
+            if (confirm(`Activate department "${deptName}"?`)) {
+                fetch('{% url "admin_panel:bulk_activate_departments" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        department_ids: [deptId]
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload(true);
+                    } else {
+                        showAlert('error', data.error);
+                    }
+                })
+                .catch(error => {
+                    showAlert('error', 'An error occurred');
+                    console.error('Error:', error);
+                });
+            }
+        });
+    });
+    
+    // Handle individual deactivate buttons
+    document.querySelectorAll('.deactivate-single-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const deptId = this.dataset.id;
+            const deptName = this.dataset.name;
+            
+            if (confirm(`Deactivate department "${deptName}"?`)) {
+                fetch('{% url "admin_panel:bulk_deactivate_departments" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        department_ids: [deptId]
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload(true);
+                    } else {
+                        showAlert('error', data.error);
+                    }
+                })
+                .catch(error => {
+                    showAlert('error', 'An error occurred');
+                    console.error('Error:', error);
+                });
+            }
+        });
+    });
+
     // Select all functionality
     const selectAll = document.getElementById('selectAll');
     const departmentCheckboxes = document.querySelectorAll('.department-checkbox');
@@ -530,46 +640,119 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('activateSelected').addEventListener('click', function() {
         const selected = Array.from(document.querySelectorAll('.department-checkbox:checked')).map(cb => cb.value);
         if (selected.length > 0 && confirm(`Activate ${selected.length} selected department(s)?`)) {
-            // Implement bulk activate
-            console.log('Activate departments:', selected);
+            fetch('{% url "admin_panel:bulk_activate_departments" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    department_ids: selected
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload(true);
+                } else {
+                    showAlert('error', data.error);
+                }
+            })
+            .catch(error => {
+                showAlert('error', 'An error occurred');
+                console.error('Error:', error);
+            });
         }
     });
     
     document.getElementById('deactivateSelected').addEventListener('click', function() {
         const selected = Array.from(document.querySelectorAll('.department-checkbox:checked')).map(cb => cb.value);
         if (selected.length > 0 && confirm(`Deactivate ${selected.length} selected department(s)?`)) {
-            // Implement bulk deactivate
-            console.log('Deactivate departments:', selected);
+            fetch('{% url "admin_panel:bulk_deactivate_departments" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    department_ids: selected
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload(true);
+                } else {
+                    showAlert('error', data.error);
+                }
+            })
+            .catch(error => {
+                showAlert('error', 'An error occurred');
+                console.error('Error:', error);
+            });
         }
     });
     
     document.getElementById('deleteSelected').addEventListener('click', function() {
         const selected = Array.from(document.querySelectorAll('.department-checkbox:checked')).map(cb => cb.value);
-        if (selected.length > 0 && confirm(`Delete ${selected.length} selected department(s)? This action cannot be undone.`)) {
-            // Implement bulk delete
-            console.log('Delete departments:', selected);
+        if (selected.length > 0 && confirm(`Delete ${selected.length} selected department(s)?\n\nWarning: This will permanently delete the departments.\n\nThis action cannot be undone.`)) {
+            fetch('{% url "admin_panel:bulk_delete_departments" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    department_ids: selected
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload(true);
+                } else {
+                    showAlert('error', data.error);
+                }
+            })
+            .catch(error => {
+                showAlert('error', 'An error occurred');
+                console.error('Error:', error);
+            });
         }
     });
-});
-
-// Department details function
-function showDepartmentDetails(deptId) {
-    // Show loading state
-    document.getElementById('departmentDetails').innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
     
-    // Show modal
-    new bootstrap.Modal(document.getElementById('detailsModal')).show();
+    // Helper functions
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
     
-    // In a real implementation, you would fetch department details via AJAX
-    // For now, we'll show a placeholder
-    setTimeout(() => {
-        document.getElementById('departmentDetails').innerHTML = `
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
-                Department details would be loaded here via AJAX call to get detailed information.
-            </div>
+    function showAlert(type, message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
-    }, 1000);
-}
+        document.querySelector('.container-fluid').insertBefore(alertDiv, document.querySelector('.container-fluid').firstChild);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+});
 </script>
 {% endblock %}

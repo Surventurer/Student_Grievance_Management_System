@@ -28285,3 +28285,1035 @@ Watching for file changes with StatReloader
 C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
 Watching for file changes with StatReloader
 "GET /auth/ HTTP/1.1" 200 3725
+"POST /auth/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 18549
+"GET /students/grievances/ HTTP/1.1" 200 19133
+"GET /api/grievances/submit/ HTTP/1.1" 200 38326
+"GET /grievances/api/categories/?type=academic HTTP/1.1" 200 566
+"GET /students/api/departments/ HTTP/1.1" 200 1407
+"GET /admin-panel/manage/categories/ HTTP/1.1" 200 66454
+"GET /admin-panel/manage/categories/?search=&type=academic&status= HTTP/1.1" 200 49350
+"GET /admin-panel/manage/categories/?search=&type=non_academic&status= HTTP/1.1" 200 49438
+"GET /grievances/api/categories/?type=non_academic HTTP/1.1" 200 607
+"GET /students/api/departments/ HTTP/1.1" 200 1407
+"GET /students/api/notifications/ HTTP/1.1" 200 30
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 23763
+"GET /admin-panel/superadmin/settings/ HTTP/1.1" 200 28083
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 23763
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 23763
+Watching for file changes with StatReloader
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 23763
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Internal Server Error: /admin-panel/manage/departments/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2636, in department_management
+    with_hod = Department.objects.filter(hod__isnull=False).count()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1493, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1511, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1518, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1646, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1678, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1526, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1333, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'hod' into field. Choices are: code, contact_email, created_at, description, head_of_department, head_of_department_id, id, is_active, name, office_location, phone, school, school_id, updated_at, website
+"GET /admin-panel/manage/departments/ HTTP/1.1" 500 124853
+Internal Server Error: /admin-panel/manage/departments/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2636, in department_management
+    with_hod = Department.objects.filter(hod__isnull=False).count()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1493, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1511, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1518, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1646, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1678, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1526, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1333, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'hod' into field. Choices are: code, contact_email, created_at, description, head_of_department, head_of_department_id, id, is_active, name, office_location, phone, school, school_id, updated_at, website
+"GET /admin-panel/manage/departments/ HTTP/1.1" 500 124990
+"GET /admin-panel/manage/departments/create/ HTTP/1.1" 200 29243
+Internal Server Error: /admin-panel/manage/departments/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2636, in department_management
+    with_hod = Department.objects.filter(hod__isnull=False).count()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1493, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1511, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1518, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1646, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1678, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1526, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1333, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'hod' into field. Choices are: code, contact_email, created_at, description, head_of_department, head_of_department_id, id, is_active, name, office_location, phone, school, school_id, updated_at, website
+"GET /admin-panel/manage/departments/ HTTP/1.1" 500 124853
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/manage/departments/?id=57a304b0-1124-46dd-aaef-0fd31b686cf3&vscodeBrowserReqId=1754134161760 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/manage/departments/%3Fid%3D57a304b0-1124-46dd-aaef-0fd31b686cf3%26vscodeBrowserReqId%3D1754134161760 HTTP/1.1" 200 3725
+Internal Server Error: /admin-panel/manage/departments/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2660, in department_management
+    departments = departments.annotate(
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1649, in annotate
+    return self._annotate(args, kwargs, select=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1701, in _annotate
+    clone.query.add_annotation(
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1218, in add_annotation
+    annotation = annotation.resolve_expression(self, allow_joins=True, reuse=None)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 176, in resolve_expression
+    result = super().resolve_expression(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 63, in resolve_expression
+    c = super().resolve_expression(query, allow_joins, reuse, summarize)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 300, in resolve_expression
+    expr.resolve_expression(query, allow_joins, reuse, summarize, for_save)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 902, in resolve_expression
+    return query.resolve_ref(self.name, allow_joins, reuse, summarize)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 2049, in resolve_ref
+    join_info = self.setup_joins(
+                ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1900, in setup_joins
+    path, final_field, targets, rest = self.names_to_path(
+                                       ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'studentprofile' into field. Choices are: code, contact_email, created_at, description, head_of_department, head_of_department_id, id, is_active, name, office_location, phone, school, school_id, updated_at, website
+"GET /admin-panel/manage/departments/ HTTP/1.1" 500 130818
+Internal Server Error: /admin-panel/manage/departments/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2660, in department_management
+    departments = departments.annotate(
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1649, in annotate
+    return self._annotate(args, kwargs, select=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1701, in _annotate
+    clone.query.add_annotation(
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1218, in add_annotation
+    annotation = annotation.resolve_expression(self, allow_joins=True, reuse=None)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 176, in resolve_expression
+    result = super().resolve_expression(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 63, in resolve_expression
+    c = super().resolve_expression(query, allow_joins, reuse, summarize)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 300, in resolve_expression
+    expr.resolve_expression(query, allow_joins, reuse, summarize, for_save)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 902, in resolve_expression
+    return query.resolve_ref(self.name, allow_joins, reuse, summarize)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 2049, in resolve_ref
+    join_info = self.setup_joins(
+                ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1900, in setup_joins
+    path, final_field, targets, rest = self.names_to_path(
+                                       ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'studentprofile' into field. Choices are: code, contact_email, created_at, description, head_of_department, head_of_department_id, id, is_active, name, office_location, phone, school, school_id, updated_at, website
+"GET /admin-panel/manage/departments/ HTTP/1.1" 500 130955
+Internal Server Error: /admin-panel/manage/departments/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2660, in department_management
+    departments = departments.annotate(
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1649, in annotate
+    return self._annotate(args, kwargs, select=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1701, in _annotate
+    clone.query.add_annotation(
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1218, in add_annotation
+    annotation = annotation.resolve_expression(self, allow_joins=True, reuse=None)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 176, in resolve_expression
+    result = super().resolve_expression(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 63, in resolve_expression
+    c = super().resolve_expression(query, allow_joins, reuse, summarize)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 300, in resolve_expression
+    expr.resolve_expression(query, allow_joins, reuse, summarize, for_save)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 902, in resolve_expression
+    return query.resolve_ref(self.name, allow_joins, reuse, summarize)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 2049, in resolve_ref
+    join_info = self.setup_joins(
+                ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1900, in setup_joins
+    path, final_field, targets, rest = self.names_to_path(
+                                       ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'studentprofile' into field. Choices are: code, contact_email, created_at, description, head_of_department, head_of_department_id, id, is_active, name, office_location, phone, school, school_id, updated_at, website
+"GET /admin-panel/manage/departments/ HTTP/1.1" 500 130955
+Internal Server Error: /admin-panel/manage/departments/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2660, in department_management
+    departments = departments.annotate(
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1649, in annotate
+    return self._annotate(args, kwargs, select=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1701, in _annotate
+    clone.query.add_annotation(
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1218, in add_annotation
+    annotation = annotation.resolve_expression(self, allow_joins=True, reuse=None)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 176, in resolve_expression
+    result = super().resolve_expression(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 63, in resolve_expression
+    c = super().resolve_expression(query, allow_joins, reuse, summarize)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 300, in resolve_expression
+    expr.resolve_expression(query, allow_joins, reuse, summarize, for_save)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 902, in resolve_expression
+    return query.resolve_ref(self.name, allow_joins, reuse, summarize)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 2049, in resolve_ref
+    join_info = self.setup_joins(
+                ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1900, in setup_joins
+    path, final_field, targets, rest = self.names_to_path(
+                                       ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'studentprofile' into field. Choices are: code, contact_email, created_at, description, head_of_department, head_of_department_id, id, is_active, name, office_location, phone, school, school_id, updated_at, website
+"GET /admin-panel/manage/departments/ HTTP/1.1" 500 130955
+Internal Server Error: /admin-panel/manage/departments/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2660, in department_management
+    departments = departments.annotate(
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1649, in annotate
+    return self._annotate(args, kwargs, select=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1701, in _annotate
+    clone.query.add_annotation(
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1218, in add_annotation
+    annotation = annotation.resolve_expression(self, allow_joins=True, reuse=None)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 176, in resolve_expression
+    result = super().resolve_expression(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 63, in resolve_expression
+    c = super().resolve_expression(query, allow_joins, reuse, summarize)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 300, in resolve_expression
+    expr.resolve_expression(query, allow_joins, reuse, summarize, for_save)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 902, in resolve_expression
+    return query.resolve_ref(self.name, allow_joins, reuse, summarize)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 2049, in resolve_ref
+    join_info = self.setup_joins(
+                ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1900, in setup_joins
+    path, final_field, targets, rest = self.names_to_path(
+                                       ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'studentprofile' into field. Choices are: code, contact_email, created_at, description, head_of_department, head_of_department_id, id, is_active, name, office_location, phone, school, school_id, updated_at, website
+"GET /admin-panel/manage/departments/ HTTP/1.1" 500 130955
+"GET /admin-panel/manage/departments/create/ HTTP/1.1" 200 29243
+Internal Server Error: /admin-panel/manage/departments/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2660, in department_management
+    departments = departments.annotate(
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1649, in annotate
+    return self._annotate(args, kwargs, select=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1701, in _annotate
+    clone.query.add_annotation(
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1218, in add_annotation
+    annotation = annotation.resolve_expression(self, allow_joins=True, reuse=None)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 176, in resolve_expression
+    result = super().resolve_expression(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 63, in resolve_expression
+    c = super().resolve_expression(query, allow_joins, reuse, summarize)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 300, in resolve_expression
+    expr.resolve_expression(query, allow_joins, reuse, summarize, for_save)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 902, in resolve_expression
+    return query.resolve_ref(self.name, allow_joins, reuse, summarize)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 2049, in resolve_ref
+    join_info = self.setup_joins(
+                ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1900, in setup_joins
+    path, final_field, targets, rest = self.names_to_path(
+                                       ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'studentprofile' into field. Choices are: code, contact_email, created_at, description, head_of_department, head_of_department_id, id, is_active, name, office_location, phone, school, school_id, updated_at, website
+"GET /admin-panel/manage/departments/ HTTP/1.1" 500 130837
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 38377
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 50205
+Watching for file changes with StatReloader
+"GET /admin-panel/manage/departments/?id=57a304b0-1124-46dd-aaef-0fd31b686cf3&vscodeBrowserReqId=1754134445609 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/manage/departments/%3Fid%3D57a304b0-1124-46dd-aaef-0fd31b686cf3%26vscodeBrowserReqId%3D1754134445609 HTTP/1.1" 200 3725
+"GET /admin-panel/manage/departments/3/edit/ HTTP/1.1" 200 31063
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 50205
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 50205
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 50205
+"POST /admin-panel/manage/departments/bulk-deactivate/ HTTP/1.1" 200 96
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 50199
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+"POST /admin-panel/manage/departments/bulk-activate/ HTTP/1.1" 200 92
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 50205
+"GET /admin-panel/manage/departments/3/edit/ HTTP/1.1" 200 31063
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 50205
+"GET /admin-panel/manage/departments/?search=&school=&status=&hod_status=&sort=created_at&per_page=10 HTTP/1.1" 200 50221
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 129419
+"GET /admin-panel/manage/departments/?id=57a304b0-1124-46dd-aaef-0fd31b686cf3&vscodeBrowserReqId=1754134603915 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/manage/departments/%3Fid%3D57a304b0-1124-46dd-aaef-0fd31b686cf3%26vscodeBrowserReqId%3D1754134603915 HTTP/1.1" 200 3725
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 50205
+"GET /admin-panel/manage/departments/create/ HTTP/1.1" 200 29243
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 50205
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 38377
+"POST /admin-panel/manage/schools/bulk-activate/ HTTP/1.1" 200 88
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 38378
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 50348
+"GET /admin-panel/manage/departments/create/ HTTP/1.1" 200 29451
+"POST /admin-panel/manage/departments/create/ HTTP/1.1" 302 0
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 54085
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 53770
+"GET /auth/student-registration/ HTTP/1.1" 200 9367
+"GET /auth/load-departments/?school_id=10 HTTP/1.1" 200 120
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 53770
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 53770
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/manage/departments/?id=57a304b0-1124-46dd-aaef-0fd31b686cf3&vscodeBrowserReqId=1754136037425 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/manage/departments/%3Fid%3D57a304b0-1124-46dd-aaef-0fd31b686cf3%26vscodeBrowserReqId%3D1754136037425 HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 129419
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 54090
+"GET /admin-panel/manage/departments/?id=57a304b0-1124-46dd-aaef-0fd31b686cf3&vscodeBrowserReqId=1754136289042 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/manage/departments/%3Fid%3D57a304b0-1124-46dd-aaef-0fd31b686cf3%26vscodeBrowserReqId%3D1754136289042 HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 129419
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 54603
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 129419
+"GET /admin-panel/superadmin/users/31/details/ HTTP/1.1" 200 514
+"POST /admin-panel/superadmin/users/31/edit/ HTTP/1.1" 200 221
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 129419
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 54603
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 129419
+"POST /admin-panel/superadmin/users/2/toggle-status/ HTTP/1.1" 200 81
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 131632
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 54603
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 134279
+"GET /admin-panel/superadmin/users/2/details/ HTTP/1.1" 200 553
+Not Found: /admin-panel/api/departments/
+"GET /admin-panel/api/departments/ HTTP/1.1" 404 19181
+Not Found: /admin-panel/api/users/2/hod-assignment/
+"GET /admin-panel/api/users/2/hod-assignment/ HTTP/1.1" 404 19214
+"POST /admin-panel/superadmin/users/2/edit/ HTTP/1.1" 200 233
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 134279
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 54603
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 135719
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 135764
+"GET /admin-panel/api/departments/ HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/api/departments/ HTTP/1.1" 200 3725
+"GET /admin-panel/api/users/2/hod-assignment/ HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/api/users/2/hod-assignment/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/?id=57a304b0-1124-46dd-aaef-0fd31b686cf3&vscodeBrowserReqId=1754136665183 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 135764
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 23763
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 135764
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 55440
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 135764
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 55440
+"GET /admin-panel/manage/departments/2/edit/ HTTP/1.1" 200 31495
+Internal Server Error: /admin-panel/api/users/search/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\views\decorators\http.py", line 64, in inner
+    return func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2701, in users_search_api
+    users = User.objects.filter(
+            ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1493, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1511, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1518, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1646, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1678, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1503, in build_filter
+    return self._add_q(
+           ^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1678, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1503, in build_filter
+    return self._add_q(
+           ^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1678, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1526, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1333, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'first_name' into field. Choices are: activities, admin_login_otps, admin_profile, auditlog, categoryassignment, created_at, deactivation_reason, email, email_verifications, grievanceassignmenthistory, grievancecomment, grievancestatushistory, groups, headed_departments, id, is_active, is_email_verified, is_staff, is_superuser, last_login, logentry, password, password_resets, read_notifications, role, student_profile, user_permissions
+"GET /admin-panel/api/users/search/?q=off HTTP/1.1" 500 154639
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 55440
+"GET /admin-panel/manage/departments/2/edit/ HTTP/1.1" 200 31495
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 55440
+"GET /admin-panel/manage/departments/1/edit/ HTTP/1.1" 200 31487
+Internal Server Error: /admin-panel/api/users/search/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\views\decorators\http.py", line 64, in inner
+    return func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2701, in users_search_api
+    users = User.objects.filter(
+            ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1493, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1511, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1518, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1646, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1678, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1503, in build_filter
+    return self._add_q(
+           ^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1678, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1503, in build_filter
+    return self._add_q(
+           ^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1678, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1526, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1333, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'first_name' into field. Choices are: activities, admin_login_otps, admin_profile, auditlog, categoryassignment, created_at, deactivation_reason, email, email_verifications, grievanceassignmenthistory, grievancecomment, grievancestatushistory, groups, headed_departments, id, is_active, is_email_verified, is_staff, is_superuser, last_login, logentry, password, password_resets, read_notifications, role, student_profile, user_permissions
+"GET /admin-panel/api/users/search/?q=abh HTTP/1.1" 500 154639
+Internal Server Error: /admin-panel/api/users/search/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\views\decorators\http.py", line 64, in inner
+    return func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2701, in users_search_api
+    users = User.objects.filter(
+            ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1493, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1511, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1518, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1646, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1678, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1503, in build_filter
+    return self._add_q(
+           ^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1678, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1503, in build_filter
+    return self._add_q(
+           ^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1678, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1526, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1333, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'first_name' into field. Choices are: activities, admin_login_otps, admin_profile, auditlog, categoryassignment, created_at, deactivation_reason, email, email_verifications, grievanceassignmenthistory, grievancecomment, grievancestatushistory, groups, headed_departments, id, is_active, is_email_verified, is_staff, is_superuser, last_login, logentry, password, password_resets, read_notifications, role, student_profile, user_permissions
+"GET /admin-panel/api/users/search/?q=abhi HTTP/1.1" 500 154700
+Internal Server Error: /admin-panel/api/users/search/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\views\decorators\http.py", line 64, in inner
+    return func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2701, in users_search_api
+    users = User.objects.filter(
+            ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1493, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1511, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1518, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1646, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1678, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1503, in build_filter
+    return self._add_q(
+           ^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1678, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1503, in build_filter
+    return self._add_q(
+           ^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1678, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1526, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1333, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'first_name' into field. Choices are: activities, admin_login_otps, admin_profile, auditlog, categoryassignment, created_at, deactivation_reason, email, email_verifications, grievanceassignmenthistory, grievancecomment, grievancestatushistory, groups, headed_departments, id, is_active, is_email_verified, is_staff, is_superuser, last_login, logentry, password, password_resets, read_notifications, role, student_profile, user_permissions
+"GET /admin-panel/api/users/search/?q=abhin HTTP/1.1" 500 154761
+"GET /admin-panel/superadmin/users/?id=57a304b0-1124-46dd-aaef-0fd31b686cf3&vscodeBrowserReqId=1754136937487 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/?id=57a304b0-1124-46dd-aaef-0fd31b686cf3&vscodeBrowserReqId=1754137229603 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 137618
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 137618
+"POST /admin-panel/superadmin/users/2/toggle-status/ HTTP/1.1" 200 78
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 136578
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 55440
+"GET /admin-panel/manage/departments/1/edit/ HTTP/1.1" 200 31487
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 55440
+"GET /admin-panel/manage/departments/2/edit/ HTTP/1.1" 200 31495
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 138636
+"POST /admin-panel/superadmin/users/30/toggle-status/ HTTP/1.1" 200 78
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 137610
+"GET /admin-panel/superadmin/users/?id=57a304b0-1124-46dd-aaef-0fd31b686cf3&vscodeBrowserReqId=1754137323394 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /admin-panel/manage/departments/?id=57a304b0-1124-46dd-aaef-0fd31b686cf3&vscodeBrowserReqId=1754137328578 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/manage/departments/%3Fid%3D57a304b0-1124-46dd-aaef-0fd31b686cf3%26vscodeBrowserReqId%3D1754137328578 HTTP/1.1" 200 3725
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/2/details/ HTTP/1.1" 200 552
+"GET /admin-panel/api/departments/ HTTP/1.1" 200 1049
+"GET /admin-panel/api/users/2/hod-assignment/ HTTP/1.1" 200 104
+"POST /admin-panel/superadmin/users/2/edit/ HTTP/1.1" 200 232
+"POST /admin-panel/api/users/2/hod-assignment/ HTTP/1.1" 200 92
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 137610
+"GET /admin-panel/superadmin/users/5/details/ HTTP/1.1" 200 545
+"GET /admin-panel/api/departments/ HTTP/1.1" 200 965
+"GET /admin-panel/api/users/5/hod-assignment/ HTTP/1.1" 200 110
+"POST /admin-panel/superadmin/users/5/edit/ HTTP/1.1" 200 248
+"POST /admin-panel/api/users/5/hod-assignment/ HTTP/1.1" 200 94
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 137610
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 53770
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 137610
+"GET /admin-panel/superadmin/users/2/details/ HTTP/1.1" 200 552
+"GET /admin-panel/api/departments/ HTTP/1.1" 200 879
+"GET /admin-panel/api/users/2/hod-assignment/ HTTP/1.1" 200 23
+"POST /admin-panel/superadmin/users/2/edit/ HTTP/1.1" 200 232
+"POST /admin-panel/api/users/2/hod-assignment/ HTTP/1.1" 200 99
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 137610
+"GET /admin-panel/superadmin/users/31/details/ HTTP/1.1" 200 514
+"GET /admin-panel/api/departments/ HTTP/1.1" 200 963
+"GET /admin-panel/api/users/31/hod-assignment/ HTTP/1.1" 200 23
+"POST /admin-panel/superadmin/users/31/edit/ HTTP/1.1" 200 221
+"POST /admin-panel/api/users/31/hod-assignment/ HTTP/1.1" 200 80
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 137610
+"GET /admin-panel/superadmin/users/33/details/ HTTP/1.1" 200 557
+"GET /admin-panel/api/departments/ HTTP/1.1" 200 1024
+"GET /admin-panel/api/users/33/hod-assignment/ HTTP/1.1" 200 23
+"GET /admin-panel/superadmin/users/35/details/ HTTP/1.1" 200 531
+"GET /admin-panel/superadmin/users/2/details/ HTTP/1.1" 200 552
+"GET /admin-panel/api/departments/ HTTP/1.1" 200 1024
+"GET /admin-panel/api/users/2/hod-assignment/ HTTP/1.1" 200 104
+"GET /admin-panel/superadmin/users/35/details/ HTTP/1.1" 200 531
+"POST /admin-panel/superadmin/users/33/update-role/ HTTP/1.1" 200 71
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 137620
+"GET /admin-panel/superadmin/users/33/details/ HTTP/1.1" 200 543
+"GET /admin-panel/api/departments/ HTTP/1.1" 200 1024
+"GET /admin-panel/api/users/33/hod-assignment/ HTTP/1.1" 200 23
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 55414
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 137620
+"GET /admin-panel/superadmin/users/33/details/ HTTP/1.1" 200 543
+"GET /admin-panel/api/departments/ HTTP/1.1" 200 1024
+"GET /admin-panel/api/users/33/hod-assignment/ HTTP/1.1" 200 23
+"POST /admin-panel/superadmin/users/33/edit/ HTTP/1.1" 200 223
+"POST /admin-panel/api/users/33/hod-assignment/ HTTP/1.1" 200 95
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 137633
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 56229
+"GET /admin-panel/manage/departments/2/edit/ HTTP/1.1" 200 31475
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/manage/departments/2/edit/ HTTP/1.1" 200 31475
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/manage/departments/2/edit/ HTTP/1.1" 200 31475
+"GET /admin-panel/api/users/search/?q=ad HTTP/1.1" 200 95
+"GET /admin-panel/api/users/search/?q=abh HTTP/1.1" 200 13
+"GET /admin-panel/api/users/search/?q=Ad HTTP/1.1" 200 95
+"GET /admin-panel/api/users/search/?q=Admin HTTP/1.1" 200 95
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 56229
+"GET /admin-panel/manage/departments/4/edit/ HTTP/1.1" 200 31459
+Watching for file changes with StatReloader
+"GET /?id=005aea4e-94da-41e7-888b-3587a5616ec2&vscodeBrowserReqId=1754138320007 HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /admin-panel/manage/departments/4/edit/ HTTP/1.1" 200 31459
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 56229
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 137633
+"POST /admin-panel/superadmin/users/bulk-delete/ HTTP/1.1" 200 156
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 131071
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 55414
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 131071
+"POST /admin-panel/superadmin/users/bulk-delete/ HTTP/1.1" 200 281
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 111412
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role= HTTP/1.1" 200 111410
+"GET /admin-panel/superadmin/users/?show_unverified=0&search=&role=&show_unverified=1 HTTP/1.1" 200 111412
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 54603
+"GET /admin-panel/manage/departments/1/edit/ HTTP/1.1" 200 31487
+"GET /admin-panel/api/users/search/?q=Ad HTTP/1.1" 200 95
+"GET /admin-panel/api/users/search/?q=Admi HTTP/1.1" 200 95
+"GET /admin-panel/api/users/search/?q=Admin HTTP/1.1" 200 95
+"GET /admin-panel/api/users/search/?q=Admi HTTP/1.1" 200 95
+"GET /admin-panel/api/users/search/?q=off HTTP/1.1" 200 97
+"GET /admin-panel/api/users/search/?q=offi HTTP/1.1" 200 97
+"GET /admin-panel/api/users/search/?q=officer HTTP/1.1" 200 97
+"GET /admin-panel/api/users/search/?q=office HTTP/1.1" 200 97
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/manage/departments/1/edit/ HTTP/1.1" 200 30950
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 54603
+"GET /admin-panel/manage/departments/6/edit/ HTTP/1.1" 200 30765
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\models.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\models.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\students\models.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/manage/departments/6/edit/ HTTP/1.1" 200 27616
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 23763
+"GET /admin-panel/grievances/ HTTP/1.1" 200 37205
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 111412
+"GET /admin-panel/superadmin/settings/ HTTP/1.1" 200 28084
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 111412
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25449
+"POST /admin-panel/superadmin/users/create/ HTTP/1.1" 302 0
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 118275
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25449
+"POST /admin-panel/superadmin/users/create/ HTTP/1.1" 302 0
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 124852
+"GET /admin-panel/superadmin/users/create/ HTTP/1.1" 200 25449
+"POST /admin-panel/superadmin/users/create/ HTTP/1.1" 302 0
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 131441
+"GET /admin-panel/superadmin/users/37/details/ HTTP/1.1" 200 526
+"GET /admin-panel/api/departments/ HTTP/1.1" 200 963
+"GET /admin-panel/api/users/37/hod-assignment/ HTTP/1.1" 200 23
+"POST /admin-panel/superadmin/users/37/edit/ HTTP/1.1" 200 228
+"POST /admin-panel/api/users/37/hod-assignment/ HTTP/1.1" 200 100
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 131114
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/categories/ HTTP/1.1" 200 66454
+"POST /admin-panel/manage/categories/bulk-delete/ HTTP/1.1" 200 85
+"GET /admin-panel/manage/categories/ HTTP/1.1" 200 57508
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 38377
+"GET /admin-panel/manage/schools/create/ HTTP/1.1" 200 14868
+"POST /admin-panel/manage/schools/create/ HTTP/1.1" 302 0
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 41200
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 54167
+"GET /admin-panel/manage/departments/create/ HTTP/1.1" 200 26014
+"GET /admin-panel/api/users/search/?q=admin HTTP/1.1" 200 175
+"GET /admin-panel/api/users/search/?q=admi HTTP/1.1" 200 175
+"POST /admin-panel/manage/departments/create/ HTTP/1.1" 302 0
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 57771
+"GET /auth/student-registration/ HTTP/1.1" 200 9412
+"GET /auth/load-departments/?school_id=11 HTTP/1.1" 200 104
+"POST /admin-panel/manage/departments/bulk-deactivate/ HTTP/1.1" 200 96
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 57458
+"GET /auth/student-registration/ HTTP/1.1" 200 9412
+"GET /auth/load-departments/?school_id=11 HTTP/1.1" 200 78
+"POST /admin-panel/manage/departments/bulk-activate/ HTTP/1.1" 200 92
+"GET /admin-panel/manage/departments/ HTTP/1.1" 200 57459
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 40882
+"POST /admin-panel/manage/schools/bulk-deactivate/ HTTP/1.1" 200 92
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 40881
+"GET /auth/student-registration/ HTTP/1.1" 200 9367
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/audit-logs/ HTTP/1.1" 200 69353
+"GET /admin-panel/superadmin/settings/ HTTP/1.1" 200 28084
+Not Found: /admin-panel/superadmin/clear-cache/
+"POST /admin-panel/superadmin/clear-cache/ HTTP/1.1" 404 19810
+Not Found: /admin-panel/superadmin/system-report/
+"GET /admin-panel/superadmin/system-report/ HTTP/1.1" 404 19815

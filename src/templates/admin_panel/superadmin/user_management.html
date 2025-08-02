@@ -1562,6 +1562,20 @@ function showEditUserModal(userDetails) {
                                                 <input type="text" class="form-control" id="edit_office_location" 
                                                        value="${userDetails.admin_profile?.office_location || ''}">
                                             </div>
+                                            
+                                            <!-- HOD Assignment Section -->
+                                            <div class="mb-3">
+                                                <label class="form-label">
+                                                    <i class="fas fa-university me-2"></i>Head of Department (HOD) Assignment
+                                                </label>
+                                                <div id="hodAssignmentSection">
+                                                    <select class="form-select" id="edit_hod_department" onchange="updateHodAssignment()">
+                                                        <option value="">Not assigned as HOD</option>
+                                                        <!-- Department options will be loaded dynamically -->
+                                                    </select>
+                                                    <small class="text-muted">Select department to assign this user as HOD</small>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     
@@ -1613,6 +1627,14 @@ function showEditUserModal(userDetails) {
     const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
     modal.show();
 
+    // Populate HOD assignment for admin/officer roles
+    if (userDetails.role === 'admin' || userDetails.role === 'officer') {
+        // Delay HOD population to ensure modal is fully rendered
+        setTimeout(() => {
+            populateHodAssignment(userDetails);
+        }, 500);
+    }
+
     // Add button click event listener
     const saveButton = document.getElementById('saveUserButton');
     if (saveButton) {
@@ -1654,6 +1676,15 @@ function handleRoleChange() {
         document.getElementById('studentProfileCard').style.display = 'block';
     } else if (role === 'admin' || role === 'officer') {
         document.getElementById('adminProfileCard').style.display = 'block';
+        
+        // Load HOD assignment options for admin/officer roles
+        const userDetails = { 
+            id: window.currentEditUserId, 
+            role: role 
+        };
+        if (window.currentEditUserId) {
+            populateHodAssignment(userDetails);
+        }
     } else if (role === 'superadmin') {
         document.getElementById('superadminProfileCard').style.display = 'block';
     }
@@ -1757,21 +1788,103 @@ function saveUserChanges(userId) {
     .then(data => {
         console.log('Save response:', data);
         
-        // Restore button state
-        saveButton.innerHTML = originalText;
-        saveButton.disabled = false;
+        // Check if this is an admin/officer user for HOD assignment
+        const role = document.getElementById('edit_role') ? document.getElementById('edit_role').value : document.getElementById('edit_role_hidden').value;
         
-        if (data.success) {
-            console.log('User profile updated successfully');
+        if ((role === 'admin' || role === 'officer') && document.getElementById('edit_hod_department')) {
+            // Save HOD assignment for admin/officer users
+            const hodDepartmentSelect = document.getElementById('edit_hod_department');
+            const hodDepartmentId = hodDepartmentSelect ? hodDepartmentSelect.value : null;
             
-            // Close the modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
-            modal.hide();
-            
-            // Reload the page to show updated data
-            window.location.reload();
+            // Only attempt HOD assignment if the element exists and has a value
+            if (hodDepartmentSelect && typeof saveHodAssignment === 'function') {
+                saveHodAssignment(userId, hodDepartmentId)
+                    .then(hodResult => {
+                        console.log('HOD assignment result:', hodResult);
+                        
+                        // Restore button state
+                        saveButton.innerHTML = originalText;
+                        saveButton.disabled = false;
+                        
+                        if (data.success) {
+                            alert('User profile and HOD assignment updated successfully!');
+                            
+                            // Close modal
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+                            if (modal) {
+                                modal.hide();
+                            }
+                            
+                            // Refresh the page to show updated data
+                            window.location.reload();
+                        } else {
+                            alert('Profile updated but there may have been issues. Error: ' + (data.error || 'Unknown error'));
+                        }
+                    })
+                    .catch(hodError => {
+                        console.error('HOD assignment error:', hodError);
+                        
+                        // Restore button state
+                        saveButton.innerHTML = originalText;
+                        saveButton.disabled = false;
+                        
+                        // Still show success for user profile update
+                        if (data.success) {
+                            alert('User profile updated successfully! (Note: HOD assignment may have failed: ' + hodError.message + ')');
+                            
+                            // Close modal and refresh
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+                            if (modal) {
+                                modal.hide();
+                            }
+                            window.location.reload();
+                        } else {
+                            alert('User profile update failed: ' + (data.error || 'Unknown error'));
+                        }
+                    });
+            } else {
+                // HOD assignment not available, just handle regular user update
+                console.log('HOD assignment not available, proceeding with regular user update');
+                
+                // Restore button state
+                saveButton.innerHTML = originalText;
+                saveButton.disabled = false;
+                
+                if (data.success) {
+                    alert('User profile updated successfully!');
+                    
+                    // Close modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+                    if (modal) {
+                        modal.hide();
+                    }
+                    
+                    // Refresh the page to show updated data
+                    window.location.reload();
+                } else {
+                    alert('Error saving changes: ' + (data.error || 'Unknown error'));
+                }
+            }
         } else {
-            alert('Error saving changes: ' + (data.error || 'Unknown error'));
+            // No HOD assignment needed, just handle the regular user update
+            // Restore button state
+            saveButton.innerHTML = originalText;
+            saveButton.disabled = false;
+            
+            if (data.success) {
+                console.log('User profile updated successfully');
+                
+                // Close the modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+                if (modal) {
+                    modal.hide();
+                }
+                
+                // Reload the page to show updated data
+                window.location.reload();
+            } else {
+                alert('Error saving changes: ' + (data.error || 'Unknown error'));
+            }
         }
     })
     .catch(error => {
@@ -1866,6 +1979,100 @@ function saveDeactivationReason() {
     .catch(error => {
         alert('Error updating reason: ' + error);
     });
+}
+
+// HOD Assignment Functions
+async function loadDepartments() {
+    try {
+        const response = await fetch('/admin-panel/api/departments/');
+        if (!response.ok) throw new Error('Failed to load departments');
+        const data = await response.json();
+        return data.departments || [];
+    } catch (error) {
+        console.error('Error loading departments:', error);
+        return [];
+    }
+}
+
+async function loadUserHodAssignment(userId) {
+    try {
+        const response = await fetch(`/admin-panel/api/users/${userId}/hod-assignment/`);
+        if (!response.ok) throw new Error('Failed to load HOD assignment');
+        return await response.json();
+    } catch (error) {
+        console.error('Error loading HOD assignment:', error);
+        return null;
+    }
+}
+
+async function populateHodAssignment(userDetails) {
+    const hodSelect = document.getElementById('edit_hod_department');
+    if (!hodSelect) {
+        console.log('HOD select element not found, skipping HOD assignment');
+        return;
+    }
+    
+    try {
+        // Load departments
+        const departments = await loadDepartments();
+        
+        // Clear existing options
+        hodSelect.innerHTML = '<option value="">Not assigned as HOD</option>';
+        
+        // Add department options
+        departments.forEach(dept => {
+            const option = document.createElement('option');
+            option.value = dept.id;
+            option.textContent = `${dept.name} (${dept.school_name || 'No School'})`;
+            hodSelect.appendChild(option);
+        });
+        
+        // Check if user is currently HOD of any department
+        try {
+            const hodAssignment = await loadUserHodAssignment(userDetails.id);
+            if (hodAssignment && hodAssignment.department_id) {
+                hodSelect.value = hodAssignment.department_id;
+            }
+        } catch (error) {
+            console.warn('Could not load current HOD assignment:', error);
+            // Continue without setting current assignment
+        }
+        
+        console.log('HOD assignment populated successfully');
+    } catch (error) {
+        console.error('Error populating HOD assignment:', error);
+        // Add error message to select
+        hodSelect.innerHTML = '<option value="">Error loading departments</option>';
+    }
+}
+
+function updateHodAssignment() {
+    // This function will be called when HOD assignment changes
+    console.log('HOD assignment changed');
+}
+
+async function saveHodAssignment(userId, departmentId) {
+    try {
+        const response = await fetch(`/admin-panel/api/users/${userId}/hod-assignment/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({
+                department_id: departmentId || null
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to save HOD assignment');
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error saving HOD assignment:', error);
+        throw error;
+    }
 }
 </script>
 

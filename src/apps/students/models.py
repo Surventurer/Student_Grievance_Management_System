@@ -31,18 +31,12 @@ class School(models.Model):
 
 
 class Department(models.Model):
-    """Department model as per database schema - Enhanced for CRUD management"""
+    """Department model as per database schema - Core fields only"""
     
     id = models.AutoField(primary_key=True)  # UUID/Auto Primary key  
     name = models.CharField(max_length=100)  # Name of the department
-    code = models.CharField(max_length=10, blank=True, null=True)  # Department code (optional)
-    description = models.TextField(blank=True, null=True)  # Department description
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='departments', null=True, blank=True)  # Links department to a school (nullable for migration)
     head_of_department = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='headed_departments')  # HOD
-    office_location = models.CharField(max_length=200, blank=True, null=True)  # Office location
-    contact_email = models.EmailField(blank=True, null=True)  # Department email
-    phone = models.CharField(max_length=15, blank=True, null=True)  # Department phone
-    website = models.URLField(blank=True, null=True)  # Department website
     is_active = models.BooleanField(default=True)  # Active status
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
