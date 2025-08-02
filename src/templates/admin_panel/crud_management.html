@@ -157,29 +157,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="col-md-3">
-            <div class="card crud-card h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-link crud-icon"></i>
-                    <h5 class="card-title mb-3">Assignments</h5>
-                    <div class="text-center mb-3">
-                        <div class="stats-badge badge rounded-pill p-3 w-75">
-                            <small>Auto-Assignments</small><br>
-                            <strong style="font-size: 1.5rem;">{{ stats.category_assignments }}</strong>
-                        </div>
-                    </div>
-                    <div class="d-grid gap-2">
-                        <a href="{% url 'admin_panel:auto_assign_management' %}" class="btn quick-action-btn btn-sm">
-                            <i class="fas fa-cog me-1"></i>Auto-Assign
-                        </a>
-                        <a href="{% url 'admin_panel:create_category_assignment' %}" class="btn quick-action-btn btn-sm">
-                            <i class="fas fa-plus me-1"></i>Add Assignment
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Quick Actions -->

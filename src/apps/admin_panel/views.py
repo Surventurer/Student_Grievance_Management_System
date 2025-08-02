@@ -96,12 +96,12 @@ def admin_dashboard(request):
             'can_view_system_reports': can_view_system_reports(user),
         }
         
-        return render(request, 'admin_panel/dashboard_working.html', context)
+        return render(request, 'admin_panel/dashboard.html', context)
         
     except Exception as e:
         print(f"Error in admin dashboard: {e}")
         messages.error(request, f'Error loading dashboard: {str(e)}')
-        return render(request, 'admin_panel/dashboard_working.html', {
+        return render(request, 'admin_panel/dashboard.html', {
             'total_grievances': 0,
             'pending_grievances': 0,
             'resolved_grievances': 0,
@@ -1937,9 +1937,9 @@ def download_category_stats_csv(request):
 @login_required
 def crud_management(request):
     """Main CRUD management dashboard"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
-        messages.error(request, 'Access denied - Admin privileges required')
-        return redirect('authentication:login')
+    if request.user.role != 'superadmin':
+        messages.error(request, 'Access denied - Superadmin privileges required')
+        return redirect('admin_panel:dashboard')
     
     # Get statistics
     from apps.students.models import School, Department
@@ -2324,29 +2324,171 @@ def school_delete(request, school_id):
         
         school = get_object_or_404(School, id=school_id)
         
-        # Check if school has departments
+        # Count departments that will be cascade deleted
         department_count = school.departments.count()
-        if department_count > 0:
-            return JsonResponse({
-                'error': f'Cannot delete school. It has {department_count} associated departments.'
-            }, status=400)
-        
         school_name = school.name
+        
+        # Delete school (departments will be cascade deleted automatically)
         school.delete()
         
         # Create audit log
+        deletion_message = f'Deleted school: {school_name}'
+        if department_count > 0:
+            deletion_message += f' and {department_count} associated departments'
+            
         AuditLog.objects.create(
             user=request.user,
             action='school_delete',
-            description=f'Deleted school: {school_name}',
+            description=deletion_message,
             target_model='School',
             target_id=str(school_id)
         )
         
-        return JsonResponse({'success': True, 'message': f'School "{school_name}" deleted successfully'})
+        success_message = f'School "{school_name}" deleted successfully'
+        if department_count > 0:
+            success_message += f' along with {department_count} associated departments'
+            
+        return JsonResponse({'success': True, 'message': success_message})
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def bulk_activate_schools(request):
+    """Bulk activate schools"""
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+        return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
+    
+    try:
+        import json
+        from apps.students.models import School
+        
+        data = json.loads(request.body)
+        school_ids = data.get('school_ids', [])
+        
+        if not school_ids:
+            return JsonResponse({'success': False, 'error': 'No schools selected'}, status=400)
+        
+        schools = School.objects.filter(id__in=school_ids)
+        activated_count = schools.filter(is_active=False).count()
+        schools.update(is_active=True)
+        
+        # Create audit log
+        AuditLog.objects.create(
+            user=request.user,
+            action='bulk_activate_schools',
+            description=f'Bulk activated {activated_count} schools',
+            target_model='School'
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Successfully activated {activated_count} school(s)',
+            'activated_count': activated_count
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def bulk_deactivate_schools(request):
+    """Bulk deactivate schools"""
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+        return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
+    
+    try:
+        import json
+        from apps.students.models import School
+        
+        data = json.loads(request.body)
+        school_ids = data.get('school_ids', [])
+        
+        if not school_ids:
+            return JsonResponse({'success': False, 'error': 'No schools selected'}, status=400)
+        
+        schools = School.objects.filter(id__in=school_ids)
+        deactivated_count = schools.filter(is_active=True).count()
+        schools.update(is_active=False)
+        
+        # Create audit log
+        AuditLog.objects.create(
+            user=request.user,
+            action='bulk_deactivate_schools',
+            description=f'Bulk deactivated {deactivated_count} schools',
+            target_model='School'
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Successfully deactivated {deactivated_count} school(s)',
+            'deactivated_count': deactivated_count
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def bulk_delete_schools(request):
+    """Bulk delete schools"""
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+        return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
+    
+    try:
+        import json
+        from apps.students.models import School
+        
+        data = json.loads(request.body)
+        school_ids = data.get('school_ids', [])
+        
+        if not school_ids:
+            return JsonResponse({'success': False, 'error': 'No schools selected'}, status=400)
+        
+        schools = School.objects.filter(id__in=school_ids)
+        
+        # Count total departments that will be cascade deleted
+        total_departments = sum(school.departments.count() for school in schools)
+        
+        deleted_count = schools.count()
+        school_names = list(schools.values_list('name', flat=True))
+        
+        # Delete schools (departments will be cascade deleted automatically)
+        schools.delete()
+        
+        # Create audit log
+        deletion_message = f'Bulk deleted {deleted_count} schools: {", ".join(school_names)}'
+        if total_departments > 0:
+            deletion_message += f' and {total_departments} associated departments'
+            
+        AuditLog.objects.create(
+            user=request.user,
+            action='bulk_delete_schools',
+            description=deletion_message,
+            target_model='School'
+        )
+        
+        success_message = f'Successfully deleted {deleted_count} school(s)'
+        if total_departments > 0:
+            success_message += f' and {total_departments} associated departments'
+        
+        return JsonResponse({
+            'success': True,
+            'message': success_message,
+            'deleted_count': deleted_count,
+            'deleted_departments': total_departments
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
 
 # Department CRUD Views
 @login_required

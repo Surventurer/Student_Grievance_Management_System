@@ -26153,3 +26153,1787 @@ Watching for file changes with StatReloader
 "GET /admin-panel/manage/categories/ HTTP/1.1" 200 58299
 "GET /admin-panel/manage/categories/64cb0d14-db19-4b5d-80ec-23dba2fa1686/edit/ HTTP/1.1" 200 17913
 "GET /admin-panel/manage/categories/ HTTP/1.1" 200 58299
+Watching for file changes with StatReloader
+"GET /admin-panel/manage/ HTTP/1.1" 200 19494
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 27955
+"GET /admin-panel/manage/categories/ HTTP/1.1" 200 58299
+"GET /admin-panel/manage/ HTTP/1.1" 200 19494
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 27955
+"GET /admin-panel/manage/categories/ HTTP/1.1" 200 58299
+"GET /admin-panel/manage/ HTTP/1.1" 200 19494
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\urls.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\urls.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/grievances/ HTTP/1.1" 200 37205
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+Internal Server Error: /admin-panel/dashboard/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 99, in admin_dashboard
+    return render(request, 'admin_panel/dashboard_working.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: admin_panel/dashboard_working.html
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\decorators.py", line 34, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 104, in admin_dashboard
+    return render(request, 'admin_panel/dashboard_working.html', {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: admin_panel/dashboard_working.html
+"GET /admin-panel/dashboard/ HTTP/1.1" 500 142030
+"GET /admin-panel/grievances/ HTTP/1.1" 200 37526
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 128358
+"GET /admin-panel/superadmin/settings/ HTTP/1.1" 200 28084
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 29077
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+Internal Server Error: /admin-panel/dashboard/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 99, in admin_dashboard
+    return render(request, 'admin_panel/dashboard_working.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: admin_panel/dashboard_working.html
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\decorators.py", line 34, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 104, in admin_dashboard
+    return render(request, 'admin_panel/dashboard_working.html', {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: admin_panel/dashboard_working.html
+"GET /admin-panel/dashboard/ HTTP/1.1" 500 142026
+Internal Server Error: /admin-panel/dashboard/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 99, in admin_dashboard
+    return render(request, 'admin_panel/dashboard_working.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: admin_panel/dashboard_working.html
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\decorators.py", line 34, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 104, in admin_dashboard
+    return render(request, 'admin_panel/dashboard_working.html', {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: admin_panel/dashboard_working.html
+"GET /admin-panel/dashboard/ HTTP/1.1" 500 142324
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 8153
+Internal Server Error: /admin-panel/dashboard/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 99, in admin_dashboard
+    return render(request, 'admin_panel/dashboard_working.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: admin_panel/dashboard_working.html
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\decorators.py", line 34, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 104, in admin_dashboard
+    return render(request, 'admin_panel/dashboard_working.html', {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: admin_panel/dashboard_working.html
+"GET /admin-panel/dashboard/ HTTP/1.1" 500 143478
+"GET /admin-panel/grievances/ HTTP/1.1" 200 37526
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 128358
+"POST /admin-panel/superadmin/users/bulk-delete/ HTTP/1.1" 200 161
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 121788
+"POST /admin-panel/superadmin/users/bulk-deactivate/ HTTP/1.1" 200 278
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 124877
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 124877
+"GET /admin-panel/superadmin/settings/ HTTP/1.1" 200 28084
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2008, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'bulk_delete_categories' not found. 'bulk_delete_categories' is not a valid view function or pattern name.
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 174586
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2008, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'bulk_delete_categories' not found. 'bulk_delete_categories' is not a valid view function or pattern name.
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 174586
+"GET /admin-panel/manage/categories/create/ HTTP/1.1" 200 16040
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2008, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'bulk_delete_categories' not found. 'bulk_delete_categories' is not a valid view function or pattern name.
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 174586
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2008, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'bulk_delete_categories' not found. 'bulk_delete_categories' is not a valid view function or pattern name.
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 174723
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2008, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'bulk_delete_categories' not found. 'bulk_delete_categories' is not a valid view function or pattern name.
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 174723
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2008, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'bulk_delete_categories' not found. 'bulk_delete_categories' is not a valid view function or pattern name.
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 174723
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2008, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'bulk_delete_categories' not found. 'bulk_delete_categories' is not a valid view function or pattern name.
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 174723
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2008, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'bulk_delete_categories' not found. 'bulk_delete_categories' is not a valid view function or pattern name.
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 174723
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/categories/?id=f972acf8-12de-4ad1-8c09-579595372c49&vscodeBrowserReqId=1754123353369 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/manage/categories/%3Fid%3Df972acf8-12de-4ad1-8c09-579595372c49%26vscodeBrowserReqId%3D1754123353369 HTTP/1.1" 200 3725
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2008, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'bulk_delete_categories' not found. 'bulk_delete_categories' is not a valid view function or pattern name.
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 174586
+"GET /admin-panel/dashboard/?id=f972acf8-12de-4ad1-8c09-579595372c49&vscodeBrowserReqId=1754123364217 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3725
+Internal Server Error: /admin-panel/dashboard/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 510, in parse
+    compile_func = self.tags[command]
+                   ~~~~~~~~~^^^^^^^^^
+KeyError: 'endif'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 99, in admin_dashboard
+    return render(request, 'admin_panel/dashboard.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 512, in parse
+    self.invalid_block_tag(token, command, parse_until)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 567, in invalid_block_tag
+    raise self.error(
+django.template.exceptions.TemplateSyntaxError: Invalid block tag on line 204: 'endif', expected 'endblock'. Did you forget to register or load this tag?
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 510, in parse
+    compile_func = self.tags[command]
+                   ~~~~~~~~~^^^^^^^^^
+KeyError: 'endif'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\decorators.py", line 34, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 104, in admin_dashboard
+    return render(request, 'admin_panel/dashboard.html', {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 512, in parse
+    self.invalid_block_tag(token, command, parse_until)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 567, in invalid_block_tag
+    raise self.error(
+django.template.exceptions.TemplateSyntaxError: Invalid block tag on line 204: 'endif', expected 'endblock'. Did you forget to register or load this tag?
+"GET /admin-panel/dashboard/ HTTP/1.1" 500 470162
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2008, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'bulk_delete_categories' not found. 'bulk_delete_categories' is not a valid view function or pattern name.
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 174952
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2008, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'bulk_delete_categories' not found. 'bulk_delete_categories' is not a valid view function or pattern name.
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 174723
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2008, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'bulk_delete_categories' not found. 'bulk_delete_categories' is not a valid view function or pattern name.
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 174586
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2008, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'bulk_delete_categories' not found. 'bulk_delete_categories' is not a valid view function or pattern name.
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 174586
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2008, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'bulk_delete_categories' not found. 'bulk_delete_categories' is not a valid view function or pattern name.
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 174723
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 23776
+"GET /admin-panel/audit-logs/ HTTP/1.1" 200 67700
+Watching for file changes with StatReloader
+"GET /?id=f972acf8-12de-4ad1-8c09-579595372c49&vscodeBrowserReqId=1754124050473 HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3725
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 23776
+"GET /admin-panel/grievances/ HTTP/1.1" 200 37205
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 124877
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2008, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'bulk_delete_categories' not found. 'bulk_delete_categories' is not a valid view function or pattern name.
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 174586
+Internal Server Error: /admin-panel/manage/categories/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2008, in category_management
+    return render(request, 'admin_panel/category_management.html', context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'bulk_delete_categories' not found. 'bulk_delete_categories' is not a valid view function or pattern name.
+"GET /admin-panel/manage/categories/ HTTP/1.1" 500 174586
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/manage/categories/ HTTP/1.1" 200 57508
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 23776
+"GET /admin-panel/manage/categories/?id=f972acf8-12de-4ad1-8c09-579595372c49&vscodeBrowserReqId=1754124264408 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/manage/categories/%3Fid%3Df972acf8-12de-4ad1-8c09-579595372c49%26vscodeBrowserReqId%3D1754124264408 HTTP/1.1" 200 3725
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 23776
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 23776
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 23776
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"POST /auth/login/ HTTP/1.1" 200 4216
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 18549
+"GET /students/grievances/ HTTP/1.1" 200 19133
+"GET /students/profile/ HTTP/1.1" 200 20972
+"GET /students/grievances/ HTTP/1.1" 200 19133
+"GET /api/grievances/submit/ HTTP/1.1" 200 38326
+"GET /grievances/api/categories/?type=academic HTTP/1.1" 200 451
+"GET /students/api/departments/ HTTP/1.1" 200 1602
+"GET /grievances/api/categories/?type=non_academic HTTP/1.1" 200 490
+"GET /students/api/departments/ HTTP/1.1" 200 1602
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 24057
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 23776
+"GET /admin-panel/superadmin/settings/ HTTP/1.1" 200 28084
+"GET /admin-panel/audit-logs/ HTTP/1.1" 200 67700
+"GET /admin-panel/audit-logs/ HTTP/1.1" 200 67700
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 23776
+"GET /admin-panel/grievances/ HTTP/1.1" 200 37205
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 124877
+"POST /admin-panel/superadmin/users/bulk-activate/ HTTP/1.1" 200 272
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 121788
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/categories/ HTTP/1.1" 200 57508
+"GET /admin-panel/manage/categories/create/ HTTP/1.1" 200 16040
+"POST /admin-panel/manage/categories/create/ HTTP/1.1" 302 0
+"GET /admin-panel/manage/categories/ HTTP/1.1" 200 62292
+"GET /admin-panel/manage/categories/create/ HTTP/1.1" 200 16040
+"GET /admin-panel/manage/categories/ HTTP/1.1" 200 61983
+"GET /admin-panel/manage/categories/create/ HTTP/1.1" 200 16040
+"POST /admin-panel/manage/categories/create/ HTTP/1.1" 302 0
+"GET /admin-panel/manage/categories/ HTTP/1.1" 200 66762
+Not Found: /admin-panel/categories/3c66e165-6ccb-4f61-b2e1-50c1492ee18d/toggle/
+"POST /admin-panel/categories/3c66e165-6ccb-4f61-b2e1-50c1492ee18d/toggle/ HTTP/1.1" 404 16608
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 29077
+"GET /admin-panel/manage/schools/create/ HTTP/1.1" 200 21803
+"POST /admin-panel/manage/schools/create/ HTTP/1.1" 302 0
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 31410
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+Internal Server Error: /admin-panel/manage/departments/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2375, in department_management
+    departments = departments.annotate(
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1649, in annotate
+    return self._annotate(args, kwargs, select=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1701, in _annotate
+    clone.query.add_annotation(
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1218, in add_annotation
+    annotation = annotation.resolve_expression(self, allow_joins=True, reuse=None)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 176, in resolve_expression
+    result = super().resolve_expression(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 63, in resolve_expression
+    c = super().resolve_expression(query, allow_joins, reuse, summarize)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 300, in resolve_expression
+    expr.resolve_expression(query, allow_joins, reuse, summarize, for_save)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 902, in resolve_expression
+    return query.resolve_ref(self.name, allow_joins, reuse, summarize)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 2049, in resolve_ref
+    join_info = self.setup_joins(
+                ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1900, in setup_joins
+    path, final_field, targets, rest = self.names_to_path(
+                                       ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'studentprofile' into field. Choices are: code, contact_email, created_at, description, head_of_department, head_of_department_id, id, is_active, name, office_location, phone, school, school_id, updated_at, website
+"GET /admin-panel/manage/departments/ HTTP/1.1" 500 130716
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 31102
+"GET /admin-panel/manage/schools/5/edit/ HTTP/1.1" 200 23341
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 31102
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 31102
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/schools/create/ HTTP/1.1" 200 21803
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 31102
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/schools/create/ HTTP/1.1" 200 21803
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 31102
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/departments/create/ HTTP/1.1" 200 29620
+"POST /admin-panel/manage/departments/create/ HTTP/1.1" 302 0
+Internal Server Error: /admin-panel/manage/departments/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2375, in department_management
+    departments = departments.annotate(
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1649, in annotate
+    return self._annotate(args, kwargs, select=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1701, in _annotate
+    clone.query.add_annotation(
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1218, in add_annotation
+    annotation = annotation.resolve_expression(self, allow_joins=True, reuse=None)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 176, in resolve_expression
+    result = super().resolve_expression(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 63, in resolve_expression
+    c = super().resolve_expression(query, allow_joins, reuse, summarize)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 300, in resolve_expression
+    expr.resolve_expression(query, allow_joins, reuse, summarize, for_save)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 902, in resolve_expression
+    return query.resolve_ref(self.name, allow_joins, reuse, summarize)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 2049, in resolve_ref
+    join_info = self.setup_joins(
+                ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1900, in setup_joins
+    path, final_field, targets, rest = self.names_to_path(
+                                       ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'studentprofile' into field. Choices are: code, contact_email, created_at, description, head_of_department, head_of_department_id, id, is_active, name, office_location, phone, school, school_id, updated_at, website
+"GET /admin-panel/manage/departments/ HTTP/1.1" 500 131278
+Internal Server Error: /admin-panel/manage/departments/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2375, in department_management
+    departments = departments.annotate(
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1649, in annotate
+    return self._annotate(args, kwargs, select=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1701, in _annotate
+    clone.query.add_annotation(
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1218, in add_annotation
+    annotation = annotation.resolve_expression(self, allow_joins=True, reuse=None)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 176, in resolve_expression
+    result = super().resolve_expression(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 63, in resolve_expression
+    c = super().resolve_expression(query, allow_joins, reuse, summarize)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 300, in resolve_expression
+    expr.resolve_expression(query, allow_joins, reuse, summarize, for_save)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 902, in resolve_expression
+    return query.resolve_ref(self.name, allow_joins, reuse, summarize)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 2049, in resolve_ref
+    join_info = self.setup_joins(
+                ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1900, in setup_joins
+    path, final_field, targets, rest = self.names_to_path(
+                                       ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'studentprofile' into field. Choices are: code, contact_email, created_at, description, head_of_department, head_of_department_id, id, is_active, name, office_location, phone, school, school_id, updated_at, website
+"GET /admin-panel/manage/departments/ HTTP/1.1" 500 131141
+Internal Server Error: /admin-panel/manage/departments/
+Traceback (most recent call last):
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py", line 2375, in department_management
+    departments = departments.annotate(
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1649, in annotate
+    return self._annotate(args, kwargs, select=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\query.py", line 1701, in _annotate
+    clone.query.add_annotation(
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1218, in add_annotation
+    annotation = annotation.resolve_expression(self, allow_joins=True, reuse=None)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 176, in resolve_expression
+    result = super().resolve_expression(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\aggregates.py", line 63, in resolve_expression
+    c = super().resolve_expression(query, allow_joins, reuse, summarize)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 300, in resolve_expression
+    expr.resolve_expression(query, allow_joins, reuse, summarize, for_save)
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\expressions.py", line 902, in resolve_expression
+    return query.resolve_ref(self.name, allow_joins, reuse, summarize)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 2049, in resolve_ref
+    join_info = self.setup_joins(
+                ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1900, in setup_joins
+    path, final_field, targets, rest = self.names_to_path(
+                                       ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\.venv\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'studentprofile' into field. Choices are: code, contact_email, created_at, description, head_of_department, head_of_department_id, id, is_active, name, office_location, phone, school, school_id, updated_at, website
+"GET /admin-panel/manage/departments/ HTTP/1.1" 500 131122
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 31413
+Not Found: /admin-panel/schools/5/delete/
+"POST /admin-panel/schools/5/delete/ HTTP/1.1" 404 16494
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 31101
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\urls.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/manage/schools/?id=f972acf8-12de-4ad1-8c09-579595372c49&vscodeBrowserReqId=1754125529747 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/manage/schools/%3Fid%3Df972acf8-12de-4ad1-8c09-579595372c49%26vscodeBrowserReqId%3D1754125529747 HTTP/1.1" 200 3725
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 34677
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 34677
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 34677
+"POST /admin-panel/manage/schools/bulk-deactivate/ HTTP/1.1" 200 92
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 34681
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+Watching for file changes with StatReloader
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 24044
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 34681
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4100
+"GET /auth/student-registration/ HTTP/1.1" 200 9386
+"GET /auth/student-registration/ HTTP/1.1" 200 9386
+"GET /auth/load-departments/?school_id=5 HTTP/1.1" 200 93
+"GET /auth/load-departments/?school_id=4 HTTP/1.1" 200 111
+"GET /auth/student-registration/ HTTP/1.1" 200 9386
+"GET /auth/ HTTP/1.1" 200 3725
+"GET /auth/student-registration/ HTTP/1.1" 200 9386
+"POST /admin-panel/manage/schools/bulk-activate/ HTTP/1.1" 200 88
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 34677
+"GET /auth/student-registration/ HTTP/1.1" 200 9386
+"GET /auth/load-departments/?school_id=5 HTTP/1.1" 200 93
+Not Found: /admin-panel/schools/5/delete/
+"POST /admin-panel/schools/5/delete/ HTTP/1.1" 404 17406
+Bad Request: /admin-panel/manage/schools/bulk-delete/
+"POST /admin-panel/manage/schools/bulk-delete/ HTTP/1.1" 400 86
+Bad Request: /admin-panel/manage/schools/bulk-delete/
+"POST /admin-panel/manage/schools/bulk-delete/ HTTP/1.1" 400 86
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 34677
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 121788
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 121788
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+"POST /admin-panel/superadmin/users/30/toggle-status/ HTTP/1.1" 200 81
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 122814
+"GET /auth/ HTTP/1.1" 200 3725
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /auth/ HTTP/1.1" 200 3725
+"POST /auth/ HTTP/1.1" 200 4504
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 8153
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4100
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 23763
+"GET /admin-panel/grievances/ HTTP/1.1" 200 37205
+"GET /admin-panel/api/grievance-stats/ HTTP/1.1" 200 56
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 122814
+"POST /auth/ HTTP/1.1" 200 4504
+"POST /auth/ HTTP/1.1" 200 4500
+"GET /admin-panel/manage/ HTTP/1.1" 200 17574
+"GET /admin-panel/manage/schools/?id=f972acf8-12de-4ad1-8c09-579595372c49&vscodeBrowserReqId=1754126038609 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/manage/schools/%3Fid%3Df972acf8-12de-4ad1-8c09-579595372c49%26vscodeBrowserReqId%3D1754126038609 HTTP/1.1" 200 3725
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 34795
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 34795
+"POST /admin-panel/manage/schools/bulk-deactivate/ HTTP/1.1" 200 92
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 34799
+"GET /auth/student-registration/ HTTP/1.1" 200 9386
+"GET /auth/student-registration/ HTTP/1.1" 200 9386
+"POST /admin-panel/manage/schools/bulk-deactivate/ HTTP/1.1" 200 92
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 34803
+"POST /admin-panel/manage/schools/5/delete/ HTTP/1.1" 200 104
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 32775
+"GET /auth/student-registration/ HTTP/1.1" 200 9351
+"GET /admin-panel/manage/schools/4/edit/ HTTP/1.1" 200 23312
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 32775
+"POST /admin-panel/manage/schools/4/delete/ HTTP/1.1" 200 111
+Internal Server Error: /admin-panel/manage/schools/4/delete/
+"POST /admin-panel/manage/schools/4/delete/ HTTP/1.1" 500 47
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 30733
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/manage/schools/create/ HTTP/1.1" 200 21803
+"POST /admin-panel/manage/schools/create/ HTTP/1.1" 302 0
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 32867
+"GET /auth/student-registration/ HTTP/1.1" 200 9353
+"GET /auth/load-departments/?school_id=6 HTTP/1.1" 200 77
+"POST /admin-panel/manage/schools/bulk-deactivate/ HTTP/1.1" 200 92
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 33800
+"GET /auth/student-registration/ HTTP/1.1" 200 9353
+"GET /auth/load-departments/?school_id=6 HTTP/1.1" 200 77
+"POST /admin-panel/manage/schools/bulk-activate/ HTTP/1.1" 200 88
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 33786
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/manage/schools/?id=f972acf8-12de-4ad1-8c09-579595372c49&vscodeBrowserReqId=1754126364204 HTTP/1.1" 302 0
+"GET /auth/login/?next=/admin-panel/manage/schools/%3Fid%3Df972acf8-12de-4ad1-8c09-579595372c49%26vscodeBrowserReqId%3D1754126364204 HTTP/1.1" 200 3725
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader
+"POST /admin-panel/manage/schools/bulk-delete/ HTTP/1.1" 200 110
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 31743
+"GET /admin-panel/manage/schools/create/ HTTP/1.1" 200 21803
+"POST /admin-panel/manage/schools/create/ HTTP/1.1" 302 0
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 34073
+"POST /admin-panel/manage/schools/7/delete/ HTTP/1.1" 200 67
+"GET /admin-panel/manage/schools/ HTTP/1.1" 200 31743
+"GET /auth/student-registration/ HTTP/1.1" 200 9309
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\views.py changed, reloading.
+Watching for file changes with StatReloader

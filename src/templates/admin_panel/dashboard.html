@@ -199,9 +199,6 @@
                             <span class="d-none d-sm-inline">Settings</span>
                         </a>
                     {% endif %}
-                            <span class="d-none d-sm-inline">Settings</span>
-                        </a>
-                    {% endif %}
                     <button class="btn btn-primary btn-sm" onclick="location.reload()">
                         <i class="fas fa-sync-alt me-1 me-sm-2"></i>
                         <span class="d-none d-sm-inline">Refresh</span>
@@ -219,8 +216,8 @@
                 <i class="fas fa-crown me-2"></i>
                 <div>
                     <strong>Superadmin Access:</strong> You have full system privileges. 
-                    <a href="{% url 'admin_panel:role_permissions' %}" class="alert-link">View role permissions</a> or 
-                    <a href="{% url 'admin_panel:audit_logs' %}" class="alert-link">check audit logs</a>.
+                    <a href="{% url 'admin_panel:audit_logs' %}" class="alert-link">Check audit logs</a> or 
+                    <a href="{% url 'admin_panel:system_settings' %}" class="alert-link">manage system settings</a>.
                 </div>
             </div>
         </div>
@@ -470,15 +467,15 @@
                     </a>
                     
                     {% if user_role == 'superadmin' %}
-                        <!-- Superadmin Only Actions -->
+                        <!-- Superadmin Only Actions - Core functionalities -->
                         <a href="{% url 'admin_panel:user_management' %}" class="btn btn-outline-danger">
                             <i class="fas fa-users-cog me-2"></i>Manage All Users
                         </a>
                         <a href="{% url 'admin_panel:system_settings' %}" class="btn btn-outline-warning">
                             <i class="fas fa-cog me-2"></i>System Settings
                         </a>
-                        <a href="{% url 'admin_panel:role_permissions' %}" class="btn btn-outline-info">
-                            <i class="fas fa-shield-alt me-2"></i>Role Permissions
+                        <a href="{% url 'admin_panel:crud_management' %}" class="btn btn-outline-info">
+                            <i class="fas fa-database me-2"></i>CRUD Management
                         </a>
                         <a href="{% url 'admin_panel:audit_logs' %}" class="btn btn-outline-secondary">
                             <i class="fas fa-history me-2"></i>Audit Logs
@@ -491,9 +488,6 @@
                         </a>
                         <a href="{% url 'admin_panel:category_management' %}" class="btn btn-outline-success">
                             <i class="fas fa-tags me-2"></i>Manage Categories
-                        </a>
-                        <a href="{% url 'admin_panel:auto_assign_management' %}" class="btn btn-outline-warning">
-                            <i class="fas fa-random me-2"></i>Auto Assignment
                         </a>
                         <a href="{% url 'admin_panel:reports_dashboard' %}" class="btn btn-outline-primary">
                             <i class="fas fa-chart-bar me-2"></i>Department Reports

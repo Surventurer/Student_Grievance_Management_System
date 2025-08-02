@@ -252,35 +252,6 @@ def update_deactivation_reason(request, user_id):
 
 
 @superadmin_required
-def system_settings(request):
-    """System settings view - Superadmin only"""
-    import django
-    from django.conf import settings
-    
-    context = {
-        'django_version': django.get_version(),
-        'debug': settings.DEBUG,
-        'total_users': User.objects.count(),
-        'total_grievances': Grievance.objects.count(),
-    }
-    
-    return render(request, 'admin_panel/superadmin/system_settings.html', context)
-
-
-@superadmin_required
-def role_permissions(request):
-    """Role permissions overview - Superadmin only"""
-    context = {
-        'superadmin_count': User.objects.filter(role='superadmin').count(),
-        'admin_count': User.objects.filter(role='admin').count(),
-        'officer_count': User.objects.filter(role='officer').count(),
-        'student_count': User.objects.filter(role='student').count(),
-        'role_choices': User.ROLE_CHOICES,
-    }
-    return render(request, 'admin_panel/superadmin/role_permissions.html', context)
-
-
-@superadmin_required
 def audit_logs_view(request):
     """Audit logs view - Superadmin only"""
     logs = AuditLog.objects.select_related('user').order_by('-timestamp')
@@ -310,18 +281,6 @@ def create_user(request):
         ],
     }
     return render(request, 'admin_panel/superadmin/create_user.html', context)
-
-
-@superadmin_required
-def create_admin_user(request):
-    """Legacy function - redirect to create_user"""
-    return redirect('admin_panel:create_user')
-
-
-@superadmin_required
-def role_permissions_matrix(request):
-    """Role permissions matrix - Superadmin only"""
-    return render(request, 'admin_panel/superadmin/role_permissions.html', {})
 
 
 @superadmin_required
@@ -530,23 +489,6 @@ def system_settings(request):
 
 
 @superadmin_required
-def role_permissions(request):
-    """Role permissions overview - Superadmin only"""
-    
-    context = {
-        'superadmin_count': User.objects.filter(role='superadmin').count(),
-        'admin_count': User.objects.filter(role='admin').count(),
-        'cs_admin_count': User.objects.filter(role='admin', admin_profile__department='cs').count(),
-        'ba_admin_count': User.objects.filter(role='admin', admin_profile__department='ba').count(),
-        'officer_count': User.objects.filter(role='officer').count(),
-        'student_count': User.objects.filter(role='student').count(),
-        'role_choices': User.ROLE_CHOICES,
-    }
-    
-    return render(request, 'admin_panel/superadmin/role_permissions.html', context)
-
-
-@superadmin_required
 def audit_logs_view(request):
     """Audit logs view - Superadmin only"""
     logs = AuditLog.objects.select_related('user').order_by('-timestamp')
@@ -727,72 +669,6 @@ def create_user(request):
     }
     
     return render(request, 'admin_panel/superadmin/create_user.html', context)
-
-
-@superadmin_required
-def create_admin_user(request):
-    """Legacy function - redirect to create_user"""
-    return redirect('admin_panel:create_user')
-
-
-@superadmin_required
-def role_permissions_matrix(request):
-    """View showing role permissions matrix - Superadmin only"""
-    
-    permissions_matrix = {
-        'superadmin': {
-            'description': 'Full system access with all permissions',
-            'permissions': [
-                'View all grievances and reports',
-                'Manage all users and admins', 
-                'System settings and configuration',
-                'Complete audit log access',
-                'Category and department management',
-                'Data export and analytics',
-                'Assign/reassign any grievance'
-            ],
-            'color': 'danger'
-        },
-        'admin': {
-            'description': 'Department-level administration',
-            'permissions': [
-                'View department grievances only',
-                'Manage department students',
-                'Department reports and analytics',
-                'Assign grievances within department',
-                'Communicate with students'
-            ],
-            'color': 'warning'
-        },
-        'officer': {
-            'description': 'Grievance handling specialist',
-            'permissions': [
-                'View assigned grievances only',
-                'Update grievance status',
-                'Communicate with students',
-                'Add comments and resolutions'
-            ],
-            'color': 'info'
-        },
-        'student': {
-            'description': 'Student user access',
-            'permissions': [
-                'Submit grievances',
-                'View own grievances only',
-                'Communicate with admins',
-                'Provide feedback',
-                'Update profile'
-            ],
-            'color': 'success'
-        }
-    }
-    
-    context = {
-        'permissions_matrix': permissions_matrix,
-        'total_roles': len(permissions_matrix),
-    }
-    
-    return render(request, 'admin_panel/superadmin/role_permissions.html', context)
 
 
 @superadmin_required

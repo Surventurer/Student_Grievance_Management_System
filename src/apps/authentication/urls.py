@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from .rate_limiting_debug import debug_rate_limiting
 
 app_name = 'authentication'
 
@@ -25,9 +24,6 @@ urlpatterns = [
     path('forgot-password/', views.forgot_password_view, name='forgot_password_view'),
     path('reset-password/<str:token>/', views.reset_password_view, name='reset_password_view'),
     path('resend-admin-otp/', views.resend_admin_otp, name='resend_admin_otp'),
-    
-    # Debug tools (staff only)
-    path('debug/rate-limiting/', debug_rate_limiting, name='debug_rate_limiting'),
     
     # Student Registration Only (No admin/staff registration)
     path('student-registration/', views.student_registration, name='student_registration'),

@@ -96,24 +96,18 @@
                 </a>
                 
                 {% if user_role == 'superadmin' %}
-                    <!-- Super Admin Links -->
+                    <!-- Super Admin Links - Core Tabs Only -->
                     <a class="nav-link d-none d-lg-block" href="{% url 'admin_panel:user_management' %}">
                         <i class="fas fa-users-cog me-1"></i>All Users
                     </a>
                     <a class="nav-link d-none d-lg-block" href="{% url 'admin_panel:system_settings' %}">
                         <i class="fas fa-cog me-1"></i>System Settings
                     </a>
-                    <a class="nav-link d-none d-lg-block" href="{% url 'admin_panel:role_permissions' %}">
-                        <i class="fas fa-shield-alt me-1"></i>Permissions
+                    <a class="nav-link d-none d-lg-block" href="{% url 'admin_panel:crud_management' %}">
+                        <i class="fas fa-database me-1"></i>CRUD Management
                     </a>
                     <a class="nav-link d-none d-lg-block" href="{% url 'admin_panel:audit_logs' %}">
                         <i class="fas fa-history me-1"></i>Audit Logs
-                    </a>
-                    <a class="nav-link d-none d-lg-block" href="{% url 'admin_panel:category_management' %}">
-                        <i class="fas fa-tags me-1"></i>Categories
-                    </a>
-                    <a class="nav-link d-none d-lg-block" href="{% url 'admin_panel:auto_assign_management' %}">
-                        <i class="fas fa-random me-1"></i>Auto-Assign
                     </a>
                     
                 {% elif user_role == 'admin' %}
@@ -150,17 +144,11 @@
                             <li><a class="dropdown-item" href="{% url 'admin_panel:system_settings' %}">
                                 <i class="fas fa-cog me-2"></i>System Settings
                             </a></li>
-                            <li><a class="dropdown-item" href="{% url 'admin_panel:role_permissions' %}">
-                                <i class="fas fa-shield-alt me-2"></i>Permissions
+                            <li><a class="dropdown-item" href="{% url 'admin_panel:crud_management' %}">
+                                <i class="fas fa-database me-2"></i>CRUD Management
                             </a></li>
                             <li><a class="dropdown-item" href="{% url 'admin_panel:audit_logs' %}">
                                 <i class="fas fa-history me-2"></i>Audit Logs
-                            </a></li>
-                            <li><a class="dropdown-item" href="{% url 'admin_panel:category_management' %}">
-                                <i class="fas fa-tags me-2"></i>Categories
-                            </a></li>
-                            <li><a class="dropdown-item" href="{% url 'admin_panel:auto_assign_management' %}">
-                                <i class="fas fa-random me-2"></i>Auto-Assign
                             </a></li>
                         {% elif user_role == 'admin' %}
                             <li><a class="dropdown-item" href="{% url 'admin_panel:student_list' %}">

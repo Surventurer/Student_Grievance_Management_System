@@ -384,15 +384,12 @@
                 <p>Are you sure you want to delete the school "<span id="deleteName"></span>"?</p>
                 <div class="alert alert-warning">
                     <i class="fas fa-exclamation-triangle me-2"></i>
-                    <strong>Warning:</strong> This action cannot be undone. All associated departments will also be affected.
+                    <strong>Warning:</strong> This action cannot be undone. All departments belonging to this school will also be automatically deleted.
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form method="post" id="deleteForm" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Delete School</button>
-                </form>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete School</button>
             </div>
         </div>
     </div>
@@ -403,16 +400,49 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Delete confirmation
+    let currentSchoolId = null;
+    
     document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', function() {
-            const schoolId = this.dataset.id;
+            currentSchoolId = this.dataset.id;
             const schoolName = this.dataset.name;
             
             document.getElementById('deleteName').textContent = schoolName;
-            document.getElementById('deleteForm').action = `/admin-panel/schools/${schoolId}/delete/`;
-            
             new bootstrap.Modal(document.getElementById('deleteModal')).show();
         });
+    });
+    
+    // Handle individual delete confirmation
+    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+        if (currentSchoolId) {
+            fetch(`/admin-panel/manage/schools/${currentSchoolId}/delete/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+                modal.hide();
+                
+                if (data.success) {
+                    // Just reload the page silently without showing alert
+                    location.reload();
+                } else {
+                    // Only show error messages
+                    showAlert('error', data.error);
+                }
+            })
+            .catch(error => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+                modal.hide();
+                showAlert('error', 'An error occurred while deleting the school');
+                console.error('Error:', error);
+            });
+        }
     });
     
     // Select all functionality
@@ -449,26 +479,124 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('activateSelected').addEventListener('click', function() {
         const selected = Array.from(document.querySelectorAll('.school-checkbox:checked')).map(cb => cb.value);
         if (selected.length > 0 && confirm(`Activate ${selected.length} selected school(s)?`)) {
-            // Implement bulk activate
-            console.log('Activate schools:', selected);
+            fetch('{% url "admin_panel:bulk_activate_schools" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    school_ids: selected
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Just reload the page silently without showing alert
+                    location.reload();
+                } else {
+                    showAlert('error', data.error);
+                }
+            })
+            .catch(error => {
+                showAlert('error', 'An error occurred');
+                console.error('Error:', error);
+            });
         }
     });
     
     document.getElementById('deactivateSelected').addEventListener('click', function() {
         const selected = Array.from(document.querySelectorAll('.school-checkbox:checked')).map(cb => cb.value);
         if (selected.length > 0 && confirm(`Deactivate ${selected.length} selected school(s)?`)) {
-            // Implement bulk deactivate
-            console.log('Deactivate schools:', selected);
+            fetch('{% url "admin_panel:bulk_deactivate_schools" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    school_ids: selected
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Just reload the page silently without showing alert
+                    location.reload();
+                } else {
+                    showAlert('error', data.error);
+                }
+            })
+            .catch(error => {
+                showAlert('error', 'An error occurred');
+                console.error('Error:', error);
+            });
         }
     });
     
     document.getElementById('deleteSelected').addEventListener('click', function() {
         const selected = Array.from(document.querySelectorAll('.school-checkbox:checked')).map(cb => cb.value);
-        if (selected.length > 0 && confirm(`Delete ${selected.length} selected school(s)? This action cannot be undone.`)) {
-            // Implement bulk delete
-            console.log('Delete schools:', selected);
+        if (selected.length > 0 && confirm(`Delete ${selected.length} selected school(s)?\n\nWarning: This will also delete all departments associated with these schools.\n\nThis action cannot be undone.`)) {
+            fetch('{% url "admin_panel:bulk_delete_schools" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    school_ids: selected
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Just reload the page silently without showing alert
+                    location.reload();
+                } else {
+                    showAlert('error', data.error);
+                }
+            })
+            .catch(error => {
+                showAlert('error', 'An error occurred');
+                console.error('Error:', error);
+            });
         }
     });
+    
+    // Helper functions
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    function showAlert(type, message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        const container = document.querySelector('.container-fluid');
+        container.insertBefore(alertDiv, container.firstChild);
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
 });
 </script>
 {% endblock %}
