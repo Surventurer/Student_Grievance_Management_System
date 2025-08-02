@@ -28,7 +28,11 @@ urlpatterns = [
     
     # Category Management
     path('categories/', views.manage_categories_view, name='manage_categories'),
-    path('categories/<int:category_id>/toggle/', views.toggle_category_status, name='toggle_category'),
+    path('categories/<uuid:category_id>/toggle/', views.toggle_category_status, name='toggle_category'),
+    path('categories/update/', views.update_category, name='update_category'),
+    path('categories/delete/', views.delete_category, name='delete_category'),
+    path('categories/bulk-delete/', views.bulk_delete_categories, name='bulk_delete_categories'),
+    path('categories/bulk-update-status/', views.bulk_update_category_status, name='bulk_update_category_status'),
     
     # Reports and Analytics
     path('reports/', views.reports, name='reports'),

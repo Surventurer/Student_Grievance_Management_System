@@ -151,25 +151,19 @@
     </div>
 
     <div class="row">
-        <!-- Add New Category -->
+        <!-- Add New Nature of Grievance -->
         <div class="col-lg-4">
             <div class="form-card">
                 <h5 class="text-white mb-4">
-                    <i class="fas fa-plus me-2"></i>Add New Category
+                    <i class="fas fa-plus me-2"></i>Add New Nature of Grievance
                 </h5>
                 
                 <form method="POST">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="name" class="form-label text-white">Category Name</label>
+                        <label for="name" class="form-label text-white">Nature of Grievance</label>
                         <input type="text" class="form-control" id="name" name="name" 
-                               placeholder="Enter category name..." required>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="description" class="form-label text-white">Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="3" 
-                                  placeholder="Enter category description..." required></textarea>
+                               placeholder="Enter nature of grievance..." required>
                     </div>
                     
                     <div class="mb-4">
@@ -195,27 +189,72 @@
             <div class="category-card">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h5 class="card-title mb-0">
-                        <i class="fas fa-list me-2 text-primary"></i>All Categories
+                        <i class="fas fa-list me-2 text-primary"></i>All Nature of Grievance
                         <span class="badge bg-primary">{{ categories.count }}</span>
                     </h5>
                     <div>
-                        <span class="badge bg-info me-2">{{ categories|dictsort:"category_type"|dictsort:"is_active"|length }} Academic</span>
-                        <span class="badge bg-warning">{{ categories|dictsort:"category_type"|dictsort:"is_active"|length }} Non-Academic</span>
+                        <span class="badge bg-info me-2">{{ academic_count }} Academic</span>
+                        <span class="badge bg-warning">{{ non_academic_count }} Non-Academic</span>
                     </div>
                 </div>
                 
+                <!-- Bulk Actions -->
+                <div class="mb-3" id="bulkActions" style="display: none;">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button type="button" class="btn btn-success btn-sm" onclick="bulkActivateCategories()">
+                            <i class="fas fa-check me-1"></i>Bulk Activate
+                        </button>
+                        <button type="button" class="btn btn-warning btn-sm" onclick="bulkDeactivateCategories()">
+                            <i class="fas fa-times me-1"></i>Bulk Deactivate
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="bulkDeleteCategories()">
+                            <i class="fas fa-trash me-1"></i>Bulk Delete
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="clearSelection()">
+                            <i class="fas fa-times me-1"></i>Clear Selection
+                        </button>
+                    </div>
+                    <small class="text-muted d-block mt-1">
+                        <span id="selectedCount">0</span> categories selected
+                    </small>
+                </div>
                 {% if categories %}
                 <div class="category-list">
+                    <!-- Select All Checkbox -->
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                            <label class="form-check-label fw-bold" for="selectAll">
+                                Select All Nature of Grievance
+                            </label>
+                        </div>
+                    </div>
+                    
                     {% for category in categories %}
-                    <div class="category-item {% if not category.is_active %}inactive{% endif %}">
+                    <div class="category-item {% if not category.is_active %}inactive{% endif %}" id="category-{{ category.id }}">
                         <div class="d-flex justify-content-between align-items-start">
                             <div class="flex-grow-1">
                                 <div class="category-header">
-                                    <h6 class="mb-1">{{ category.name }}</h6>
-                                    <div class="ms-auto d-flex align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <input class="form-check-input me-2 category-checkbox" type="checkbox" 
+                                               value="{{ category.id }}" onchange="updateBulkActions()">
+                                        <h6 class="mb-1" id="categoryName-{{ category.id }}">{{ category.name }}</h6>
+                                    </div>
+                                    <div class="ms-auto d-flex align-items-center gap-2">
                                         <span class="category-type-badge bg-{% if category.category_type == 'academic' %}info{% else %}warning{% endif %} text-white me-2">
                                             {{ category.get_category_type_display }}
                                         </span>
+                                        <!-- Action Buttons -->
+                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                onclick="editCategory('{{ category.id }}', '{{ category.name }}', '{{ category.category_type }}')"
+                                                title="Edit Category">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                onclick="deleteCategory('{{ category.id }}', '{{ category.name }}')"
+                                                title="Delete Category">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                         <label class="toggle-switch">
                                             <input type="checkbox" {% if category.is_active %}checked{% endif %} 
                                                    onchange="toggleCategoryStatus('{{ category.id }}')">
@@ -223,7 +262,6 @@
                                         </label>
                                     </div>
                                 </div>
-                                <p class="text-muted mb-2">{{ category.description }}</p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <small class="text-muted">
                                         <i class="fas fa-clipboard-list me-1"></i>
@@ -231,7 +269,7 @@
                                     </small>
                                     <small class="text-muted">
                                         Status: 
-                                        <span class="badge bg-{% if category.is_active %}success{% else %}secondary{% endif %} px-2 py-1">
+                                        <span class="badge bg-{% if category.is_active %}success{% else %}secondary{% endif %} px-2 py-1" id="statusBadge-{{ category.id }}">
                                             {% if category.is_active %}Active{% else %}Inactive{% endif %}
                                         </span>
                                     </small>
@@ -298,6 +336,43 @@
     </div>
 </div>
 
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-edit me-2"></i>Edit Category
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editCategoryForm">
+                    <input type="hidden" id="editCategoryId">
+                    <div class="mb-3">
+                        <label for="editCategoryName" class="form-label">Nature of Grievance</label>
+                        <input type="text" class="form-control" id="editCategoryName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCategoryType" class="form-label">Category Type</label>
+                        <select class="form-select" id="editCategoryType" required>
+                            <option value="">Select type...</option>
+                            <option value="academic">Academic</option>
+                            <option value="non_academic">Non-Academic</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveCategory()">
+                    <i class="fas fa-save me-1"></i>Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Success Modal -->
 <div class="modal fade" id="successModal" tabindex="-1">
     <div class="modal-dialog">
@@ -321,6 +396,22 @@
 
 {% block extra_js %}
 <script>
+// CSRF Cookie function
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 function toggleCategoryStatus(categoryId) {
     fetch(`/admin-panel/categories/${categoryId}/toggle/`, {
         method: 'POST',
@@ -355,6 +446,253 @@ function toggleCategoryStatus(categoryId) {
         // Revert the toggle
         event.target.checked = !event.target.checked;
     });
+}
+
+// Bulk Operations Functions
+function toggleSelectAll() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.category-checkbox');
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll.checked;
+    });
+    
+    updateBulkActions();
+}
+
+function updateBulkActions() {
+    const checkboxes = document.querySelectorAll('.category-checkbox:checked');
+    const bulkActions = document.getElementById('bulkActions');
+    const selectedCount = document.getElementById('selectedCount');
+    
+    if (checkboxes.length > 0) {
+        bulkActions.style.display = 'block';
+        selectedCount.textContent = checkboxes.length;
+    } else {
+        bulkActions.style.display = 'none';
+    }
+    
+    // Update select all checkbox state
+    const allCheckboxes = document.querySelectorAll('.category-checkbox');
+    const selectAll = document.getElementById('selectAll');
+    selectAll.checked = checkboxes.length === allCheckboxes.length;
+    selectAll.indeterminate = checkboxes.length > 0 && checkboxes.length < allCheckboxes.length;
+}
+
+function clearSelection() {
+    document.querySelectorAll('.category-checkbox').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    document.getElementById('selectAll').checked = false;
+    updateBulkActions();
+}
+
+function getSelectedCategories() {
+    return Array.from(document.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
+}
+
+function bulkActivateCategories() {
+    const selectedIds = getSelectedCategories();
+    if (selectedIds.length === 0) {
+        alert('Please select categories to activate');
+        return;
+    }
+    
+    if (confirm(`Are you sure you want to activate ${selectedIds.length} selected categories?`)) {
+        bulkUpdateStatus(selectedIds, true);
+    }
+}
+
+function bulkDeactivateCategories() {
+    const selectedIds = getSelectedCategories();
+    if (selectedIds.length === 0) {
+        alert('Please select categories to deactivate');
+        return;
+    }
+    
+    if (confirm(`Are you sure you want to deactivate ${selectedIds.length} selected categories?`)) {
+        bulkUpdateStatus(selectedIds, false);
+    }
+}
+
+function bulkDeleteCategories() {
+    const selectedIds = getSelectedCategories();
+    if (selectedIds.length === 0) {
+        alert('Please select categories to delete');
+        return;
+    }
+    
+    if (confirm(`Are you sure you want to delete ${selectedIds.length} selected categories? This action cannot be undone.`)) {
+        fetch('{% url "admin_panel:bulk_delete_categories" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                category_ids: selectedIds
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Remove deleted categories from DOM
+                selectedIds.forEach(id => {
+                    const element = document.getElementById(`category-${id}`);
+                    if (element) element.remove();
+                });
+                clearSelection();
+                alert(`Successfully deleted ${data.deleted_count} categories`);
+            } else {
+                alert('Error deleting categories: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting categories');
+        });
+    }
+}
+
+function bulkUpdateStatus(categoryIds, isActive) {
+    fetch('{% url "admin_panel:bulk_update_category_status" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            category_ids: categoryIds,
+            is_active: isActive
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update UI for each category
+            categoryIds.forEach(id => {
+                const categoryElement = document.getElementById(`category-${id}`);
+                const statusBadge = document.getElementById(`statusBadge-${id}`);
+                const toggleInput = categoryElement.querySelector('.toggle-switch input');
+                
+                if (isActive) {
+                    categoryElement.classList.remove('inactive');
+                    statusBadge.className = 'badge bg-success px-2 py-1';
+                    statusBadge.textContent = 'Active';
+                    toggleInput.checked = true;
+                } else {
+                    categoryElement.classList.add('inactive');
+                    statusBadge.className = 'badge bg-secondary px-2 py-1';
+                    statusBadge.textContent = 'Inactive';
+                    toggleInput.checked = false;
+                }
+            });
+            clearSelection();
+            alert(`Successfully ${isActive ? 'activated' : 'deactivated'} ${data.updated_count} categories`);
+        } else {
+            alert('Error updating categories: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating categories');
+    });
+}
+
+// Edit Category Functions
+function editCategory(categoryId, currentName, currentType) {
+    // Populate the modal with current values
+    document.getElementById('editCategoryId').value = categoryId;
+    document.getElementById('editCategoryName').value = currentName;
+    document.getElementById('editCategoryType').value = currentType;
+    
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('editCategoryModal'));
+    modal.show();
+}
+
+function saveCategory() {
+    const categoryId = document.getElementById('editCategoryId').value;
+    const name = document.getElementById('editCategoryName').value.trim();
+    const categoryType = document.getElementById('editCategoryType').value;
+    
+    if (!name || !categoryType) {
+        alert('Please fill in all fields');
+        return;
+    }
+    
+    updateCategory(categoryId, name, categoryType);
+}
+
+function updateCategory(categoryId, name, categoryType) {
+    fetch('{% url "admin_panel:update_category" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            category_id: categoryId,
+            name: name,
+            category_type: categoryType
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update the Nature of Grievance and type in the DOM
+            document.getElementById(`categoryName-${categoryId}`).textContent = name;
+            
+            // Update the category type badge
+            const categoryElement = document.getElementById(`category-${categoryId}`);
+            const typeBadge = categoryElement.querySelector('.category-type-badge');
+            typeBadge.className = `category-type-badge bg-${categoryType === 'academic' ? 'info' : 'warning'} text-white me-2`;
+            typeBadge.textContent = categoryType === 'academic' ? 'Academic' : 'Non-Academic';
+            
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editCategoryModal'));
+            modal.hide();
+            
+            alert('Category updated successfully');
+        } else {
+            alert('Error updating category: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating category');
+    });
+}
+
+// Delete Category Function
+function deleteCategory(categoryId, categoryName) {
+    if (confirm(`Are you sure you want to delete the category "${categoryName}"? This action cannot be undone.`)) {
+        fetch('{% url "admin_panel:delete_category" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                category_id: categoryId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Remove the category from DOM
+                const element = document.getElementById(`category-${categoryId}`);
+                if (element) element.remove();
+                alert('Category deleted successfully');
+            } else {
+                alert('Error deleting category: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting category');
+        });
+    }
 }
 
 // Display messages if any

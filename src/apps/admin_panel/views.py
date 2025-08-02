@@ -550,25 +550,30 @@ def manage_categories_view(request):
     
     categories = Category.objects.all().order_by('category_type', 'name')
     
+    # Calculate counts
+    academic_count = categories.filter(category_type='academic').count()
+    non_academic_count = categories.filter(category_type='non_academic').count()
+    
     if request.method == 'POST':
         name = request.POST.get('name')
-        description = request.POST.get('description')
         category_type = request.POST.get('category_type')
         
-        if name and description and category_type:
+        if name and category_type:
             Category.objects.create(
                 name=name,
-                description=description,
+                description=f"{name} category",  # Provide a default description
                 category_type=category_type,
                 is_active=True
             )
             messages.success(request, 'Category created successfully')
             return redirect('admin_panel:manage_categories')
         else:
-            messages.error(request, 'All fields are required')
+            messages.error(request, 'Category name and type are required')
     
     context = {
         'categories': categories,
+        'academic_count': academic_count,
+        'non_academic_count': non_academic_count,
     }
     
     return render(request, 'admin_panel/manage_categories.html', context)
@@ -590,6 +595,166 @@ def toggle_category_status(request, category_id):
             'is_active': category.is_active,
             'status': 'activated' if category.is_active else 'deactivated'
         })
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@login_required
+def update_category(request):
+    """Update category details"""
+    if not request.user.is_admin:
+        return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
+    
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
+    
+    try:
+        import json
+        data = json.loads(request.body)
+        category_id = data.get('category_id')
+        name = data.get('name', '').strip()
+        category_type = data.get('category_type')
+        
+        if not all([category_id, name, category_type]):
+            return JsonResponse({'success': False, 'error': 'Category ID, name, and type are required'}, status=400)
+        
+        if category_type not in ['academic', 'non_academic']:
+            return JsonResponse({'success': False, 'error': 'Invalid category type'}, status=400)
+        
+        category = get_object_or_404(Category, id=category_id)
+        
+        # Check if name already exists for another category
+        if Category.objects.filter(name=name).exclude(id=category_id).exists():
+            return JsonResponse({'success': False, 'error': 'Category with this name already exists'}, status=400)
+        
+        category.name = name
+        category.category_type = category_type
+        category.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Category updated successfully'
+        })
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON data'}, status=400)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@login_required
+def delete_category(request):
+    """Delete a single category"""
+    if not request.user.is_admin:
+        return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
+    
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
+    
+    try:
+        import json
+        data = json.loads(request.body)
+        category_id = data.get('category_id')
+        
+        if not category_id:
+            return JsonResponse({'success': False, 'error': 'Category ID is required'}, status=400)
+        
+        category = get_object_or_404(Category, id=category_id)
+        
+        # Check if category has grievances
+        if category.grievances.exists():
+            return JsonResponse({
+                'success': False, 
+                'error': f'Cannot delete category "{category.name}" as it has associated grievances'
+            }, status=400)
+        
+        category.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Category deleted successfully'
+        })
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON data'}, status=400)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@login_required
+def bulk_delete_categories(request):
+    """Bulk delete categories"""
+    if not request.user.is_admin:
+        return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
+    
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
+    
+    try:
+        import json
+        data = json.loads(request.body)
+        category_ids = data.get('category_ids', [])
+        
+        if not category_ids:
+            return JsonResponse({'success': False, 'error': 'No categories selected'}, status=400)
+        
+        # Get categories and check for associated grievances
+        categories = Category.objects.filter(id__in=category_ids)
+        categories_with_grievances = []
+        
+        for category in categories:
+            if category.grievances.exists():
+                categories_with_grievances.append(category.name)
+        
+        if categories_with_grievances:
+            return JsonResponse({
+                'success': False,
+                'error': f'Cannot delete categories with associated grievances: {", ".join(categories_with_grievances)}'
+            }, status=400)
+        
+        deleted_count = categories.count()
+        categories.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'deleted_count': deleted_count,
+            'message': f'Successfully deleted {deleted_count} categories'
+        })
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON data'}, status=400)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@login_required
+def bulk_update_category_status(request):
+    """Bulk activate/deactivate categories"""
+    if not request.user.is_admin:
+        return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
+    
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
+    
+    try:
+        import json
+        data = json.loads(request.body)
+        category_ids = data.get('category_ids', [])
+        is_active = data.get('is_active', True)
+        
+        if not category_ids:
+            return JsonResponse({'success': False, 'error': 'No categories selected'}, status=400)
+        
+        updated_count = Category.objects.filter(id__in=category_ids).update(is_active=is_active)
+        
+        return JsonResponse({
+            'success': True,
+            'updated_count': updated_count,
+            'message': f'Successfully {"activated" if is_active else "deactivated"} {updated_count} categories'
+        })
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON data'}, status=400)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
@@ -1809,10 +1974,7 @@ def category_management(request):
     categories = Category.objects.all()
     
     if search:
-        categories = categories.filter(
-            Q(name__icontains=search) | 
-            Q(description__icontains=search)
-        )
+        categories = categories.filter(name__icontains=search)
     
     if category_type:
         categories = categories.filter(category_type=category_type)

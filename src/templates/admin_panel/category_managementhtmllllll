@@ -24,6 +24,20 @@
     
     .status-toggle {
         cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .status-toggle:hover {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+    
+    .bg-success.status-toggle:hover {
+        background-color: #198754 !important;
+    }
+    
+    .bg-secondary.status-toggle:hover {
+        background-color: #6c757d !important;
     }
     
     .search-filters {
@@ -92,7 +106,7 @@
             <div class="col-md-4">
                 <label for="search" class="form-label">Search Categories</label>
                 <input type="text" class="form-control filter-input" id="search" name="search" 
-                       value="{{ search }}" placeholder="Search by name or description">
+                       value="{{ search }}" placeholder="Search by name">
             </div>
             <div class="col-md-3">
                 <label for="type" class="form-label">Category Type</label>
@@ -156,17 +170,21 @@
                                    {% if category.category_type == 'academic' %}bg-primary{% else %}bg-info{% endif %}">
                             {{ category.get_category_type_display }}
                         </span>
-                        <span class="badge ms-2 {% if category.is_active %}bg-success{% else %}bg-secondary{% endif %}">
-                            {% if category.is_active %}Active{% else %}Inactive{% endif %}
+                        <span class="badge ms-2 status-toggle {% if category.is_active %}bg-success{% else %}bg-secondary{% endif %}" 
+                              data-category-id="{{ category.id }}"
+                              onclick="toggleCategoryStatus('{{ category.id }}', '{{ category.name }}')"
+                              style="cursor: pointer;" 
+                              {% if category.is_active %}data-bs-toggle="tooltip" data-bs-placement="top" title="Click to deactivate"{% else %}data-bs-toggle="tooltip" data-bs-placement="top" title="Click to activate"{% endif %}>
+                            {% if category.is_active %}
+                                <i class="fas fa-check-circle me-1"></i>Active
+                            {% else %}
+                                <i class="fas fa-times-circle me-1"></i>Inactive
+                            {% endif %}
                         </span>
                         {% if category.auto_assign_enabled %}
                         <span class="badge bg-warning text-dark ms-2">Auto-Assign</span>
                         {% endif %}
                     </div>
-                    
-                    {% if category.description %}
-                    <p class="card-text text-muted small">{{ category.description|truncatechars:100 }}</p>
-                    {% endif %}
                     
                     {% if category.keywords %}
                     <div class="mb-2">
@@ -184,10 +202,20 @@
                             Created: {{ category.created_at|date:"M d, Y" }}
                         </small>
                         <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-{% if category.is_active %}warning{% else %}success{% endif %} btn-sm" 
+                                    onclick="toggleCategoryStatus('{{ category.id }}', '{{ category.name }}')"
+                                    title="Toggle Status">
+                                <i class="fas fa-{% if category.is_active %}pause{% else %}play{% endif %}"></i>
+                            </button>
                             <a href="{% url 'admin_panel:category_edit' category.id %}" 
-                               class="btn btn-outline-primary btn-sm">
+                               class="btn btn-outline-primary btn-sm" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
+                            <button class="btn btn-outline-danger btn-sm" 
+                                    onclick="deleteCategory('{{ category.id }}', '{{ category.name }}')"
+                                    title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -271,6 +299,76 @@
 <script>
 let categoryIdToDelete = null;
 
+// Initialize tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+
+function toggleCategoryStatus(categoryId, categoryName) {
+    if (!confirm(`Are you sure you want to toggle the status of "${categoryName}"?`)) {
+        return;
+    }
+    
+    const statusBadge = document.querySelector(`[data-category-id="${categoryId}"]`);
+    const originalContent = statusBadge.innerHTML;
+    
+    // Show loading state
+    statusBadge.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Updating...';
+    statusBadge.className = 'badge ms-2 bg-secondary';
+    
+    fetch(`/admin-panel/categories/${categoryId}/toggle/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update badge based on new status
+            if (data.is_active) {
+                statusBadge.innerHTML = '<i class="fas fa-check-circle me-1"></i>Active';
+                statusBadge.className = 'badge ms-2 bg-success status-toggle';
+                statusBadge.setAttribute('title', 'Click to deactivate');
+            } else {
+                statusBadge.innerHTML = '<i class="fas fa-times-circle me-1"></i>Inactive';
+                statusBadge.className = 'badge ms-2 bg-secondary status-toggle';
+                statusBadge.setAttribute('title', 'Click to activate');
+            }
+            
+            // Update toggle button icon in actions
+            const toggleButton = statusBadge.closest('.card').querySelector('.btn-group .btn-outline-warning, .btn-group .btn-outline-success');
+            if (toggleButton) {
+                if (data.is_active) {
+                    toggleButton.className = 'btn btn-outline-warning btn-sm';
+                    toggleButton.innerHTML = '<i class="fas fa-pause"></i>';
+                    toggleButton.setAttribute('title', 'Deactivate');
+                } else {
+                    toggleButton.className = 'btn btn-outline-success btn-sm';
+                    toggleButton.innerHTML = '<i class="fas fa-play"></i>';
+                    toggleButton.setAttribute('title', 'Activate');
+                }
+            }
+            
+            showAlert('success', `Category "${categoryName}" has been ${data.status}.`);
+        } else {
+            // Restore original state on error
+            statusBadge.innerHTML = originalContent;
+            showAlert('danger', data.error || 'Failed to update category status.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Restore original state on error
+        statusBadge.innerHTML = originalContent;
+        showAlert('danger', 'An error occurred while updating the category status.');
+    });
+}
+
 function deleteCategory(categoryId, categoryName) {
     categoryIdToDelete = categoryId;
     document.getElementById('categoryNameToDelete').textContent = categoryName;
@@ -280,7 +378,7 @@ function deleteCategory(categoryId, categoryName) {
 function confirmDelete() {
     if (!categoryIdToDelete) return;
     
-    fetch(`/admin/manage/categories/${categoryIdToDelete}/delete/`, {
+    fetch(`/admin-panel/manage/categories/${categoryIdToDelete}/delete/`, {
         method: 'POST',
         headers: {
             'X-CSRFToken': '{{ csrf_token }}',
