@@ -352,31 +352,7 @@ def bulk_delete_users(request):
         return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
 
 
-@superadmin_required
-@require_http_methods(["POST"])
-def bulk_deactivate_users(request):
-    """Bulk deactivate users - Superadmin only"""
-    try:
-        data = json.loads(request.body)
-        user_ids = data.get('user_ids', [])
-        
-        if not user_ids:
-            return JsonResponse({'error': 'No users selected'}, status=400)
-        
-        users_to_deactivate = User.objects.filter(id__in=user_ids, is_active=True)
-        
-        for user in users_to_deactivate:
-            user.is_active = False
-            user.save()
-        
-        return JsonResponse({
-            'success': True,
-            'deactivated_count': len(user_ids),
-            'message': f'Successfully deactivated {len(user_ids)} user(s)'
-        })
-        
-    except Exception as e:
-        return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+
 
 
 @superadmin_required
@@ -928,9 +904,13 @@ def bulk_deactivate_users(request):
         # Parse the JSON body
         data = json.loads(request.body)
         user_ids = data.get('user_ids', [])
+        deactivation_reason = data.get('deactivation_reason', '').strip()
         
         if not user_ids:
             return JsonResponse({'error': 'No users selected'}, status=400)
+        
+        if not deactivation_reason:
+            return JsonResponse({'error': 'Deactivation reason is required'}, status=400)
         
         # Validate that user_ids is a list of integers
         try:
@@ -961,13 +941,14 @@ def bulk_deactivate_users(request):
                 
                 # Deactivate the user
                 user.is_active = False
+                user.deactivation_reason = deactivation_reason
                 user.save()
                 
                 # Create audit log
                 AuditLog.objects.create(
                     user=request.user,
                     action='update',
-                    description=f'Bulk deactivated user {user.email} (Role: {user.get_role_display()})',
+                    description=f'Bulk deactivated user {user.email} (Role: {user.get_role_display()}) - Reason: {deactivation_reason}',
                     target_model='User',
                     target_id=str(user.id),
                     ip_address=request.META.get('REMOTE_ADDR'),

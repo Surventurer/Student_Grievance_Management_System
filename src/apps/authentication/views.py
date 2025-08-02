@@ -371,6 +371,17 @@ def login_view(request):
                     log_login_action(user, request, success=True)
                     return redirect('admin_panel:dashboard')
             else:
+                # Check if user exists but is inactive (Django's authenticate() returns None for inactive users)
+                try:
+                    inactive_user = User.objects.get(email=email, is_active=False)
+                    # Verify the password manually for inactive users
+                    if inactive_user.check_password(password):
+                        reason = inactive_user.deactivation_reason or "Your account has been deactivated by the administrator."
+                        messages.error(request, f'Account Deactivated: {reason}')
+                        return render(request, 'authentication/login.html', {'deactivation_reason': reason})
+                except User.DoesNotExist:
+                    pass  # User doesn't exist or is active but password is wrong
+                
                 # Increment failed login attempts
                 login_attempts_key = f'login_attempts_{email}'
                 login_attempts = request.session.get(login_attempts_key, 0)

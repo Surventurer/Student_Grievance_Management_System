@@ -23762,3 +23762,99 @@ Watching for file changes with StatReloader
 "GET /admin-panel/superadmin/users/ HTTP/1.1" 200 122167
 C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
 Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/?id=aacb61ab-b7aa-4b0a-9db8-ce5a5e60efb4&vscodeBrowserReqId=1754091845032 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3759
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+Bad Request: /admin-panel/superadmin/users/bulk-deactivate/
+"POST /admin-panel/superadmin/users/bulk-deactivate/ HTTP/1.1" 400 44
+Bad Request: /admin-panel/superadmin/users/bulk-deactivate/
+"POST /admin-panel/superadmin/users/bulk-deactivate/ HTTP/1.1" 400 44
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 122604
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\admin_panel\superadmin_views.py changed, reloading.
+Watching for file changes with StatReloader
+"POST /admin-panel/superadmin/users/bulk-deactivate/ HTTP/1.1" 200 486
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 128843
+"POST /admin-panel/superadmin/users/bulk-activate/ HTTP/1.1" 200 480
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 122604
+Watching for file changes with StatReloader
+"GET /admin-panel/superadmin/users/?id=aacb61ab-b7aa-4b0a-9db8-ce5a5e60efb4&vscodeBrowserReqId=1754092277220 HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3759
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 302 0
+"GET /auth/ HTTP/1.1" 200 3759
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 122604
+"POST /admin-panel/superadmin/users/30/toggle-status/ HTTP/1.1" 200 81
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 130724
+"POST /admin-panel/superadmin/users/30/update-deactivation-reason/ HTTP/1.1" 200 72
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 130696
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4258
+"POST /auth/login/ HTTP/1.1" 200 4251
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 18549
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4258
+"POST /auth/login/ HTTP/1.1" 200 8047
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 28236
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 130696
+"POST /admin-panel/superadmin/users/21/toggle-status/ HTTP/1.1" 200 81
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 131748
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4258
+"POST /auth/login/ HTTP/1.1" 200 4251
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /auth/login/?id=aacb61ab-b7aa-4b0a-9db8-ce5a5e60efb4&vscodeBrowserReqId=1754092553868 HTTP/1.1" 200 3759
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET /auth/login/?id=aacb61ab-b7aa-4b0a-9db8-ce5a5e60efb4&vscodeBrowserReqId=1754093010612 HTTP/1.1" 200 3759
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 3759
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4098
+"POST /auth/login/ HTTP/1.1" 200 5543
+"POST /auth/login/ HTTP/1.1" 200 10605
+"POST /auth/login/ HTTP/1.1" 200 10605
+C:\Users\Abhinav\Desktop\Student_Grievance_Management_System\src\apps\authentication\views.py changed, reloading.
+Watching for file changes with StatReloader
+"POST /auth/login/ HTTP/1.1" 200 10605
+"POST /auth/login/ HTTP/1.1" 200 6747
+"POST /auth/login/ HTTP/1.1" 200 6747
+"POST /auth/login/ HTTP/1.1" 200 4216
+"POST /auth/login/ HTTP/1.1" 200 4217
+"POST /auth/login/ HTTP/1.1" 200 4217
+"POST /auth/login/ HTTP/1.1" 200 8013
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /admin-panel/dashboard/ HTTP/1.1" 200 28236
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 139516
+"POST /admin-panel/superadmin/users/34/toggle-status/ HTTP/1.1" 200 78
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 138318
+"POST /admin-panel/superadmin/users/30/toggle-status/ HTTP/1.1" 200 78
+"GET /admin-panel/superadmin/users/ HTTP/1.1" 200 130226
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224
+"POST /auth/login/ HTTP/1.1" 302 0
+"GET /students/ HTTP/1.1" 200 14807
+"GET /auth/logout/ HTTP/1.1" 302 0
+"GET /auth/login/ HTTP/1.1" 200 4224

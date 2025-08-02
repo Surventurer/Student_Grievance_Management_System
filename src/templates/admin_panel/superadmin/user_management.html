@@ -891,6 +891,16 @@ function bulkDeactivateUsers() {
     const userIds = Array.from(checkedBoxes).map(checkbox => parseInt(checkbox.value));
     const count = userIds.length;
     
+    // Prompt for deactivation reason
+    const deactivationReason = prompt(`Please provide a reason for deactivating ${count} user${count > 1 ? 's' : ''}:`, '');
+    if (deactivationReason === null) {
+        return; // User cancelled
+    }
+    if (deactivationReason.trim() === '') {
+        alert('A reason is required when deactivating users.');
+        return;
+    }
+    
     // Show confirmation dialog
     const confirmMessage = `Are you sure you want to deactivate ${count} user${count > 1 ? 's' : ''}? This is a safer alternative to deletion - users will be disabled but their data will remain intact.`;
     
@@ -911,7 +921,8 @@ function bulkDeactivateUsers() {
             'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
         },
         body: JSON.stringify({
-            user_ids: userIds
+            user_ids: userIds,
+            deactivation_reason: deactivationReason.trim()
         })
     })
     .then(response => response.json())
