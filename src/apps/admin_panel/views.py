@@ -17,7 +17,7 @@ import json
 
 from apps.grievances.models import Grievance, Category, GrievanceComment, AuditLog, CategoryAssignment
 from apps.students.models import StudentProfile, AdminProfile
-from apps.authentication.decorators import admin_required, superadmin_required, permission_required
+from apps.authentication.decorators import admin_required, superadmin_required, permission_required, role_required
 from apps.admin_panel.permissions import (
     filter_grievances_by_access, filter_students_by_access, can_access_all_data,
     can_manage_system_settings, can_manage_categories, can_manage_auto_assignment,
@@ -25,25 +25,28 @@ from apps.admin_panel.permissions import (
 )
 
 
-@admin_required
+@role_required(['admin', 'officer', 'superadmin'])
 def admin_dashboard(request):
-    """Admin dashboard view with role-based data filtering"""
+    """Admin dashboard view with department-based data filtering"""
     user = request.user
     
     try:
-        # Get all grievances first, then filter based on access
-        all_grievances = Grievance.objects.select_related('student', 'category', 'assigned_to')
-        accessible_grievances = filter_grievances_by_access(user, all_grievances)
+        # Get accessible data based on user's department assignment
+        accessible_grievances = user.get_accessible_grievances()
+        accessible_students = user.get_accessible_students()
         
-        # Calculate statistics from accessible grievances
+        # Calculate statistics from accessible data
         total_grievances = accessible_grievances.count()
         pending_grievances = accessible_grievances.filter(status='pending').count()
         resolved_grievances = accessible_grievances.filter(status='resolved').count()
         rejected_grievances = accessible_grievances.filter(status='rejected').count()
         recent_grievances = accessible_grievances.order_by('-submitted_at')[:10]
         
+        # Student statistics
+        total_students = accessible_students.count()
+        
         # Get category statistics based on accessible grievances
-        if can_access_all_data(user):
+        if user.is_superadmin:
             category_stats = Category.objects.annotate(count=Count('grievances')).order_by('-count')[:5]
         else:
             # Get categories for accessible grievances only
@@ -76,7 +79,7 @@ def admin_dashboard(request):
                 'rejected': month_data['rejected'] or 0,
             })
         
-        # Add user role information to context
+        # Add user role and department information to context
         context = {
             'total_grievances': total_grievances,
             'pending_grievances': pending_grievances,
@@ -86,10 +89,13 @@ def admin_dashboard(request):
             'category_stats': category_stats,
             'monthly_stats': monthly_stats,
             'monthly_stats_json': json.dumps(monthly_stats),
+            'total_students': total_students,
             'user_role': user.role,
             'is_superadmin': user.role == 'superadmin',
             'is_dept_admin': user.role == 'admin',
             'is_officer': user.role == 'officer',
+            'assigned_department': user.assigned_department,
+            'department_name': user.department_name,
             'can_manage_categories': can_manage_categories(user),
             'can_manage_auto_assignment': can_manage_auto_assignment(user),
             'can_view_audit_logs': can_view_audit_logs(user),
@@ -115,18 +121,17 @@ def admin_dashboard(request):
 @login_required
 @department_access_required
 def grievance_list(request):
-    """Grievance list view with role-based filtering"""
+    """Grievance list view with department-based filtering"""
     user = request.user
     
-    # Get all grievances and filter based on user's access level
-    all_grievances = Grievance.objects.select_related('student__user', 'category')
-    accessible_grievances = filter_grievances_by_access(user, all_grievances)
+    # Get accessible grievances based on user's department assignment
+    accessible_grievances = user.get_accessible_grievances().select_related('student__user', 'category')
     
-    # Order and get categories for filtering
+    # Order grievances
     grievances = accessible_grievances.order_by('-submitted_at')
     
     # Get categories that are relevant to the user's accessible grievances
-    if can_access_all_data(user):
+    if user.is_superadmin:
         categories = Category.objects.all()
     else:
         # Only show categories that have grievances the user can access
@@ -137,6 +142,8 @@ def grievance_list(request):
         'grievances': grievances,
         'categories': categories,
         'user_role': user.role,
+        'assigned_department': user.assigned_department,
+        'department_name': user.department_name,
         'can_manage_categories': can_manage_categories(user),
     }
     
@@ -146,7 +153,7 @@ def grievance_list(request):
 @login_required
 @department_access_required  
 def student_list(request):
-    """Enhanced Student list view with search, filtering, and role-based access"""
+    """Student list view with department-based access control"""
     user = request.user
     
     # Get filter parameters
@@ -154,9 +161,8 @@ def student_list(request):
     status_filter = request.GET.get('status', '')
     department_filter = request.GET.get('department', '')
     
-    # Get all students and filter based on user's access level
-    all_students = StudentProfile.objects.select_related('user')
-    accessible_students = filter_students_by_access(user, all_students)
+    # Get accessible students based on user's department assignment
+    accessible_students = user.get_accessible_students().select_related('user')
     
     # Apply additional filters
     students = accessible_students
@@ -175,12 +181,12 @@ def student_list(request):
         elif status_filter == 'inactive':
             students = students.filter(user__is_active=False)
     
-    # Department filter - only apply if user can see multiple departments
-    if department_filter and can_access_all_data(user):
+    # Department filter - only apply if user can see multiple departments (superadmin)
+    if department_filter and user.is_superadmin:
         students = students.filter(department__icontains=department_filter)
     
     # Get departments for filter dropdown (only departments the user can access)
-    if can_access_all_data(user):
+    if user.is_superadmin:
         departments = StudentProfile.objects.values_list('department', flat=True).distinct().order_by('department')
     else:
         departments = accessible_students.values_list('department', flat=True).distinct().order_by('department')
@@ -197,7 +203,9 @@ def student_list(request):
         'status_filter': status_filter,
         'department_filter': department_filter,
         'user_role': user.role,
-        'can_access_all_data': can_access_all_data(user),
+        'assigned_department': user.assigned_department,
+        'department_name': user.department_name,
+        'can_access_all_data': user.is_superadmin,
     }
     
     return render(request, 'admin_panel/student_list.html', context)
@@ -255,7 +263,7 @@ def student_list(request):
 @login_required
 def reports(request):
     """Reports view with role-based data access"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         messages.error(request, 'Access denied')
         return redirect('authentication:login')
     
@@ -314,7 +322,7 @@ def reports(request):
 @permission_classes([IsAuthenticated])
 def manage_grievances(request):
     """Manage grievances API"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)
     
     grievances = Grievance.objects.all().order_by('-submitted_at')
@@ -336,7 +344,7 @@ def manage_grievances(request):
 @permission_classes([IsAuthenticated])
 def grievance_detail(request, grievance_id):
     """Get grievance details"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)
     
     try:
@@ -359,7 +367,7 @@ def grievance_detail(request, grievance_id):
 @permission_classes([IsAuthenticated])
 def manage_students(request):
     """Manage students API"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)
     
     students = StudentProfile.objects.all()
@@ -381,7 +389,7 @@ def manage_students(request):
 @permission_classes([IsAuthenticated])
 def manage_categories(request):
     """Manage categories API"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)
     
     categories = Category.objects.all()
@@ -402,7 +410,7 @@ def manage_categories(request):
 @permission_classes([IsAuthenticated])
 def reports_api(request):
     """Generate reports API"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)
     
     # Sample report data
@@ -468,7 +476,7 @@ def grievance_detail_view(request, grievance_id):
 @require_http_methods(["PATCH"])
 def update_grievance_status(request, grievance_id):
     """Update grievance status"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
     
     try:
@@ -507,7 +515,7 @@ def update_grievance_status(request, grievance_id):
 @login_required
 def add_admin_response(request, grievance_id):
     """Add admin response to a grievance"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
     
     if request.method != 'POST':
@@ -544,7 +552,7 @@ def add_admin_response(request, grievance_id):
 @login_required
 def manage_categories_view(request):
     """View for managing grievance categories"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         messages.error(request, 'Access denied')
         return redirect('authentication:login')
     
@@ -582,7 +590,7 @@ def manage_categories_view(request):
 @login_required
 def toggle_category_status(request, category_id):
     """Toggle category active status"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
     
     try:
@@ -602,7 +610,7 @@ def toggle_category_status(request, category_id):
 @login_required
 def update_category(request):
     """Update category details"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
     
     if request.method != 'POST':
@@ -646,7 +654,7 @@ def update_category(request):
 @login_required
 def delete_category(request):
     """Delete a single category"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
     
     if request.method != 'POST':
@@ -685,7 +693,7 @@ def delete_category(request):
 @login_required
 def bulk_delete_categories(request):
     """Bulk delete categories"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
     
     if request.method != 'POST':
@@ -731,7 +739,7 @@ def bulk_delete_categories(request):
 @login_required
 def bulk_update_category_status(request):
     """Bulk activate/deactivate categories"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
     
     if request.method != 'POST':
@@ -850,11 +858,13 @@ def audit_logs_view(request):
 @login_required
 def grievance_list_advanced(request):
     """Advanced grievance list with filtering and search"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         messages.error(request, 'Access denied')
         return redirect('authentication:login')
     
-    grievances = Grievance.objects.select_related('student__user', 'category').order_by('-submitted_at')
+    # Get accessible grievances based on user's role and department
+    accessible_grievances = request.user.get_accessible_grievances()
+    grievances = accessible_grievances.select_related('student__user', 'category').order_by('-submitted_at')
     
     # Filtering
     status_filter = request.GET.get('status')
@@ -916,7 +926,7 @@ def grievance_list_advanced(request):
 @login_required
 def grievance_stats_api(request):
     """API endpoint to get grievance statistics for the dashboard"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     try:
@@ -935,7 +945,7 @@ def grievance_stats_api(request):
 @require_http_methods(["POST"])
 def bulk_delete_grievances(request):
     """API endpoint to bulk delete grievances"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         return JsonResponse({'error': 'Access denied - Admin privileges required'}, status=403)
     
     try:
@@ -1039,7 +1049,7 @@ def student_detail_view(request, student_id):
 @login_required
 def student_stats_api(request):
     """API endpoint to get student statistics"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     try:
@@ -1069,7 +1079,7 @@ def student_stats_api(request):
 @require_http_methods(["POST"])
 def student_actions_api(request):
     """API endpoint to perform bulk actions on students (suspend/activate/delete)"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         return JsonResponse({'error': 'Access denied - Admin privileges required'}, status=403)
     
     try:
@@ -1173,7 +1183,7 @@ def student_actions_api(request):
 @login_required
 def departments_api(request):
     """API endpoint to get departments by school"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     school_id = request.GET.get('school')
@@ -1197,7 +1207,7 @@ def departments_api(request):
 @login_required
 def add_student_api(request):
     """API endpoint to add a new student"""
-    if not request.user.is_admin:
+    if not request.user.is_admin_or_officer:
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     if request.method != 'POST':
@@ -2018,7 +2028,7 @@ def category_management(request):
 @require_http_methods(["GET", "POST"])
 def category_create(request):
     """Create new category"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         messages.error(request, 'Access denied - Admin privileges required')
         return redirect('authentication:login')
     
@@ -2080,7 +2090,7 @@ def category_create(request):
 @require_http_methods(["GET", "POST"])
 def category_edit(request, category_id):
     """Edit existing category"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         messages.error(request, 'Access denied - Admin privileges required')
         return redirect('authentication:login')
     
@@ -2150,7 +2160,7 @@ def category_edit(request, category_id):
 @require_http_methods(["POST"])
 def category_delete(request, category_id):
     """Delete category"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     try:
@@ -2184,7 +2194,7 @@ def category_delete(request, category_id):
 @login_required
 def school_management(request):
     """School management view"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         messages.error(request, 'Access denied - Admin privileges required')
         return redirect('authentication:login')
     
@@ -2261,7 +2271,7 @@ def school_management(request):
 @require_http_methods(["GET", "POST"])
 def school_create(request):
     """Create new school"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         messages.error(request, 'Access denied - Admin privileges required')
         return redirect('authentication:login')
     
@@ -2324,7 +2334,7 @@ def school_create(request):
 @require_http_methods(["GET", "POST"])
 def school_edit(request, school_id):
     """Edit existing school"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         messages.error(request, 'Access denied - Admin privileges required')
         return redirect('authentication:login')
     
@@ -2393,7 +2403,7 @@ def school_edit(request, school_id):
 @require_http_methods(["POST"])
 def school_delete(request, school_id):
     """Delete school"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     try:
@@ -2438,7 +2448,7 @@ def school_delete(request, school_id):
 @require_http_methods(["POST"])
 def bulk_activate_schools(request):
     """Bulk activate schools"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
     
     try:
@@ -2489,7 +2499,7 @@ def bulk_activate_schools(request):
 @require_http_methods(["POST"])
 def bulk_deactivate_schools(request):
     """Bulk deactivate schools"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
     
     try:
@@ -2540,7 +2550,7 @@ def bulk_deactivate_schools(request):
 @require_http_methods(["POST"])
 def bulk_delete_schools(request):
     """Bulk delete schools"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
     
     try:
@@ -2595,7 +2605,7 @@ def bulk_delete_schools(request):
 @login_required
 def department_management(request):
     """Department management view"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         messages.error(request, 'Access denied - Admin privileges required')
         return redirect('authentication:login')
     
@@ -2688,7 +2698,7 @@ def department_management(request):
 @require_http_methods(["GET"])
 def users_search_api(request):
     """API endpoint for searching users for HOD assignment"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     query = request.GET.get('q', '').strip()
@@ -2720,7 +2730,7 @@ def users_search_api(request):
 @require_http_methods(["GET"])
 def departments_api(request):
     """API endpoint for getting departments list"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     from apps.students.models import Department
@@ -2748,7 +2758,7 @@ def departments_api(request):
 @require_http_methods(["GET", "POST"])
 def user_hod_assignment_api(request, user_id):
     """API endpoint for getting/setting user HOD assignment"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     from apps.authentication.models import User
@@ -2841,7 +2851,7 @@ def user_hod_assignment_api(request, user_id):
 @require_http_methods(["GET", "POST"])
 def department_create(request):
     """Create new department"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         messages.error(request, 'Access denied - Admin privileges required')
         return redirect('authentication:login')
     
@@ -2934,7 +2944,7 @@ def department_create(request):
 @require_http_methods(["GET", "POST"])
 def department_edit(request, department_id):
     """Edit existing department"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         messages.error(request, 'Access denied - Admin privileges required')
         return redirect('authentication:login')
     
@@ -3050,7 +3060,7 @@ def department_edit(request, department_id):
 @require_http_methods(["POST"])
 def department_delete(request, department_id):
     """Delete department"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     try:
@@ -3098,7 +3108,7 @@ def department_delete(request, department_id):
 @require_http_methods(["POST"])
 def bulk_activate_departments(request):
     """Bulk activate departments"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     try:
@@ -3140,7 +3150,7 @@ def bulk_activate_departments(request):
 @require_http_methods(["POST"])
 def bulk_deactivate_departments(request):
     """Bulk deactivate departments"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     try:
@@ -3182,7 +3192,7 @@ def bulk_deactivate_departments(request):
 @require_http_methods(["POST"])
 def bulk_delete_departments(request):
     """Bulk delete departments"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin:
+    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     try:

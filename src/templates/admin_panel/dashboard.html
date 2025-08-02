@@ -236,12 +236,23 @@
     {% elif user_role == 'officer' %}
     <div class="row mb-3">
         <div class="col-12">
-            <div class="alert alert-primary d-flex align-items-center" role="alert">
-                <i class="fas fa-clipboard-check me-2"></i>
-                <div>
-                    <strong>Grievance Officer:</strong> Handle your assigned grievances and update their status.
+            {% if user_department %}
+                <div class="alert alert-primary d-flex align-items-center" role="alert">
+                    <i class="fas fa-clipboard-check me-2"></i>
+                    <div>
+                        <strong>Grievance Officer:</strong> Handle your assigned grievances in the {{ user_department|upper }} department.
+                    </div>
                 </div>
-            </div>
+            {% else %}
+                <div class="alert alert-warning d-flex align-items-center" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <div>
+                        <strong>Department Assignment Required:</strong> You are not currently assigned to any department. 
+                        Please contact the Super Admin for department assignment. You can still 
+                        <a href="{% url 'authentication:logout_view' %}" class="alert-link">logout</a> if needed.
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
     {% endif %}
@@ -531,8 +542,8 @@
                         </div>
                     </div>
                 </div>
-                {% elif request.user.is_admin %}
-                <!-- Department Info for Admins -->
+                {% elif request.user.is_admin_or_officer %}
+                <!-- Department Info for Admins and Officers -->
                 <div class="mt-4 pt-3 border-top">
                     <h6 class="text-muted mb-2">Department Info</h6>
                     <div class="row">

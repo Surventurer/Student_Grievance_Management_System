@@ -570,8 +570,10 @@ tr:has(.user-checkbox:checked) td {
                                         {{ user.department|default:"-" }}
                                     {% elif user.is_student and user.student_profile %}
                                         {{ user.student_profile.department|default:"-" }}
-                                    {% elif user.is_admin and user.admin_profile %}
+                                    {% elif user.is_admin_or_officer and user.admin_profile %}
                                         {{ user.admin_profile.department|default:"-" }}
+                                    {% elif user.is_admin_or_officer %}
+                                        {{ user.department_name|default:"-" }}
                                     {% else %}
                                         -
                                     {% endif %}

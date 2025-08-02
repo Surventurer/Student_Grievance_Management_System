@@ -57,7 +57,7 @@ def officer_required(view_func):
         if not request.user.is_authenticated:
             return redirect('authentication:login')
         
-        if not request.user.is_admin:  # admin includes superadmin, admin, officer
+        if not request.user.is_admin_or_officer:  # admin_or_officer includes superadmin, admin, officer
             messages.error(request, 'Access denied - Officer privileges required')
             return redirect('authentication:login')
         
@@ -140,7 +140,7 @@ def api_admin_required(view_func):
         if not request.user.is_authenticated:
             return JsonResponse({'error': 'Authentication required'}, status=401)
         
-        if not request.user.is_admin:
+        if not request.user.is_admin_or_officer:
             return JsonResponse({'error': 'Admin privileges required'}, status=403)
         
         return view_func(request, *args, **kwargs)

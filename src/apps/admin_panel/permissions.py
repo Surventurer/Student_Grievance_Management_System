@@ -17,9 +17,10 @@ def get_user_department(user):
         return None  # Superadmin has access to all departments
     
     try:
-        if hasattr(user, 'admin_profile') and user.admin_profile:
-            return user.admin_profile.department
-        elif hasattr(user, 'student_profile') and user.student_profile:
+        # Use the new department assignment system
+        if user.role in ['admin', 'officer']:
+            return user.assigned_department
+        elif user.role == 'student' and hasattr(user, 'student_profile') and user.student_profile:
             return user.student_profile.department
     except Exception as e:
         # Handle case where profile doesn't exist
@@ -72,35 +73,9 @@ def can_access_department_data(user, department_name):
 
 def can_access_grievance(user, grievance):
     """Check if user can access a specific grievance"""
-    if user.role == 'superadmin':
-        return True
-    
-    # Department admin can access grievances from their department
-    if user.role == 'admin':
-        user_dept = get_user_department(user)
-        if user_dept:
-            return (grievance.department == user_dept or 
-                   grievance.student.department == user_dept)
-    
-    # Officers can access grievances assigned to them
-    if user.role == 'officer':
-        try:
-            if hasattr(user, 'admin_profile') and user.admin_profile:
-                return grievance.assigned_to == user.admin_profile
-        except Exception as e:
-            print(f"Error checking officer access: {e}")
-            return False
-    
-    # Students can access their own grievances
-    if user.role == 'student':
-        try:
-            if hasattr(user, 'student_profile') and user.student_profile:
-                return grievance.student == user.student_profile
-        except Exception as e:
-            print(f"Error checking student access: {e}")
-            return False
-    
-    return False
+    # Use the new User model access methods
+    accessible_grievances = user.get_accessible_grievances()
+    return accessible_grievances.filter(id=grievance.id).exists()
 
 
 def can_access_student(user, student):
@@ -140,67 +115,14 @@ def can_access_student(user, student):
 
 def filter_grievances_by_access(user, queryset):
     """Filter grievance queryset based on user's access level"""
-    if user.role == 'superadmin':
-        return queryset
-    
-    if user.role == 'admin':
-        user_dept = get_user_department(user)
-        if user_dept:
-            return queryset.filter(
-                models.Q(department=user_dept) | 
-                models.Q(student__department=user_dept)
-            )
-    
-    if user.role == 'officer':
-        try:
-            if hasattr(user, 'admin_profile') and user.admin_profile:
-                return queryset.filter(assigned_to=user.admin_profile)
-        except Exception as e:
-            print(f"Error filtering grievances for officer: {e}")
-            pass
-    
-    if user.role == 'student':
-        try:
-            if hasattr(user, 'student_profile') and user.student_profile:
-                return queryset.filter(student=user.student_profile)
-        except Exception as e:
-            print(f"Error filtering grievances for student: {e}")
-            pass
-    
-    return queryset.none()
+    # Use the new User model access methods
+    return user.get_accessible_grievances().filter(id__in=queryset.values_list('id', flat=True))
 
 
 def filter_students_by_access(user, queryset):
     """Filter student queryset based on user's access level"""
-    if user.role == 'superadmin':
-        return queryset
-    
-    if user.role == 'admin':
-        user_dept = get_user_department(user)
-        if user_dept:
-            return queryset.filter(department=user_dept)
-    
-    if user.role == 'officer':
-        try:
-            if hasattr(user, 'admin_profile') and user.admin_profile:
-                # Officers can see students who have grievances assigned to them
-                student_ids = Grievance.objects.filter(
-                    assigned_to=user.admin_profile
-                ).values_list('student_id', flat=True).distinct()
-                return queryset.filter(id__in=student_ids)
-        except Exception as e:
-            print(f"Error filtering students for officer: {e}")
-            pass
-    
-    if user.role == 'student':
-        try:
-            if hasattr(user, 'student_profile') and user.student_profile:
-                return queryset.filter(id=user.student_profile.id)
-        except Exception as e:
-            print(f"Error filtering students for student: {e}")
-            pass
-    
-    return queryset.none()
+    # Use the new User model access methods
+    return user.get_accessible_students().filter(id__in=queryset.values_list('id', flat=True))
 
 
 # Decorators for view-level permission checking
@@ -241,7 +163,7 @@ def department_access_required(view_func):
         if not request.user.is_authenticated:
             return redirect('authentication:login')
         
-        if not request.user.is_admin:
+        if not request.user.is_admin_or_officer:
             messages.error(request, 'Access denied.')
             return redirect('authentication:login')
         

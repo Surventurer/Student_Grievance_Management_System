@@ -24,7 +24,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             {% if user.is_authenticated %}
-                {% if user.is_admin %}
+                {% if user.is_admin_or_officer %}
                     <a class="navbar-brand" href="{% url 'admin_panel:dashboard' %}">
                         <i class="fas fa-graduation-cap d-inline d-lg-none me-2"></i>
                         <span class="d-none d-sm-inline">Student Grievance System</span>
@@ -81,7 +81,7 @@
                     <span class="d-lg-none">Profile</span>
                 </a>
                 {% endif %}
-                {% if user.is_admin or user.is_officer %}
+                {% if user.is_admin_or_officer %}
                 <a class="nav-link" href="{% url 'admin_panel:dashboard' %}">
                     <i class="fas fa-tachometer-alt me-1"></i>
                     <span class="d-lg-inline d-none">Dashboard</span>

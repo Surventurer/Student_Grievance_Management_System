@@ -70,11 +70,78 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     @property
     def is_admin(self):
+        return self.role in ['admin', 'superadmin']
+    
+    @property 
+    def is_officer(self):
+        return self.role == 'officer'
+    
+    @property
+    def is_admin_or_officer(self):
         return self.role in ['admin', 'superadmin', 'officer']
     
     @property
     def is_superadmin(self):
         return self.role == 'superadmin'
+    
+    @property
+    def assigned_department(self):
+        """Get the department this user is assigned to"""
+        if self.role == 'superadmin':
+            return None  # Superadmin has access to all departments
+        elif self.role == 'admin':
+            # Admins are assigned as HOD of departments
+            return self.headed_departments.first()
+        elif self.role == 'officer':
+            # Officers are assigned through AdminProfile
+            try:
+                if hasattr(self, 'admin_profile') and self.admin_profile:
+                    dept_name = self.admin_profile.department
+                    from apps.students.models import Department
+                    return Department.objects.filter(name=dept_name).first()
+            except Exception as e:
+                print(f"Error getting officer department: {e}")
+            return None
+        return None
+    
+    @property
+    def department_name(self):
+        """Get the name of the department this user manages"""
+        dept = self.assigned_department
+        return dept.name if dept else None
+    
+    def get_accessible_students(self):
+        """Get students this user can access based on their role"""
+        if self.is_superadmin:
+            # Superadmin can see all students
+            from apps.students.models import StudentProfile
+            return StudentProfile.objects.all()
+        elif self.role in ['admin', 'officer'] and self.assigned_department:
+            # Department admin/hod can only see their department students
+            from apps.students.models import StudentProfile
+            return StudentProfile.objects.filter(department=self.assigned_department.name)
+        else:
+            # Students and others see none
+            from apps.students.models import StudentProfile
+            return StudentProfile.objects.none()
+    
+    def get_accessible_grievances(self):
+        """Get grievances this user can access based on their role"""
+        if self.is_superadmin:
+            # Superadmin can see all grievances
+            from apps.grievances.models import Grievance
+            return Grievance.objects.all()
+        elif self.role in ['admin', 'officer'] and self.assigned_department:
+            # Department admin/hod can only see grievances from their department students
+            from apps.grievances.models import Grievance
+            accessible_students = self.get_accessible_students()
+            return Grievance.objects.filter(student__in=accessible_students)
+        else:
+            # Students see their own grievances
+            from apps.grievances.models import Grievance
+            if hasattr(self, 'student_profile') and self.student_profile:
+                return Grievance.objects.filter(student=self.student_profile)
+            return Grievance.objects.none()
     
     def get_full_name(self):
         """Get full name from student profile if available, otherwise return email"""

@@ -28,13 +28,16 @@ def role_context(request):
             if user.role == 'student' and hasattr(user, 'student_profile'):
                 context.update({
                     'user_profile': user.student_profile,
-                    'user_department': user.student_profile.department,
+                    'user_department': user.student_profile.department.name if user.student_profile.department else None,
                 })
-            elif user.role in ['admin', 'officer', 'superadmin'] and hasattr(user, 'admin_profile'):
+            elif user.role in ['admin', 'officer', 'superadmin']:
+                # Use the new department assignment property
                 context.update({
-                    'user_profile': user.admin_profile,
-                    'user_department': user.admin_profile.department,
+                    'user_department': user.department_name,
                 })
+                # Keep admin profile if exists
+                if hasattr(user, 'admin_profile'):
+                    context['user_profile'] = user.admin_profile
         except Exception as e:
             # Handle cases where profile doesn't exist
             context['profile_error'] = str(e)
