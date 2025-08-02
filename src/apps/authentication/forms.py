@@ -58,7 +58,7 @@ class StudentRegistrationForm(forms.Form):
     
     # School and Department (linked)
     school = forms.ModelChoiceField(
-        queryset=School.objects.all(),
+        queryset=School.objects.filter(is_active=True),
         empty_label="Select School",
         widget=forms.Select(attrs={
             'class': 'form-control',
@@ -90,7 +90,11 @@ class StudentRegistrationForm(forms.Form):
             except (AttributeError, ValueError, TypeError):
                 school_id = None
         if school_id:
-            self.fields['department'].queryset = Department.objects.filter(school=school_id)
+            self.fields['department'].queryset = Department.objects.filter(
+                school=school_id, 
+                school__is_active=True, 
+                is_active=True
+            )
         else:
             self.fields['department'].queryset = Department.objects.none()
     

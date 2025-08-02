@@ -97,7 +97,7 @@
                                 <label for="code" class="form-label">School Code</label>
                                 <input type="text" class="form-control" id="code" name="code" 
                                        value="{% if school %}{{ school.code }}{% elif form_data %}{{ form_data.code }}{% endif %}" 
-                                       maxlength="20" placeholder="e.g., COMP_SCI">
+                                       maxlength="20" placeholder="e.g., SCS">
                                 <div class="form-text">Optional unique identifier</div>
                             </div>
                         </div>
@@ -109,102 +109,6 @@
                                   maxlength="500" placeholder="Brief description of the school">{% if school %}{{ school.description }}{% elif form_data %}{{ form_data.description }}{% endif %}</textarea>
                         <div class="character-counter" id="descriptionCounter">0/500</div>
                     </div>
-                </div>
-
-                <!-- Contact Information -->
-                <div class="form-section">
-                    <h5><i class="fas fa-address-book me-2"></i>Contact Information</h5>
-                    
-                    <div class="mb-3">
-                        <label for="address" class="form-label">Address</label>
-                        <textarea class="form-control" id="address" name="address" rows="2"
-                                  placeholder="Full address of the school">{% if school %}{{ school.address }}{% elif form_data %}{{ form_data.address }}{% endif %}</textarea>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="phone" class="form-label">Phone Number</label>
-                                <input type="tel" class="form-control" id="phone" name="phone" 
-                                       value="{% if school %}{{ school.phone }}{% elif form_data %}{{ form_data.phone }}{% endif %}" 
-                                       placeholder="+1-xxx-xxx-xxxx">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email Address</label>
-                                <input type="email" class="form-control" id="email" name="email" 
-                                       value="{% if school %}{{ school.email }}{% elif form_data %}{{ form_data.email }}{% endif %}" 
-                                       placeholder="contact@school.edu">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="website" class="form-label">Website</label>
-                        <input type="url" class="form-control" id="website" name="website" 
-                               value="{% if school %}{{ school.website }}{% elif form_data %}{{ form_data.website }}{% endif %}" 
-                               placeholder="https://www.school.edu">
-                    </div>
-                </div>
-
-                <!-- Additional Details -->
-                <div class="form-section">
-                    <h5><i class="fas fa-cogs me-2"></i>Additional Details</h5>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="established_year" class="form-label">Established Year</label>
-                                <input type="number" class="form-control" id="established_year" name="established_year" 
-                                       value="{% if school %}{{ school.established_year }}{% elif form_data %}{{ form_data.established_year }}{% endif %}" 
-                                       min="1800" max="{% now 'Y' %}" placeholder="YYYY">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="accreditation" class="form-label">Accreditation</label>
-                                <input type="text" class="form-control" id="accreditation" name="accreditation" 
-                                       value="{% if school %}{{ school.accreditation }}{% elif form_data %}{{ form_data.accreditation }}{% endif %}" 
-                                       placeholder="e.g., NAAC, NBA">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="campus_size" class="form-label">Campus Size</label>
-                                <input type="text" class="form-control" id="campus_size" name="campus_size" 
-                                       value="{% if school %}{{ school.campus_size }}{% elif form_data %}{{ form_data.campus_size }}{% endif %}" 
-                                       placeholder="e.g., 100 acres, 50 hectares">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="student_capacity" class="form-label">Student Capacity</label>
-                                <input type="number" class="form-control" id="student_capacity" name="student_capacity" 
-                                       value="{% if school %}{{ school.student_capacity }}{% elif form_data %}{{ form_data.student_capacity }}{% endif %}" 
-                                       min="0" placeholder="Maximum students">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Status Settings -->
-                <div class="form-section">
-                    <h5><i class="fas fa-toggle-on me-2"></i>Status Settings</h5>
-                    
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="is_active" name="is_active"
-                            {% if school and school.is_active %}checked
-                            {% elif form_data and form_data.is_active %}checked
-                            {% elif not school and not form_data %}checked{% endif %}>
-                        <label class="form-check-label" for="is_active">
-                            Active Status
-                        </label>
-                    </div>
-                    <small class="text-muted">Only active schools can have new departments and students</small>
                 </div>
 
                 <!-- Form Actions -->
@@ -229,7 +133,6 @@
                     <div class="preview-card" id="schoolPreview">
                         <i class="fas fa-school fa-3x text-muted mb-3"></i>
                         <h6 id="previewName" class="text-muted">School Name</h6>
-                        <p id="previewCode" class="small text-muted mb-0">School Code</p>
                     </div>
                 </div>
             </div>
@@ -308,7 +211,7 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Character counters
+    // Character counter function
     function setupCharacterCounter(inputId, counterId, maxLength) {
         const input = document.getElementById(inputId);
         const counter = document.getElementById(counterId);
@@ -339,19 +242,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const nameInput = document.getElementById('name');
     const codeInput = document.getElementById('code');
     const previewName = document.getElementById('previewName');
-    const previewCode = document.getElementById('previewCode');
     
     function updatePreview() {
         const name = nameInput.value.trim() || 'School Name';
-        const code = codeInput.value.trim();
-        
         previewName.textContent = name;
-        previewCode.textContent = code || 'No Code';
-        previewCode.style.display = code ? 'block' : 'none';
     }
     
     nameInput.addEventListener('input', updatePreview);
-    codeInput.addEventListener('input', updatePreview);
+    if (codeInput) {
+        codeInput.addEventListener('input', updatePreview);
+    }
     updatePreview(); // Initial preview
     
     // Form validation
@@ -365,49 +265,6 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('School name is required.');
             return;
         }
-        
-        // Email validation if provided
-        const emailInput = document.getElementById('email');
-        if (emailInput.value && !emailInput.checkValidity()) {
-            e.preventDefault();
-            emailInput.focus();
-            alert('Please enter a valid email address.');
-            return;
-        }
-        
-        // Website validation if provided
-        const websiteInput = document.getElementById('website');
-        if (websiteInput.value && !websiteInput.checkValidity()) {
-            e.preventDefault();
-            websiteInput.focus();
-            alert('Please enter a valid website URL.');
-            return;
-        }
-        
-        // Year validation if provided
-        const yearInput = document.getElementById('established_year');
-        if (yearInput.value) {
-            const year = parseInt(yearInput.value);
-            const currentYear = new Date().getFullYear();
-            if (year < 1800 || year > currentYear) {
-                e.preventDefault();
-                yearInput.focus();
-                alert(`Please enter a valid year between 1800 and ${currentYear}.`);
-                return;
-            }
-        }
-    });
-    
-    // Auto-format phone number
-    const phoneInput = document.getElementById('phone');
-    phoneInput.addEventListener('input', function() {
-        let value = this.value.replace(/\D/g, '');
-        if (value.length >= 6) {
-            value = value.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
-        } else if (value.length >= 3) {
-            value = value.replace(/(\d{3})(\d+)/, '$1-$2');
-        }
-        this.value = value;
     });
 });
 </script>

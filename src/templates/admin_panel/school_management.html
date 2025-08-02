@@ -238,11 +238,11 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <input type="checkbox" class="form-check-input select-all-checkbox me-2" id="selectAll">
-                            Schools ({{ page_obj.paginator.count }} total)
+                            Schools
                         </h5>
-                        <div class="text-muted small">
+                        <!-- <div class="text-muted small">
                             Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }}
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="card-body p-0">
@@ -252,10 +252,9 @@
                                 <tr>
                                     <th width="40"></th>
                                     <th>School Details</th>
-                                    <th>Contact Information</th>
                                     <th>Departments</th>
                                     <th>Status</th>
-                                    <th width="150">Actions</th>
+                                    <th width="200">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -270,23 +269,10 @@
                                             {% if school.code %}
                                             <small class="text-muted">Code: {{ school.code }}</small><br>
                                             {% endif %}
-                                            {% if school.address %}
-                                            <small class="text-muted">{{ school.address|truncatechars:50 }}</small>
+                                            {% if school.description %}
+                                            <small class="text-muted">{{ school.description|truncatechars:50 }}</small>
                                             {% endif %}
                                         </div>
-                                    </td>
-                                    <td>
-                                        {% if school.phone %}
-                                        <div><i class="fas fa-phone text-muted me-1"></i>{{ school.phone }}</div>
-                                        {% endif %}
-                                        {% if school.email %}
-                                        <div><i class="fas fa-envelope text-muted me-1"></i>{{ school.email }}</div>
-                                        {% endif %}
-                                        {% if school.website %}
-                                        <div><i class="fas fa-globe text-muted me-1"></i>
-                                            <a href="{{ school.website }}" target="_blank" class="text-decoration-none">Website</a>
-                                        </div>
-                                        {% endif %}
                                     </td>
                                     <td>
                                         <span class="department-count">{{ school.departments.count }} Dept{% if school.departments.count != 1 %}s{% endif %}</span>
@@ -303,6 +289,15 @@
                                             <a href="{% url 'admin_panel:school_edit' school.id %}" class="btn btn-sm btn-outline-primary" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
+                                            {% if school.is_active %}
+                                            <button class="btn btn-sm btn-outline-warning deactivate-single-btn" data-id="{{ school.id }}" data-name="{{ school.name }}" title="Deactivate">
+                                                <i class="fas fa-toggle-off"></i>
+                                            </button>
+                                            {% else %}
+                                            <button class="btn btn-sm btn-outline-success activate-single-btn" data-id="{{ school.id }}" data-name="{{ school.name }}" title="Activate">
+                                                <i class="fas fa-toggle-on"></i>
+                                            </button>
+                                            {% endif %}
                                             <button class="btn btn-sm btn-outline-danger delete-btn" data-id="{{ school.id }}" data-name="{{ school.name }}" title="Delete">
                                                 <i class="fas fa-trash"></i>
                                             </button>
@@ -445,6 +440,72 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Handle individual activate buttons
+    document.querySelectorAll('.activate-single-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const schoolId = this.dataset.id;
+            const schoolName = this.dataset.name;
+            
+            if (confirm(`Activate school "${schoolName}"?`)) {
+                fetch('{% url "admin_panel:bulk_activate_schools" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        school_ids: [schoolId]
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload(true);
+                    } else {
+                        showAlert('error', data.error);
+                    }
+                })
+                .catch(error => {
+                    showAlert('error', 'An error occurred');
+                    console.error('Error:', error);
+                });
+            }
+        });
+    });
+    
+    // Handle individual deactivate buttons
+    document.querySelectorAll('.deactivate-single-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const schoolId = this.dataset.id;
+            const schoolName = this.dataset.name;
+            
+            if (confirm(`Deactivate school "${schoolName}"?\n\nThis will also deactivate all departments in this school.`)) {
+                fetch('{% url "admin_panel:bulk_deactivate_schools" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        school_ids: [schoolId]
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload(true);
+                    } else {
+                        showAlert('error', data.error);
+                    }
+                })
+                .catch(error => {
+                    showAlert('error', 'An error occurred');
+                    console.error('Error:', error);
+                });
+            }
+        });
+    });
+
     // Select all functionality
     const selectAll = document.getElementById('selectAll');
     const schoolCheckboxes = document.querySelectorAll('.school-checkbox');
@@ -478,7 +539,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Bulk actions
     document.getElementById('activateSelected').addEventListener('click', function() {
         const selected = Array.from(document.querySelectorAll('.school-checkbox:checked')).map(cb => cb.value);
+        console.log('DEBUG: Selected school IDs for activation:', selected);
         if (selected.length > 0 && confirm(`Activate ${selected.length} selected school(s)?`)) {
+            console.log('DEBUG: Sending activation request...');
             fetch('{% url "admin_panel:bulk_activate_schools" %}', {
                 method: 'POST',
                 headers: {
@@ -491,9 +554,10 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
+                console.log('DEBUG: Activation response:', data);
                 if (data.success) {
-                    // Just reload the page silently without showing alert
-                    location.reload();
+                    // Force page reload with cache refresh
+                    window.location.reload(true);
                 } else {
                     showAlert('error', data.error);
                 }
@@ -507,7 +571,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     document.getElementById('deactivateSelected').addEventListener('click', function() {
         const selected = Array.from(document.querySelectorAll('.school-checkbox:checked')).map(cb => cb.value);
+        console.log('DEBUG: Selected school IDs for deactivation:', selected);
         if (selected.length > 0 && confirm(`Deactivate ${selected.length} selected school(s)?`)) {
+            console.log('DEBUG: Sending deactivation request...');
             fetch('{% url "admin_panel:bulk_deactivate_schools" %}', {
                 method: 'POST',
                 headers: {
@@ -520,9 +586,10 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
+                console.log('DEBUG: Deactivation response:', data);
                 if (data.success) {
-                    // Just reload the page silently without showing alert
-                    location.reload();
+                    // Use cache-busting reload
+                    window.location.reload(true);
                 } else {
                     showAlert('error', data.error);
                 }
@@ -549,9 +616,10 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
+                console.log('DEBUG: Deletion response:', data);
                 if (data.success) {
-                    // Just reload the page silently without showing alert
-                    location.reload();
+                    // Use cache-busting reload
+                    window.location.reload(true);
                 } else {
                     showAlert('error', data.error);
                 }

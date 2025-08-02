@@ -740,8 +740,12 @@ def load_departments(request):
             except School.DoesNotExist:
                 return JsonResponse({'departments': [], 'error': 'School not found'})
             
-            # Get departments for the school
-            departments = Department.objects.filter(school=school_id).order_by('name')
+            # Get departments for the school (only active departments from active schools)
+            departments = Department.objects.filter(
+                school=school_id, 
+                school__is_active=True, 
+                is_active=True
+            ).order_by('name')
             
             # Create response data
             department_data = [{'id': dept.id, 'name': dept.name} for dept in departments]

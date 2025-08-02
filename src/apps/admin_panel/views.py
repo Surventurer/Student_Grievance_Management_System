@@ -237,9 +237,9 @@ def student_list(request):
     page_number = request.GET.get('page')
     students_page = paginator.get_page(page_number)
     
-    # Get schools for the add student form
+    # Get schools for the add student form (only active schools)
     from apps.students.models import School
-    schools = School.objects.all().order_by('name')
+    schools = School.objects.filter(is_active=True).order_by('name')
     
     context = {
         'students': students_page,
@@ -1179,11 +1179,18 @@ def departments_api(request):
     school_id = request.GET.get('school')
     if school_id:
         from apps.students.models import Department
-        departments = Department.objects.filter(school_id=school_id).values('id', 'name')
+        departments = Department.objects.filter(
+            school_id=school_id, 
+            school__is_active=True, 
+            is_active=True
+        ).values('id', 'name')
         return JsonResponse({'departments': list(departments)})
     else:
         from apps.students.models import Department
-        departments = Department.objects.all().values('id', 'name')
+        departments = Department.objects.filter(
+            school__is_active=True, 
+            is_active=True
+        ).values('id', 'name')
         return JsonResponse({'departments': list(departments)})
 
 
@@ -2181,25 +2188,70 @@ def school_management(request):
         messages.error(request, 'Access denied - Admin privileges required')
         return redirect('authentication:login')
     
-    from apps.students.models import School
+    from apps.students.models import School, Department
     
-    search = request.GET.get('search', '')
+    # Get filter parameters
+    search = request.GET.get('search', '').strip()
+    status = request.GET.get('status', '')
+    sort = request.GET.get('sort', 'name')
+    per_page = int(request.GET.get('per_page', 10))
+    
+    # Start with all schools
     schools = School.objects.all()
     
+    # Apply search filter
     if search:
-        schools = schools.filter(name__icontains=search)
+        schools = schools.filter(
+            Q(name__icontains=search) | 
+            Q(code__icontains=search) |
+            Q(description__icontains=search)
+        )
     
+    # Apply status filter
+    if status == 'active':
+        schools = schools.filter(is_active=True)
+    elif status == 'inactive':
+        schools = schools.filter(is_active=False)
+    
+    # Calculate statistics (before applying sorting and pagination)
+    total_schools = School.objects.count()
+    active_schools = School.objects.filter(is_active=True).count()
+    inactive_schools = School.objects.filter(is_active=False).count()
+    total_departments = Department.objects.count()
+    
+    stats = {
+        'total': total_schools,
+        'active': active_schools,
+        'inactive': inactive_schools,
+        'total_departments': total_departments
+    }
+    
+    # Apply sorting
+    if sort == 'name':
+        schools = schools.order_by('name')
+    elif sort == '-created_at':
+        schools = schools.order_by('-created_at')
+    elif sort == 'created_at':
+        schools = schools.order_by('created_at')
+    elif sort == 'code':
+        schools = schools.order_by('code')
+    else:
+        schools = schools.order_by('name')
+    
+    # Annotate with department count
     schools = schools.annotate(
         department_count=Count('departments')
-    ).order_by('-created_at')
+    )
     
     # Pagination
-    paginator = Paginator(schools, 10)
+    paginator = Paginator(schools, per_page)
     page_number = request.GET.get('page')
-    schools = paginator.get_page(page_number)
+    page_obj = paginator.get_page(page_number)
     
     context = {
-        'schools': schools,
+        'schools': page_obj,
+        'page_obj': page_obj,
+        'stats': stats,
         'search': search,
         'page_title': 'School Management'
     }
@@ -2218,6 +2270,8 @@ def school_create(request):
             from apps.students.models import School
             
             name = request.POST.get('name', '').strip()
+            code = request.POST.get('code', '').strip()
+            description = request.POST.get('description', '').strip()
             
             if not name:
                 messages.error(request, 'School name is required')
@@ -2231,8 +2285,19 @@ def school_create(request):
                 return render(request, 'admin_panel/school_form.html', {
                     'form_data': request.POST
                 })
+
+            # Check for duplicate codes if code is provided
+            if code and School.objects.filter(code__iexact=code).exists():
+                messages.error(request, 'A school with this code already exists')
+                return render(request, 'admin_panel/school_form.html', {
+                    'form_data': request.POST
+                })
             
-            school = School.objects.create(name=name)
+            school = School.objects.create(
+                name=name,
+                code=code if code else None,
+                description=description if description else None
+            )
             
             # Create audit log
             AuditLog.objects.create(
@@ -2270,6 +2335,8 @@ def school_edit(request, school_id):
     if request.method == 'POST':
         try:
             name = request.POST.get('name', '').strip()
+            code = request.POST.get('code', '').strip()
+            description = request.POST.get('description', '').strip()
             
             if not name:
                 messages.error(request, 'School name is required')
@@ -2285,9 +2352,19 @@ def school_edit(request, school_id):
                     'school': school,
                     'form_data': request.POST
                 })
+
+            # Check for duplicate codes if code is provided (excluding current school)
+            if code and School.objects.filter(code__iexact=code).exclude(id=school.id).exists():
+                messages.error(request, 'A school with this code already exists')
+                return render(request, 'admin_panel/school_form.html', {
+                    'school': school,
+                    'form_data': request.POST
+                })
             
             old_name = school.name
             school.name = name
+            school.code = code if code else None
+            school.description = description if description else None
             school.save()
             
             # Create audit log
@@ -2371,18 +2448,30 @@ def bulk_activate_schools(request):
         data = json.loads(request.body)
         school_ids = data.get('school_ids', [])
         
+        # Convert string IDs to integers
+        try:
+            school_ids = [int(id) for id in school_ids]
+        except (ValueError, TypeError):
+            return JsonResponse({'success': False, 'error': 'Invalid school IDs'}, status=400)
+        
         if not school_ids:
             return JsonResponse({'success': False, 'error': 'No schools selected'}, status=400)
         
         schools = School.objects.filter(id__in=school_ids)
         activated_count = schools.filter(is_active=False).count()
-        schools.update(is_active=True)
+        
+        # Activate schools
+        result = schools.update(is_active=True)
+        
+        # Also reactivate all departments in these schools
+        from apps.students.models import Department
+        departments_updated = Department.objects.filter(school__in=school_ids).update(is_active=True)
         
         # Create audit log
         AuditLog.objects.create(
             user=request.user,
             action='bulk_activate_schools',
-            description=f'Bulk activated {activated_count} schools',
+            description=f'Bulk activated {activated_count} schools and {departments_updated} associated departments',
             target_model='School'
         )
         
@@ -2410,18 +2499,30 @@ def bulk_deactivate_schools(request):
         data = json.loads(request.body)
         school_ids = data.get('school_ids', [])
         
+        # Convert string IDs to integers
+        try:
+            school_ids = [int(id) for id in school_ids]
+        except (ValueError, TypeError):
+            return JsonResponse({'success': False, 'error': 'Invalid school IDs'}, status=400)
+        
         if not school_ids:
             return JsonResponse({'success': False, 'error': 'No schools selected'}, status=400)
         
         schools = School.objects.filter(id__in=school_ids)
         deactivated_count = schools.filter(is_active=True).count()
-        schools.update(is_active=False)
+        
+        # Deactivate schools
+        result = schools.update(is_active=False)
+        
+        # Also deactivate all departments in these schools
+        from apps.students.models import Department
+        departments_updated = Department.objects.filter(school__in=school_ids).update(is_active=False)
         
         # Create audit log
         AuditLog.objects.create(
             user=request.user,
             action='bulk_deactivate_schools',
-            description=f'Bulk deactivated {deactivated_count} schools',
+            description=f'Bulk deactivated {deactivated_count} schools and {departments_updated} associated departments',
             target_model='School'
         )
         
@@ -2525,7 +2626,7 @@ def department_management(request):
     
     context = {
         'departments': departments,
-        'schools': School.objects.all().order_by('name'),
+        'schools': School.objects.filter(is_active=True).order_by('name'),
         'search': search,
         'school_filter': school_filter,
         'page_title': 'Department Management'
@@ -2550,7 +2651,7 @@ def department_create(request):
             if not name:
                 messages.error(request, 'Department name is required')
                 return render(request, 'admin_panel/department_form.html', {
-                    'schools': School.objects.all().order_by('name'),
+                    'schools': School.objects.filter(is_active=True).order_by('name'),
                     'form_data': request.POST
                 })
             
@@ -2561,7 +2662,7 @@ def department_create(request):
                 except School.DoesNotExist:
                     messages.error(request, 'Selected school does not exist')
                     return render(request, 'admin_panel/department_form.html', {
-                        'schools': School.objects.all().order_by('name'),
+                        'schools': School.objects.filter(is_active=True).order_by('name'),
                         'form_data': request.POST
                     })
             
@@ -2570,14 +2671,14 @@ def department_create(request):
                 if Department.objects.filter(name__iexact=name, school=school).exists():
                     messages.error(request, f'A department with this name already exists in {school.name}')
                     return render(request, 'admin_panel/department_form.html', {
-                        'schools': School.objects.all().order_by('name'),
+                        'schools': School.objects.filter(is_active=True).order_by('name'),
                         'form_data': request.POST
                     })
             else:
                 if Department.objects.filter(name__iexact=name, school__isnull=True).exists():
                     messages.error(request, 'A department with this name already exists')
                     return render(request, 'admin_panel/department_form.html', {
-                        'schools': School.objects.all().order_by('name'),
+                        'schools': School.objects.filter(is_active=True).order_by('name'),
                         'form_data': request.POST
                     })
             
@@ -2603,7 +2704,7 @@ def department_create(request):
     
     from apps.students.models import School
     context = {
-        'schools': School.objects.all().order_by('name'),
+        'schools': School.objects.filter(is_active=True).order_by('name'),
         'action': 'Create',
         'page_title': 'Create Department'
     }
@@ -2630,7 +2731,7 @@ def department_edit(request, department_id):
                 messages.error(request, 'Department name is required')
                 return render(request, 'admin_panel/department_form.html', {
                     'department': department,
-                    'schools': School.objects.all().order_by('name'),
+                    'schools': School.objects.filter(is_active=True).order_by('name'),
                     'form_data': request.POST
                 })
             
@@ -2642,7 +2743,7 @@ def department_edit(request, department_id):
                     messages.error(request, 'Selected school does not exist')
                     return render(request, 'admin_panel/department_form.html', {
                         'department': department,
-                        'schools': School.objects.all().order_by('name'),
+                        'schools': School.objects.filter(is_active=True).order_by('name'),
                         'form_data': request.POST
                     })
             
@@ -2652,7 +2753,7 @@ def department_edit(request, department_id):
                     messages.error(request, f'A department with this name already exists in {school.name}')
                     return render(request, 'admin_panel/department_form.html', {
                         'department': department,
-                        'schools': School.objects.all().order_by('name'),
+                        'schools': School.objects.filter(is_active=True).order_by('name'),
                         'form_data': request.POST
                     })
             else:
@@ -2660,7 +2761,7 @@ def department_edit(request, department_id):
                     messages.error(request, 'A department with this name already exists')
                     return render(request, 'admin_panel/department_form.html', {
                         'department': department,
-                        'schools': School.objects.all().order_by('name'),
+                        'schools': School.objects.filter(is_active=True).order_by('name'),
                         'form_data': request.POST
                     })
             
@@ -2691,7 +2792,7 @@ def department_edit(request, department_id):
     
     context = {
         'department': department,
-        'schools': School.objects.all().order_by('name'),
+        'schools': School.objects.filter(is_active=True).order_by('name'),
         'action': 'Edit',
         'page_title': 'Edit Department'
     }
