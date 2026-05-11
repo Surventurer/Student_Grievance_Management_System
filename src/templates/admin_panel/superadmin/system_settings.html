@@ -1,0 +1,333 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}System Settings - Superadmin{% endblock %}
+
+{% block extra_css %}
+<style>
+.settings-section {
+    border-left: 4px solid #007bff;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+.permission-matrix {
+    font-size: 0.875rem;
+}
+.permission-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+.role-superadmin { background-color: #dc3545; color: white; }
+.role-admin { background-color: #fd7e14; color: white; }
+.role-officer { background-color: #0dcaf0; color: white; }
+.role-student { background-color: #198754; color: white; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">⚙️ System Settings</h1>
+            <p class="text-muted">Superadmin-only access • Configure system-wide settings</p>
+        </div>
+        <div class="btn-group">
+            <a href="{% url 'admin_panel:audit_logs' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-history"></i> Audit Logs
+            </a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <!-- General Settings -->
+        <div class="col-md-6 mb-4">
+            <div class="card settings-section">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-cog"></i> General Settings</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'admin_panel:system_settings' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="general">
+                        
+                        <div class="mb-3">
+                            <label class="form-label">System Name</label>
+                            <input type="text" class="form-control" name="system_name" 
+                                   value="{{ settings.system_name|default:'Student Grievance Management System' }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Contact Email</label>
+                            <input type="email" class="form-control" name="contact_email" 
+                                   value="{{ settings.contact_email|default:'admin@university.edu' }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Max File Size (MB)</label>
+                            <input type="number" class="form-control" name="max_file_size" 
+                                   value="{{ settings.max_file_size|default:10 }}" min="1" max="100">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="email_notifications" 
+                                       {% if settings.email_notifications|default:True %}checked{% endif %}>
+                                <label class="form-check-label">Enable Email Notifications</label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="auto_assignment" 
+                                       {% if settings.auto_assignment|default:True %}checked{% endif %}>
+                                <label class="form-check-label">Auto-assign Grievances</label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save General Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Settings -->
+        <div class="col-md-6 mb-4">
+            <div class="card settings-section">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-shield-alt"></i> Security Settings</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'admin_panel:system_settings' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="security">
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="require_email_verification" 
+                                       {% if settings.require_email_verification|default:True %}checked{% endif %}>
+                                <label class="form-check-label">Require Email Verification</label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="allow_student_registration" 
+                                       {% if settings.allow_student_registration|default:True %}checked{% endif %}>
+                                <label class="form-check-label">Allow Student Registration</label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Session Timeout (minutes)</label>
+                            <input type="number" class="form-control" name="session_timeout" 
+                                   value="{{ settings.session_timeout|default:60 }}" min="15" max="480">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Password Min Length</label>
+                            <input type="number" class="form-control" name="password_min_length" 
+                                   value="{{ settings.password_min_length|default:8 }}" min="6" max="20">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-shield-alt"></i> Update Security Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grievance Settings -->
+        <div class="col-md-6 mb-4">
+            <div class="card settings-section">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-clipboard-list"></i> Grievance Settings</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'admin_panel:system_settings' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="grievance">
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Default Priority Level</label>
+                            <select class="form-select" name="default_priority">
+                                <option value="low" {% if settings.default_priority == 'low' %}selected{% endif %}>Low</option>
+                                <option value="medium" {% if settings.default_priority == 'medium' or not settings.default_priority %}selected{% endif %}>Medium</option>
+                                <option value="high" {% if settings.default_priority == 'high' %}selected{% endif %}>High</option>
+                                <option value="urgent" {% if settings.default_priority == 'urgent' %}selected{% endif %}>Urgent</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Auto-resolve After (days)</label>
+                            <input type="number" class="form-control" name="auto_resolve_days" 
+                                   value="{{ settings.auto_resolve_days|default:30 }}" min="7" max="365">
+                            <div class="form-text">Grievances will be auto-resolved after this many days of inactivity</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Escalation Threshold (days)</label>
+                            <input type="number" class="form-control" name="escalation_threshold" 
+                                   value="{{ settings.escalation_threshold|default:7 }}" min="1" max="30">
+                            <div class="form-text">Escalate grievances after this many days without resolution</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="allow_anonymous" 
+                                       {% if settings.allow_anonymous|default:False %}checked{% endif %}>
+                                <label class="form-check-label">Allow Anonymous Grievances</label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-info">
+                            <i class="fas fa-clipboard-list"></i> Save Grievance Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI & Knowledge Base Settings -->
+        <div class="col-md-6 mb-4">
+            <div class="card settings-section">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-robot"></i> AI & Knowledge Base Settings</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'admin_panel:system_settings' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="ai_kb">
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="enable_auto_suggestions" 
+                                       {% if settings.enable_auto_suggestions|default:True %}checked{% endif %}>
+                                <label class="form-check-label">Enable KB Auto-Suggestions</label>
+                            </div>
+                            <div class="form-text">Suggest solutions to students while they type</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="auto_categorize" 
+                                       {% if settings.auto_categorize|default:True %}checked{% endif %}>
+                                <label class="form-check-label">AI Auto-Categorization</label>
+                            </div>
+                            <div class="form-text">Automatically categorize incoming grievances based on content</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Minimum Confidence Score (%)</label>
+                            <input type="number" class="form-control" name="kb_confidence_score" 
+                                   value="{{ settings.kb_confidence_score|default:80 }}" min="50" max="100">
+                            <div class="form-text">Confidence required to suggest an article</div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-brain"></i> Save AI Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workflow & SLA Settings -->
+        <div class="col-md-6 mb-4">
+            <div class="card settings-section">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-project-diagram"></i> Workflow & SLA Settings</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'admin_panel:system_settings' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="workflow">
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Maximum Re-open Count</label>
+                            <input type="number" class="form-control" name="max_reopen_count" 
+                                   value="{{ settings.max_reopen_count|default:2 }}" min="0" max="5">
+                            <div class="form-text">How many times a student can reopen a resolved grievance</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">SLA Breach Action</label>
+                            <select class="form-select" name="sla_breach_action">
+                                <option value="notify" {% if settings.sla_breach_action == 'notify' %}selected{% endif %}>Notify Admin Only</option>
+                                <option value="escalate" {% if settings.sla_breach_action == 'escalate' or not settings.sla_breach_action %}selected{% endif %}>Auto-Escalate Immediately</option>
+                                <option value="both" {% if settings.sla_breach_action == 'both' %}selected{% endif %}>Notify & Auto-Escalate</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="require_closure_remark" 
+                                       {% if settings.require_closure_remark|default:True %}checked{% endif %}>
+                                <label class="form-check-label">Require Officer Closure Remark</label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-tasks"></i> Save Workflow Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Experience Settings -->
+        <div class="col-md-6 mb-4">
+            <div class="card settings-section">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-user-graduate"></i> Student Experience Settings</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'admin_panel:system_settings' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="experience">
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="enable_feedback" 
+                                       {% if settings.enable_feedback|default:True %}checked{% endif %}>
+                                <label class="form-check-label">Enable Post-Resolution Feedback</label>
+                            </div>
+                            <div class="form-text">Ask students to rate their experience out of 5 stars</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="allow_attachments_in_replies" 
+                                       {% if settings.allow_attachments_in_replies|default:True %}checked{% endif %}>
+                                <label class="form-check-label">Allow Attachments in Replies</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Support Hours Message</label>
+                            <input type="text" class="form-control" name="support_hours" 
+                                   value="{{ settings.support_hours|default:'Mon-Fri, 9:00 AM - 5:00 PM' }}">
+                            <div class="form-text">Displayed on the submission page</div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-smile"></i> Save Experience Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

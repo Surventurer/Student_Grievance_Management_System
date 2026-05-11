@@ -1,0 +1,591 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - Student Grievance System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-card {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+        border: 1px solid #e9ecef;
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+    
+    .stats-card {
+        text-align: center;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin-bottom: 1.5rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    /* Responsive stats cards */
+    @media (max-width: 575.98px) {
+        .stats-card {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+        }
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+    
+    .stats-card.total { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .stats-card.pending { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .stats-card.resolved { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .stats-card.rejected { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    
+    .stats-icon {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 2rem;
+        opacity: 0.3;
+    }
+    
+    @media (max-width: 575.98px) {
+        .stats-icon {
+            font-size: 1.5rem;
+            top: 0.75rem;
+            right: 0.75rem;
+        }
+    }
+    
+    .stats-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    @media (max-width: 575.98px) {
+        .stats-number {
+            font-size: 2rem;
+            margin-bottom: 0.25rem;
+        }
+    }
+    
+    .stats-label {
+        font-size: 1rem;
+        font-weight: 500;
+    }
+    
+    @media (max-width: 575.98px) {
+        .stats-label {
+            font-size: 0.9rem;
+        }
+    }
+    
+    /* Responsive dashboard cards */
+    @media (max-width: 767.98px) {
+        .dashboard-card {
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            border-radius: 10px;
+        }
+    }
+    
+    @media (max-width: 575.98px) {
+        .dashboard-card {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+        }
+    }
+    
+    .table th {
+        background: #f8f9fa;
+        border: none;
+        font-weight: 600;
+        color: #495057;
+        white-space: nowrap;
+    }
+    
+    .table td {
+        border: none;
+        vertical-align: middle;
+    }
+    
+    .table tbody tr {
+        border-bottom: 1px solid #e9ecef;
+        transition: background 0.3s ease;
+    }
+    
+    .table tbody tr:hover {
+        background: #f8f9fa;
+    }
+    
+    .badge {
+        font-size: 0.875em;
+        padding: 0.375rem 0.75rem;
+    }
+    
+    .action-btn {
+        padding: 0.25rem 0.5rem;
+        margin: 0 0.125rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        min-width: auto;
+    }
+    
+    @media (max-width: 575.98px) {
+        .action-btn {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8rem;
+            margin: 0.125rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div class="mb-2 mb-md-0">
+                    <h1 class="h3 mb-0 text-gray-800">
+                        <i class="fas fa-tachometer-alt me-2"></i>
+                        {% if user_role == 'superadmin' %}
+                            Super Admin Dashboard
+                        {% elif user_role == 'admin' %}
+                            {% if user_department %}
+                                {{ user_department|upper }} Admin Dashboard
+                            {% else %}
+                                Admin Dashboard
+                            {% endif %}
+                        {% elif user_role == 'officer' %}
+                            Officer Dashboard
+                        {% else %}
+                            Admin Dashboard
+                        {% endif %}
+                    </h1>
+                    <p class="text-muted mb-0 d-none d-sm-block">
+                        Welcome back, {{ request.user.get_display_name }}! 
+                        {% if user_role == 'superadmin' %}
+                            You have complete system access.
+                        {% elif user_role == 'admin' %}
+                            Managing {% if user_department %}{{ user_department|upper }}{% else %}department{% endif %} grievances.
+                        {% elif user_role == 'officer' %}
+                            Handle your assigned grievances efficiently.
+                        {% else %}
+                            Here's what's happening with your grievance system.
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="btn-group">
+                    {% if user_role == 'superadmin' %}
+                        <a href="{% url 'admin_panel:user_management' %}" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-users-cog me-1"></i>
+                            <span class="d-none d-sm-inline">Users</span>
+                        </a>
+                        <a href="{% url 'admin_panel:system_settings' %}" class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-cog me-1"></i>
+                            <span class="d-none d-sm-inline">Settings</span>
+                        </a>
+                    {% endif %}
+                    <button class="btn btn-primary btn-sm" onclick="location.reload()">
+                        <i class="fas fa-sync-alt me-1 me-sm-2"></i>
+                        <span class="d-none d-sm-inline">Refresh</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role-Specific Alert -->
+    {% if user_role == 'superadmin' %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="alert alert-info d-flex align-items-center" role="alert">
+                <i class="fas fa-crown me-2"></i>
+                <div>
+                    <strong>Superadmin Access:</strong> You have full system privileges. 
+                    <a href="{% url 'admin_panel:audit_logs' %}" class="alert-link">Check audit logs</a> or 
+                    <a href="{% url 'admin_panel:system_settings' %}" class="alert-link">manage system settings</a>.
+                </div>
+            </div>
+        </div>
+    </div>
+    {% elif user_role == 'admin' %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="alert alert-warning d-flex align-items-center" role="alert">
+                <i class="fas fa-user-shield me-2"></i>
+                <div>
+                    <strong>Department Admin:</strong> You can manage {% if user_department %}{{ user_department|upper }}{% else %}department{% endif %} grievances and users.
+                </div>
+            </div>
+        </div>
+    </div>
+    {% elif user_role == 'officer' %}
+    <div class="row mb-3">
+        <div class="col-12">
+            {% if user_department %}
+                <div class="alert alert-primary d-flex align-items-center" role="alert">
+                    <i class="fas fa-clipboard-check me-2"></i>
+                    <div>
+                        <strong>Grievance Officer:</strong> Handle your assigned grievances in the {{ user_department|upper }} department.
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-warning d-flex align-items-center" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <div>
+                        <strong>Department Assignment Required:</strong> You are not currently assigned to any department. 
+                        Please contact the Super Admin for department assignment. You can still 
+                        <a href="{% url 'authentication:logout_view' %}" class="alert-link">logout</a> if needed.
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 col-sm-6 col-6">
+            <div class="stats-card total">
+                <div class="stats-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="stats-number">{{ total_grievances|default:0 }}</div>
+                <div class="stats-label">Total</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 col-sm-6 col-6">
+            <div class="stats-card pending">
+                <div class="stats-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stats-number">{{ pending_grievances|default:0 }}</div>
+                <div class="stats-label">Pending</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 col-sm-6 col-6">
+            <div class="stats-card resolved">
+                <div class="stats-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stats-number">{{ resolved_grievances|default:0 }}</div>
+                <div class="stats-label">Resolved</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 col-sm-6 col-6">
+            <div class="stats-card rejected">
+                <div class="stats-icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="stats-number">{{ rejected_grievances|default:0 }}</div>
+                <div class="stats-label">Rejected</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Row -->
+    <div class="row">
+        <!-- Recent Grievances -->
+        <div class="col-lg-8 col-12">
+            <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+                    <h5 class="card-title mb-2 mb-sm-0">
+                        <i class="fas fa-list-alt me-2"></i>
+                        Recent Grievances
+                    </h5>
+                    <a href="{% url 'admin_panel:grievance_list' %}" class="btn btn-outline-primary btn-sm">
+                        <span class="d-none d-sm-inline">View All</span>
+                        <span class="d-sm-none">All</span>
+                    </a>
+                </div>
+                
+                {% if recent_grievances %}
+                    <!-- Desktop Table View -->
+                    <div class="table-responsive d-none d-lg-block">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Student</th>
+                                    <th>Category</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for grievance in recent_grievances %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ grievance.title|truncatechars:50 }}</strong>
+                                    </td>
+                                    <td>
+                                        {% if grievance.student %}
+                                            {{ grievance.student.user.get_display_name|default:grievance.student.user.email }}
+                                        {% else %}
+                                            Unknown Student
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if grievance.category %}
+                                            {{ grievance.category.name }}
+                                        {% else %}
+                                            No Category
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if grievance.status == 'pending' %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% elif grievance.status == 'resolved' %}
+                                            <span class="badge bg-success">Resolved</span>
+                                        {% elif grievance.status == 'rejected' %}
+                                            <span class="badge bg-danger">Rejected</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ grievance.status|title }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ grievance.submitted_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        <a href="{% url 'admin_panel:grievance_detail' grievance.id %}" 
+                                           class="btn btn-outline-primary action-btn">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Mobile/Tablet Card View -->
+                    <div class="d-lg-none">
+                        {% for grievance in recent_grievances %}
+                        <div class="card mb-3 border-start border-primary border-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="card-title mb-0">{{ grievance.title|truncatechars:40 }}</h6>
+                                    {% if grievance.status == 'pending' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% elif grievance.status == 'resolved' %}
+                                        <span class="badge bg-success">Resolved</span>
+                                    {% elif grievance.status == 'rejected' %}
+                                        <span class="badge bg-danger">Rejected</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ grievance.status|title }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">Student:</small>
+                                        <small>
+                                            {% if grievance.student %}
+                                                {{ grievance.student.user.get_display_name|default:grievance.student.user.email|truncatechars:20 }}
+                                            {% else %}
+                                                Unknown
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">Category:</small>
+                                        <small>
+                                            {% if grievance.category %}
+                                                {{ grievance.category.name|truncatechars:15 }}
+                                            {% else %}
+                                                No Category
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        {{ grievance.submitted_at|date:"M d, Y" }}
+                                    </small>
+                                    <a href="{% url 'admin_panel:grievance_detail' grievance.id %}" 
+                                       class="btn btn-primary btn-sm">
+                                        <i class="fas fa-eye me-1"></i>View
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No grievances submitted yet.</p>
+                        <small class="text-muted">New grievances will appear here when students submit them.</small>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Category Statistics & Quick Actions -->
+        <div class="col-lg-4 col-12">
+            <!-- Category Statistics -->
+            <div class="dashboard-card mb-4">
+                <h5 class="card-title mb-3">
+                    <i class="fas fa-chart-pie me-2"></i>Top Categories
+                </h5>
+                {% if category_stats %}
+                    {% for category in category_stats %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-truncate me-2">{{ category.name|truncatechars:25 }}</span>
+                        <span class="badge bg-primary">{{ category.count }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted mb-0 text-center">
+                        <i class="fas fa-chart-pie fa-2x mb-2 d-block"></i>
+                        No category data available
+                    </p>
+                {% endif %}
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="dashboard-card">
+                <h5 class="card-title mb-3">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </h5>
+                <div class="d-grid gap-2">
+                    <!-- Common Actions for All Roles -->
+                    <a href="{% url 'admin_panel:grievance_list' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-list me-2"></i>
+                        {% if user_role == 'superadmin' %}
+                            All Grievances
+                        {% elif user_role == 'admin' %}
+                            Department Grievances
+                        {% elif user_role == 'officer' %}
+                            My Assigned Grievances
+                        {% else %}
+                            Manage Grievances
+                        {% endif %}
+                    </a>
+                    
+                    {% if user_role == 'superadmin' %}
+                        <!-- Superadmin Only Actions - Core functionalities -->
+                        <a href="{% url 'admin_panel:user_management' %}" class="btn btn-outline-danger">
+                            <i class="fas fa-users-cog me-2"></i>Manage All Users
+                        </a>
+                        <a href="{% url 'admin_panel:system_settings' %}" class="btn btn-outline-warning">
+                            <i class="fas fa-cog me-2"></i>System Settings
+                        </a>
+                        <a href="{% url 'admin_panel:crud_management' %}" class="btn btn-outline-info">
+                            <i class="fas fa-database me-2"></i>CRUD Management
+                        </a>
+                        <a href="{% url 'admin_panel:audit_logs' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-history me-2"></i>Audit Logs
+                        </a>
+                        
+                    {% elif user_role == 'admin' %}
+                        <!-- Department Admin Actions -->
+                        <a href="{% url 'admin_panel:student_list' %}" class="btn btn-outline-info">
+                            <i class="fas fa-users me-2"></i>Department Students
+                        </a>
+                        <a href="{% url 'admin_panel:category_management' %}" class="btn btn-outline-success">
+                            <i class="fas fa-tags me-2"></i>Manage Categories
+                        </a>
+                        <a href="{% url 'admin_panel:reports_dashboard' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-chart-bar me-2"></i>Department Reports
+                        </a>
+                        
+                    {% elif request.user.is_officer %}
+                        <!-- Officer Actions -->
+                        <a href="{% url 'admin_panel:grievance_list' %}?assigned_to={{ request.user.id }}" class="btn btn-outline-success">
+                            <i class="fas fa-clipboard-check me-2"></i>My Active Cases
+                        </a>
+                        <a href="{% url 'admin_panel:grievance_list' %}?status=pending" class="btn btn-outline-warning">
+                            <i class="fas fa-clock me-2"></i>Pending Reviews
+                        </a>
+                        
+                    {% else %}
+                        <!-- Default Admin Actions -->
+                        <a href="{% url 'admin_panel:student_list' %}" class="btn btn-outline-info">
+                            <i class="fas fa-users me-2"></i>Manage Students
+                        </a>
+                        <a href="{% url 'admin_panel:crud_management' %}" class="btn btn-outline-warning">
+                            <i class="fas fa-database me-2"></i>CRUD Management
+                        </a>
+                        <a href="{% url 'admin_panel:reports_dashboard' %}" class="btn btn-outline-success">
+                            <i class="fas fa-chart-bar me-2"></i>View Reports
+                        </a>
+                    {% endif %}
+                </div>
+                
+                {% if request.user.is_superadmin %}
+                <!-- System Status for Superadmin -->
+                <div class="mt-4 pt-3 border-top">
+                    <h6 class="text-muted mb-2">System Status</h6>
+                    <div class="row">
+                        <div class="col-6">
+                            <small class="text-muted d-block">Total Users</small>
+                            <strong>{{ total_users|default:0 }}</strong>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block">Active Sessions</small>
+                            <strong>{{ active_sessions|default:0 }}</strong>
+                        </div>
+                    </div>
+                </div>
+                {% elif request.user.is_admin_or_officer %}
+                <!-- Department Info for Admins and Officers -->
+                <div class="mt-4 pt-3 border-top">
+                    <h6 class="text-muted mb-2">Department Info</h6>
+                    <div class="row">
+                        <div class="col-6">
+                            <small class="text-muted d-block">Students</small>
+                            <strong>{{ department_students|default:0 }}</strong>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block">Officers</small>
+                            <strong>{{ department_officers|default:0 }}</strong>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-refresh dashboard every 5 minutes
+setInterval(function() {
+    if (document.visibilityState === 'visible') {
+        location.reload();
+    }
+}, 300000);
+
+// Add click handlers for responsive behavior
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle mobile card interactions
+    const mobileCards = document.querySelectorAll('.dashboard-card');
+    mobileCards.forEach(card => {
+        card.addEventListener('touchstart', function() {
+            this.style.transform = 'scale(0.98)';
+        });
+        
+        card.addEventListener('touchend', function() {
+            this.style.transform = '';
+        });
+    });
+});
+</script>
+{% endblock %}

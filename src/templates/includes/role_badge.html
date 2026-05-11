@@ -1,0 +1,6 @@
+{% if role %}
+<span class="badge bg-{{ color }} badge-{{ size }}">
+    <i class="{{ role|role_icon }} me-1"></i>
+    {{ role_display }}
+</span>
+{% endif %}

@@ -1,0 +1,170 @@
+{% load role_tags %}
+
+<!-- Role-based Access Overview -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="role-avatar me-3">
+                            <i class="{{ user.role|role_icon }} fa-2x {{ user.role|role_color }}"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-1">
+                                {% role_badge user %}
+                                <span class="ms-2">{{ user.get_display_name }}</span>
+                            </h5>
+                            <p class="text-muted mb-0">
+                                {% format_role_access user %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="role-actions">
+                        {% if user_role == 'superadmin' %}
+                            <a href="{% url 'admin_panel:user_management' %}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-users-cog me-1"></i>Manage Users
+                            </a>
+                        {% elif user_role == 'admin' %}
+                            <a href="{% url 'admin_panel:student_list' %}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-users me-1"></i>My Department
+                            </a>
+                        {% elif user_role == 'officer' %}
+                            <a href="{% url 'admin_panel:grievance_list' %}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-clipboard-list me-1"></i>My Cases
+                            </a>
+                        {% elif user_role == 'student' %}
+                            <a href="{% url 'students:submit_grievance' %}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-plus me-1"></i>New Grievance
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Role-specific Quick Actions -->
+{% if user_role == 'superadmin' %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-danger text-white">
+                <h6 class="mb-0"><i class="fas fa-crown me-2"></i>Superadmin Controls</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'admin_panel:user_management' %}" class="btn btn-outline-danger w-100">
+                            <i class="fas fa-users-cog"></i><br>
+                            <small>All Users</small>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'admin_panel:system_settings' %}" class="btn btn-outline-warning w-100">
+                            <i class="fas fa-cog"></i><br>
+                            <small>System Settings</small>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'admin_panel:crud_management' %}" class="btn btn-outline-info w-100">
+                            <i class="fas fa-database"></i><br>
+                            <small>CRUD Management</small>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'admin_panel:audit_logs' %}" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-history"></i><br>
+                            <small>Audit Logs</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% elif user_role == 'admin' %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header" style="background-color: #fd7e14; color: white;">
+                <h6 class="mb-0"><i class="fas fa-user-shield me-2"></i>Department Admin Controls</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <a href="{% url 'admin_panel:student_list' %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-users"></i><br>
+                            <small>Department Students</small>
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <a href="{% url 'admin_panel:grievance_list' %}" class="btn btn-outline-warning w-100">
+                            <i class="fas fa-exclamation-triangle"></i><br>
+                            <small>Department Grievances</small>
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <a href="{% url 'admin_panel:reports_dashboard' %}" class="btn btn-outline-info w-100">
+                            <i class="fas fa-chart-bar"></i><br>
+                            <small>Department Reports</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% elif user_role == 'officer' %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0"><i class="fas fa-clipboard-check me-2"></i>Officer Controls</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <a href="{% url 'admin_panel:grievance_list' %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-clipboard-list"></i><br>
+                            <small>Assigned Grievances</small>
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <a href="#" class="btn btn-outline-info w-100" onclick="updateProfile()">
+                            <i class="fas fa-user-edit"></i><br>
+                            <small>Update Profile</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<style>
+.role-avatar {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0,0,0,0.05);
+    border-radius: 50%;
+}
+
+.badge-sm {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+}
+
+.btn i {
+    display: block;
+    font-size: 1.2rem;
+    margin-bottom: 0.25rem;
+}
+</style>

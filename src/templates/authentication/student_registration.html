@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Student Registration - Student Grievance System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Student Registration</h2>
+                <p class="text-center text-muted mb-4">Create your account to access the Student Grievance Management System</p>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} d-flex align-items-center mb-3" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <div>{{ message }}</div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <form method="post" id="registration-form">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.name.id_for_label }}" class="form-label">Full Name *</label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.student_id.id_for_label }}" class="form-label">Student ID *</label>
+                                {{ form.student_id }}
+                                {% if form.student_id.errors %}
+                                    <div class="text-danger small">{{ form.student_id.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">Email Address *</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger small">{{ form.email.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.contact_no.id_for_label }}" class="form-label">Contact Number *</label>
+                                {{ form.contact_no }}
+                                {% if form.contact_no.errors %}
+                                    <div class="text-danger small">{{ form.contact_no.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.password.id_for_label }}" class="form-label">Password *</label>
+                                {{ form.password }}
+                                {% if form.password.errors %}
+                                    <div class="text-danger small">{{ form.password.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.confirm_password.id_for_label }}" class="form-label">Confirm Password *</label>
+                                {{ form.confirm_password }}
+                                {% if form.confirm_password.errors %}
+                                    <div class="text-danger small">{{ form.confirm_password.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.school.id_for_label }}" class="form-label">School *</label>
+                                {{ form.school }}
+                                {% if form.school.errors %}
+                                    <div class="text-danger small">{{ form.school.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.department.id_for_label }}" class="form-label">Department *</label>
+                                {{ form.department }}
+                                {% if form.department.errors %}
+                                    <div class="text-danger small">{{ form.department.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <button type="submit" class="btn btn-primary w-100">Register</button>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <p>Already have an account? <a href="{% url 'authentication:login' %}">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Wait for the DOM to fully load before attaching event handlers
+window.addEventListener('load', function() {
+    // Get the school and department select elements
+    const schoolSelect = document.querySelector('#id_school');
+    const departmentSelect = document.querySelector('#id_department');
+    
+    // Verify both elements exist
+    if (!schoolSelect || !departmentSelect) {
+        return;
+    }
+    
+    // Function to load departments based on school selection
+    function loadDepartments(schoolId) {
+        // Clear existing department options
+        departmentSelect.innerHTML = '<option value="">Select Department</option>';
+        
+        // If no school is selected, stop here
+        if (!schoolId) {
+            return;
+        }
+        
+        // Build the API URL
+        const apiUrl = '/auth/load-departments/?school_id=' + schoolId;
+        
+        // Make the AJAX request
+        fetch(apiUrl)
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+                return response.json();
+            })
+            .then(function(data) {
+                if (!data.departments || data.departments.length === 0) {
+                    return;
+                }
+                
+                // Add each department as an option
+                data.departments.forEach(function(dept) {
+                    const option = document.createElement('option');
+                    option.value = dept.id;
+                    option.textContent = dept.name;
+                    departmentSelect.appendChild(option);
+                });
+            })
+            .catch(function(error) {
+                // Add an error option without exposing details
+                const errorOption = document.createElement('option');
+                errorOption.value = '';
+                errorOption.textContent = 'Error loading departments';
+                departmentSelect.appendChild(errorOption);
+            });
+    }
+    
+    // Attach the change event listener to the school dropdown
+    schoolSelect.addEventListener('change', function() {
+        const selectedSchoolId = this.value;
+        loadDepartments(selectedSchoolId);
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Grievance Assigned</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+        }
+        .content {
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 0 0 8px 8px;
+        }
+        .grievance-info {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+        }
+        .button {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            font-size: 14px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎓 Student Grievance System</h1>
+        <h2>New Grievance Assigned</h2>
+    </div>
+    
+    <div class="content">
+        <p>Dear {{ admin.user.first_name|default:"Admin" }},</p>
+        
+        <p>A new grievance has been assigned to you for review and action.</p>
+        
+        <div class="grievance-info">
+            <h3>📋 Grievance Details</h3>
+            <p><strong>Title:</strong> {{ grievance.title }}</p>
+            <p><strong>Student:</strong> {{ grievance.student.name }} ({{ grievance.student.student_id }})</p>
+            <p><strong>Department:</strong> {{ grievance.student.department }}</p>
+            <p><strong>Category:</strong> {{ grievance.category.name }}</p>
+            <p><strong>Priority:</strong> {{ grievance.get_priority_display }}</p>
+            <p><strong>Submitted:</strong> {{ grievance.submitted_at|date:"F d, Y g:i A" }}</p>
+            <p><strong>Grievance ID:</strong> {{ grievance.grievance_id }}</p>
+            
+            <div style="margin-top: 15px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
+                <strong>Description:</strong>
+                <p>{{ grievance.description }}</p>
+            </div>
+        </div>
+        
+        <p>Please review this grievance and take appropriate action at your earliest convenience.</p>
+        
+        <a href="http://localhost:8000/admin-panel/grievances/{{ grievance.id }}/" class="button">
+            View Grievance Details
+        </a>
+        
+        <div style="margin-top: 20px; padding: 15px; background-color: #fff3cd; border-radius: 5px; border: 1px solid #ffeaa7;">
+            <strong>📌 Next Steps:</strong>
+            <ul>
+                <li>Review the grievance details and any attachments</li>
+                <li>Contact the student if more information is needed</li>
+                <li>Update the status as you work on the resolution</li>
+                <li>Provide a detailed resolution when completed</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>This is an automated notification from the Student Grievance Management System.</p>
+        <p>If you have any questions, please contact the system administrator.</p>
+    </div>
+</body>
+</html>

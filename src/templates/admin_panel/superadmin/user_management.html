@@ -1,0 +1,2047 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}User Management - Superadmin{% endblock %}
+
+{% block extra_css %}
+<style>
+.role-badge {
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+}
+.role-superadmin { background-color: #dc3545; color: white; }
+.role-admin { background-color: #fd7e14; color: white; }
+.role-officer { background-color: #0dcaf0; color: white; }
+.role-student { background-color: #198754; color: white; }
+
+.stats-card {
+    border-left: 4px solid #007bff;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 123, 255, 0.1);
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.stats-card h3 {
+    font-weight: 700;
+    font-size: 2rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    color: #212529 !important;
+}
+
+.stats-card h5 {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    opacity: 0.85;
+}
+
+.stats-card .card-body {
+    padding: 1.5rem;
+}
+
+.stats-icon {
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.stats-card:hover .stats-icon {
+    opacity: 1;
+}
+
+/* Ensure numbers are always visible */
+.stats-card .text-dark {
+    color: #212529 !important;
+    font-weight: 700;
+}
+
+/* Role distribution improvements */
+.fw-bold {
+    font-weight: 700 !important;
+    font-size: 1.5rem;
+}
+
+.border-end {
+    border-right: 1px solid #dee2e6;
+}
+.permission-denied {
+    text-align: center;
+    padding: 3rem;
+    color: #6c757d;
+}
+
+/* Bulk delete styling */
+.user-checkbox {
+    cursor: pointer;
+}
+
+#select-all {
+    cursor: pointer;
+}
+
+#bulk-delete-btn {
+    transition: all 0.3s ease;
+}
+
+#bulk-delete-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+#bulk-deactivate-btn {
+    transition: all 0.3s ease;
+}
+
+#bulk-deactivate-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
+}
+
+#bulk-activate-btn {
+    transition: all 0.3s ease;
+}
+
+#bulk-activate-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(25, 135, 84, 0.3);
+}
+
+#selected-count {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Row hover effect for selected items */
+tr:has(.user-checkbox:checked) {
+    background-color: rgba(220, 53, 69, 0.05) !important;
+}
+
+tr:has(.user-checkbox:checked) td {
+    border-color: rgba(220, 53, 69, 0.2);
+}
+
+/* Temporary registration styling */
+.table-warning {
+    background-color: rgba(255, 193, 7, 0.1) !important;
+}
+
+.table-warning:hover {
+    background-color: rgba(255, 193, 7, 0.2) !important;
+}
+
+/* Badge styling for unverified roles */
+.role-badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}
+
+/* Status badges for temporary registrations */
+.badge.bg-info {
+    background-color: #0dcaf0 !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}
+
+/* Enhanced checkbox styling */
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.form-check-label {
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.form-check-label i {
+    color: #6c757d;
+}
+
+.form-check-input:checked + .form-check-label i {
+    color: #0d6efd;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">🔐 User Management</h1>
+            <p class="text-muted">Superadmin-only access • Manage all users and roles</p>
+        </div>
+        <div class="btn-group">
+            <a href="{% url 'admin_panel:create_user' %}" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i> Create User
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stats-card" style="border-left-color: #007bff;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title text-primary">Total Users</h5>
+                            <h3 class="mb-0 text-dark">{{ total_users|default:0 }}</h3>
+                        </div>
+                        <i class="fas fa-users fa-2x text-primary stats-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stats-card" style="border-left-color: #28a745;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title text-success">Active Users</h5>
+                            <h3 class="mb-0 text-dark">{{ active_users|default:0 }}</h3>
+                        </div>
+                        <i class="fas fa-user-check fa-2x text-success stats-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stats-card" style="border-left-color: #17a2b8;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title text-info">Verified</h5>
+                            <h3 class="mb-0 text-dark">{{ verified_users|default:0 }}</h3>
+                        </div>
+                        <i class="fas fa-certificate fa-2x text-info stats-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stats-card" style="border-left-color: #fd7e14;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title text-warning">Pending Registrations</h5>
+                            <h3 class="mb-0 text-dark">{{ temp_registrations_count|default:0 }}</h3>
+                        </div>
+                        <i class="fas fa-hourglass-half fa-2x text-warning stats-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role Distribution -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);">
+                <div class="card-header bg-light" style="border-radius: 12px 12px 0 0;">
+                    <h5 class="mb-0 text-dark">👥 Role Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="p-3 border-end">
+                                <h4 class="text-danger fw-bold">{{ superadmins_count|default:0 }}</h4>
+                                <span class="role-badge role-superadmin">Super Admins</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3 border-end">
+                                <h4 class="text-warning fw-bold">{{ admins_count|default:0 }}</h4>
+                                <span class="role-badge role-admin">Department Admins</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3 border-end">
+                                <h4 class="text-info fw-bold">{{ officers_count|default:0 }}</h4>
+                                <span class="role-badge role-officer">Officers</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3">
+                                <h4 class="text-success fw-bold">{{ students_count|default:0 }}</h4>
+                                <span class="role-badge role-student">Students</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <!-- Hidden field to ensure show_unverified parameter is always sent -->
+                <input type="hidden" name="show_unverified" value="0">
+                
+                <div class="col-md-3">
+                    <input type="text" class="form-control" name="search" 
+                           placeholder="Search by email, name, or student ID..." 
+                           value="{{ search_query }}">
+                </div>
+                <div class="col-md-2">
+                    <select name="role" class="form-select">
+                        <option value="">All Roles</option>
+                        {% for role_code, role_name in role_choices %}
+                            <option value="{{ role_code }}" {% if role_filter == role_code %}selected{% endif %}>
+                                {{ role_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check form-switch d-flex align-items-center h-100">
+                        <input class="form-check-input me-2" type="checkbox" name="show_unverified" 
+                               id="show_unverified" value="1" 
+                               {% if show_unverified %}checked{% endif %}>
+                        <label class="form-check-label" for="show_unverified">
+                            <i class="fas fa-eye me-1"></i>Show Unverified Students
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+                <div class="col-md-2">
+                    <a href="{% url 'admin_panel:user_management' %}" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-times"></i> Clear Filters
+                    </a>
+                </div>
+            </form>
+            
+            <!-- Filter Status Indicator -->
+            <div class="mt-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        {% if show_unverified %}
+                            <span class="badge bg-success me-2">
+                                <i class="fas fa-eye me-1"></i>Showing All Users
+                            </span>
+                            <small class="text-muted">Including unverified students (temporary registrations)</small>
+                        {% else %}
+                            <span class="badge bg-secondary me-2">
+                                <i class="fas fa-eye-slash me-1"></i>Verified Only
+                            </span>
+                            <small class="text-muted">Showing only verified users - unverified students hidden</small>
+                        {% endif %}
+                    </div>
+                    <div class="text-end">
+                        <small class="text-muted">
+                            Displaying {{ users.paginator.count }} user{{ users.paginator.count|pluralize }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">👤 All Users ({{ users.paginator.count }} total)</h5>
+            <div class="d-flex align-items-center gap-2">
+                <div class="btn-group" role="group" style="display: none;" id="bulk-actions">
+                    <button id="bulk-delete-btn" class="btn btn-danger btn-sm" onclick="bulkDeleteUsers()">
+                        <i class="fas fa-trash-alt"></i> Delete Selected
+                    </button>
+                    <button id="bulk-deactivate-btn" class="btn btn-warning btn-sm" onclick="bulkDeactivateUsers()">
+                        <i class="fas fa-ban"></i> Deactivate Selected
+                    </button>
+                    <button id="bulk-activate-btn" class="btn btn-success btn-sm" onclick="bulkActivateUsers()">
+                        <i class="fas fa-check-circle"></i> Activate Selected
+                    </button>
+                </div>
+                <span id="selected-count" class="text-muted small" style="display: none;"></span>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if users %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="select-all" class="form-check-input" onchange="toggleSelectAll()">
+                                </th>
+                                <th>Email</th>
+                                <th>Name/ID</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Deactivation Reason</th>
+                                <th>Department</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr data-user-id="{{ user.id }}" {% if user.is_temporary %}class="table-warning"{% endif %}>
+                                <td>
+                                    {% if user.is_temporary %}
+                                        <i class="fas fa-clock text-warning" title="Temporary Registration"></i>
+                                    {% elif user.id != request.user.id %}
+                                        <input type="checkbox" class="form-check-input user-checkbox" 
+                                               value="{{ user.id }}" onchange="updateBulkDeleteButton()">
+                                    {% else %}
+                                        <i class="fas fa-user-shield text-muted" title="Cannot select own account"></i>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-2">
+                                            {% if user.is_temporary %}
+                                                {% if user.is_email_verified %}
+                                                    <i class="fas fa-check-circle text-success" title="Email Verified - Pending Admin Approval"></i>
+                                                {% else %}
+                                                    <i class="fas fa-hourglass-half text-warning" title="Awaiting Email Verification"></i>
+                                                {% endif %}
+                                            {% elif user.is_email_verified %}
+                                                <i class="fas fa-check-circle text-success" title="Verified User"></i>
+                                            {% else %}
+                                                <i class="fas fa-exclamation-circle text-warning" title="Unverified User"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div>{{ user.email }}</div>
+                                        {% if user.is_temporary %}
+                                            <small class="text-muted ms-2">(Temporary)</small>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if user.is_temporary %}
+                                        <div>{{ user.name|default:"No Name" }}</div>
+                                        <small class="text-muted">{{ user.student_id }}</small>
+                                    {% elif user.is_student and user.student_profile %}
+                                        <div>{{ user.student_profile.name|default:"No Name" }}</div>
+                                        <small class="text-muted">{{ user.student_profile.student_id }}</small>
+                                    {% elif user.role == 'admin' and user.admin_profile %}
+                                        <div>{{ user.get_display_name }}</div>
+                                        <small class="text-muted">{{ user.admin_profile.employee_id }}</small>
+                                    {% elif user.role == 'officer' and user.admin_profile %}
+                                        <div>{{ user.get_display_name }}</div>
+                                        <small class="text-muted">{{ user.admin_profile.employee_id }}</small>
+                                    {% elif user.role == 'superadmin' %}
+                                        {{ user.get_display_name }}
+                                    {% else %}
+                                        {{ user.get_display_name }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.is_temporary %}
+                                        <span class="role-badge bg-warning text-dark">
+                                            Student (Unverified)
+                                        </span>
+                                    {% else %}
+                                        <span class="role-badge role-{{ user.role }}">
+                                            {{ user.get_role_display }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.is_temporary %}
+                                        {% if user.is_expired %}
+                                            <span class="badge bg-danger">Expired</span>
+                                        {% elif user.is_email_verified %}
+                                            <span class="badge bg-info">Awaiting Approval</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Awaiting Verification</span>
+                                        {% endif %}
+                                    {% elif user.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if not user.is_active %}
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-grow-1">
+                                                {% if user.deactivation_reason %}
+                                                    <small class="text-muted" title="{{ user.deactivation_reason }}">
+                                                        {% if user.deactivation_reason|length > 30 %}
+                                                            {{ user.deactivation_reason|truncatechars:30 }}
+                                                        {% else %}
+                                                            {{ user.deactivation_reason }}
+                                                        {% endif %}
+                                                    </small>
+                                                {% else %}
+                                                    <small class="text-muted">No reason provided</small>
+                                                {% endif %}
+                                            </div>
+                                            <button class="btn btn-outline-secondary btn-sm ms-2" 
+                                                    onclick="viewDeactivationReason({{ user.id }}, '{{ user.email }}', '{{ user.deactivation_reason|escapejs }}')"
+                                                    title="Edit deactivation reason">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.is_temporary %}
+                                        {{ user.department|default:"-" }}
+                                    {% elif user.is_student and user.student_profile %}
+                                        {{ user.student_profile.department|default:"-" }}
+                                    {% elif user.is_admin_or_officer and user.admin_profile %}
+                                        {{ user.admin_profile.department|default:"-" }}
+                                    {% elif user.is_admin_or_officer %}
+                                        {{ user.department_name|default:"-" }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.created_at|date:"M d, Y" }}</td>
+                                <td>
+                                    {% if user.is_temporary %}
+                                        <div class="btn-group btn-group-sm">
+                                            {% if not user.is_expired %}
+                                                <button class="btn btn-success btn-sm" 
+                                                        onclick="approveTempRegistration('{{ user.id|slice:'5:' }}', '{{ user.email }}')">
+                                                    <i class="fas fa-check"></i> Approve
+                                                </button>
+                                            {% endif %}
+                                            <button class="btn btn-danger btn-sm" 
+                                                    onclick="deleteTempRegistration('{{ user.id|slice:'5:' }}', '{{ user.email }}')">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                            <button class="btn btn-info btn-sm" 
+                                                    onclick="viewTempRegistrationDetails('{{ user.id|slice:'5:' }}')">
+                                                <i class="fas fa-eye"></i> Details
+                                            </button>
+                                        </div>
+                                    {% else %}
+                                        <div class="btn-group btn-group-sm">
+                                            <!-- Role Change Dropdown (hidden for superadmin) -->
+                                            {% if user.role != 'superadmin' %}
+                                            <div class="dropdown">
+                                                <button class="btn btn-outline-primary dropdown-toggle" type="button" 
+                                                        data-bs-toggle="dropdown">
+                                                    Role
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    {% for role_code, role_name in role_choices %}
+                                                        {% if role_code != user.role %}
+                                                        <li>
+                                                            <a class="dropdown-item" href="#" 
+                                                               onclick="updateUserRole({{ user.id }}, '{{ role_code }}', '{{ role_name }}')">
+                                                                {{ role_name }}
+                                                            </a>
+                                                        </li>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                            {% endif %}
+                                            
+                                            <!-- Status Toggle -->
+                                            {% if user.id != request.user.id %}
+                                            <button class="btn btn-outline-warning" 
+                                                    onclick="toggleUserStatus({{ user.id }}, '{{ user.email }}', {{ user.is_active|yesno:'true,false' }})">
+                                                {% if user.is_active %}
+                                                    <i class="fas fa-pause"></i>
+                                                {% else %}
+                                                    <i class="fas fa-play"></i>
+                                                {% endif %}
+                                            </button>
+                                            {% endif %}
+                                            
+                                            <!-- View Details Button (hidden for superadmin) -->
+                                            {% if user.role != 'superadmin' %}
+                                            <button class="btn btn-outline-info btn-sm" 
+                                                    onclick="viewUserDetails({{ user.id }}, '{{ user.email }}')">
+                                                <i class="fas fa-eye"></i> Details
+                                            </button>
+                                            
+                                            <!-- Edit User Button (hidden for superadmin) -->
+                                            <button class="btn btn-outline-warning btn-sm" 
+                                                    onclick="editUser({{ user.id }}, '{{ user.email }}', '{{ user.role }}')">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if users.has_other_pages %}
+                <nav aria-label="Users pagination" class="mt-3">
+                    <ul class="pagination justify-content-center">
+                        {% if users.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ users.previous_page_number }}&search={{ search_query }}&role={{ role_filter }}{% if show_unverified %}&show_unverified=1{% endif %}">Previous</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in users.paginator.page_range %}
+                            {% if users.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}&search={{ search_query }}&role={{ role_filter }}{% if show_unverified %}&show_unverified=1{% endif %}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if users.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ users.next_page_number }}&search={{ search_query }}&role={{ role_filter }}{% if show_unverified %}&show_unverified=1{% endif %}">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h5>No users found</h5>
+                    <p class="text-muted">Try adjusting your search criteria</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for AJAX operations -->
+<script>
+function updateUserRole(userId, newRole, roleName) {
+    if (confirm(`Are you sure you want to change this user's role to ${roleName}?`)) {
+        fetch(`/admin-panel/superadmin/users/${userId}/update-role/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: `role=${newRole}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error updating role: ' + error);
+        });
+    }
+}
+
+function toggleUserStatus(userId, userEmail, isActive) {
+    const action = isActive ? 'deactivate' : 'activate';
+    let deactivationReason = '';
+    
+    // If deactivating, prompt for reason
+    if (isActive) {
+        deactivationReason = prompt(`Please provide a reason for deactivating ${userEmail}:`, '');
+        if (deactivationReason === null) {
+            return; // User cancelled
+        }
+        if (deactivationReason.trim() === '') {
+            alert('A reason is required when deactivating a user.');
+            return;
+        }
+    }
+    
+    if (confirm(`Are you sure you want to ${action} ${userEmail}?`)) {
+        const formData = new FormData();
+        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+        if (!isActive || deactivationReason) {
+            formData.append('deactivation_reason', deactivationReason);
+        }
+        
+        fetch(`/admin-panel/superadmin/users/${userId}/toggle-status/`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error updating status: ' + error);
+        });
+    }
+}
+
+// Bulk delete functionality
+function toggleSelectAll() {
+    const selectAllCheckbox = document.getElementById('select-all');
+    const userCheckboxes = document.querySelectorAll('.user-checkbox');
+    
+    userCheckboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+    });
+    
+    updateBulkDeleteButton();
+}
+
+function updateBulkDeleteButton() {
+    const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+    const bulkActions = document.getElementById('bulk-actions');
+    const selectedCount = document.getElementById('selected-count');
+    const selectAllCheckbox = document.getElementById('select-all');
+    const totalCheckboxes = document.querySelectorAll('.user-checkbox');
+    
+    if (checkedBoxes.length > 0) {
+        bulkActions.style.display = 'inline-block';
+        selectedCount.style.display = 'inline';
+        selectedCount.textContent = `${checkedBoxes.length} selected`;
+    } else {
+        bulkActions.style.display = 'none';
+        selectedCount.style.display = 'none';
+    }
+    
+    // Update select-all checkbox state
+    if (checkedBoxes.length === 0) {
+        selectAllCheckbox.indeterminate = false;
+        selectAllCheckbox.checked = false;
+    } else if (checkedBoxes.length === totalCheckboxes.length) {
+        selectAllCheckbox.indeterminate = false;
+        selectAllCheckbox.checked = true;
+    } else {
+        selectAllCheckbox.indeterminate = true;
+    }
+}
+
+function bulkDeleteUsers() {
+    const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+    
+    if (checkedBoxes.length === 0) {
+        alert('Please select users to delete.');
+        return;
+    }
+    
+    const userIds = Array.from(checkedBoxes).map(checkbox => parseInt(checkbox.value));
+    const count = userIds.length;
+    
+    // Show confirmation dialog
+    const confirmMessage = `Are you sure you want to permanently delete ${count} user${count > 1 ? 's' : ''}? 
+
+⚠️  This action will:
+• Delete the user account permanently
+• Remove associated profiles and grievances
+• Preserve audit logs and comments (but anonymize them)
+
+This action cannot be undone!`;
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    // Disable button and show loading state
+    const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+    const originalText = bulkDeleteBtn.innerHTML;
+    bulkDeleteBtn.disabled = true;
+    bulkDeleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+    
+    fetch('/admin-panel/superadmin/users/bulk-delete/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+            user_ids: userIds
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Successfully deleted ${data.deleted_count} user(s)!`);
+            
+            // Remove deleted rows from the table
+            if (data.deleted_users) {
+                data.deleted_users.forEach(user => {
+                    const row = document.querySelector(`tr[data-user-id="${user.id}"]`);
+                    if (row) {
+                        row.remove();
+                    }
+                });
+            }
+            
+            // Reset checkboxes and buttons
+            document.getElementById('select-all').checked = false;
+            updateBulkDeleteButton();
+            
+            // Reload the page to update counts
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Bulk delete error:', error);
+        alert('Error deleting users: ' + error.message);
+    })
+    .finally(() => {
+        // Re-enable button
+        bulkDeleteBtn.disabled = false;
+        bulkDeleteBtn.innerHTML = originalText;
+    });
+}
+
+function bulkDeactivateUsers() {
+    const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+    
+    if (checkedBoxes.length === 0) {
+        alert('Please select users to deactivate.');
+        return;
+    }
+    
+    const userIds = Array.from(checkedBoxes).map(checkbox => parseInt(checkbox.value));
+    const count = userIds.length;
+    
+    // Prompt for deactivation reason
+    const deactivationReason = prompt(`Please provide a reason for deactivating ${count} user${count > 1 ? 's' : ''}:`, '');
+    if (deactivationReason === null) {
+        return; // User cancelled
+    }
+    if (deactivationReason.trim() === '') {
+        alert('A reason is required when deactivating users.');
+        return;
+    }
+    
+    // Show confirmation dialog
+    const confirmMessage = `Are you sure you want to deactivate ${count} user${count > 1 ? 's' : ''}? This is a safer alternative to deletion - users will be disabled but their data will remain intact.`;
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    // Disable button and show loading state
+    const bulkDeactivateBtn = document.getElementById('bulk-deactivate-btn');
+    const originalText = bulkDeactivateBtn.innerHTML;
+    bulkDeactivateBtn.disabled = true;
+    bulkDeactivateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deactivating...';
+    
+    fetch('/admin-panel/superadmin/users/bulk-deactivate/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+            user_ids: userIds,
+            deactivation_reason: deactivationReason.trim()
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Successfully deactivated ${data.deactivated_count} user(s)`);
+            
+            // Reset checkboxes and buttons
+            document.getElementById('select-all').checked = false;
+            updateBulkDeleteButton();
+            
+            // Reload the page to update the user list
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Bulk deactivate error:', error);
+        alert('Error deactivating users: ' + error.message);
+    })
+    .finally(() => {
+        // Re-enable button
+        bulkDeactivateBtn.disabled = false;
+        bulkDeactivateBtn.innerHTML = originalText;
+    });
+}
+
+function bulkActivateUsers() {
+    const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+    
+    if (checkedBoxes.length === 0) {
+        alert('Please select users to activate.');
+        return;
+    }
+    
+    const userIds = Array.from(checkedBoxes).map(checkbox => parseInt(checkbox.value));
+    const count = userIds.length;
+    
+    // Show confirmation dialog
+    const confirmMessage = `Are you sure you want to activate ${count} user${count > 1 ? 's' : ''}? This will restore their access to the system.`;
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    // Disable button and show loading state
+    const bulkActivateBtn = document.getElementById('bulk-activate-btn');
+    const originalText = bulkActivateBtn.innerHTML;
+    bulkActivateBtn.disabled = true;
+    bulkActivateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Activating...';
+    
+    fetch('/admin-panel/superadmin/users/bulk-activate/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+            user_ids: userIds
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Successfully activated ${data.activated_count} user(s)`);
+            
+            // Reset checkboxes and buttons
+            document.getElementById('select-all').checked = false;
+            updateBulkDeleteButton();
+            
+            // Reload the page to update the user list
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Bulk activate error:', error);
+        alert('Error activating users: ' + error.message);
+    })
+    .finally(() => {
+        // Re-enable button
+        bulkActivateBtn.disabled = false;
+        bulkActivateBtn.innerHTML = originalText;
+    });
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Add event listeners to existing checkboxes
+    document.querySelectorAll('.user-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', updateBulkDeleteButton);
+    });
+    
+    // Add instant filtering for the show unverified checkbox
+    const showUnverifiedCheckbox = document.getElementById('show_unverified');
+    if (showUnverifiedCheckbox) {
+        showUnverifiedCheckbox.addEventListener('change', function() {
+            // Auto-submit the form when checkbox state changes
+            this.form.submit();
+        });
+    }
+});
+
+// Functions for temporary registrations
+function approveTempRegistration(tempId, email) {
+    if (confirm(`Are you sure you want to approve the registration for ${email}? This will create a permanent user account.`)) {
+        fetch(`/admin-panel/superadmin/temp-registrations/${tempId}/approve/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Registration approved successfully!');
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error approving registration: ' + error);
+        });
+    }
+}
+
+function deleteTempRegistration(tempId, email) {
+    if (confirm(`Are you sure you want to delete the temporary registration for ${email}? This action cannot be undone.`)) {
+        fetch(`/admin-panel/superadmin/temp-registrations/${tempId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Temporary registration deleted successfully!');
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error deleting temporary registration: ' + error);
+        });
+    }
+}
+
+function viewTempRegistrationDetails(tempId) {
+    fetch(`/admin-panel/superadmin/temp-registrations/${tempId}/details/`, {
+        method: 'GET',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const details = data.registration;
+            const expiredText = details.is_expired ? ' (EXPIRED)' : '';
+            const verifiedText = details.is_verified ? 'Yes' : 'No';
+            
+            const message = `Registration Details${expiredText}:
+
+Name: ${details.name}
+Student ID: ${details.student_id}
+Email: ${details.email}
+Contact: ${details.contact_no}
+School: ${details.school}
+Department: ${details.department}
+Email Verified: ${verifiedText}
+Created: ${details.created_at}
+Expires: ${details.expires_at}`;
+            
+            alert(message);
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        alert('Error fetching registration details: ' + error);
+    });
+}
+
+// Function for viewing permanent user details
+function viewUserDetails(userId, email) {
+    console.log('Fetching details for user ID:', userId);
+    fetch(`/admin-panel/superadmin/users/${userId}/details/`, {
+        method: 'GET',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error('Authentication required. Please log in again.');
+            } else if (response.status === 403) {
+                throw new Error('Access denied. Super Admin privileges required.');
+            } else {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        if (data.success && data.user) {
+            const details = data.user;
+            console.log('User details:', details);
+            console.log('Student profile in details:', details.student_profile);
+            showUserDetailsModal(details);
+        } else {
+            console.error('API response missing user data:', data);
+            alert('Failed to load user details: Invalid response format');
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching user details:', error);
+        alert('Error fetching user details: ' + error);
+    });
+}
+
+// Function to show user details in a modal
+function showUserDetailsModal(details) {
+    console.log('showUserDetailsModal called with details:', details);
+    console.log('Student profile check:', details.student_profile);
+    console.log('Admin profile check:', details.admin_profile);
+    
+    // Create modal HTML
+    let modalContent = `
+        <div class="modal fade" id="userDetailsModal" tabindex="-1" aria-labelledby="userDetailsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="userDetailsModalLabel">
+                            <i class="fas fa-user-circle me-2"></i>User Profile Details
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <!-- Basic Information -->
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Basic Information</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row mb-2">
+                                            <div class="col-4"><strong>Full Name:</strong></div>
+                                            <div class="col-8">${details.name || 'N/A'}</div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-4"><strong>Email:</strong></div>
+                                            <div class="col-8">${details.email}</div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-4"><strong>Role:</strong></div>
+                                            <div class="col-8">
+                                                <span class="badge bg-primary">${details.role_display}</span>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-4"><strong>User ID:</strong></div>
+                                            <div class="col-8">${details.id}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Account Status -->
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Account Status</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row mb-2">
+                                            <div class="col-5"><strong>Active:</strong></div>
+                                            <div class="col-7">
+                                                <span class="badge ${details.is_active ? 'bg-success' : 'bg-danger'}">
+                                                    ${details.is_active ? 'Yes' : 'No'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-5"><strong>Email Verified:</strong></div>
+                                            <div class="col-7">
+                                                <span class="badge ${details.is_email_verified ? 'bg-success' : 'bg-warning'}">
+                                                    ${details.is_email_verified ? 'Yes' : 'No'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-5"><strong>Staff Status:</strong></div>
+                                            <div class="col-7">
+                                                <span class="badge ${details.is_staff ? 'bg-info' : 'bg-secondary'}">
+                                                    ${details.is_staff ? 'Yes' : 'No'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-5"><strong>Member Since:</strong></div>
+                                            <div class="col-7">${new Date(details.date_joined).toLocaleDateString()}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    `;
+
+    // Add role-specific information
+    if (details.student_profile) {
+        modalContent += `
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header bg-success text-white">
+                                        <h6 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Student Profile</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="row mb-2">
+                                                    <div class="col-4"><strong>Student ID:</strong></div>
+                                                    <div class="col-8">${details.student_profile.student_id || 'N/A'}</div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-4"><strong>School:</strong></div>
+                                                    <div class="col-8">${details.student_profile.school || 'N/A'}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="row mb-2">
+                                                    <div class="col-4"><strong>Department:</strong></div>
+                                                    <div class="col-8">${details.student_profile.department || 'N/A'}</div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-4"><strong>Contact No:</strong></div>
+                                                    <div class="col-8">${details.student_profile.contact_no || 'N/A'}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+        `;
+    }
+
+    if (details.admin_profile) {
+        modalContent += `
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header bg-warning text-dark">
+                                        <h6 class="mb-0"><i class="fas fa-user-tie me-2"></i>Admin Profile</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="row mb-2">
+                                                    <div class="col-5"><strong>Employee ID:</strong></div>
+                                                    <div class="col-7">${details.admin_profile.employee_id || 'N/A'}</div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-5"><strong>Department:</strong></div>
+                                                    <div class="col-7">${details.admin_profile.department || 'N/A'}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="row mb-2">
+                                                    <div class="col-5"><strong>Phone:</strong></div>
+                                                    <div class="col-7">${details.admin_profile.phone || 'N/A'}</div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-5"><strong>Office:</strong></div>
+                                                    <div class="col-7">${details.admin_profile.office_location || 'N/A'}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+        `;
+    }
+
+    modalContent += `
+                        <!-- Activity Information -->
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header bg-info text-white">
+                                        <h6 class="mb-0"><i class="fas fa-clock me-2"></i>Activity Information</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="row mb-2">
+                                                    <div class="col-5"><strong>Last Login:</strong></div>
+                                                    <div class="col-7">${details.last_login ? new Date(details.last_login).toLocaleString() : 'Never'}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="row mb-2">
+                                                    <div class="col-6"><strong>Failed Attempts:</strong></div>
+                                                    <div class="col-6">
+                                                        <span class="badge ${details.failed_login_attempts > 0 ? 'bg-warning' : 'bg-success'}">
+                                                            ${details.failed_login_attempts || 0}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Remove existing modal if any
+    const existingModal = document.getElementById('userDetailsModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // Add modal to page
+    document.body.insertAdjacentHTML('beforeend', modalContent);
+
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('userDetailsModal'));
+    modal.show();
+
+    // Clean up when modal is hidden
+    document.getElementById('userDetailsModal').addEventListener('hidden.bs.modal', function () {
+        this.remove();
+    });
+}
+
+// Function to edit user details
+function editUser(userId, email, role) {
+    console.log('Opening edit modal for user:', userId, email, role);
+    
+    // Store the user ID for form submission
+    window.currentEditUserId = userId;
+    
+    // First fetch the current user details
+    fetch(`/admin-panel/superadmin/users/${userId}/details/`, {
+        method: 'GET',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error('Authentication required. Please log in again.');
+            } else if (response.status === 403) {
+                throw new Error('Access denied. Super Admin privileges required.');
+            } else {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('User data for editing:', data);
+        if (data.success && data.user) {
+            showEditUserModal(data.user);
+        } else {
+            console.error('API response missing user data:', data);
+            alert('Failed to load user details for editing');
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching user details for editing:', error);
+        alert('Error loading user details: ' + error.message);
+    });
+}
+
+// Function to show edit user modal
+function showEditUserModal(userDetails) {
+    console.log('Creating edit modal for user:', userDetails);
+    
+    // Create edit modal HTML
+    let modalContent = `
+        <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title" id="editUserModalLabel">
+                            <i class="fas fa-edit me-2"></i>Edit User Profile
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="editUserForm">
+                        <div class="modal-body">
+                            <div class="row">
+                                <!-- Basic Information -->
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0"><i class="fas fa-user me-2"></i>Basic Information</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="edit_email" class="form-label">Email *</label>
+                                                <input type="email" class="form-control" id="edit_email" 
+                                                       value="${userDetails.email}" required readonly>
+                                                <small class="text-muted">Email cannot be changed</small>
+                                            </div>
+                                            
+                                            <div class="mb-3" id="roleSelectionDiv" style="display: ${userDetails.role === 'superadmin' ? 'none' : 'block'}">
+                                                <label for="edit_role" class="form-label">Role *</label>
+                                                <select class="form-select" id="edit_role" required onchange="handleRoleChange()">
+                                                    <option value="student" ${userDetails.role === 'student' ? 'selected' : ''}>Student</option>
+                                                    <option value="admin" ${userDetails.role === 'admin' ? 'selected' : ''}>Admin</option>
+                                                    <option value="officer" ${userDetails.role === 'officer' ? 'selected' : ''}>Officer</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="mb-3" id="superadminRoleDiv" style="display: ${userDetails.role === 'superadmin' ? 'block' : 'none'}">
+                                                <label class="form-label">Role</label>
+                                                <input type="text" class="form-control" value="Super Admin" readonly>
+                                                <small class="text-muted">Super Admin role cannot be changed</small>
+                                                <input type="hidden" id="edit_role_hidden" value="${userDetails.role}">
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label class="form-label">Account Status</label>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="edit_is_active" 
+                                                           ${userDetails.is_active ? 'checked' : ''}>
+                                                    <label class="form-check-label" for="edit_is_active">
+                                                        Active Account
+                                                    </label>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="edit_is_verified" 
+                                                           ${userDetails.is_email_verified ? 'checked' : ''}>
+                                                    <label class="form-check-label" for="edit_is_verified">
+                                                        Email Verified
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Role-specific Information -->
+                                <div class="col-md-6">
+                                    <div id="studentProfileCard" class="card h-100" style="display: ${userDetails.role === 'student' ? 'block' : 'none'}">
+                                        <div class="card-header bg-success text-white">
+                                            <h6 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Student Profile</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="edit_student_name" class="form-label">Full Name *</label>
+                                                <input type="text" class="form-control" id="edit_student_name" 
+                                                       value="${userDetails.student_profile?.name || ''}" required>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="edit_student_id" class="form-label">Student ID *</label>
+                                                <input type="text" class="form-control" id="edit_student_id" 
+                                                       value="${userDetails.student_profile?.student_id || ''}" required>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="edit_school" class="form-label">School *</label>
+                                                <input type="text" class="form-control" id="edit_school" 
+                                                       value="${userDetails.student_profile?.school || ''}" required>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="edit_department" class="form-label">Department *</label>
+                                                <input type="text" class="form-control" id="edit_department" 
+                                                       value="${userDetails.student_profile?.department || ''}" required>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="edit_contact_no" class="form-label">Contact Number</label>
+                                                <input type="tel" class="form-control" id="edit_contact_no" 
+                                                       value="${userDetails.student_profile?.contact_no || ''}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="adminProfileCard" class="card h-100" style="display: ${userDetails.role === 'admin' || userDetails.role === 'officer' ? 'block' : 'none'}">
+                                        <div class="card-header bg-primary text-white">
+                                            <h6 class="mb-0"><i class="fas fa-user-tie me-2"></i>Admin Profile</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label for="edit_admin_name" class="form-label">Full Name</label>
+                                                <input type="text" class="form-control" id="edit_admin_name" 
+                                                       value="${userDetails.name || ''}">
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="edit_employee_id" class="form-label">Employee ID</label>
+                                                <input type="text" class="form-control" id="edit_employee_id" 
+                                                       value="${userDetails.admin_profile?.employee_id || ''}">
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="edit_admin_department" class="form-label">Department</label>
+                                                <input type="text" class="form-control" id="edit_admin_department" 
+                                                       value="${userDetails.admin_profile?.department || ''}">
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="edit_phone" class="form-label">Phone</label>
+                                                <input type="tel" class="form-control" id="edit_phone" 
+                                                       value="${userDetails.admin_profile?.phone || ''}">
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="edit_office_location" class="form-label">Office Location</label>
+                                                <input type="text" class="form-control" id="edit_office_location" 
+                                                       value="${userDetails.admin_profile?.office_location || ''}">
+                                            </div>
+                                            
+                                            <!-- HOD Assignment Section -->
+                                            <div class="mb-3">
+                                                <label class="form-label">
+                                                    <i class="fas fa-university me-2"></i>Head of Department (HOD) Assignment
+                                                </label>
+                                                <div id="hodAssignmentSection">
+                                                    <select class="form-select" id="edit_hod_department" onchange="updateHodAssignment()">
+                                                        <option value="">Not assigned as HOD</option>
+                                                        <!-- Department options will be loaded dynamically -->
+                                                    </select>
+                                                    <small class="text-muted">Select department to assign this user as HOD</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="superadminProfileCard" class="card h-100" style="display: ${userDetails.role === 'superadmin' ? 'block' : 'none'}">
+                                        <div class="card-header bg-danger text-white">
+                                            <h6 class="mb-0"><i class="fas fa-crown me-2"></i>Super Admin Profile</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="alert alert-warning">
+                                                <i class="fas fa-shield-alt me-2"></i>
+                                                <strong>Protected Account:</strong> Super Admin is a unique role with full system access. Role cannot be changed for security reasons.
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="edit_superadmin_name" class="form-label">Display Name</label>
+                                                <input type="text" class="form-control" id="edit_superadmin_name" 
+                                                       value="${userDetails.name || 'Super Administrator'}" 
+                                                       placeholder="Super Administrator">
+                                                <small class="text-muted">Optional display name for the super admin account</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </button>
+                            <button type="button" class="btn btn-warning" id="saveUserButton">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Remove existing modal if any
+    const existingModal = document.getElementById('editUserModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // Add modal to page
+    document.body.insertAdjacentHTML('beforeend', modalContent);
+
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+    modal.show();
+
+    // Populate HOD assignment for admin/officer roles
+    if (userDetails.role === 'admin' || userDetails.role === 'officer') {
+        // Delay HOD population to ensure modal is fully rendered
+        setTimeout(() => {
+            populateHodAssignment(userDetails);
+        }, 500);
+    }
+
+    // Add button click event listener
+    const saveButton = document.getElementById('saveUserButton');
+    if (saveButton) {
+        saveButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            console.log('Save button clicked');
+            handleFormSubmit(event);
+        });
+        console.log('Save button click event listener added');
+    } else {
+        console.error('Save button not found');
+    }
+
+    // Clean up when modal is hidden
+    document.getElementById('editUserModal').addEventListener('hidden.bs.modal', function () {
+        this.remove();
+    });
+
+    // Add form submission handler
+    document.getElementById('editUserForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        console.log('Form submitted, calling saveUserChanges...');
+        saveUserChanges(userDetails.id);
+    });
+}
+
+// Function to handle role change in edit modal
+function handleRoleChange() {
+    const roleElement = document.getElementById('edit_role');
+    const role = roleElement ? roleElement.value : 'superadmin'; // Default to superadmin if no dropdown
+    
+    // Hide all profile cards
+    document.getElementById('studentProfileCard').style.display = 'none';
+    document.getElementById('adminProfileCard').style.display = 'none';
+    document.getElementById('superadminProfileCard').style.display = 'none';
+    
+    // Show appropriate card based on role
+    if (role === 'student') {
+        document.getElementById('studentProfileCard').style.display = 'block';
+    } else if (role === 'admin' || role === 'officer') {
+        document.getElementById('adminProfileCard').style.display = 'block';
+        
+        // Load HOD assignment options for admin/officer roles
+        const userDetails = { 
+            id: window.currentEditUserId, 
+            role: role 
+        };
+        if (window.currentEditUserId) {
+            populateHodAssignment(userDetails);
+        }
+    } else if (role === 'superadmin') {
+        document.getElementById('superadminProfileCard').style.display = 'block';
+    }
+}
+
+// Function to handle form submission
+function handleFormSubmit(event) {
+    event.preventDefault(); // Prevent default form submission
+    console.log('Form submitted, calling saveUserChanges...');
+    
+    // Get the user ID from the current edit modal data
+    const userId = window.currentEditUserId; // We'll set this when opening the modal
+    if (userId) {
+        saveUserChanges(userId);
+    } else {
+        console.error('No user ID available for saving changes');
+        alert('Error: Unable to identify user for saving changes');
+    }
+}
+
+// Function to save user changes
+function saveUserChanges(userId) {
+    console.log('saveUserChanges called with userId:', userId);
+    
+    try {
+        // Get form data based on current role
+        const roleElement = document.getElementById('edit_role');
+        const hiddenRoleElement = document.getElementById('edit_role_hidden');
+        const role = roleElement ? roleElement.value : hiddenRoleElement.value;
+        const isActive = document.getElementById('edit_is_active').checked;
+        const isVerified = document.getElementById('edit_is_verified').checked;
+        
+        console.log('Form values:', { role, isActive, isVerified });
+        
+        const formData = {
+            role: role,
+            is_active: isActive,
+            is_email_verified: isVerified
+        };
+        
+        console.log('Base form data:', formData);
+    
+    // Add role-specific data
+    if (role === 'student') {
+        formData.student_profile = {
+            name: document.getElementById('edit_student_name').value,
+            student_id: document.getElementById('edit_student_id').value,
+            school: document.getElementById('edit_school').value,
+            department: document.getElementById('edit_department').value,
+            contact_no: document.getElementById('edit_contact_no').value
+        };
+    } else if (role === 'admin' || role === 'officer') {
+        formData.admin_profile = {
+            name: document.getElementById('edit_admin_name').value,
+            employee_id: document.getElementById('edit_employee_id').value,
+            department: document.getElementById('edit_admin_department').value,
+            phone: document.getElementById('edit_phone').value,
+            office_location: document.getElementById('edit_office_location').value,
+            role_level: role
+        };
+    } else if (role === 'superadmin') {
+        formData.name = document.getElementById('edit_superadmin_name').value;
+    }
+    
+    console.log('Form data to submit:', formData);
+    
+    // Add loading state to save button
+    const saveButton = document.getElementById('saveUserButton');
+    if (!saveButton) {
+        console.error('Save button not found');
+        alert('Error: Save button not found');
+        return;
+    }
+    
+    const originalText = saveButton.innerHTML;
+    saveButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+    saveButton.disabled = true;
+    
+    // Submit the changes
+    fetch(`/admin-panel/superadmin/users/${userId}/edit/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => {
+        console.log('Save response status:', response.status);
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error('Authentication required. Please log in again.');
+            } else if (response.status === 403) {
+                throw new Error('Access denied. Super Admin privileges required.');
+            } else {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Save response:', data);
+        
+        // Check if this is an admin/officer user for HOD assignment
+        const role = document.getElementById('edit_role') ? document.getElementById('edit_role').value : document.getElementById('edit_role_hidden').value;
+        
+        if ((role === 'admin' || role === 'officer') && document.getElementById('edit_hod_department')) {
+            // Save HOD assignment for admin/officer users
+            const hodDepartmentSelect = document.getElementById('edit_hod_department');
+            const hodDepartmentId = hodDepartmentSelect ? hodDepartmentSelect.value : null;
+            
+            // Only attempt HOD assignment if the element exists and has a value
+            if (hodDepartmentSelect && typeof saveHodAssignment === 'function') {
+                saveHodAssignment(userId, hodDepartmentId)
+                    .then(hodResult => {
+                        console.log('HOD assignment result:', hodResult);
+                        
+                        // Restore button state
+                        saveButton.innerHTML = originalText;
+                        saveButton.disabled = false;
+                        
+                        if (data.success) {
+                            alert('User profile and HOD assignment updated successfully!');
+                            
+                            // Close modal
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+                            if (modal) {
+                                modal.hide();
+                            }
+                            
+                            // Refresh the page to show updated data
+                            window.location.reload();
+                        } else {
+                            alert('Profile updated but there may have been issues. Error: ' + (data.error || 'Unknown error'));
+                        }
+                    })
+                    .catch(hodError => {
+                        console.error('HOD assignment error:', hodError);
+                        
+                        // Restore button state
+                        saveButton.innerHTML = originalText;
+                        saveButton.disabled = false;
+                        
+                        // Still show success for user profile update
+                        if (data.success) {
+                            alert('User profile updated successfully! (Note: HOD assignment may have failed: ' + hodError.message + ')');
+                            
+                            // Close modal and refresh
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+                            if (modal) {
+                                modal.hide();
+                            }
+                            window.location.reload();
+                        } else {
+                            alert('User profile update failed: ' + (data.error || 'Unknown error'));
+                        }
+                    });
+            } else {
+                // HOD assignment not available, just handle regular user update
+                console.log('HOD assignment not available, proceeding with regular user update');
+                
+                // Restore button state
+                saveButton.innerHTML = originalText;
+                saveButton.disabled = false;
+                
+                if (data.success) {
+                    alert('User profile updated successfully!');
+                    
+                    // Close modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+                    if (modal) {
+                        modal.hide();
+                    }
+                    
+                    // Refresh the page to show updated data
+                    window.location.reload();
+                } else {
+                    alert('Error saving changes: ' + (data.error || 'Unknown error'));
+                }
+            }
+        } else {
+            // No HOD assignment needed, just handle the regular user update
+            // Restore button state
+            saveButton.innerHTML = originalText;
+            saveButton.disabled = false;
+            
+            if (data.success) {
+                console.log('User profile updated successfully');
+                
+                // Close the modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+                if (modal) {
+                    modal.hide();
+                }
+                
+                // Reload the page to show updated data
+                window.location.reload();
+            } else {
+                alert('Error saving changes: ' + (data.error || 'Unknown error'));
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error saving user changes:', error);
+        
+        // Restore button state
+        saveButton.innerHTML = originalText;
+        saveButton.disabled = false;
+        
+        alert('Error saving changes: ' + error.message);
+    });
+    
+    } catch (error) {
+        console.error('Error in saveUserChanges:', error);
+        alert('Error preparing save data: ' + error.message);
+    }
+}
+
+// Helper function to get CSRF token
+function getCsrfToken() {
+    // Try multiple methods to get CSRF token
+    let token = null;
+    
+    // Method 1: From hidden input
+    const tokenInput = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (tokenInput) {
+        token = tokenInput.value;
+    }
+    
+    // Method 2: From cookie
+    if (!token) {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'csrftoken') {
+                token = decodeURIComponent(value);
+                break;
+            }
+        }
+    }
+    
+    // Method 3: From meta tag (if exists)
+    if (!token) {
+        const metaTag = document.querySelector('meta[name="csrf-token"]');
+        if (metaTag) {
+            token = metaTag.getAttribute('content');
+        }
+    }
+    
+    console.log('CSRF token found:', token ? 'Yes' : 'No');
+    return token || '';
+}
+
+// Function to view/edit deactivation reason
+function viewDeactivationReason(userId, userEmail, currentReason) {
+    document.getElementById('deactivationUserId').value = userId;
+    document.getElementById('deactivationUserEmail').textContent = userEmail;
+    document.getElementById('deactivationReasonText').value = currentReason || '';
+    
+    const modal = new bootstrap.Modal(document.getElementById('deactivationReasonModal'));
+    modal.show();
+}
+
+// Function to save deactivation reason
+function saveDeactivationReason() {
+    const userId = document.getElementById('deactivationUserId').value;
+    const reason = document.getElementById('deactivationReasonText').value.trim();
+    
+    if (!reason) {
+        alert('Please provide a deactivation reason.');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', getCsrfToken());
+    formData.append('deactivation_reason', reason);
+    
+    fetch(`/admin-panel/superadmin/users/${userId}/update-deactivation-reason/`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('deactivationReasonModal'));
+            modal.hide();
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        alert('Error updating reason: ' + error);
+    });
+}
+
+// HOD Assignment Functions
+async function loadDepartments() {
+    try {
+        const response = await fetch('/admin-panel/api/departments/');
+        if (!response.ok) throw new Error('Failed to load departments');
+        const data = await response.json();
+        return data.departments || [];
+    } catch (error) {
+        console.error('Error loading departments:', error);
+        return [];
+    }
+}
+
+async function loadUserHodAssignment(userId) {
+    try {
+        const response = await fetch(`/admin-panel/api/users/${userId}/hod-assignment/`);
+        if (!response.ok) throw new Error('Failed to load HOD assignment');
+        return await response.json();
+    } catch (error) {
+        console.error('Error loading HOD assignment:', error);
+        return null;
+    }
+}
+
+async function populateHodAssignment(userDetails) {
+    const hodSelect = document.getElementById('edit_hod_department');
+    if (!hodSelect) {
+        console.log('HOD select element not found, skipping HOD assignment');
+        return;
+    }
+    
+    try {
+        // Load departments
+        const departments = await loadDepartments();
+        
+        // Clear existing options
+        hodSelect.innerHTML = '<option value="">Not assigned as HOD</option>';
+        
+        // Add department options
+        departments.forEach(dept => {
+            const option = document.createElement('option');
+            option.value = dept.id;
+            option.textContent = `${dept.name} (${dept.school_name || 'No School'})`;
+            hodSelect.appendChild(option);
+        });
+        
+        // Check if user is currently HOD of any department
+        try {
+            const hodAssignment = await loadUserHodAssignment(userDetails.id);
+            if (hodAssignment && hodAssignment.department_id) {
+                hodSelect.value = hodAssignment.department_id;
+            }
+        } catch (error) {
+            console.warn('Could not load current HOD assignment:', error);
+            // Continue without setting current assignment
+        }
+        
+        console.log('HOD assignment populated successfully');
+    } catch (error) {
+        console.error('Error populating HOD assignment:', error);
+        // Add error message to select
+        hodSelect.innerHTML = '<option value="">Error loading departments</option>';
+    }
+}
+
+function updateHodAssignment() {
+    // This function will be called when HOD assignment changes
+    console.log('HOD assignment changed');
+}
+
+async function saveHodAssignment(userId, departmentId) {
+    try {
+        const response = await fetch(`/admin-panel/api/users/${userId}/hod-assignment/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({
+                department_id: departmentId || null
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to save HOD assignment');
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error saving HOD assignment:', error);
+        throw error;
+    }
+}
+</script>
+
+<!-- Deactivation Reason Modal -->
+<div class="modal fade" id="deactivationReasonModal" tabindex="-1" aria-labelledby="deactivationReasonModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deactivationReasonModalLabel">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                    Deactivation Reason
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3">
+                    <strong>User:</strong> <span id="deactivationUserEmail"></span>
+                </p>
+                <div class="mb-3">
+                    <label for="deactivationReasonText" class="form-label">Deactivation Reason</label>
+                    <textarea class="form-control" id="deactivationReasonText" rows="4" 
+                              placeholder="Enter the reason for deactivating this account..."></textarea>
+                    <div class="form-text">This reason will be shown to the user when they try to log in.</div>
+                </div>
+                <input type="hidden" id="deactivationUserId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" onclick="saveDeactivationReason()">
+                    <i class="fas fa-save me-1"></i>Save Reason
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSRF Token -->
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+{% endblock %}

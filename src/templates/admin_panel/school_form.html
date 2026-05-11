@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ action }} School - Admin Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-section {
+        background: #f8f9fa;
+        border-left: 4px solid #17a2b8;
+        padding: 1.5rem;
+        border-radius: 5px;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-section h5 {
+        color: #17a2b8;
+        margin-bottom: 1rem;
+    }
+    
+    .preview-card {
+        border: 2px dashed #dee2e6;
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        background: #f8f9fa;
+    }
+    
+    .character-counter {
+        font-size: 0.875rem;
+        color: #6c757d;
+        float: right;
+        margin-top: 0.25rem;
+    }
+    
+    .character-counter.warning {
+        color: #fd7e14;
+    }
+    
+    .character-counter.error {
+        color: #dc3545;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-0">
+                        <i class="fas fa-{% if action == 'Create' %}plus{% else %}edit{% endif %} me-2"></i>{{ action }} School
+                    </h2>
+                    <p class="text-muted mb-0">{% if action == 'Create' %}Add a new educational institution{% else %}Modify school details{% endif %}</p>
+                </div>
+                <a href="{% url 'admin_panel:school_management' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Schools
+                </a>
+            </div>
+            
+            <nav aria-label="breadcrumb" class="mt-2">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'admin_panel:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'admin_panel:crud_management' %}">CRUD Management</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'admin_panel:school_management' %}">Schools</a></li>
+                    <li class="breadcrumb-item active">{{ action }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <div class="row">
+        <div class="col-lg-8">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <h5><i class="fas fa-info-circle me-2"></i>Basic Information</h5>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">School Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="name" name="name" 
+                                       value="{% if school %}{{ school.name }}{% elif form_data %}{{ form_data.name }}{% endif %}" 
+                                       maxlength="200" required>
+                                <div class="character-counter" id="nameCounter">0/200</div>
+                                <div class="form-text">Enter the full official name of the school</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="code" class="form-label">School Code</label>
+                                <input type="text" class="form-control" id="code" name="code" 
+                                       value="{% if school %}{{ school.code }}{% elif form_data %}{{ form_data.code }}{% endif %}" 
+                                       maxlength="20" placeholder="e.g., SCS">
+                                <div class="form-text">Optional unique identifier</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"
+                                  maxlength="500" placeholder="Brief description of the school">{% if school %}{{ school.description }}{% elif form_data %}{{ form_data.description }}{% endif %}</textarea>
+                        <div class="character-counter" id="descriptionCounter">0/500</div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-info">
+                        <i class="fas fa-save me-1"></i>{{ action }} School
+                    </button>
+                    <a href="{% url 'admin_panel:school_management' %}" class="btn btn-secondary">
+                        <i class="fas fa-times me-1"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Preview Card -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-eye me-2"></i>School Preview</h6>
+                </div>
+                <div class="card-body">
+                    <div class="preview-card" id="schoolPreview">
+                        <i class="fas fa-school fa-3x text-muted mb-3"></i>
+                        <h6 id="previewName" class="text-muted">School Name</h6>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Guidelines -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Guidelines</h6>
+                </div>
+                <div class="card-body">
+                    <h6>School Naming:</h6>
+                    <ul class="small">
+                        <li>Use the official full name</li>
+                        <li>Avoid abbreviations in the main name</li>
+                        <li>Be consistent with naming conventions</li>
+                    </ul>
+                    
+                    <h6>Contact Information:</h6>
+                    <ul class="small">
+                        <li>Provide accurate contact details</li>
+                        <li>Use main administrative contacts</li>
+                        <li>Ensure email addresses are monitored</li>
+                    </ul>
+                    
+                    <h6>Best Practices:</h6>
+                    <ul class="small">
+                        <li>Fill all relevant fields completely</li>
+                        <li>Verify information accuracy</li>
+                        <li>Update details regularly</li>
+                    </ul>
+                </div>
+            </div>
+            
+            {% if school %}
+            <!-- School Stats -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>School Statistics</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h4 class="text-primary mb-0">{{ school.departments.count }}</h4>
+                            <small class="text-muted">Departments</small>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-success mb-0">{{ school.students.count }}</h4>
+                            <small class="text-muted">Students</small>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <strong>Created:</strong>
+                        </div>
+                        <div class="col-sm-6">
+                            {{ school.created_at|date:"M d, Y" }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <strong>Last Updated:</strong>
+                        </div>
+                        <div class="col-sm-6">
+                            {{ school.updated_at|date:"M d, Y" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Character counter function
+    function setupCharacterCounter(inputId, counterId, maxLength) {
+        const input = document.getElementById(inputId);
+        const counter = document.getElementById(counterId);
+        
+        if (input && counter) {
+            function updateCounter() {
+                const length = input.value.length;
+                counter.textContent = `${length}/${maxLength}`;
+                
+                counter.classList.remove('warning', 'error');
+                if (length > maxLength * 0.8) {
+                    counter.classList.add('warning');
+                }
+                if (length >= maxLength) {
+                    counter.classList.add('error');
+                }
+            }
+            
+            input.addEventListener('input', updateCounter);
+            updateCounter(); // Initial update
+        }
+    }
+    
+    setupCharacterCounter('name', 'nameCounter', 200);
+    setupCharacterCounter('description', 'descriptionCounter', 500);
+    
+    // Live preview
+    const nameInput = document.getElementById('name');
+    const codeInput = document.getElementById('code');
+    const previewName = document.getElementById('previewName');
+    
+    function updatePreview() {
+        const name = nameInput.value.trim() || 'School Name';
+        previewName.textContent = name;
+    }
+    
+    nameInput.addEventListener('input', updatePreview);
+    if (codeInput) {
+        codeInput.addEventListener('input', updatePreview);
+    }
+    updatePreview(); // Initial preview
+    
+    // Form validation
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const name = nameInput.value.trim();
+        
+        if (!name) {
+            e.preventDefault();
+            nameInput.focus();
+            alert('School name is required.');
+            return;
+        }
+    });
+});
+</script>
+{% endblock %}

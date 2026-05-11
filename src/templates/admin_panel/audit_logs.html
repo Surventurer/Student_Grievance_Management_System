@@ -1,0 +1,373 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Audit Logs - Admin Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .audit-card {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid #e9ecef;
+    }
+    
+    .stats-row {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        color: white;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .audit-item {
+        border-left: 4px solid #007bff;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background: #f8f9fa;
+        border-radius: 0 10px 10px 0;
+        transition: all 0.3s ease;
+    }
+    
+    .audit-item:hover {
+        background: #e9ecef;
+        transform: translateX(5px);
+    }
+    
+    .audit-item.create { border-left-color: #28a745; }
+    .audit-item.update { border-left-color: #ffc107; }
+    .audit-item.delete { border-left-color: #dc3545; }
+    .audit-item.login { border-left-color: #17a2b8; }
+    .audit-item.logout { border-left-color: #6c757d; }
+    .audit-item.assign { border-left-color: #fd7e14; }
+    .audit-item.status_change { border-left-color: #e83e8c; }
+    
+    .audit-time {
+        font-size: 0.85rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    .audit-user {
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .audit-action {
+        color: #007bff;
+        font-weight: 500;
+        text-transform: capitalize;
+    }
+    
+    .audit-description {
+        color: #6c757d;
+        margin-top: 0.5rem;
+    }
+    
+    .filter-section {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .pagination {
+        justify-content: center;
+    }
+    
+    .pagination .page-link {
+        border-radius: 8px;
+        margin: 0 2px;
+        border: 1px solid #dee2e6;
+        color: #495057;
+    }
+    
+    .pagination .page-link:hover {
+        background-color: #e9ecef;
+    }
+    
+    .pagination .page-item.active .page-link {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    
+    .search-box {
+        position: relative;
+    }
+    
+    .search-box .fas {
+        position: absolute;
+        top: 50%;
+        left: 10px;
+        transform: translateY(-50%);
+        color: #6c757d;
+    }
+    
+    .search-box input {
+        padding-left: 35px;
+    }
+    
+    .action-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 15px;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    
+    .badge-create { background: #d4edda; color: #155724; }
+    .badge-update { background: #fff3cd; color: #856404; }
+    .badge-delete { background: #f8d7da; color: #721c24; }
+    .badge-login { background: #d1ecf1; color: #0c5460; }
+    .badge-logout { background: #e2e3e5; color: #383d41; }
+    .badge-assign { background: #ffeaa7; color: #d63031; }
+    .badge-status_change { background: #fab1a0; color: #2d3436; }
+    
+    .ip-info {
+        font-size: 0.8rem;
+        color: #6c757d;
+        font-family: monospace;
+    }
+    
+    @media print {
+        body { background: white; }
+        .navbar, .sidebar, .filter-section, .stats-row, .pagination, button {
+            display: none !important;
+        }
+        .audit-card {
+            box-shadow: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+        .audit-item {
+            page-break-inside: avoid;
+            border: 1px solid #ddd;
+            border-left: 4px solid #007bff;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold">
+                        <i class="fas fa-history me-2 text-primary"></i>Audit Logs
+                    </h2>
+                    <p class="text-muted mb-0">Track all administrative actions and system events</p>
+                </div>
+                <div>
+                    <a href="?{{ request.GET.urlencode }}&print=true" class="btn btn-outline-primary" target="_blank">
+                        <i class="fas fa-print me-2"></i>Print All Logs
+                    </a>
+                </div>
+            </div>
+
+            <!-- Statistics Row -->
+            <div class="stats-row">
+                <div class="row">
+                    <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
+                        <div class="stat-card">
+                            <h3 class="mb-0">{{ total_logs|floatformat:0 }}</h3>
+                            <p class="mb-0">Total Logs</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
+                        <div class="stat-card">
+                            <h3 class="mb-0">{{ today_logs|floatformat:0 }}</h3>
+                            <p class="mb-0">Today's Activity</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
+                        <div class="stat-card">
+                            <h3 class="mb-0">{{ action_stats.0.count|default:0 }}</h3>
+                            <p class="mb-0">Most Common Action</p>
+                            <small>{{ action_stats.0.action|default:"N/A"|capfirst }}</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="stat-card">
+                            <h3 class="mb-0">{{ audit_logs.paginator.count|floatformat:0 }}</h3>
+                            <p class="mb-0">Filtered Results</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="action" class="form-label">Action Type</label>
+                        <select name="action" id="action" class="form-select">
+                            <option value="">All Actions</option>
+                            {% for action_type in action_types %}
+                            <option value="{{ action_type }}" {% if filters.action == action_type %}selected{% endif %}>
+                                {{ action_type|capfirst }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="user" class="form-label">User</label>
+                        <input type="text" class="form-control" id="user" name="user" 
+                               value="{{ filters.user }}" placeholder="Enter email">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="date_from" class="form-label">From Date</label>
+                        <input type="date" class="form-control" id="date_from" name="date_from" 
+                               value="{{ filters.date_from }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="date_to" class="form-label">To Date</label>
+                        <input type="date" class="form-control" id="date_to" name="date_to" 
+                               value="{{ filters.date_to }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="search" class="form-label">Search</label>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   value="{{ filters.search }}" placeholder="Search...">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter me-2"></i>Filter
+                        </button>
+                        <a href="{% url 'admin_panel:audit_logs' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>Clear
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Audit Logs -->
+            <div class="audit-card">
+                <h5 class="card-title mb-4">
+                    <i class="fas fa-list-alt me-2"></i>Audit Trail
+                    <small class="text-muted">({{ audit_logs.paginator.count }} entries)</small>
+                </h5>
+
+                {% if audit_logs %}
+                    {% for log in audit_logs %}
+                    <div class="audit-item {{ log.action }}">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <div class="d-flex align-items-center">
+                                    <span class="action-badge badge-{{ log.action }}">
+                                        {{ log.action|upper }}
+                                    </span>
+                                    <div class="ms-3">
+                                        <div class="audit-user">{{ log.user.email }}</div>
+                                        <div class="audit-description">{{ log.description }}</div>
+                                        <div class="small text-muted">
+                                            <span class="me-3">
+                                                <i class="fas fa-cube me-1"></i>{{ log.target_model }}
+                                            </span>
+                                            <span class="me-3">
+                                                <i class="fas fa-tag me-1"></i>{{ log.target_id|truncatechars:15 }}
+                                            </span>
+                                            {% if log.ip_address %}
+                                            <span class="ip-info me-3">
+                                                <i class="fas fa-map-marker-alt me-1"></i>{{ log.ip_address }}
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <div class="audit-time">
+                                    <i class="fas fa-clock me-1"></i>
+                                    {{ log.timestamp|date:"M d, Y" }}
+                                    <br>
+                                    {{ log.timestamp|time:"H:i:s" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No audit logs found</h5>
+                        <p class="text-muted">Try adjusting your filters or check back later.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Pagination -->
+            {% if audit_logs.has_other_pages %}
+            <nav aria-label="Audit logs pagination">
+                <ul class="pagination">
+                    {% if audit_logs.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{{ request.GET.urlencode|add:'&' }}">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ audit_logs.previous_page_number }}{{ request.GET.urlencode|add:'&' }}">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in audit_logs.paginator.page_range %}
+                        {% if audit_logs.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > audit_logs.number|add:'-3' and num < audit_logs.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{{ request.GET.urlencode|add:'&' }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if audit_logs.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ audit_logs.next_page_number }}{{ request.GET.urlencode|add:'&' }}">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ audit_logs.paginator.num_pages }}{{ request.GET.urlencode|add:'&' }}">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (window.location.search.includes('print=true')) {
+            window.print();
+        }
+    });
+</script>
+{% endblock %}

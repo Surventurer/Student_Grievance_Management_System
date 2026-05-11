@@ -1,0 +1,339 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create User - Admin Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .required-field {
+        border-left: 3px solid #dc3545 !important;
+    }
+    
+    .form-label .text-danger {
+        font-weight: bold;
+    }
+    
+    .alert-validation {
+        border-left: 4px solid #dc3545;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-user-plus"></i> Create New User</h3>
+                    <p class="mb-0">Add a new user to the system with appropriate role and profile</p>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Help Text -->
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle"></i> 
+                        <strong>Creating Users:</strong> Fill in the basic information first, then select a role. 
+                        Additional fields will appear based on the selected role. All fields marked with 
+                        <span class="text-danger">*</span> are required.
+                        <br><br>
+                        <strong>Default Password:</strong> All new users will be created with the password 
+                        <code>default123</code>. Users should change this password after their first login.
+                    </div>
+
+                    <!-- Messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" id="createUserForm">
+                        {% csrf_token %}
+                        
+                        <!-- Basic Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-primary border-bottom pb-2">Basic Information</h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="role" class="form-label">User Role <span class="text-danger">*</span></label>
+                                <select class="form-control" id="role" name="role" required>
+                                    <option value="">Select Role</option>
+                                    {% for value, label in role_choices %}
+                                        <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" value="default123">
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-info-circle"></i> Default password: <strong>default123</strong> 
+                                    (Users can change this after first login)
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Student-specific fields -->
+                        <div id="student-fields" style="display: none;">
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="text-success border-bottom pb-2">Student Information</h5>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="name" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="name" name="name">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="student_id" class="form-label">Student ID <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="student_id" name="student_id">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="school" class="form-label">School <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="school" name="school" required>
+                                        <option value="">Select School</option>
+                                        {% for school in schools %}
+                                            <option value="{{ school.name }}">{{ school.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="department" name="department" required>
+                                        <option value="">Select Department</option>
+                                        {% for department in departments %}
+                                            <option value="{{ department.name }}">{{ department.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="contact_no" class="form-label">Contact Number</label>
+                                    <input type="tel" class="form-control" id="contact_no" name="contact_no">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Admin/Officer-specific fields -->
+                        <div id="admin-fields" style="display: none;">
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="text-warning border-bottom pb-2">Admin/Officer Information</h5>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="employee_id" class="form-label">Employee ID <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="employee_id" name="employee_id">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="admin_department" class="form-label">Department <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="admin_department" name="admin_department" required>
+                                        <option value="">Select Department</option>
+                                        {% for department in departments %}
+                                            <option value="{{ department.name }}">{{ department.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="phone" class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="office_location" class="form-label">Office Location</label>
+                                    <input type="text" class="form-control" id="office_location" name="office_location">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'admin_panel:user_management' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Create User
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('role');
+    const studentFields = document.getElementById('student-fields');
+    const adminFields = document.getElementById('admin-fields');
+    
+    function toggleRoleFields() {
+        const selectedRole = roleSelect.value;
+        
+        // Hide all role-specific fields
+        studentFields.style.display = 'none';
+        adminFields.style.display = 'none';
+        
+        // Show relevant fields based on selected role
+        if (selectedRole === 'student') {
+            studentFields.style.display = 'block';
+            
+            // Make student fields required and add visual feedback
+            document.getElementById('student_id').required = true;
+            document.getElementById('school').required = true;
+            document.getElementById('department').required = true;
+            
+            // Ensure fields are enabled
+            document.getElementById('student_id').disabled = false;
+            document.getElementById('school').disabled = false;
+            document.getElementById('department').disabled = false;
+            
+            // Add required styling
+            document.getElementById('student_id').classList.add('required-field');
+            document.getElementById('school').classList.add('required-field');
+            document.getElementById('department').classList.add('required-field');
+            
+            // Remove admin field requirements and styling, but disable them
+            document.getElementById('employee_id').required = false;
+            document.getElementById('admin_department').required = false;
+            document.getElementById('employee_id').disabled = true;
+            document.getElementById('admin_department').disabled = true;
+            document.getElementById('employee_id').classList.remove('required-field');
+            document.getElementById('admin_department').classList.remove('required-field');
+        } else if (selectedRole === 'admin' || selectedRole === 'officer') {
+            adminFields.style.display = 'block';
+            
+            // Make admin fields required and add visual feedback
+            document.getElementById('employee_id').required = true;
+            document.getElementById('admin_department').required = true;
+            
+            // Ensure fields are enabled
+            document.getElementById('employee_id').disabled = false;
+            document.getElementById('admin_department').disabled = false;
+            
+            // Add required styling
+            document.getElementById('employee_id').classList.add('required-field');
+            document.getElementById('admin_department').classList.add('required-field');
+            
+            // Remove student field requirements and styling, but disable them
+            document.getElementById('student_id').required = false;
+            document.getElementById('school').required = false;
+            document.getElementById('department').required = false;
+            document.getElementById('student_id').disabled = true;
+            document.getElementById('school').disabled = true;
+            document.getElementById('department').disabled = true;
+            document.getElementById('student_id').classList.remove('required-field');
+            document.getElementById('school').classList.remove('required-field');
+            document.getElementById('department').classList.remove('required-field');
+        } else {
+            // No role selected, disable all fields
+            document.getElementById('student_id').required = false;
+            document.getElementById('school').required = false;
+            document.getElementById('department').required = false;
+            document.getElementById('employee_id').required = false;
+            document.getElementById('admin_department').required = false;
+            
+            // Disable all role-specific fields
+            document.getElementById('student_id').disabled = true;
+            document.getElementById('school').disabled = true;
+            document.getElementById('department').disabled = true;
+            document.getElementById('employee_id').disabled = true;
+            document.getElementById('admin_department').disabled = true;
+            
+            // Remove all styling
+            document.querySelectorAll('.required-field').forEach(field => {
+                field.classList.remove('required-field');
+            });
+        }
+    }
+    
+    // Initial toggle
+    toggleRoleFields();
+    
+    // Toggle on role change
+    roleSelect.addEventListener('change', toggleRoleFields);
+    
+    // Form submission validation
+    document.getElementById('createUserForm').addEventListener('submit', function(e) {
+        const role = roleSelect.value;
+        const email = document.getElementById('email').value.trim();
+        
+        // Basic validation
+        if (!email || !role) {
+            e.preventDefault();
+            alert('Email and Role are required fields.');
+            return;
+        }
+        
+        // Role-specific validation
+        if (role === 'student') {
+            const studentId = document.getElementById('student_id').value.trim();
+            const school = document.getElementById('school').value;
+            const department = document.getElementById('department').value;
+            
+            console.log('Student form data:', { studentId, school, department });
+            
+            if (!studentId) {
+                e.preventDefault();
+                alert('Student ID is required for student accounts.');
+                document.getElementById('student_id').focus();
+                return;
+            }
+            
+            if (!school) {
+                e.preventDefault();
+                alert('School selection is required for student accounts.');
+                document.getElementById('school').focus();
+                return;
+            }
+            
+            if (!department) {
+                e.preventDefault();
+                alert('Department selection is required for student accounts.');
+                document.getElementById('department').focus();
+                return;
+            }
+        } else if (role === 'admin' || role === 'officer') {
+            const employeeId = document.getElementById('employee_id').value.trim();
+            const department = document.getElementById('admin_department').value;
+            
+            console.log('Admin form data:', { employeeId, department });
+            
+            if (!employeeId) {
+                e.preventDefault();
+                alert('Employee ID is required for ' + role + ' accounts.');
+                document.getElementById('employee_id').focus();
+                return;
+            }
+            
+            if (!department) {
+                e.preventDefault();
+                alert('Department selection is required for ' + role + ' accounts.');
+                document.getElementById('admin_department').focus();
+                return;
+            }
+        }
+        
+        // Before submitting, ensure all fields are enabled so they are included in the form data
+        document.querySelectorAll('input, select').forEach(field => {
+            if (field.type !== 'hidden' && field.name) {
+                field.disabled = false;
+            }
+        });
+        
+        // All validations passed
+        console.log('Form validation passed, submitting...');
+        return true;
+    });
+});
+</script>
+{% endblock %}

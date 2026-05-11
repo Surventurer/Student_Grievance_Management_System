@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Grievances{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>My Grievances</h1>
+            <a href="{% url 'grievances_web:submit_grievance' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Submit New Grievance
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total</h5>
+                <h3>{{ total_grievances }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <h5 class="card-title">Pending</h5>
+                <h3>{{ pending_grievances }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h5 class="card-title">Resolved</h5>
+                <h3>{{ resolved_grievances }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter Options -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="get" class="row g-3" id="searchForm">
+                    <!-- Search Bar -->
+                    <div class="col-md-6">
+                        <label for="search" class="form-label">Search Grievances</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" 
+                                   name="search" 
+                                   id="search"
+                                   class="form-control" 
+                                   placeholder="Search by Grievance ID, Title, or Category..."
+                                   value="{{ search_query }}"
+                                   autocomplete="off">
+                            {% if search_query %}
+                            <button type="button" class="btn btn-outline-secondary" onclick="clearSearch()" title="Clear search">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                        <small class="form-text text-muted">
+                            Search across Grievance ID, Title, and Category fields
+                        </small>
+                    </div>
+                    
+                    <!-- Status Filter -->
+                    <div class="col-md-4">
+                        <label for="status" class="form-label">Filter by Status</label>
+                        <select name="status" id="status" class="form-select">
+                            <option value="">All Status</option>
+                            <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="resolved" {% if status_filter == 'resolved' %}selected{% endif %}>Resolved</option>
+                            <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Search Buttons -->
+                    <div class="col-md-2 d-flex align-items-end">
+                        <div class="btn-group w-100">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-1"></i>Search
+                            </button>
+                            <a href="{% url 'students:grievances' %}" class="btn btn-outline-secondary" title="Reset filters">
+                                <i class="fas fa-refresh"></i>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+                
+                <!-- Search Results Info -->
+                {% if search_query or status_filter %}
+                <div class="mt-3 pt-3 border-top">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="text-muted">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Showing {{ filtered_count }} of {{ total_grievances }} grievances
+                            {% if search_query %}
+                                matching "<strong>{{ search_query }}</strong>"
+                            {% endif %}
+                            {% if status_filter %}
+                                with status "<strong>{{ status_filter|title }}</strong>"
+                            {% endif %}
+                        </div>
+                        {% if search_query or status_filter %}
+                        <a href="{% url 'students:grievances' %}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-times me-1"></i>Clear All Filters
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Grievances Table -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Grievance List</h5>
+    </div>
+    <div class="card-body">
+        {% if page_obj.object_list %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Grievance ID</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                            <th>Submitted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for grievance in page_obj.object_list %}
+                        <tr>
+                            <td>
+                                <span class="badge bg-secondary">{{ grievance.grievance_id }}</span>
+                            </td>
+                            <td>
+                                <div class="fw-bold">{{ grievance.title|truncatechars:50 }}</div>
+                                {% if grievance.is_anonymous %}
+                                    <small class="text-muted"><i class="fas fa-user-secret"></i> Anonymous</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-{% if grievance.category.category_type == 'academic' %}info{% else %}warning{% endif %}">
+                                    {{ grievance.category.name }}
+                                </span>
+                            </td>
+                            <td>{{ grievance.department|default:"N/A" }}</td>
+                            <td>
+                                <span class="badge bg-{% if grievance.status == 'pending' %}warning{% elif grievance.status == 'resolved' %}success{% else %}danger{% endif %}">
+                                    {{ grievance.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ grievance.submitted_at|date:"M d, Y H:i" }}</td>
+                            <td>
+                                <a href="{% url 'students:grievance_detail' grievance.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Grievances pagination">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">Previous</a>
+                        </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">
+                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">Last</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-{% if search_query or status_filter %}search{% else %}inbox{% endif %} fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No grievances found</h5>
+                <p class="text-muted">
+                    {% if search_query %}
+                        No grievances matching "<strong>{{ search_query }}</strong>" were found.
+                        {% if status_filter %}with "{{ status_filter }}" status{% endif %}
+                        <br>
+                        <a href="{% url 'students:grievances' %}" class="text-decoration-none">Clear search and view all grievances</a>
+                    {% elif status_filter %}
+                        No grievances with "<strong>{{ status_filter }}</strong>" status found.
+                        <br>
+                        <a href="{% url 'students:grievances' %}" class="text-decoration-none">View all grievances</a>
+                    {% else %}
+                        You haven't submitted any grievances yet.
+                    {% endif %}
+                </p>
+                {% if not search_query and not status_filter %}
+                <a href="{% url 'grievances_web:submit_grievance' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Submit Your First Grievance
+                </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-submit form when status filter changes
+    const statusSelect = document.getElementById('status');
+    if (statusSelect) {
+        statusSelect.addEventListener('change', function() {
+            document.getElementById('searchForm').submit();
+        });
+    }
+    
+    // Search functionality
+    const searchInput = document.getElementById('search');
+    if (searchInput) {
+        // Enable Enter key to submit search
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('searchForm').submit();
+            }
+        });
+        
+        // Focus on search input if there's a search query
+        const hasSearchQuery = {{ search_query|yesno:"true,false" }};
+        if (hasSearchQuery && searchInput.value) {
+            searchInput.focus();
+            searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
+        }
+    }
+});
+
+// Clear search function
+function clearSearch() {
+    const searchInput = document.getElementById('search');
+    if (searchInput) {
+        searchInput.value = '';
+        document.getElementById('searchForm').submit();
+    }
+}
+
+// Highlight search terms in results (if needed)
+function highlightSearchTerms() {
+    const searchQuery = '{{ search_query|escapejs }}';
+    if (searchQuery && searchQuery.length > 0) {
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            cells.forEach(cell => {
+                if (cell.cellIndex <= 2) { // Only highlight in ID, Title, and Category columns
+                    const text = cell.innerHTML;
+                    const regex = new RegExp(`(${searchQuery})`, 'gi');
+                    if (regex.test(text)) {
+                        cell.innerHTML = text.replace(regex, '<mark class="bg-warning">$1</mark>');
+                    }
+                }
+            });
+        });
+    }
+}
+
+// Call highlight function after page load
+document.addEventListener('DOMContentLoaded', highlightSearchTerms);
+</script>
+
+{% endblock %}

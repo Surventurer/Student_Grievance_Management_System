@@ -1,0 +1,417 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, shrink-to-fit=no">
+    <meta name="theme-color" content="#343a40">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="SGS">
+    
+    <title>{% block title %}Student Grievance Management System{% endblock %}</title>
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid px-lg-4">
+            {% if user.is_authenticated %}
+                {% if user.is_admin_or_officer %}
+                    <a class="navbar-brand" href="{% url 'admin_panel:dashboard' %}">
+                        <i class="fas fa-graduation-cap d-inline d-lg-none me-2"></i>
+                        <span class="d-none d-sm-inline">Student Grievance System</span>
+                        <span class="d-inline d-sm-none">SGS</span>
+                    </a>
+                {% elif user.is_student %}
+                    <a class="navbar-brand" href="{% url 'students:dashboard' %}">
+                        <i class="fas fa-graduation-cap d-inline d-lg-none me-2"></i>
+                        <span class="d-none d-sm-inline">Student Grievance System</span>
+                        <span class="d-inline d-sm-none">SGS</span>
+                    </a>
+                {% else %}
+                    <a class="navbar-brand" href="{% url 'authentication:login_view' %}">
+                        <i class="fas fa-graduation-cap d-inline d-lg-none me-2"></i>
+                        <span class="d-none d-sm-inline">Student Grievance System</span>
+                        <span class="d-inline d-sm-none">SGS</span>
+                    </a>
+                {% endif %}
+            {% else %}
+                <a class="navbar-brand" href="{% url 'authentication:login_view' %}">
+                    <i class="fas fa-graduation-cap d-inline d-lg-none me-2"></i>
+                    <span class="d-none d-sm-inline">Student Grievance System</span>
+                    <span class="d-inline d-sm-none">SGS</span>
+                </a>
+            {% endif %}
+            
+            {% if user.is_authenticated %}
+            <!-- Mobile menu toggle -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="navbar-nav me-auto">
+                {% if user.is_student %}
+                <a class="nav-link text-nowrap" href="{% url 'students:dashboard' %}">
+                    <i class="fas fa-tachometer-alt me-1"></i>
+                    <span class="d-lg-inline d-none">Dashboard</span>
+                    <span class="d-lg-none">Home</span>
+                </a>
+                <a class="nav-link text-nowrap" href="{% url 'grievances:submit_grievance' %}">
+                    <i class="fas fa-plus-circle me-1"></i>
+                    <span class="d-lg-inline d-none">Lodge Grievance</span>
+                    <span class="d-lg-none">New</span>
+                </a>
+                <a class="nav-link text-nowrap" href="{% url 'students:grievances' %}">
+                    <i class="fas fa-list me-1"></i>
+                    <span class="d-lg-inline d-none">My Grievances</span>
+                    <span class="d-lg-none">My Cases</span>
+                </a>
+                {% endif %}
+                {% if user.is_admin_or_officer %}
+                <a class="nav-link text-nowrap" href="{% url 'admin_panel:dashboard' %}">
+                    <i class="fas fa-tachometer-alt me-1"></i>
+                    <span class="d-lg-inline d-none">Dashboard</span>
+                    <span class="d-lg-none">Home</span>
+                </a>
+                {% if user_role != 'officer' %}
+                <a class="nav-link text-nowrap" href="{% url 'admin_panel:grievance_list' %}">
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    <span class="d-lg-inline d-none">
+                        {% if user_role == 'superadmin' %}All {% elif user_role == 'admin' %}Department {% endif %}Grievances
+                    </span>
+                    <span class="d-lg-none">Cases</span>
+                </a>
+                {% endif %}
+                
+                {% if user_role == 'superadmin' %}
+                    <!-- Super Admin Links - Core Tabs Only -->
+                    <a class="nav-link text-nowrap d-none d-lg-block" href="{% url 'admin_panel:user_management' %}">
+                        <i class="fas fa-users-cog me-1"></i>All Users
+                    </a>
+                    
+                    <a class="nav-link text-nowrap d-none d-lg-block" href="{% url 'admin_panel:system_settings' %}">
+                        <i class="fas fa-cog me-1"></i>System Settings
+                    </a>
+                    <a class="nav-link text-nowrap d-none d-lg-block" href="{% url 'admin_panel:crud_management' %}">
+                        <i class="fas fa-database me-1"></i>CRUD Management
+                    </a>
+                    
+                {% elif user_role == 'admin' %}
+                    <!-- Department Admin Links -->
+                    <a class="nav-link text-nowrap" href="{% url 'admin_panel:department_users' %}">
+                        <i class="fas fa-users me-1"></i>
+                        <span class="d-lg-inline d-none">Department Users</span>
+                        <span class="d-lg-none">Users</span>
+                    </a>
+                    
+                {% elif user_role == 'officer' %}
+                    <!-- Officer Links -->
+                    <a class="nav-link text-nowrap" href="{% url 'admin_panel:grievance_list' %}">
+                        <i class="fas fa-clipboard-list me-1"></i>
+                        <span class="d-lg-inline d-none">Assigned Grievances</span>
+                        <span class="d-lg-none">Grievances</span>
+                    </a>
+                {% endif %}
+                
+                <!-- Mobile-only dropdown for admin tools -->
+                <div class="nav-item dropdown d-lg-none">
+                    <a class="nav-link text-nowrap dropdown-toggle" href="#" id="adminToolsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-cog me-1"></i>
+                        {% if user_role == 'superadmin' %}Super Admin{% elif user_role == 'admin' %}Department Admin{% elif user_role == 'officer' %}Officer{% endif %}
+                    </a>
+                    <ul class="dropdown-menu">
+                        {% if user_role == 'superadmin' %}
+                            <li><a class="dropdown-item" href="{% url 'admin_panel:user_management' %}">
+                                <i class="fas fa-users-cog me-2"></i>All Users
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin_panel:system_settings' %}">
+                                <i class="fas fa-cog me-2"></i>System Settings
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin_panel:crud_management' %}">
+                                <i class="fas fa-database me-2"></i>CRUD Management
+                            </a></li>
+
+                        {% elif user_role == 'admin' %}
+                            <li><a class="dropdown-item" href="{% url 'admin_panel:department_users' %}">
+                                <i class="fas fa-users me-2"></i>Department Users
+                            </a></li>
+                        {% elif user_role == 'officer' %}
+                            <li><a class="dropdown-item" href="{% url 'admin_panel:grievance_list' %}">
+                                <i class="fas fa-clipboard-list me-2"></i>Assigned Grievances
+                            </a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            <div class="navbar-nav ms-auto">
+                <!-- General Notifications -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link text-nowrap dropdown-toggle position-relative" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bell"></i>
+                        <span class="d-none d-sm-inline ms-1">Notifications</span>
+                        {% if general_notifications_count > 0 or notifications_count > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.7rem;">
+                            {{ general_notifications_count|add:notifications_count|default:"" }}
+                        </span>
+                        {% endif %}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" style="width: 350px; max-height: 400px; overflow-y: auto;">
+                        <li class="dropdown-header">
+                            <i class="fas fa-bell me-2"></i>Recent Notifications
+                        </li>
+                        
+                        <!-- General Notifications (System, Escalations, etc.) -->
+                        {% if general_notifications %}
+                            {% for notification in general_notifications %}
+                            <li>
+                                <a class="dropdown-item py-2 border-bottom notification-link" 
+                                   href="{{ notification.related_link|default:'#' }}"
+                                   data-notification-id="{{ notification.id }}">
+                                    <div class="d-flex">
+                                        <div class="flex-grow-1">
+                                            <div class="fw-bold text-primary small">
+                                                <i class="fas fa-info-circle me-1"></i>{{ notification.title }}
+                                            </div>
+                                            <div class="text-dark">{{ notification.message|truncatechars:80 }}</div>
+                                            <div class="text-muted small mt-1">
+                                                <i class="fas fa-clock me-1"></i>{{ notification.created_at|timesince }} ago
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        {% endif %}
+
+                        <!-- Student Legacy Notifications (Messages from Admins) -->
+                        {% if user.is_student and student_notifications %}
+                            {% for notification in student_notifications %}
+                            <li>
+                                <a class="dropdown-item py-2 border-bottom notification-link" 
+                                   href="{% url 'students:grievance_detail' notification.grievance.id %}"
+                                   data-student-notification-id="{{ notification.id }}">
+                                    <div class="d-flex">
+                                        <div class="flex-grow-1">
+                                            <div class="fw-bold text-success small">
+                                                <i class="fas fa-user-shield me-1"></i>{{ notification.user.get_full_name }}
+                                            </div>
+                                            <div class="text-muted small mb-1">
+                                                Grievance: {{ notification.grievance.title|truncatechars:30 }}
+                                            </div>
+                                            <div class="text-dark">{{ notification.message|truncatechars:80 }}</div>
+                                            <div class="text-muted small mt-1">
+                                                <i class="fas fa-clock me-1"></i>{{ notification.timestamp|timesince }} ago
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        {% endif %}
+
+                        {% if not general_notifications and not student_notifications %}
+                            <li>
+                                <div class="dropdown-item-text text-center text-muted py-3">
+                                    <i class="fas fa-inbox fa-2x mb-2"></i>
+                                    <br>No new messages
+                                </div>
+                            </li>
+                        {% endif %}
+                        
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-center text-primary" href="#">
+                                <i class="fas fa-eye me-2"></i>View All
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-item dropdown">
+                    <a class="nav-link text-nowrap dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle me-1"></i>
+                        <span class="d-none d-sm-inline-block text-truncate align-middle" style="max-width: 150px;">{{ user.get_display_name }}</span>
+                        {% if user.is_superadmin %}
+                            <span class="badge bg-danger ms-1">Superadmin</span>
+                        {% elif user.role == 'officer' %}
+                            <span class="badge bg-info ms-1">Grievance Officer</span>
+                        {% elif user.role == 'admin' %}
+                            {% if user.admin_profile.department == 'Computer Science' %}
+                                <span class="badge bg-warning ms-1">CS Admin</span>
+                            {% elif user.admin_profile.department == 'Business Administration' %}
+                                <span class="badge bg-warning ms-1">BA Admin</span>
+                            {% else %}
+                                <span class="badge bg-warning ms-1">Dept Admin</span>
+                            {% endif %}
+                        {% elif user.is_student %}
+                            <span class="badge bg-success ms-1">Student</span>
+                        {% endif %}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        {% if user.is_student %}
+                        <li><a class="dropdown-item" href="{% url 'students:profile' %}">
+                            <i class="fas fa-user me-2"></i>My Profile
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        {% elif user.is_admin_or_officer %}
+                        <li><a class="dropdown-item" href="{% url 'admin_panel:profile' %}">
+                            <i class="fas fa-user me-2"></i>My Profile
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        {% endif %}
+                        <li><a class="dropdown-item" href="{% url 'authentication:logout_view' %}">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+    
+    <main class="{% if request.resolver_match.app_name == 'admin_panel' %}container-fluid{% else %}container{% endif %} mt-4">
+        {% csrf_token %}
+        {% if messages and request.resolver_match.url_name != 'login_view' %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}
+        {% endblock %}
+    </main>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    
+    {% if user.is_student %}
+    <script>
+    // Auto-refresh notifications every 30 seconds
+    function refreshNotifications() {
+        fetch('{% url "students:notifications_api" %}', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.querySelector('.notification-badge');
+            const dropdown = document.querySelector('#notificationsDropdown');
+            
+            if (data.count > 0) {
+                if (badge) {
+                    badge.textContent = data.count;
+                } else {
+                    // Create badge if it doesn't exist
+                    const newBadge = document.createElement('span');
+                    newBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge';
+                    newBadge.style.fontSize = '0.7rem';
+                    newBadge.textContent = data.count;
+                    dropdown.appendChild(newBadge);
+                }
+            } else {
+                if (badge) {
+                    badge.remove();
+                }
+            }
+        })
+        .catch(error => console.log('Notification refresh failed:', error));
+    }
+    
+    // Refresh notifications every 30 seconds
+    setInterval(refreshNotifications, 30000);
+    
+    // Add notification badge class for animation
+    document.addEventListener('DOMContentLoaded', function() {
+        const badge = document.querySelector('.position-absolute.badge');
+        if (badge) {
+            badge.classList.add('notification-badge');
+        }
+        
+        // Handle notification clicks
+        const notificationLinks = document.querySelectorAll('.notification-link');
+        notificationLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                const notificationId = this.getAttribute('data-notification-id');
+                if (notificationId) {
+                    // Mark notification as read
+                    fetch(`/students/api/notifications/mark-read/${notificationId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            // Remove the notification from the dropdown
+                            const listItem = this.closest('li');
+                            if (listItem) {
+                                listItem.style.opacity = '0.5';
+                                setTimeout(() => {
+                                    listItem.remove();
+                                    // Update badge count
+                                    updateNotificationBadge();
+                                }, 200);
+                            }
+                        }
+                    }).catch(error => {
+                        console.log('Failed to mark notification as read:', error);
+                    });
+                }
+            });
+        });
+        
+        // Function to update notification badge
+        function updateNotificationBadge() {
+            const remainingNotifications = document.querySelectorAll('.notification-link').length;
+            const badge = document.querySelector('.notification-badge');
+            
+            if (remainingNotifications === 0) {
+                if (badge) {
+                    badge.remove();
+                }
+                // Show "No new messages" if no notifications remain
+                const dropdownMenu = document.querySelector('#notificationsDropdown').nextElementSibling;
+                const existingNotifications = dropdownMenu.querySelectorAll('.notification-link');
+                if (existingNotifications.length === 0) {
+                    const noMessagesHtml = `
+                        <li>
+                            <div class="dropdown-item-text text-center text-muted py-3">
+                                <i class="fas fa-inbox fa-2x mb-2"></i>
+                                <br>No new messages
+                            </div>
+                        </li>`;
+                    // Find the place to insert this (after the header, before the "View All" link)
+                    const divider = dropdownMenu.querySelector('.dropdown-divider');
+                    if (divider) {
+                        divider.previousElementSibling.insertAdjacentHTML('afterend', noMessagesHtml);
+                    }
+                }
+            } else {
+                if (badge) {
+                    badge.textContent = remainingNotifications;
+                }
+            }
+        }
+    });
+    </script>
+    {% endif %}
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
