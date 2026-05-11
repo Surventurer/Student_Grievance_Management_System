@@ -244,19 +244,7 @@
                     <br>{{ admin_profile.created_at|date:"F d, Y" }}
                 </div>
                 
-                {% if admin_profile.role_level == 'admin' or admin_profile.role_level == 'superadmin' %}
-                <div class="mb-3">
-                    <strong>Permissions:</strong>
-                    <ul class="list-unstyled mt-2">
-                        <li><i class="fas fa-check text-success"></i> Manage Grievances</li>
-                        <li><i class="fas fa-check text-success"></i> View Reports</li>
-                        {% if admin_profile.role_level == 'superadmin' %}
-                        <li><i class="fas fa-check text-success"></i> Manage Users</li>
-                        <li><i class="fas fa-check text-success"></i> System Settings</li>
-                        {% endif %}
-                    </ul>
-                </div>
-                {% endif %}
+
             </div>
         </div>
         
@@ -272,14 +260,15 @@
                     <a href="{% url 'admin_panel:grievance_list' %}" class="btn btn-outline-secondary">
                         <i class="fas fa-list"></i> Manage Grievances
                     </a>
-                    {% if admin_profile.role_level == 'admin' or admin_profile.role_level == 'superadmin' %}
-                    <a href="{% url 'admin_panel:student_list' %}" class="btn btn-outline-info">
-                        <i class="fas fa-users"></i> Manage Students
-                    </a>
-                    {% endif %}
                     {% if admin_profile.role_level == 'superadmin' %}
-                    <a href="{% url 'admin_panel:user_management' %}" class="btn btn-outline-warning">
-                        <i class="fas fa-user-cog"></i> Manage Users
+                    <a href="{% url 'admin_panel:user_management' %}" class="btn btn-outline-info">
+                        <i class="fas fa-users-cog"></i> All Users
+                    </a>
+                    <a href="{% url 'admin_panel:crud_management' %}" class="btn btn-outline-warning">
+                        <i class="fas fa-database"></i> CRUD Management
+                    </a>
+                    <a href="{% url 'admin_panel:system_settings' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-cog"></i> System Settings
                     </a>
                     {% endif %}
                     <a href="{% url 'authentication:logout_view' %}" class="btn btn-outline-danger">

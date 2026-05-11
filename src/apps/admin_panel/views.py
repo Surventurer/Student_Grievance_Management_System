@@ -855,10 +855,14 @@ def audit_logs_view(request):
         'user__email'
     ).distinct().order_by('user__email')[:20]
     
-    # Pagination
-    paginator = Paginator(logs, 25)
-    page_number = request.GET.get('page')
-    audit_logs = paginator.get_page(page_number)
+    # Pagination or Print all
+    is_print = request.GET.get('print') == 'true'
+    if is_print:
+        audit_logs = logs  # Return all filtered logs without pagination
+    else:
+        paginator = Paginator(logs, 25)
+        page_number = request.GET.get('page')
+        audit_logs = paginator.get_page(page_number)
     
     # Statistics
     total_logs = AuditLog.objects.count()

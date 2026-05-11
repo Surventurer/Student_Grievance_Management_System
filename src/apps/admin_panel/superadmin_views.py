@@ -432,57 +432,59 @@ def clear_failed_login_attempts(request):
 @superadmin_required
 def system_settings(request):
     """System settings view - Superadmin only"""
-    import django
-    from django.conf import settings
-    import os
+    from apps.admin_panel.models import SystemSettings
+    
+    settings_obj = SystemSettings.load()
     
     # Handle form submissions
     if request.method == 'POST':
         form_type = request.POST.get('form_type')
         
         if form_type == 'general':
-            # Handle general settings (you can implement actual settings storage here)
+            settings_obj.system_name = request.POST.get('system_name', settings_obj.system_name)
+            settings_obj.contact_email = request.POST.get('contact_email', settings_obj.contact_email)
+            settings_obj.max_file_size = int(request.POST.get('max_file_size', settings_obj.max_file_size))
+            settings_obj.email_notifications = request.POST.get('email_notifications') == 'on'
+            settings_obj.auto_assignment = request.POST.get('auto_assignment') == 'on'
             messages.success(request, 'General settings updated successfully!')
+            
         elif form_type == 'security':
-            # Handle security settings
+            settings_obj.require_email_verification = request.POST.get('require_email_verification') == 'on'
+            settings_obj.allow_student_registration = request.POST.get('allow_student_registration') == 'on'
+            settings_obj.session_timeout = int(request.POST.get('session_timeout', settings_obj.session_timeout))
+            settings_obj.password_min_length = int(request.POST.get('password_min_length', settings_obj.password_min_length))
             messages.success(request, 'Security settings updated successfully!')
+            
         elif form_type == 'grievance':
-            # Handle grievance settings
+            settings_obj.default_priority = request.POST.get('default_priority', settings_obj.default_priority)
+            settings_obj.auto_resolve_days = int(request.POST.get('auto_resolve_days', settings_obj.auto_resolve_days))
+            settings_obj.escalation_threshold = int(request.POST.get('escalation_threshold', settings_obj.escalation_threshold))
+            settings_obj.allow_anonymous = request.POST.get('allow_anonymous') == 'on'
             messages.success(request, 'Grievance settings updated successfully!')
+            
+        elif form_type == 'ai_kb':
+            settings_obj.enable_auto_suggestions = request.POST.get('enable_auto_suggestions') == 'on'
+            settings_obj.auto_categorize = request.POST.get('auto_categorize') == 'on'
+            settings_obj.kb_confidence_score = int(request.POST.get('kb_confidence_score', settings_obj.kb_confidence_score))
+            messages.success(request, 'AI & Knowledge Base settings updated successfully!')
+            
+        elif form_type == 'workflow':
+            settings_obj.max_reopen_count = int(request.POST.get('max_reopen_count', settings_obj.max_reopen_count))
+            settings_obj.sla_breach_action = request.POST.get('sla_breach_action', settings_obj.sla_breach_action)
+            settings_obj.require_closure_remark = request.POST.get('require_closure_remark') == 'on'
+            messages.success(request, 'Workflow & SLA settings updated successfully!')
+            
+        elif form_type == 'experience':
+            settings_obj.enable_feedback = request.POST.get('enable_feedback') == 'on'
+            settings_obj.allow_attachments_in_replies = request.POST.get('allow_attachments_in_replies') == 'on'
+            settings_obj.support_hours = request.POST.get('support_hours', settings_obj.support_hours)
+            messages.success(request, 'Student Experience settings updated successfully!')
         
+        settings_obj.save()
         return redirect('admin_panel:system_settings')
     
-    # Calculate disk usage (simple approximation)
-    try:
-        import shutil
-        total, used, free = shutil.disk_usage("/")
-        disk_usage_mb = round(used / (1024**2), 2)
-    except:
-        disk_usage_mb = 0
-    
     context = {
-        'django_version': django.get_version(),
-        'debug': settings.DEBUG,
-        'total_users': User.objects.count(),
-        'total_grievances': Grievance.objects.count(),
-        'disk_usage': disk_usage_mb,
-        
-        # System settings (defaults - you can implement actual settings storage)
-        'settings': {
-            'system_name': 'Student Grievance Management System',
-            'contact_email': 'admin@university.edu',
-            'max_file_size': 10,
-            'email_notifications': True,
-            'auto_assignment': True,
-            'require_email_verification': True,
-            'allow_student_registration': True,
-            'session_timeout': 60,
-            'password_min_length': 8,
-            'default_priority': 'medium',
-            'auto_resolve_days': 30,
-            'escalation_threshold': 7,
-            'allow_anonymous': False,
-        },
+        'settings': settings_obj,
     }
     
     return render(request, 'admin_panel/superadmin/system_settings.html', context)

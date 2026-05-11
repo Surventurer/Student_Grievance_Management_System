@@ -140,6 +140,24 @@
         color: #6c757d;
         font-family: monospace;
     }
+    
+    @media print {
+        body { background: white; }
+        .navbar, .sidebar, .filter-section, .stats-row, .pagination, button {
+            display: none !important;
+        }
+        .audit-card {
+            box-shadow: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+        .audit-item {
+            page-break-inside: avoid;
+            border: 1px solid #ddd;
+            border-left: 4px solid #007bff;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -156,9 +174,9 @@
                     <p class="text-muted mb-0">Track all administrative actions and system events</p>
                 </div>
                 <div>
-                    <button class="btn btn-outline-primary" onclick="window.print()">
-                        <i class="fas fa-print me-2"></i>Print Report
-                    </button>
+                    <a href="?{{ request.GET.urlencode }}&print=true" class="btn btn-outline-primary" target="_blank">
+                        <i class="fas fa-print me-2"></i>Print All Logs
+                    </a>
                 </div>
             </div>
 
@@ -344,4 +362,12 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (window.location.search.includes('print=true')) {
+            window.print();
+        }
+    });
+</script>
 {% endblock %}
