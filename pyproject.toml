@@ -3,7 +3,7 @@ name = "student-grievance-system"
 version = "0.1.0"
 description = "A Django-based Student Grievance Management System"
 authors = [
-    {name = "Your Name", email = "your.email@example.com"},
+    {name = "surventurer", email = "your.email@example.com"},
 ]
 dependencies = [
     "django>=4.2.0",
