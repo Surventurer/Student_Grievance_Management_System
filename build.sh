@@ -21,7 +21,7 @@ password = '${DJANGO_SUPERUSER_PASSWORD}'
 
 if not User.objects.filter(email=email).exists():
     user = User.objects.create_superuser(email=email, password=password)
-    user.is_email_verified = True
+    user.is_email_verified = False
     user.save()
     
     # Ensure AdminProfile exists

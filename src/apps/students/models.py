@@ -103,6 +103,7 @@ class AdminProfile(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='admin_profile')
+    name = models.CharField(max_length=100, blank=True, null=True)  # Added name field
     role_level = models.CharField(max_length=20, choices=ROLE_LEVEL_CHOICES)
     department = models.CharField(max_length=100)  # Department is required for admin/officers
     employee_id = models.CharField(max_length=50, unique=True)
@@ -112,7 +113,7 @@ class AdminProfile(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"{self.user.get_full_name()} - {self.get_role_level_display()}"
+        return f"{self.name or self.user.email} - {self.get_role_level_display()}"
     
     def save(self, *args, **kwargs):
         """Ensure user role matches admin role_level"""
