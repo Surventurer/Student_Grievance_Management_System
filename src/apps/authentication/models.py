@@ -60,7 +60,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
     
     def get_display_name(self):
-        """Get display name - either from student profile or email"""
+        """Get display name - from admin profile name, student profile name, or email"""
+        if hasattr(self, 'admin_profile') and self.admin_profile.name:
+            return self.admin_profile.name
         if hasattr(self, 'student_profile') and self.student_profile.name:
             return self.student_profile.name
         return self.email

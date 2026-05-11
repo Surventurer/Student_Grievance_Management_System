@@ -61,18 +61,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Email Address</label>
-                                <div class="input-group">
-                                    <input type="email" class="form-control readonly-field" value="{{ admin_profile.user.email }}" readonly>
-                                    {% if not admin_profile.user.is_email_verified %}
-                                    <a href="{% url 'admin_panel:admin_send_verification_otp' %}" class="btn btn-warning">
-                                        Verify Email
-                                    </a>
-                                    {% else %}
-                                    <span class="input-group-text bg-success text-white">
-                                        <i class="fas fa-check-circle"></i> Verified
-                                    </span>
-                                    {% endif %}
-                                </div>
+                                <input type="email" class="form-control readonly-field" value="{{ admin_profile.user.email }}" readonly>
                             </div>
                         </div>
                         
@@ -237,8 +226,7 @@
                 </div>
                 
                 <div class="mb-3">
-                    <strong>Department:</strong>
-                    <br>{{ admin_profile.department|default:'Not assigned' }}
+                    <strong>Department:</strong> {{ admin_profile.department|default:'Not assigned' }}
                 </div>
                 
                 <div class="mb-3">
@@ -248,6 +236,8 @@
                     </span>
                 </div>
                 
+
+                
                 <div class="mb-3">
                     <strong>Email Verified:</strong>
                     <span class="badge bg-{{ admin_profile.user.is_email_verified|yesno:'success,warning' }}">
@@ -256,8 +246,7 @@
                 </div>
                 
                 <div class="mb-3">
-                    <strong>Member Since:</strong>
-                    <br>{{ admin_profile.created_at|date:"F d, Y" }}
+                    <strong>Member Since:</strong> {{ admin_profile.created_at|date:"F d, Y" }}
                 </div>
                 
 
@@ -296,41 +285,8 @@
     </div>
 </div>
 
-<!-- OTP Verification Modal -->
-<div class="modal fade" id="verifyOtpModal" tabindex="-1" aria-labelledby="verifyOtpModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form method="post" action="{% url 'admin_panel:admin_verify_email_otp' %}">
-                {% csrf_token %}
-                <div class="modal-header bg-warning">
-                    <h5 class="modal-title" id="verifyOtpModalLabel">Verify Your Email</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>An OTP has been sent to your email address: <strong>{{ admin_profile.user.email }}</strong></p>
-                    <div class="mb-3">
-                        <label for="otp" class="form-label fw-bold">Enter OTP Code</label>
-                        <input type="text" class="form-control text-center fs-4 letter-spacing-2" id="otp" name="otp" 
-                               maxlength="6" required placeholder="------" pattern="\d{6}" title="Please enter 6 digit OTP">
-                    </div>
-                </div>
-                <div class="modal-footer d-flex justify-content-between">
-                    <a href="{% url 'admin_panel:admin_send_verification_otp' %}" class="btn btn-outline-secondary">Resend OTP</a>
-                    <button type="submit" class="btn btn-success">Verify OTP</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Show OTP modal if requested
-    {% if request.session.show_verify_otp %}
-        var otpModal = new bootstrap.Modal(document.getElementById('verifyOtpModal'));
-        otpModal.show();
-    {% endif %}
-
     // Password strength indicator
     const newPassword = document.getElementById('new_password1');
     const confirmPassword = document.getElementById('new_password2');

@@ -3368,8 +3368,7 @@ def update_admin_contact_view(request):
             return redirect('admin_panel:profile')
         
         # Update contact information
-        if name:
-            admin_profile.name = name
+        admin_profile.name = name
         if employee_id:
             # Check if employee_id is already taken by someone else
             if AdminProfile.objects.exclude(id=admin_profile.id).filter(employee_id=employee_id).exists():
