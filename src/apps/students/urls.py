@@ -22,6 +22,7 @@ urlpatterns = [
     path('grievances/<uuid:grievance_id>/', views.student_grievance_detail_view, name='grievance_detail'),
     path('grievances/<uuid:grievance_id>/add-response/', views.add_student_response, name='add_student_response'),
     path('grievances/<uuid:grievance_id>/submit-feedback/', views.submit_feedback_view, name='submit_feedback'),
+    path('grievances/<uuid:grievance_id>/appeal/', views.appeal_grievance_view, name='appeal_grievance'),
     path('api/notifications/', views.get_notifications_api, name='notifications_api'),
     path('api/notifications/mark-read/<uuid:notification_id>/', views.mark_notification_read, name='mark_notification_read'),
 ]

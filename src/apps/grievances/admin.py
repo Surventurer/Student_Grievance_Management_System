@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Grievance, GrievanceOTPVerification
+from .models import Category, Grievance, GrievanceOTPVerification, EscalationLog, Appeal, KnowledgeBaseArticle
 
 
 @admin.register(Category)
@@ -71,3 +71,30 @@ class GrievanceOTPVerificationAdmin(admin.ModelAdmin):
         return obj.is_expired
     is_expired.boolean = True
     is_expired.short_description = 'Expired'
+
+
+@admin.register(EscalationLog)
+class EscalationLogAdmin(admin.ModelAdmin):
+    """Admin interface for EscalationLog model"""
+    list_display = ['grievance', 'escalated_from', 'escalated_to', 'is_auto_escalated', 'timestamp']
+    list_filter = ['is_auto_escalated', 'timestamp']
+    search_fields = ['grievance__title', 'reason']
+    readonly_fields = ['timestamp']
+
+
+@admin.register(Appeal)
+class AppealAdmin(admin.ModelAdmin):
+    """Admin interface for Appeal model"""
+    list_display = ['grievance', 'student', 'status', 'created_at']
+    list_filter = ['status', 'created_at']
+    search_fields = ['grievance__title', 'student__student_id', 'reason']
+    readonly_fields = ['created_at', 'updated_at']
+
+
+@admin.register(KnowledgeBaseArticle)
+class KnowledgeBaseArticleAdmin(admin.ModelAdmin):
+    """Admin interface for KnowledgeBaseArticle model"""
+    list_display = ['title', 'category', 'is_published', 'view_count']
+    list_filter = ['is_published', 'category']
+    search_fields = ['title', 'content', 'keywords']
+    readonly_fields = ['view_count', 'helpful_count', 'created_at', 'updated_at']

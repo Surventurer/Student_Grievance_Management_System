@@ -296,6 +296,22 @@
                         </span>
                     </div>
                 </div>
+                {% if grievance.is_escalated %}
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold text-danger">Escalation:</div>
+                    <div class="col-7">
+                        <span class="badge bg-danger">Escalated (Level {{ grievance.escalation_level }})</span>
+                    </div>
+                </div>
+                {% endif %}
+                {% if grievance.is_appealed %}
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold text-info">Appeal:</div>
+                    <div class="col-7">
+                        <span class="badge bg-info">Appealed</span>
+                    </div>
+                </div>
+                {% endif %}
                 <div class="row mb-2">
                     <div class="col-5 fw-bold">Anonymous:</div>
                     <div class="col-7">
@@ -443,6 +459,16 @@
                     <a href="{% url 'grievances:submit_grievance' %}" class="btn btn-success">
                         <i class="fas fa-plus"></i> Submit New Grievance
                     </a>
+                    {% if grievance.status == 'resolved' or grievance.status == 'rejected' %}
+                        {% if not grievance.is_appealed %}
+                        <form method="POST" action="{% url 'students:appeal_grievance' grievance.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-warning w-100" onclick="return confirm('Are you sure you want to appeal this resolution? This will notify higher authorities and re-open the grievance for review.');">
+                                <i class="fas fa-exclamation-circle"></i> Appeal Resolution
+                            </button>
+                        </form>
+                        {% endif %}
+                    {% endif %}
                 </div>
             </div>
         </div>

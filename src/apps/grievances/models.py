@@ -20,6 +20,7 @@ class Category(models.Model):
     keywords = models.TextField(blank=True, null=True, help_text="Keywords for auto-assignment (comma-separated)")
     is_active = models.BooleanField(default=True)
     auto_assign_enabled = models.BooleanField(default=True, help_text="Enable automatic assignment for this category")
+    sla_hours = models.IntegerField(default=48, help_text="Service Level Agreement resolution time in hours")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -99,6 +100,10 @@ class Grievance(models.Model):
     priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium')
     assigned_to = models.ForeignKey(AdminProfile, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_grievances')
     is_anonymous = models.BooleanField(default=False)
+    is_escalated = models.BooleanField(default=False)
+    escalation_level = models.IntegerField(default=0, help_text="0=Normal, 1=Admin, 2=Superadmin")
+    is_appealed = models.BooleanField(default=False)
+    is_archived = models.BooleanField(default=False, help_text="Soft delete flag")
     expected_resolution_date = models.DateTimeField(null=True, blank=True)
     actual_resolution_date = models.DateTimeField(null=True, blank=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
@@ -368,3 +373,68 @@ class GrievanceOTPVerification(models.Model):
     
     class Meta:
         ordering = ['-created_at']
+
+
+class EscalationLog(models.Model):
+    """Log to track grievance escalations"""
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    grievance = models.ForeignKey(Grievance, on_delete=models.CASCADE, related_name='escalations')
+    escalated_from = models.ForeignKey(AdminProfile, on_delete=models.SET_NULL, null=True, blank=True, related_name='escalated_from_logs')
+    escalated_to = models.ForeignKey(AdminProfile, on_delete=models.SET_NULL, null=True, blank=True, related_name='escalated_to_logs')
+    reason = models.TextField()
+    is_auto_escalated = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-timestamp']
+    
+    def __str__(self):
+        return f"Escalation for {self.grievance.title} to Level {self.grievance.escalation_level}"
+
+
+class Appeal(models.Model):
+    """Appeal workflow when a student is not satisfied"""
+    
+    STATUS_CHOICES = [
+        ('pending', 'Pending Review'),
+        ('accepted', 'Appeal Accepted - Reopened'),
+        ('rejected', 'Appeal Rejected - Closed'),
+    ]
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    grievance = models.ForeignKey(Grievance, on_delete=models.CASCADE, related_name='appeals')
+    student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='appeals')
+    reason = models.TextField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    reviewed_by = models.ForeignKey(AdminProfile, on_delete=models.SET_NULL, null=True, blank=True)
+    review_notes = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Appeal for {self.grievance.title} by {self.student.student_id}"
+
+
+class KnowledgeBaseArticle(models.Model):
+    """FAQ or knowledge base article for deflection"""
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='articles')
+    keywords = models.TextField(blank=True, null=True, help_text="Keywords to match for suggestion (comma-separated)")
+    is_published = models.BooleanField(default=True)
+    view_count = models.IntegerField(default=0)
+    helpful_count = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-view_count', '-created_at']
+    
+    def __str__(self):
+        return self.title

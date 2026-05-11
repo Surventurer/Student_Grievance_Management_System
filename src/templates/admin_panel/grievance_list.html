@@ -110,9 +110,6 @@
                             <span class="d-none d-md-inline">All Grievances Management</span>
                             <span class="d-md-none">Grievances</span>
                         </h4>
-                        <div class="d-none d-md-block">
-                            <small class="text-light">Total: {{ grievances.count }} grievances</small>
-                        </div>
                     </div>
                 </div>
                 <div class="card-body">
@@ -640,28 +637,29 @@ function clearSelection() {
 
 function updateBulkActions() {
     const checkedBoxes = document.querySelectorAll('.grievance-checkbox:checked');
+    const checkedValues = new Set(Array.from(checkedBoxes).map(cb => cb.value));
+    const allValues = new Set(Array.from(document.querySelectorAll('.grievance-checkbox')).map(cb => cb.value));
+    
     const bulkActionsCard = document.getElementById('bulkActionsCard');
     const selectedCount = document.getElementById('selectedCount');
     const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-    const allCheckboxes = document.querySelectorAll('.grievance-checkbox');
     
     // Update selected count
-    selectedCount.textContent = checkedBoxes.length;
+    selectedCount.textContent = checkedValues.size;
     
     // Show/hide bulk actions card
-    if (checkedBoxes.length > 0) {
+    if (checkedValues.size > 0) {
         bulkActionsCard.style.display = 'block';
-        bulkActionsCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     } else {
         bulkActionsCard.style.display = 'none';
     }
     
     // Update select all checkbox state (only if it exists - desktop view)
     if (selectAllCheckbox) {
-        if (checkedBoxes.length === 0) {
+        if (checkedValues.size === 0) {
             selectAllCheckbox.indeterminate = false;
             selectAllCheckbox.checked = false;
-        } else if (checkedBoxes.length === allCheckboxes.length) {
+        } else if (checkedValues.size === allValues.size) {
             selectAllCheckbox.indeterminate = false;
             selectAllCheckbox.checked = true;
         } else {
@@ -685,14 +683,15 @@ function updateBulkActions() {
 
 function confirmBulkDelete() {
     const checkedBoxes = document.querySelectorAll('.grievance-checkbox:checked');
+    const checkedValues = new Set(Array.from(checkedBoxes).map(cb => cb.value));
     
-    if (checkedBoxes.length === 0) {
+    if (checkedValues.size === 0) {
         alert('Please select at least one grievance to delete.');
         return;
     }
     
     // Update modal with selected count
-    document.getElementById('modalSelectedCount').textContent = checkedBoxes.length;
+    document.getElementById('modalSelectedCount').textContent = checkedValues.size;
     
     // Show the modal
     const modal = new bootstrap.Modal(document.getElementById('bulkDeleteModal'));
@@ -701,7 +700,7 @@ function confirmBulkDelete() {
 
 function performBulkDelete() {
     const checkedBoxes = document.querySelectorAll('.grievance-checkbox:checked');
-    const grievanceIds = Array.from(checkedBoxes).map(cb => cb.value);
+    const grievanceIds = Array.from(new Set(Array.from(checkedBoxes).map(cb => cb.value)));
     
     // Hide the modal
     const modal = bootstrap.Modal.getInstance(document.getElementById('bulkDeleteModal'));

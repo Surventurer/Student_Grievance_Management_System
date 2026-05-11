@@ -61,6 +61,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'apps.authentication.context_processors.role_context',
                 'apps.students.context_processors.student_notifications',
+                'apps.notifications.context_processors.general_notifications',
             ],
         },
     },

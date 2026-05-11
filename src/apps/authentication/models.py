@@ -130,17 +130,17 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.is_superadmin:
             # Superadmin can see all grievances
             from apps.grievances.models import Grievance
-            return Grievance.objects.all()
+            return Grievance.objects.filter(is_archived=False)
         elif self.role in ['admin', 'officer'] and self.assigned_department:
             # Department admin/hod can only see grievances from their department students
             from apps.grievances.models import Grievance
             accessible_students = self.get_accessible_students()
-            return Grievance.objects.filter(student__in=accessible_students)
+            return Grievance.objects.filter(student__in=accessible_students, is_archived=False)
         else:
             # Students see their own grievances
             from apps.grievances.models import Grievance
             if hasattr(self, 'student_profile') and self.student_profile:
-                return Grievance.objects.filter(student=self.student_profile)
+                return Grievance.objects.filter(student=self.student_profile, is_archived=False)
             return Grievance.objects.none()
     
     def get_full_name(self):

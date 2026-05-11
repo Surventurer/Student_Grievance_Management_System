@@ -17,3 +17,11 @@ app.autodiscover_tasks()
 @app.task(bind=True, ignore_result=True)
 def debug_task(self):
     print(f'Request: {self.request!r}')
+
+# Configure periodic tasks
+app.conf.beat_schedule = {
+    'check-sla-escalations-every-hour': {
+        'task': 'apps.grievances.tasks.check_sla_and_escalate',
+        'schedule': 3600.0,  # Run every hour (3600 seconds)
+    },
+}

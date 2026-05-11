@@ -90,7 +90,7 @@ def student_dashboard(request):
         return Response({'error': 'Student profile not found'}, status=status.HTTP_404_NOT_FOUND)
     
     # Get student's grievances
-    grievances = Grievance.objects.filter(student=student_profile).order_by('-submitted_at')
+    grievances = Grievance.objects.filter(student=student_profile, is_archived=False).order_by('-submitted_at')
     
     # Dashboard statistics
     total_grievances = grievances.count()
@@ -306,7 +306,7 @@ def student_dashboard_view(request):
         return redirect('authentication:login')
     
     # Get student's grievances
-    grievances = Grievance.objects.filter(student=student_profile).order_by('-submitted_at')
+    grievances = Grievance.objects.filter(student=student_profile, is_archived=False).order_by('-submitted_at')
     
     context = {
         'student_profile': student_profile,
@@ -417,7 +417,7 @@ def student_grievances_view(request):
         return redirect('authentication:login')
     
     # Get all student's grievances
-    all_grievances = Grievance.objects.filter(student=student_profile)
+    all_grievances = Grievance.objects.filter(student=student_profile, is_archived=False)
     grievances = all_grievances.order_by('-submitted_at')
     
     # Search functionality
@@ -643,3 +643,47 @@ def mark_notification_read(request, notification_id):
         return JsonResponse({'error': 'Notification not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+def appeal_grievance_view(request, grievance_id):
+    """Submit an appeal for a resolved or rejected grievance"""
+    if not request.user.is_student:
+        messages.error(request, 'Access denied.')
+        return redirect('students:dashboard')
+    
+    if request.method != 'POST':
+        messages.error(request, 'Invalid request method.')
+        return redirect('students:grievance_detail', grievance_id=grievance_id)
+        
+    try:
+        from apps.grievances.models import Appeal
+        student_profile = request.user.student_profile
+        grievance = get_object_or_404(Grievance, id=grievance_id, student=student_profile)
+        
+        if grievance.status not in ['resolved', 'rejected']:
+            messages.error(request, 'You can only appeal resolved or rejected grievances.')
+            return redirect('students:grievance_detail', grievance_id=grievance_id)
+            
+        if grievance.is_appealed:
+            messages.warning(request, 'This grievance has already been appealed.')
+            return redirect('students:grievance_detail', grievance_id=grievance_id)
+            
+        # Create Appeal
+        Appeal.objects.create(
+            grievance=grievance,
+            student=student_profile,
+            reason="Appealed by student from dashboard"
+        )
+        
+        # Update Grievance
+        grievance.is_appealed = True
+        grievance.status = 'pending' # Re-open the grievance
+        grievance.save()
+        
+        messages.success(request, 'Your appeal has been submitted successfully and the grievance has been re-opened.')
+        return redirect('students:grievance_detail', grievance_id=grievance_id)
+        
+    except Exception as e:
+        messages.error(request, f'Error submitting appeal: {str(e)}')
+        return redirect('students:grievance_detail', grievance_id=grievance_id)

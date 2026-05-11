@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ReadNotification
+from .models import ReadNotification, Notification
 
 
 @admin.register(ReadNotification)
@@ -16,3 +16,12 @@ class ReadNotificationAdmin(admin.ModelAdmin):
     
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('student', 'comment')
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    """Admin interface for general Notification model"""
+    list_display = ['recipient', 'title', 'notification_type', 'is_read', 'created_at']
+    list_filter = ['notification_type', 'is_read', 'created_at']
+    search_fields = ['recipient__email', 'title', 'message']
+    readonly_fields = ['created_at']

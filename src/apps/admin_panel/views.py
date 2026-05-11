@@ -30,6 +30,11 @@ from apps.admin_panel.permissions import (
 @role_required(['admin', 'officer', 'superadmin'])
 def admin_dashboard(request):
     """Admin dashboard view with department-based data filtering"""
+    from django.contrib.auth import get_user_model
+    from django.contrib.sessions.models import Session
+    from apps.students.models import AdminProfile
+    
+    User = get_user_model()
     user = request.user
     
     try:
@@ -82,6 +87,29 @@ def admin_dashboard(request):
             })
         
         # Add user role and department information to context
+        
+        # Additional statistics for the right panel
+        total_users = 0
+        active_sessions = 0
+        department_students = 0
+        department_officers = 0
+        
+        if user.is_superadmin:
+            total_users = User.objects.count()
+            # Count distinct users from active sessions
+            active_session_qs = Session.objects.filter(expire_date__gte=timezone.now())
+            active_user_ids = set()
+            for session in active_session_qs:
+                data = session.get_decoded()
+                user_id = data.get('_auth_user_id')
+                if user_id:
+                    active_user_ids.add(user_id)
+            active_sessions = len(active_user_ids)
+            
+        elif user.role in ['admin', 'officer']:
+            department_students = accessible_students.count()
+            department_officers = AdminProfile.objects.filter(department=user.assigned_department, role_level='officer').count() if user.assigned_department else 0
+            
         context = {
             'total_grievances': total_grievances,
             'pending_grievances': pending_grievances,
@@ -98,6 +126,10 @@ def admin_dashboard(request):
             'is_officer': user.role == 'officer',
             'assigned_department': user.assigned_department,
             'department_name': user.department_name,
+            'total_users': total_users,
+            'active_sessions': active_sessions,
+            'department_students': department_students,
+            'department_officers': department_officers,
             'can_manage_categories': can_manage_categories(user),
             'can_manage_auto_assignment': can_manage_auto_assignment(user),
             'can_view_audit_logs': can_view_audit_logs(user),
@@ -269,7 +301,7 @@ def reports(request):
         return redirect('authentication:login')
     
     # Get grievances based on user's access level
-    all_grievances = Grievance.objects.all()
+    all_grievances = Grievance.objects.filter(is_archived=False)
     accessible_grievances = filter_grievances_by_access(request.user, all_grievances)
     
     # Get basic statistics from accessible grievances
@@ -326,7 +358,7 @@ def manage_grievances(request):
     if not request.user.is_admin_or_officer:
         return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)
     
-    grievances = Grievance.objects.all().order_by('-submitted_at')
+    grievances = Grievance.objects.filter(is_archived=False).order_by('-submitted_at')
     
     return Response([
         {
@@ -931,11 +963,12 @@ def grievance_stats_api(request):
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     try:
+        accessible_grievances = request.user.get_accessible_grievances()
         stats = {
-            'total': Grievance.objects.count(),
-            'pending': Grievance.objects.filter(status='pending').count(),
-            'resolved': Grievance.objects.filter(status='resolved').count(),
-            'rejected': Grievance.objects.filter(status='rejected').count(),
+            'total': accessible_grievances.count(),
+            'pending': accessible_grievances.filter(status='pending').count(),
+            'resolved': accessible_grievances.filter(status='resolved').count(),
+            'rejected': accessible_grievances.filter(status='rejected').count(),
         }
         return JsonResponse(stats)
     except Exception as e:

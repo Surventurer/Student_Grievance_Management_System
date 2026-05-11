@@ -289,6 +289,24 @@
                     </div>
                 </div>
                 
+                {% if grievance.is_escalated %}
+                <div class="info-row">
+                    <div class="label text-danger">Escalation Status</div>
+                    <div class="value">
+                        <span class="badge bg-danger fs-6">Escalated (Level {{ grievance.escalation_level }})</span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if grievance.is_appealed %}
+                <div class="info-row">
+                    <div class="label text-info">Appeal Status</div>
+                    <div class="value">
+                        <span class="badge bg-info fs-6">Appealed by Student</span>
+                    </div>
+                </div>
+                {% endif %}
+                
                 {% if grievance.department %}
                 <div class="info-row">
                     <div class="label">Department</div>
