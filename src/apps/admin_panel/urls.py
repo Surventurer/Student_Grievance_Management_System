@@ -41,6 +41,8 @@ urlpatterns = [
     path('profile/', views.admin_profile_view, name='profile'),
     path('profile/update-contact/', views.update_admin_contact_view, name='update_admin_contact'),
     path('profile/change-password/', views.change_admin_password_view, name='change_admin_password'),
+    path('profile/send-verification-otp/', views.admin_send_verification_otp, name='admin_send_verification_otp'),
+    path('profile/verify-email-otp/', views.admin_verify_email_otp, name='admin_verify_email_otp'),
     
     # Reports
     path('reports/', views.reports_dashboard, name='reports_dashboard'),

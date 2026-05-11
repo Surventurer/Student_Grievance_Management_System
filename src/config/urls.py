@@ -1,4 +1,3 @@
-from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
@@ -10,7 +9,6 @@ def home_redirect(request):
 
 urlpatterns = [
     path('', home_redirect, name='home'),  # Root URL redirect
-    path('admin/', admin.site.urls),
     path('api/auth/', include(('apps.authentication.urls', 'authentication'), namespace='auth_api')),
     path('api/students/', include(('apps.students.urls', 'students'), namespace='students_api')),
     path('api/grievances/', include('apps.grievances.urls')),

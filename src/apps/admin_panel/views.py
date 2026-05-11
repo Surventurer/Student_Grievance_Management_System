@@ -3308,12 +3308,30 @@ def admin_profile_view(request):
         if hasattr(request.user, 'admin_profile'):
             admin_profile = request.user.admin_profile
         else:
-            # If no admin profile exists, we might need to create one or handle gracefully
+            # If no admin profile exists, auto-create for superadmin, otherwise show error
+            if request.user.role == 'superadmin':
+                from apps.students.models import AdminProfile
+                admin_profile = AdminProfile.objects.create(
+                    user=request.user,
+                    role_level='superadmin',
+                    employee_id=f'SA-{request.user.id}',
+                    department='Administration'
+                )
+            else:
+                messages.error(request, 'Admin profile not found. Please contact system administrator.')
+                return redirect('admin_panel:dashboard')
+    except AdminProfile.DoesNotExist:
+        if request.user.role == 'superadmin':
+            from apps.students.models import AdminProfile
+            admin_profile = AdminProfile.objects.create(
+                user=request.user,
+                role_level='superadmin',
+                employee_id=f'SA-{request.user.id}',
+                department='Administration'
+            )
+        else:
             messages.error(request, 'Admin profile not found. Please contact system administrator.')
             return redirect('admin_panel:dashboard')
-    except AdminProfile.DoesNotExist:
-        messages.error(request, 'Admin profile not found. Please contact system administrator.')
-        return redirect('admin_panel:dashboard')
     
     return render(request, 'admin_panel/profile.html', {
         'admin_profile': admin_profile,
@@ -3334,6 +3352,8 @@ def update_admin_contact_view(request):
         return redirect('admin_panel:dashboard')
     
     if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        employee_id = request.POST.get('employee_id', '').strip()
         phone = request.POST.get('phone', '').strip()
         office_location = request.POST.get('office_location', '').strip()
         
@@ -3348,6 +3368,14 @@ def update_admin_contact_view(request):
             return redirect('admin_panel:profile')
         
         # Update contact information
+        admin_profile.name = name
+        if employee_id:
+            # Check if employee_id is already taken by someone else
+            if AdminProfile.objects.exclude(id=admin_profile.id).filter(employee_id=employee_id).exists():
+                messages.error(request, 'This Employee ID is already in use by another user.')
+                return redirect('admin_panel:profile')
+            admin_profile.employee_id = employee_id
+            
         admin_profile.phone = phone
         admin_profile.office_location = office_location
         admin_profile.save()
@@ -3364,6 +3392,91 @@ def update_admin_contact_view(request):
         messages.success(request, 'Contact information updated successfully')
         return redirect('admin_panel:profile')
     
+    return redirect('admin_panel:profile')
+
+
+@login_required
+@role_required(['admin', 'officer', 'superadmin'])
+def admin_send_verification_otp(request):
+    """Send email verification OTP to admin/superadmin"""
+    user = request.user
+    if user.is_email_verified:
+        messages.info(request, 'Your email is already verified.')
+        return redirect('admin_panel:profile')
+        
+    from apps.authentication.models import EmailVerification
+    from apps.authentication.views import generate_otp
+    from django.core.mail import send_mail
+    from django.utils import timezone
+    from datetime import timedelta
+    from django.conf import settings
+    
+    # Generate new OTP
+    otp = generate_otp()
+    expires_at = timezone.now() + timedelta(minutes=10)
+    
+    # Invalidate previous unused OTPs
+    EmailVerification.objects.filter(user=user, is_used=False).update(is_used=True)
+    
+    EmailVerification.objects.create(
+        user=user,
+        otp=otp,
+        expires_at=expires_at
+    )
+    
+    try:
+        send_mail(
+            'Verify Your Email - Student Grievance System',
+            f'Hello {user.email},\n\nYour OTP for email verification is: {otp}\n\nThis OTP is valid for 10 minutes.\n\nThank you!',
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+            fail_silently=False,
+        )
+        messages.success(request, 'Verification OTP sent to your email! Please enter it below.')
+        # We can store a flag in session to show the OTP modal/field on the profile page
+        request.session['show_verify_otp'] = True
+    except Exception as e:
+        messages.error(request, 'Failed to send OTP email. Please try again later.')
+        
+    return redirect('admin_panel:profile')
+
+
+@login_required
+@role_required(['admin', 'officer', 'superadmin'])
+def admin_verify_email_otp(request):
+    """Verify OTP and mark email as verified"""
+    if request.method == 'POST':
+        otp = request.POST.get('otp', '').strip()
+        user = request.user
+        
+        from apps.authentication.models import EmailVerification
+        
+        verification = EmailVerification.objects.filter(
+            user=user,
+            otp=otp,
+            is_used=False
+        ).order_by('-created_at').first()
+        
+        if not verification:
+            messages.error(request, 'Invalid OTP. Please check and try again.')
+            request.session['show_verify_otp'] = True
+            return redirect('admin_panel:profile')
+            
+        if verification.is_expired:
+            messages.error(request, 'OTP has expired. Please request a new one.')
+            request.session['show_verify_otp'] = True
+            return redirect('admin_panel:profile')
+            
+        # Success!
+        verification.is_used = True
+        verification.save()
+        
+        user.is_email_verified = True
+        user.save()
+        
+        request.session.pop('show_verify_otp', None)
+        messages.success(request, 'Your email has been successfully verified!')
+        
     return redirect('admin_panel:profile')
 
 

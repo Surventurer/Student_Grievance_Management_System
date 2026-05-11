@@ -19,6 +19,7 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('role', 'superadmin')
+        extra_fields.setdefault('is_email_verified', True)
         
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
@@ -59,7 +60,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
     
     def get_display_name(self):
-        """Get display name - either from student profile or email"""
+        """Get display name - from admin profile name, student profile name, or email"""
+        if hasattr(self, 'admin_profile') and self.admin_profile.name:
+            return self.admin_profile.name
         if hasattr(self, 'student_profile') and self.student_profile.name:
             return self.student_profile.name
         return self.email

@@ -1,302 +1,390 @@
 # Student Grievance Management System
 
-A comprehensive Django-based web application for managing student grievances with role-based access control, automated assignment, and notification system.
+A production-ready Django web application for managing student grievances with role-based access control, automated assignment, OTP-based authentication, and real-time notifications.
 
-## 🚀 Quick Start
+> **Live Demo:** Deployed on [Render](https://render.com) with [Neon PostgreSQL](https://neon.tech)
 
-1. **Clone and setup the project:**
-   ```bash
-   cd Student_Grievance_Management_System
-   uv sync  # Install dependencies
-   ```
+---
 
-2. **Setup the database:**
-   ```bash
-   uv run python src/manage.py migrate
-   uv run python src/manage.py setup_initial_data
-   ```
+## Table of Contents
 
-3. **Start the server:**
-   ```bash
-   uv run python src/manage.py runserver
-   ```
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Environment Setup](#1-environment-setup)
+  - [Local Development](#2-local-development)
+  - [Production Deployment (Render)](#3-production-deployment-render)
+- [Environment Variables](#environment-variables)
+- [System Workflows](#system-workflows)
+- [API Endpoints](#api-endpoints)
+- [Security](#security)
+- [Contributing](#contributing)
+- [License](#license)
 
-4. **Access the system:**
-   - Open your browser and go to: `http://localhost:8000`
-   - Use the login credentials provided below
+---
 
-## 🔐 Default Login Credentials
+## Features
 
-After running the setup command, you can log in with these accounts:
-
-### Admin Accounts
-- **Superuser:** admin@example.com / admin123
-- **CS Department Admin:** cs.admin@university.edu / admin123
-- **Business Department Admin:** ba.admin@university.edu / admin123
-
-### Student Accounts  
-- **Student 1:** student1@university.edu / student123
-- **Student 2:** student2@university.edu / student123
-
-## ✨ Features
-
-### Student Panel
-- ✅ Secure registration and login with email verification
-- ✅ Submit grievances with file attachments
-- ✅ Track grievance status and timeline
-- ✅ Communication thread with admins
-- ✅ Resolution feedback system
-- ✅ Profile management
-- ✅ Real-time notifications
+### Student Portal
+- Secure registration with university email verification (OTP)
+- Submit grievances with file attachments and category selection
+- Real-time grievance status tracking with timeline
+- Communication thread with administrators
+- Resolution feedback and rating system
+- Real-time in-app notifications
+- Profile management
 
 ### Admin Panel
-- ✅ Role-based access control (Super Admin, Department Admin, Grievance Officer)
-- ✅ Comprehensive dashboard with analytics
-- ✅ Automated grievance assignment based on categories and keywords
-- ✅ Manual assignment for complex cases
-- ✅ Student and department management
-- ✅ Category management with auto-assignment rules
-- ✅ Reports and analytics with data visualization
-- ✅ Complete audit logging system
-- ✅ Email notifications
-- ✅ CRUD operations for all entities
+- Role-based access control — **Super Admin**, **Department Admin**, **Grievance Officer**
+- Comprehensive dashboard with analytics and charts
+- Automated grievance assignment based on department, category, and keywords
+- User management — approve registrations, manage roles
+- Department and category management with auto-assignment rules
+- Complete audit logging for all administrative actions
+- Reports and data export capabilities
+- Email notification system
 
-### System Features
-- ✅ Automated grievance categorization and assignment
-- ✅ Multi-level approval workflows
-- ✅ File upload and attachment management
-- ✅ Timeline tracking for all grievances
-- ✅ Advanced search and filtering
-- ✅ Data export capabilities
-- ✅ Security audit trails
+### System Highlights
+- OTP-based login for students — no passwords stored in plain text
+- Superadmin auto-provisioned from environment variables on deployment
+- Django built-in /admin panel fully removed — custom admin panel only
+- Production-ready with Gunicorn, WhiteNoise, and PostgreSQL
+- Responsive design (Bootstrap 5)
 
-## 🏗️ Technology Stack
+---
 
-- **Backend:** Django 4.2+
-- **Database:** SQLite (default) / PostgreSQL (production)
-- **Package Manager:** UV (modern Python package manager)
-- **Frontend:** HTML, CSS, JavaScript (Bootstrap 5)
-- **Task Queue:** Celery with Redis
-- **Authentication:** Django Auth with custom user model
-- **API:** Django REST Framework
+## Tech Stack
 
-## 📁 Project Structure
+| Layer | Technology |
+|-------|------------|
+| **Backend** | Django 5.2, Django REST Framework |
+| **Database** | PostgreSQL (Neon) — no SQLite |
+| **Frontend** | HTML, CSS, JavaScript, Bootstrap 5 |
+| **Static Files** | WhiteNoise |
+| **Production Server** | Gunicorn |
+| **Package Manager** | [uv](https://docs.astral.sh/uv/) |
+| **Task Queue** | Celery + Redis (optional) |
+| **Deployment** | Render |
+| **Authentication** | Custom User model with OTP email verification |
+
+---
+
+## Project Structure
 
 ```
-src/
-├── config/                 # Django project settings
-│   ├── settings.py         # Main configuration
-│   ├── urls.py            # URL routing
-│   └── wsgi.py            # WSGI application
-├── apps/
-│   ├── authentication/    # User authentication & authorization
-│   │   ├── models.py      # User model and auth-related models
-│   │   ├── views.py       # Login, registration, password reset
-│   │   ├── forms.py       # Authentication forms
-│   │   └── urls.py        # Auth URL patterns
-│   ├── students/          # Student and admin profiles
-│   │   ├── models.py      # StudentProfile, AdminProfile, School, Department
-│   │   ├── views.py       # Profile management, dashboards
-│   │   └── context_processors.py # Global context data
-│   ├── grievances/        # Core grievance management
-│   │   ├── models.py      # Grievance, Category, Comments, Attachments
-│   │   ├── views.py       # Grievance CRUD, submission, tracking
-│   │   └── urls.py        # Grievance-related URLs
-│   ├── admin_panel/       # Administrative functionality
-│   │   ├── views.py       # Admin dashboard, user management, reports
-│   │   ├── audit_utils.py # Audit logging utilities
-│   │   └── urls.py        # Admin panel URLs
-│   └── notifications/     # Notification system
-│       ├── models.py      # Email notifications, read status
-│       └── views.py       # Notification management
-├── templates/             # HTML templates
-│   ├── base.html         # Base template with navigation
-│   ├── authentication/   # Login, registration templates
-│   ├── students/         # Student dashboard and profile
-│   ├── grievances/       # Grievance forms and details
-│   └── admin_panel/      # Admin interface templates
-└── static/               # CSS, JavaScript, images
-    ├── css/style.css     # Custom styling
-    └── js/main.js        # Interactive functionality
+Student_Grievance_Management_System/
+├── .env                    # Local environment variables (git-ignored)
+├── .env.example            # Template for environment variables
+├── build.sh                # Render build script (deps + migrate + superuser)
+├── pyproject.toml          # Python dependencies and project metadata
+├── uv.lock                 # Locked dependency versions
+│
+└── src/                    # Django project root
+    ├── manage.py
+    ├── config/             # Django project configuration
+    │   ├── settings.py     # All settings (DB, email, security, etc.)
+    │   ├── urls.py         # Root URL routing
+    │   └── wsgi.py         # WSGI entry point for Gunicorn
+    │
+    ├── apps/
+    │   ├── authentication/ # Custom User model, login, OTP, registration
+    │   ├── students/       # StudentProfile, AdminProfile, School, Department
+    │   ├── grievances/     # Grievance model, categories, comments, attachments
+    │   ├── admin_panel/    # Admin dashboard, user management, reports, audit logs
+    │   └── notifications/  # In-app and email notifications
+    │
+    ├── templates/          # Django HTML templates
+    │   ├── authentication/ # Login, registration, OTP verification pages
+    │   ├── students/       # Student dashboard and profile
+    │   ├── grievances/     # Grievance forms, detail, and listing
+    │   └── admin_panel/    # Admin interface (dashboard, users, settings)
+    │
+    ├── static/             # CSS, JavaScript, images
+    │   ├── css/style.css
+    │   └── js/main.js
+    │
+    └── staticfiles/        # Collected static files (auto-generated)
 ```
 
-## 🎯 System Workflows
+---
+
+## Getting Started
+
+### Prerequisites
+
+- **Python 3.12+**
+- **[uv](https://docs.astral.sh/uv/getting-started/installation/)** — Modern Python package manager
+- **PostgreSQL database** — [Neon](https://neon.tech) (free tier available)
+- **Gmail account** with an [App Password](https://myaccount.google.com/apppasswords) for SMTP
+
+### 1. Environment Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/Surventurer/Student_Grievance_Management_System.git
+cd Student_Grievance_Management_System
+
+# Install dependencies
+uv sync
+
+# Create your environment file
+cp .env.example .env
+```
+
+Edit `.env` with your actual values. See the [Environment Variables](#environment-variables) section for details.
+
+### 2. Local Development
+
+```bash
+# Apply database migrations
+uv run src/manage.py migrate
+
+# Create superadmin using your .env values
+uv run src/manage.py shell -c "
+from django.contrib.auth import get_user_model
+from apps.students.models import AdminProfile
+from decouple import config
+
+User = get_user_model()
+email = config('DJANGO_SUPERUSER_EMAIL')
+password = config('DJANGO_SUPERUSER_PASSWORD')
+verified = config('DJANGO_SUPERUSER_EMAIL_VERIFIED', default='True') == 'True'
+
+user, created = User.objects.get_or_create(
+    email=email,
+    defaults={'is_staff': True, 'is_superuser': True, 'role': 'superadmin', 'is_email_verified': verified}
+)
+if created:
+    user.set_password(password)
+    user.save()
+    print(f'Superuser {email} created')
+else:
+    user.is_email_verified = verified
+    user.save()
+    print(f'Superuser {email} updated')
+
+AdminProfile.objects.get_or_create(
+    user=user,
+    defaults={'role_level': 'superadmin', 'employee_id': 'SUPERADMIN-01', 'department': 'Administration'}
+)
+"
+
+# Start the development server
+uv run src/manage.py runserver 127.0.0.1:8000
+```
+
+Open **http://127.0.0.1:8000** in your browser.
+
+> **Important:** Always use `http://` (not `https://`). The Django dev server does not support HTTPS.
+
+#### Dev Mode Notes
+- `DEBUG=True` in `.env` enables detailed error pages and serves static files automatically
+- Django's built-in /admin panel is **disabled** — use the custom admin panel at /admin-panel/
+- OTP codes are sent to the configured `EMAIL_HOST_USER` Gmail account
+- The superadmin's email verification status is controlled by `DJANGO_SUPERUSER_EMAIL_VERIFIED` in `.env`
+
+### 3. Production Deployment (Render)
+
+#### Step 1 — Create a Neon Database
+1. Sign up at [neon.tech](https://neon.tech)
+2. Create a new project and copy the connection string
+
+#### Step 2 — Create a Render Web Service
+1. Go to [render.com](https://render.com) → **New** → **Web Service**
+2. Connect your GitHub repository
+3. Configure:
+
+| Setting | Value |
+|---------|-------|
+| **Build Command** | `./build.sh` |
+| **Start Command** | `gunicorn --chdir src config.wsgi:application` |
+| **Python Version** | Set `PYTHON_VERSION=3.12.11` in env vars |
+
+#### Step 3 — Set Environment Variables on Render
+
+Add these environment variables in the Render dashboard:
+
+| Variable | Value |
+|----------|-------|
+| `DATABASE_URL` | Your Neon connection string |
+| `SECRET_KEY` | A long random string (use `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`) |
+| `DEBUG` | `False` |
+| `DJANGO_SUPERUSER_EMAIL` | Your admin email |
+| `DJANGO_SUPERUSER_PASSWORD` | Your admin password |
+| `DJANGO_SUPERUSER_EMAIL_VERIFIED` | `True` |
+| `EMAIL_BACKEND` | `django.core.mail.backends.smtp.EmailBackend` |
+| `EMAIL_HOST_USER` | Your Gmail address |
+| `EMAIL_HOST_PASSWORD` | Your Gmail App Password |
+| `SECURE_SSL_REDIRECT` | `True` |
+| `PYTHON_VERSION` | `3.12.11` |
+
+#### Step 4 — Deploy
+Push to your branch. Render will automatically:
+1. Install dependencies via `uv sync --frozen`
+2. Collect static files
+3. Run database migrations
+4. Create/update the superadmin with verified email and AdminProfile
+
+#### Production Security
+- `DEBUG=False` — no error details exposed
+- `SECURE_SSL_REDIRECT=True` — forces HTTPS
+- HSTS headers enabled with 1-year max-age
+- Django /admin panel is completely removed from URL routing
+- CSRF trusted origins auto-configured for Render hostname
+- Static files served via WhiteNoise with compression
+
+---
+
+## Environment Variables
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `SECRET_KEY` | Yes | insecure default | Django secret key — **must change in production** |
+| `DEBUG` | Yes | `True` | `True` for dev, `False` for production |
+| `ALLOWED_HOSTS` | No | `localhost,127.0.0.1,*` | Comma-separated allowed hostnames |
+| `DATABASE_URL` | Yes | — | PostgreSQL connection string (Neon) |
+| `EMAIL_BACKEND` | No | console backend | `django.core.mail.backends.smtp.EmailBackend` for real emails |
+| `EMAIL_HOST_USER` | Yes | — | Gmail address for sending OTPs |
+| `EMAIL_HOST_PASSWORD` | Yes | — | Gmail App Password (16 characters) |
+| `DJANGO_SUPERUSER_EMAIL` | No | — | Auto-create superadmin with this email |
+| `DJANGO_SUPERUSER_PASSWORD` | No | — | Password for auto-created superadmin |
+| `DJANGO_SUPERUSER_EMAIL_VERIFIED` | No | `True` | Skip OTP for superadmin if `True` |
+| `SECURE_SSL_REDIRECT` | No | `True` (prod) | Set `False` for local development |
+| `PYTHON_VERSION` | No | — | Python version hint for Render |
+
+---
+
+## System Workflows
 
 ### Student Workflow
-1. **Registration:** Student registers with university email
-2. **Email Verification:** Verifies email with OTP
-3. **Submit Grievance:** Fills form with category selection
-4. **Auto Assignment:** System automatically assigns to appropriate admin
-5. **Tracking:** Student tracks progress and communicates with admin
-6. **Resolution:** Student provides feedback on resolution
+1. **Register** — Student signs up with university email
+2. **Verify Email** — Receives OTP, verifies email address
+3. **Submit Grievance** — Selects category, describes issue, attaches files
+4. **Auto-Assignment** — System assigns to the appropriate department admin
+5. **Track Progress** — Views timeline updates and communicates with admin
+6. **Feedback** — Rates resolution after grievance is closed
 
 ### Admin Workflow
-1. **Login:** Admin logs in to dedicated panel
-2. **Dashboard:** Views assigned grievances and statistics
-3. **Review:** Reviews grievance details and attachments
-4. **Action:** Updates status, adds comments, requests more info
-5. **Resolution:** Marks as resolved with solution details
-6. **Analytics:** Generates reports and tracks performance
+1. **Login** — Admins log in with OTP-verified credentials
+2. **Dashboard** — View assigned grievances, statistics, and alerts
+3. **Review** — Read grievance details, attachments, and student info
+4. **Action** — Update status, add comments, escalate, or reassign
+5. **Resolve** — Mark as resolved with solution details
+6. **Reports** — Generate analytics and export data
 
 ### Auto-Assignment Logic
-1. **Department Matching:** Matches student's department with admin
-2. **Category Assignment:** Uses category-specific assignments
-3. **Keyword Analysis:** Analyzes grievance content for keywords
-4. **Priority Rules:** Applies priority-based assignment rules
-5. **Fallback Logic:** Uses default admins when no match found
+1. **Department Match** — Routes to admin of the student's department
+2. **Category Rules** — Uses category-specific assignment configurations
+3. **Keyword Analysis** — Scans grievance content for routing keywords
+4. **Fallback** — Assigns to superadmin if no match is found
 
-## 📊 Key Features Detail
+---
 
-### Dashboard Analytics
-- Real-time grievance statistics
-- Category-wise distribution charts
-- Resolution time analytics
-- Department performance metrics
-- Trend analysis with historical data
-
-### Security Features
-- Complete audit trail for all actions
-- Role-based access control
-- Session management
-- File upload security
-- SQL injection protection
-- XSS prevention
-
-### Notification System
-- Email notifications for new grievances
-- Status update notifications
-- Real-time in-app notifications
-- Admin assignment notifications
-- Escalation alerts
-
-## 🔧 Advanced Configuration
-
-### Environment Variables (.env)
-```bash
-SECRET_KEY=your-secret-key-here
-DEBUG=True
-ALLOWED_HOSTS=localhost,127.0.0.1
-
-# Database (SQLite default)
-DATABASE_URL=sqlite:///db.sqlite3
-
-# Email Configuration
-EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USE_TLS=True
-EMAIL_HOST_USER=your-email@gmail.com
-EMAIL_HOST_PASSWORD=your-app-password
-
-# Redis for Celery (optional)
-REDIS_URL=redis://localhost:6379/0
-```
-
-### Database Migration
-```bash
-# Create new migrations
-uv run python src/manage.py makemigrations
-
-# Apply migrations  
-uv run python src/manage.py migrate
-
-# Reset database (if needed)
-rm src/db.sqlite3
-uv run python src/manage.py migrate
-uv run python src/manage.py setup_initial_data
-```
-
-### Custom Management Commands
-```bash
-# Setup initial data
-uv run python src/manage.py setup_initial_data
-
-# Populate sample categories
-uv run python src/manage.py populate_categories
-
-# Create superuser manually
-uv run python src/manage.py createsuperuser
-```
-
-## 🚀 Deployment
-
-### Development
-```bash
-uv run python src/manage.py runserver 0.0.0.0:8000
-```
-
-### Production (with Gunicorn)
-```bash
-pip install gunicorn
-gunicorn --chdir src config.wsgi:application
-```
-
-## 📝 API Endpoints
-
-The system provides RESTful API endpoints:
+## API Endpoints
 
 ### Authentication
-- `POST /api/auth/register/` - User registration
-- `POST /api/auth/login/` - User login
-- `POST /api/auth/logout/` - User logout
-- `POST /api/auth/verify-email/` - Email verification
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/auth/login/` | Login page |
+| `POST` | `/auth/login/` | Submit login credentials + OTP |
+| `GET` | `/auth/student-registration/` | Registration page |
+| `POST` | `/auth/student-registration/` | Submit registration |
+| `GET` | `/auth/verify-student-email/` | Email OTP verification |
+| `GET` | `/auth/logout/` | Logout |
+
+### Student Panel
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/students/` | Student dashboard |
+| `GET` | `/students/profile/` | Student profile |
+| `GET` | `/students/api/notifications/` | Fetch notifications (JSON) |
 
 ### Grievances
-- `GET /api/grievances/` - List grievances
-- `POST /api/grievances/` - Submit new grievance
-- `GET /api/grievances/{id}/` - Get grievance details
-- `PUT /api/grievances/{id}/` - Update grievance
-- `POST /api/grievances/{id}/comments/` - Add comment
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/grievances/` | List student's grievances |
+| `POST` | `/grievances/submit/` | Submit new grievance |
+| `GET` | `/grievances/<id>/` | Grievance detail |
 
-### Admin Operations
-- `GET /api/admin-panel/dashboard/` - Admin dashboard data
-- `GET /api/admin-panel/users/` - User management
-- `GET /api/admin-panel/reports/` - Generate reports
-- `POST /api/admin-panel/assign/` - Manual assignment
+### Admin Panel
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/admin-panel/dashboard/` | Admin dashboard |
+| `GET` | `/admin-panel/profile/` | Admin profile |
+| `GET` | `/admin-panel/grievances/` | Grievance management |
+| `GET` | `/admin-panel/manage/` | Department management |
+| `GET` | `/admin-panel/superadmin/users/` | User management (superadmin) |
+| `GET` | `/admin-panel/superadmin/settings/` | System settings (superadmin) |
 
-## 🧪 Testing
+---
 
-### Manual Testing
-1. Start the server: `uv run python src/manage.py runserver`
-2. Open browser and navigate to `http://localhost:8000`
-3. Test with provided demo accounts
-4. Submit test grievances as students
-5. Process grievances as admin
+## Security
 
-### Test Data
-The system comes with pre-configured:
-- 2 Schools (Engineering, Business)  
-- 2 Departments (Computer Science, Business Admin)
-- 2 Admin users (department-specific)
-- 2 Student users
-- 5 Grievance categories with auto-assignment rules
+| Feature | Implementation |
+|---------|---------------|
+| **Authentication** | OTP-based email verification, no plain-text password login flow for students |
+| **Authorization** | Role-based access control with `@role_required` decorator |
+| **CSRF Protection** | Django CSRF middleware with trusted origins |
+| **SQL Injection** | Django ORM parameterized queries |
+| **XSS Prevention** | Django template auto-escaping |
+| **HTTPS** | `SECURE_SSL_REDIRECT` + HSTS in production |
+| **Audit Trail** | Complete logging of all admin actions |
+| **File Uploads** | Size-limited (10MB), type-validated |
+| **Admin Panel** | Django's built-in `/admin` is fully disabled |
+| **Session Security** | Secure cookies in production |
 
-## 🤝 Contributing
+---
+
+## Testing
+
+```bash
+# Start dev server
+uv run src/manage.py runserver 127.0.0.1:8000
+
+# Test student flow
+# 1. Register at /auth/student-registration/
+# 2. Verify email with OTP
+# 3. Submit a grievance
+
+# Test admin flow
+# 1. Login with superadmin credentials from .env
+# 2. View dashboard, manage grievances, check profile
+```
+
+---
+
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
-4. Add tests for new functionality
-5. Commit your changes (`git commit -m 'Add amazing feature'`)
-6. Push to the branch (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
-
-## 🆘 Support
-
-If you encounter any issues:
-
-1. Check the Django logs in the terminal
-2. Verify all migrations are applied
-3. Ensure sample data is loaded
-4. Check file permissions
-5. Verify environment variables
-
-For additional help, please create an issue in the repository.
+4. Commit (`git commit -m 'Add amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
 
 ---
 
-**🎉 Congratulations! Your Student Grievance Management System is now ready to use!**
+## License
+
+This project is licensed under the MIT License.
+
+---
+
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| `ModuleNotFoundError: No module named 'django'` | Run `uv sync` to install dependencies |
+| HTTPS errors in dev server terminal | Use `http://` not `https://`. Clear Chrome HSTS at `chrome://net-internals/#hsts` |
+| CSRF token errors | Clear browser cookies for localhost/127.0.0.1 |
+| `DATABASE_URL` missing | Ensure `.env` file exists with a valid PostgreSQL connection string |
+| OTP not received | Check `EMAIL_HOST_USER` and `EMAIL_HOST_PASSWORD` (must be Gmail App Password) |
+| Superadmin can't login | Verify `DJANGO_SUPERUSER_EMAIL_VERIFIED=True` in `.env` |
+| Static files not loading in production | Run `uv run src/manage.py collectstatic --no-input` |
+| Migration conflicts on Render | Reset Neon DB: `DROP SCHEMA public CASCADE; CREATE SCHEMA public;` then redeploy |
+
+---
+
+**Built with pride using Django and deployed on Render**
