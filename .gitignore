@@ -13,17 +13,18 @@ pip-delete-this-directory.txt
 nosetests.xml
 coverage.xml
 *.cover
-# *.log
+*.log
 .git
 .mypy_cache
 .pytest_cache
 .hypothesis
 
 # Django
-# #*.log
-# local_settings.py
-# db.sqlite3
-# db.sqlite3-journal
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+src/logs/
 
 # Media files
 media/

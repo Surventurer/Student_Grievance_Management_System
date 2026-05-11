@@ -185,9 +185,6 @@ tr:has(.user-checkbox:checked) td {
             <a href="{% url 'admin_panel:create_user' %}" class="btn btn-primary">
                 <i class="fas fa-user-plus"></i> Create User
             </a>
-            <a href="{% url 'admin_panel:system_settings' %}" class="btn btn-outline-info">
-                <i class="fas fa-cog"></i> System Settings
-            </a>
         </div>
     </div>
 
@@ -233,80 +230,14 @@ tr:has(.user-checkbox:checked) td {
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card stats-card" style="border-left-color: #ffc107;">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h5 class="card-title text-warning">Admins</h5>
-                            <h3 class="mb-0 text-dark">{{ admins_count|default:0 }}</h3>
-                        </div>
-                        <i class="fas fa-user-shield fa-2x text-warning stats-icon"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Additional Statistics Row -->
-    <div class="row mb-4">
-        <div class="col-md-3">
             <div class="card stats-card" style="border-left-color: #fd7e14;">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
                             <h5 class="card-title text-warning">Pending Registrations</h5>
                             <h3 class="mb-0 text-dark">{{ temp_registrations_count|default:0 }}</h3>
-                            <small class="text-muted">{{ unverified_temp_count|default:0 }} unverified</small>
                         </div>
                         <i class="fas fa-hourglass-half fa-2x text-warning stats-icon"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card stats-card" style="border-left-color: #007bff;">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h5 class="card-title text-primary">Students</h5>
-                            <h3 class="mb-0 text-dark">{{ students_count|default:0 }}</h3>
-                            <small class="text-muted">Verified students</small>
-                        </div>
-                        <i class="fas fa-graduation-cap fa-2x text-primary stats-icon"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card stats-card" style="border-left-color: #17a2b8;">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h5 class="card-title text-info">Officers</h5>
-                            <h3 class="mb-0 text-dark">{{ officers_count|default:0 }}</h3>
-                            <small class="text-muted">Grievance officers</small>
-                        </div>
-                        <i class="fas fa-user-tie fa-2x text-info stats-icon"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card stats-card" style="border-left-color: #6c757d;">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h5 class="card-title text-secondary">System Health</h5>
-                            <h3 class="mb-0 text-dark">
-                                {% if total_users > 0 %}
-                                    {% widthratio verified_users total_users 100 %}%
-                                {% else %}
-                                    0%
-                                {% endif %}
-                            </h3>
-                            <small class="text-muted">Verification rate</small>
-                        </div>
-                        <i class="fas fa-heartbeat fa-2x text-secondary stats-icon"></i>
                     </div>
                 </div>
             </div>
