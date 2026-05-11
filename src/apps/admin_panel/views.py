@@ -3308,12 +3308,30 @@ def admin_profile_view(request):
         if hasattr(request.user, 'admin_profile'):
             admin_profile = request.user.admin_profile
         else:
-            # If no admin profile exists, we might need to create one or handle gracefully
+            # If no admin profile exists, auto-create for superadmin, otherwise show error
+            if request.user.role == 'superadmin':
+                from apps.students.models import AdminProfile
+                admin_profile = AdminProfile.objects.create(
+                    user=request.user,
+                    role_level='superadmin',
+                    employee_id=f'SA-{request.user.id}',
+                    department='Administration'
+                )
+            else:
+                messages.error(request, 'Admin profile not found. Please contact system administrator.')
+                return redirect('admin_panel:dashboard')
+    except AdminProfile.DoesNotExist:
+        if request.user.role == 'superadmin':
+            from apps.students.models import AdminProfile
+            admin_profile = AdminProfile.objects.create(
+                user=request.user,
+                role_level='superadmin',
+                employee_id=f'SA-{request.user.id}',
+                department='Administration'
+            )
+        else:
             messages.error(request, 'Admin profile not found. Please contact system administrator.')
             return redirect('admin_panel:dashboard')
-    except AdminProfile.DoesNotExist:
-        messages.error(request, 'Admin profile not found. Please contact system administrator.')
-        return redirect('admin_panel:dashboard')
     
     return render(request, 'admin_panel/profile.html', {
         'admin_profile': admin_profile,
