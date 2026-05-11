@@ -245,8 +245,16 @@ def department_users_list(request):
     if role_filter:
         users = users.filter(role=role_filter)
     
-    # Pagination
-    paginator = Paginator(users.order_by('-created_at'), 20)
+    # Pagination — current user always sorted to the bottom
+    from django.db.models import Case, When, IntegerField
+    users = users.annotate(
+        is_current_user=Case(
+            When(id=request.user.id, then=1),
+            default=0,
+            output_field=IntegerField()
+        )
+    ).order_by('is_current_user', '-created_at')
+    paginator = Paginator(users, 20)
     page_number = request.GET.get('page')
     users_page = paginator.get_page(page_number)
     
