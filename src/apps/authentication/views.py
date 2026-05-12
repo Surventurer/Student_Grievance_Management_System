@@ -62,6 +62,15 @@ def register(request):
             fail_silently=False,
         )
         
+        # For development: print OTP to console
+        if settings.DEBUG:
+            print(f"\n{'='*60}")
+            print(f"📋 USER REGISTRATION OTP")
+            print(f"Email: {user.email}")
+            print(f"OTP Code: {otp}")
+            print(f"Expires in: 10 minutes")
+            print(f"{'='*60}\n")
+        
         return Response({
             'message': 'Registration successful. Please check your email for OTP verification.',
             'user_id': user.id
@@ -310,7 +319,13 @@ def login_view(request):
                         )
                         
                         # For development: print OTP to console
-                        print(f"🔑 OTP FOR {user.email}: {otp}")
+                        if settings.DEBUG:
+                            print(f"\n{'='*60}")
+                            print(f"🔑 ADMIN LOGIN OTP")
+                            print(f"Email: {user.email}")
+                            print(f"OTP Code: {otp}")
+                            print(f"Expires in: 5 minutes")
+                            print(f"{'='*60}\n")
                         
                         messages.success(request, f'OTP has been sent to your email. Please enter it below to complete login. [DEV: Check console for OTP]')
                         return render(request, 'authentication/login.html', {
@@ -319,7 +334,13 @@ def login_view(request):
                         })
                     except Exception as e:
                         # For development: show OTP in error message if email fails
-                        print(f"🔑 EMAIL FAILED - OTP FOR {user.email}: {otp}")
+                        if settings.DEBUG:
+                            print(f"\n{'='*60}")
+                            print(f"⚠️  EMAIL FAILED - ADMIN LOGIN OTP")
+                            print(f"Email: {user.email}")
+                            print(f"OTP Code: {otp}")
+                            print(f"Error: {str(e)}")
+                            print(f"{'='*60}\n")
                         messages.info(request, f'Email failed. For development, your OTP is: {otp}')
                         return render(request, 'authentication/login.html', {
                             'show_otp_field': True,
@@ -641,6 +662,16 @@ Student Grievance Management System Team"""
                     fail_silently=False,
                 )
                 
+                # For development: print reset link to console
+                if settings.DEBUG:
+                    print(f"\n{'='*60}")
+                    print(f"🔐 PASSWORD RESET TOKEN")
+                    print(f"Email: {user.email}")
+                    print(f"Token: {token}")
+                    print(f"Reset Link: {reset_link}")
+                    print(f"Expires in: 1 hour")
+                    print(f"{'='*60}\n")
+                
                 messages.success(request, 'Password reset link has been sent to your email.')
                 return redirect('authentication:forgot_password_view')
             except Exception as e:
@@ -711,6 +742,18 @@ def student_registration(request):
                         [temp_registration.email],
                         fail_silently=False,
                     )
+                    
+                    # For development: print OTP to console
+                    if settings.DEBUG:
+                        print(f"\n{'='*60}")
+                        print(f"📋 STUDENT REGISTRATION OTP")
+                        print(f"Name: {temp_registration.name}")
+                        print(f"Email: {temp_registration.email}")
+                        print(f"Student ID: {temp_registration.student_id}")
+                        print(f"OTP Code: {temp_registration.otp}")
+                        print(f"Expires in: 10 minutes")
+                        print(f"{'='*60}\n")
+                    
                     messages.success(request, f'Registration initiated! Please check your email ({temp_registration.email}) for verification OTP. Your Student ID is: {temp_registration.student_id}')
                 except Exception as email_error:
                     messages.warning(request, f'Registration saved! However, we could not send the verification email. Your Student ID is: {temp_registration.student_id}. Please contact support.')

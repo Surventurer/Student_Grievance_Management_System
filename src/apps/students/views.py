@@ -507,15 +507,21 @@ def add_student_response(request, grievance_id):
             is_internal=False  # Student responses are always public
         )
 
+        # Only create notification if admin is not currently viewing the grievance
         if grievance.assigned_to and grievance.assigned_to.user:
-            from django.urls import reverse
-            Notification.objects.create(
-                recipient=grievance.assigned_to.user,
-                title='New student message',
-                message=f'Student replied on grievance {grievance.grievance_id}: {student_response[:120]}',
-                notification_type='comment',
-                related_link=reverse('admin_panel:grievance_detail', args=[grievance.id]) + '#admin_response'
-            )
+            from apps.grievances.views import is_user_viewing_grievance
+            admin_user = grievance.assigned_to.user
+            
+            # Check if admin is viewing this grievance
+            if not is_user_viewing_grievance(admin_user, grievance.id):
+                from django.urls import reverse
+                Notification.objects.create(
+                    recipient=admin_user,
+                    title='New student message',
+                    message=f'Student replied on grievance {grievance.grievance_id}: {student_response[:120]}',
+                    notification_type='comment',
+                    related_link=reverse('admin_panel:grievance_detail', args=[grievance.id]) + '#admin_response'
+                )
         
         # Redirect with fragment to maintain scroll position near message form
         from django.http import HttpResponseRedirect

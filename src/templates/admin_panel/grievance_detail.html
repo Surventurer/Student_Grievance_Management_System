@@ -594,6 +594,35 @@
 
 {% block extra_js %}
 <script>
+// Track that user is viewing this grievance
+document.addEventListener('DOMContentLoaded', function() {
+    const grievanceId = '{{ grievance.id }}';
+    if (grievanceId) {
+        fetch('/api/grievances/api/track-view/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken') || document.querySelector('[name=csrfmiddlewaretoken]')?.value
+            },
+            body: JSON.stringify({ grievance_id: grievanceId })
+        }).catch(err => console.log('Tracking error:', err));
+    }
+    
+    // Clear tracking when user leaves the page
+    window.addEventListener('beforeunload', function() {
+        if (grievanceId) {
+            fetch('/api/grievances/api/track-view/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken') || document.querySelector('[name=csrfmiddlewaretoken]')?.value
+                },
+                body: JSON.stringify({ grievance_id: null })
+            }).catch(err => console.log('Tracking clear error:', err));
+        }
+    });
+});
+
 // Function to update grievance status
 function updateGrievanceStatus(grievanceId, status) {
     const confirmMessage = status === 'resolved' ? 'resolve' : 'reject';

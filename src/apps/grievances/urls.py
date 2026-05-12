@@ -12,6 +12,7 @@ urlpatterns = [
     # API endpoints
     path('', views.grievance_list, name='grievance_list'),
     path('api/submit/', views.submit_grievance, name='submit_grievance_api'),
+    path('api/track-view/', views.track_grievance_view, name='track_grievance_view'),
     path('<uuid:grievance_id>/', views.grievance_detail, name='grievance_detail'),
     path('<uuid:grievance_id>/comments/', views.grievance_comments, name='grievance_comments'),
     path('<uuid:grievance_id>/feedback/', views.submit_feedback, name='submit_feedback'),

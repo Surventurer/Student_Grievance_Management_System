@@ -18,6 +18,35 @@ from datetime import datetime, timedelta
 
 from .models import Grievance, Category, GrievanceComment, Feedback, GrievanceOTPVerification
 from apps.students.models import StudentProfile
+from django.core.cache import cache
+
+
+def is_user_viewing_grievance(user, grievance_id):
+    """Check if user is currently viewing a grievance"""
+    if not user or not user.is_authenticated:
+        return False
+    viewing_grievance_id = cache.get(f'viewing_grievance_{user.id}')
+    return str(viewing_grievance_id) == str(grievance_id)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def track_grievance_view(request):
+    """Track that a user is viewing a specific grievance"""
+    try:
+        data = json.loads(request.body)
+        grievance_id = data.get('grievance_id')
+        
+        if grievance_id:
+            # Store in cache which grievance the user is viewing (expires in 1 hour)
+            cache.set(f'viewing_grievance_{request.user.id}', grievance_id, timeout=3600)
+            return JsonResponse({'success': True, 'message': 'Viewing tracked'})
+        else:
+            # Clear the viewing status
+            cache.delete(f'viewing_grievance_{request.user.id}')
+            return JsonResponse({'success': True, 'message': 'Viewing cleared'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
 
 @api_view(['GET'])
@@ -232,9 +261,29 @@ def send_otp_view(request):
                 [email],
                 fail_silently=False,
             )
+            
+            # For development: print OTP to console
+            if settings.DEBUG:
+                print(f"\n{'='*60}")
+                print(f"✉️  GRIEVANCE SUBMISSION OTP")
+                print(f"Email: {email}")
+                print(f"OTP Code: {otp}")
+                print(f"Expires in: 10 minutes")
+                print(f"{'='*60}\n")
+            
             return JsonResponse({'success': True})
         except Exception as e:
             print(f"Email sending failed: {e}")
+            
+            # For development: still print OTP even if email fails
+            if settings.DEBUG:
+                print(f"\n{'='*60}")
+                print(f"⚠️  EMAIL FAILED - GRIEVANCE SUBMISSION OTP")
+                print(f"Email: {email}")
+                print(f"OTP Code: {otp}")
+                print(f"Error: {str(e)}")
+                print(f"{'='*60}\n")
+            
             return JsonResponse({'success': True})  # Return success even if email fails for demo
         
     except Exception as e:

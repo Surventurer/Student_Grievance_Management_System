@@ -580,16 +580,23 @@ def add_admin_response(request, grievance_id):
             is_internal=is_internal
         )
 
+        # Only create notification if student is not currently viewing the grievance
         if not is_internal and grievance.student and grievance.student.user:
-            from django.urls import reverse
-            from apps.notifications.models import Notification
-            Notification.objects.create(
-                recipient=grievance.student.user,
-                title='New grievance update',
-                message=f'An admin replied on grievance {grievance.grievance_id}: {admin_response[:120]}',
-                notification_type='comment',
-                related_link=reverse('students:grievance_detail', kwargs={'grievance_id': grievance.id}) + '#message-form'
-            )
+            from django.core.cache import cache
+            from apps.grievances.views import is_user_viewing_grievance
+            student_user = grievance.student.user
+            
+            # Check if student is viewing this grievance
+            if not is_user_viewing_grievance(student_user, grievance.id):
+                from django.urls import reverse
+                from apps.notifications.models import Notification
+                Notification.objects.create(
+                    recipient=student_user,
+                    title='New grievance update',
+                    message=f'An admin replied on grievance {grievance.grievance_id}: {admin_response[:120]}',
+                    notification_type='comment',
+                    related_link=reverse('students:grievance_detail', kwargs={'grievance_id': grievance.id}) + '#message-form'
+                )
         
         return JsonResponse({
             'success': True, 
