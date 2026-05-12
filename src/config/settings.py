@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 from decouple import config
 import dj_database_url
@@ -12,10 +11,7 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-produc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,192.168.1.2,0.0.0.0,*').split(',')
-RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
 
 # Application definition
 INSTALLED_APPS = [
@@ -151,15 +147,9 @@ CORS_ALLOWED_ORIGINS = [
 # Allow all origins in development (can be restricted in production)
 CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=True, cast=bool)
 
-# CSRF trusted origins
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-    'http://localhost:9000',
-    'http://127.0.0.1:9000',
-]
-if RENDER_EXTERNAL_HOSTNAME:
-    CSRF_TRUSTED_ORIGINS.append(f'https://{RENDER_EXTERNAL_HOSTNAME}')
+# CSRF trusted origins — add your production domain(s) via CSRF_TRUSTED_ORIGINS in .env
+_default_csrf = 'http://localhost:8000,http://127.0.0.1:8000,http://localhost:9000,http://127.0.0.1:9000'
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default=_default_csrf).split(',')
 
 # Email settings
 EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
