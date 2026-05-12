@@ -281,7 +281,7 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">&nbsp;</label>
-                                <button type="button" class="btn btn-success d-block" id="sendOtpBtn">
+                                <button type="button" class="btn btn-secondary d-block" id="sendOtpBtn" disabled>
                                     <i class="fas fa-paper-plane"></i> Send OTP
                                 </button>
                             </div>
@@ -337,9 +337,60 @@ document.addEventListener('DOMContentLoaded', function() {
     let otpSent = false;
     let otpVerified = false;
 
+    function getGrievanceFormData() {
+        const title = document.getElementById('title').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const categoryType = document.querySelector('input[name="category_type"]:checked')?.value || '';
+        const categoryId = document.getElementById('nature_of_grievance').value.trim();
+        const departmentId = document.getElementById('department_select').value.trim();
+
+        return { title, description, categoryType, categoryId, departmentId };
+    }
+
+    function validateRequiredFields(showAlerts = true) {
+        const { title, description, categoryType, categoryId, departmentId } = getGrievanceFormData();
+
+        if (!title) {
+            if (showAlerts) alert('Please enter a title for your grievance.');
+            return false;
+        }
+
+        if (!description) {
+            if (showAlerts) alert('Please provide a description of your grievance.');
+            return false;
+        }
+
+        if (!categoryType) {
+            if (showAlerts) alert('Please select grievance type (Academic or Non-Academic).');
+            return false;
+        }
+
+        if (!categoryId) {
+            if (showAlerts) alert('Please select a category.');
+            return false;
+        }
+
+        if (categoryType === 'non_academic' && !departmentId) {
+            if (showAlerts) alert('Please select a department for non-academic grievances.');
+            return false;
+        }
+
+        return true;
+    }
+
+    function refreshOtpButtonState() {
+        const isValid = validateRequiredFields(false);
+        sendOtpBtn.disabled = !isValid;
+        if (isValid && !otpSent) {
+            sendOtpBtn.classList.remove('btn-secondary');
+            sendOtpBtn.classList.add('btn-success');
+        }
+    }
+
     // Character counter
     descriptionTextarea.addEventListener('input', function() {
         charCount.textContent = this.value.length;
+        refreshOtpButtonState();
     });
 
     // Load departments for non-academic
@@ -444,6 +495,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     departmentSelect.setAttribute('required', 'required');
                     loadDepartments(); // Load departments for non-academic
                 }
+
+                refreshOtpButtonState();
             }
         });
     });
@@ -458,12 +511,23 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             categoryDescription.style.display = 'none';
         }
+
+        refreshOtpButtonState();
     });
+
+    document.getElementById('title').addEventListener('input', refreshOtpButtonState);
+    document.getElementById('department_select').addEventListener('change', refreshOtpButtonState);
 
     // Send OTP handler
     sendOtpBtn.addEventListener('click', function() {
+        if (!validateRequiredFields(true)) {
+            return;
+        }
+
         this.disabled = true;
         this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+        const { title, description, categoryType, categoryId, departmentId } = getGrievanceFormData();
         
         fetch('/grievances/send-otp/', {
             method: 'POST',
@@ -472,7 +536,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
             },
             body: JSON.stringify({
-                'email': '{{ user.email }}'
+                'email': '{{ user.email }}',
+                'title': title,
+                'description': description,
+                'category_type': categoryType,
+                'category_id': categoryId,
+                'department_id': departmentId
             })
         })
         .then(response => response.json())
@@ -485,7 +554,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.classList.remove('btn-success');
                 this.classList.add('btn-secondary');
             } else {
-                alert('Failed to send OTP. Please try again.');
+                alert(data.error || 'Failed to send OTP. Please try again.');
                 this.disabled = false;
                 this.innerHTML = '<i class="fas fa-paper-plane"></i> Send OTP';
             }
@@ -555,33 +624,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('Form data:', { title, description, categoryType, categoryId, departmentId, otpCode });
         
-        if (!title) {
+        if (!validateRequiredFields(true)) {
             e.preventDefault();
-            alert('Please enter a title for your grievance.');
-            return false;
-        }
-        
-        if (!description) {
-            e.preventDefault();
-            alert('Please provide a description of your grievance.');
-            return false;
-        }
-        
-        if (!categoryType) {
-            e.preventDefault();
-            alert('Please select grievance type (Academic or Non-Academic).');
-            return false;
-        }
-        
-        if (!categoryId) {
-            e.preventDefault();
-            alert('Please select a category.');
-            return false;
-        }
-        
-        if (categoryType === 'non_academic' && !departmentId) {
-            e.preventDefault();
-            alert('Please select a department for non-academic grievances.');
             return false;
         }
         
@@ -610,6 +654,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load academic categories by default and set up departments
     loadCategories('academic');
     loadDepartments(); // Load departments for potential non-academic use
+    refreshOtpButtonState();
 });
 </script>
 {% endblock %}

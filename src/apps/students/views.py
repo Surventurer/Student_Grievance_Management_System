@@ -11,11 +11,11 @@ from django.db.models import Q, Count, Max
 from django.utils import timezone
 from datetime import timedelta
 
-from .models import StudentProfile, AdminProfile, Department, UserActivity
+from .models import StudentProfile, AdminProfile, Department
 from .serializers import StudentProfileSerializer, AdminProfileSerializer, DepartmentSerializer
 from apps.authentication.models import User
 from apps.grievances.models import Grievance, GrievanceComment, Feedback
-from apps.notifications.models import ReadNotification
+from apps.notifications.models import ReadNotification, Notification
 from django.shortcuts import get_object_or_404
 
 
@@ -275,23 +275,6 @@ def departments(request):
     return Response(serializer.data)
 
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def user_activity(request):
-    """Get user login activity"""
-    activities = UserActivity.objects.filter(user=request.user).order_by('-login_time')[:10]
-    
-    return Response([
-        {
-            'login_time': activity.login_time,
-            'ip_address': activity.ip_address,
-            'user_agent': activity.user_agent,
-            'is_successful': activity.is_successful,
-        }
-        for activity in activities
-    ])
-
-
 # Web views
 @login_required
 def student_dashboard_view(request):
@@ -523,6 +506,16 @@ def add_student_response(request, grievance_id):
             comment_type='comment',
             is_internal=False  # Student responses are always public
         )
+
+        if grievance.assigned_to and grievance.assigned_to.user:
+            from django.urls import reverse
+            Notification.objects.create(
+                recipient=grievance.assigned_to.user,
+                title='New student message',
+                message=f'Student replied on grievance {grievance.grievance_id}: {student_response[:120]}',
+                notification_type='comment',
+                related_link=reverse('admin_panel:grievance_detail', args=[grievance.id]) + '#admin_response'
+            )
         
         # Redirect with fragment to maintain scroll position near message form
         from django.http import HttpResponseRedirect

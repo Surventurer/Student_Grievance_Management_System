@@ -11,7 +11,6 @@ urlpatterns = [
     path('api/admin/profile/', views.admin_profile, name='admin_profile_api'),
     path('api/admin/students/', views.manage_students, name='manage_students_api'),
     path('api/departments/', views.departments, name='departments_api'),
-    path('api/activity/', views.user_activity, name='user_activity_api'),
     
     # Web views
     path('', views.student_dashboard_view, name='dashboard'),

@@ -420,7 +420,7 @@
                 <!-- Existing Comments -->
                 {% with all_comments=grievance.comments.all|dictsort:"timestamp" %}
                 {% if all_comments %}
-                <div class="mb-4">
+                <div id="adminChatContainer" class="mb-4">
                     <h6 class="fw-bold mb-3">Previous Comments:</h6>
                     {% for comment in all_comments %}
                     <div class="comment-box mb-3 {% if comment.is_internal %}border-warning{% endif %}">
@@ -645,10 +645,8 @@ document.getElementById('adminResponseForm').addEventListener('submit', function
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Clear the form
             document.getElementById('admin_response').value = '';
-            // Reload to show the new comment
-            location.reload();
+            refreshAdminThread();
         } else {
             alert('Error adding response: ' + (data.error || 'Unknown error'));
         }
@@ -681,7 +679,7 @@ function submitInternalNote() {
     .then(data => {
         if (data.success) {
             document.getElementById('admin_response').value = '';
-            location.reload();
+            refreshAdminThread();
         } else {
             alert('Error adding internal note: ' + (data.error || 'Unknown error'));
         }
@@ -691,5 +689,86 @@ function submitInternalNote() {
         alert('Error adding internal note');
     });
 }
+
+const adminChatContainer = document.getElementById('adminChatContainer');
+const adminCommentsUrl = '{% url "grievances:grievance_comments" grievance.id %}';
+let lastAdminCommentSignature = '';
+
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function renderAdminComments(comments) {
+    if (!adminChatContainer) {
+        return;
+    }
+
+    if (!comments.length) {
+        adminChatContainer.innerHTML = `
+            <div class="mb-4">
+                <h6 class="fw-bold mb-3">Previous Comments:</h6>
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-comments fa-3x mb-3"></i>
+                    <p>No messages yet.</p>
+                </div>
+            </div>`;
+        return;
+    }
+
+    const html = comments.map(comment => `
+        <div class="comment-box mb-3 ${comment.is_internal ? 'border-warning' : ''}">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <strong>
+                        ${comment.is_student
+                            ? '<i class="fas fa-user me-1 text-primary"></i>' + escapeHtml(comment.user) + ' (Student)'
+                            : '<i class="fas fa-user-shield me-1 text-success"></i>' + escapeHtml(comment.user) + ' (Admin)'}
+                    </strong>
+                    ${comment.comment_type !== 'comment' ? `<span class="badge bg-${comment.comment_type === 'status_update' ? 'info' : 'secondary'} ms-2">${escapeHtml(comment.comment_type.replace('_', ' '))}</span>` : ''}
+                    ${comment.is_internal ? '<span class="badge bg-warning ms-1">Internal</span>' : ''}
+                </div>
+                <small class="text-muted">${new Date(comment.timestamp).toLocaleString()}</small>
+            </div>
+            <p class="mb-0">${escapeHtml(comment.message).replace(/\n/g, '<br>')}</p>
+        </div>
+    `).join('');
+
+    adminChatContainer.innerHTML = `
+        <h6 class="fw-bold mb-3">Previous Comments:</h6>
+        ${html}`;
+}
+
+function refreshAdminThread() {
+    fetch(adminCommentsUrl, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!Array.isArray(data)) {
+            return;
+        }
+
+        const signature = data.map(comment => `${comment.id}:${comment.timestamp}:${comment.is_internal}`).join('|');
+        if (signature !== lastAdminCommentSignature) {
+            const shouldStickToBottom = !adminChatContainer || adminChatContainer.scrollTop + adminChatContainer.clientHeight >= adminChatContainer.scrollHeight - 120;
+            renderAdminComments(data);
+            lastAdminCommentSignature = signature;
+            if (adminChatContainer && shouldStickToBottom) {
+                adminChatContainer.scrollTop = adminChatContainer.scrollHeight;
+            }
+        }
+    })
+    .catch(error => console.log('Admin comment refresh failed:', error));
+}
+
+refreshAdminThread();
+setInterval(refreshAdminThread, 10000);
 </script>
 {% endblock %}

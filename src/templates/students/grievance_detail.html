@@ -196,7 +196,7 @@
                     </h6>
                     
                     <!-- Chat Messages Container -->
-                    <div class="chat-container border rounded p-3" style="max-height: 500px; overflow-y: auto; background-color: #f8f9fa;">
+                    <div id="studentChatContainer" class="chat-container border rounded p-3" style="max-height: 500px; overflow-y: auto; background-color: #f8f9fa;">
                         {% if public_comments %}
                             {% for comment in public_comments %}
                             {% if not comment.is_internal %}
@@ -602,12 +602,97 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.disabled = true;
             
             // Store scroll position of chat container before submission
-            const chatContainer = document.querySelector('.chat-container');
+            const chatContainer = document.getElementById('studentChatContainer');
             if (chatContainer) {
                 sessionStorage.setItem('chatScrollPosition', chatContainer.scrollTop);
             }
         });
     }
+
+    const studentChatContainer = document.getElementById('studentChatContainer');
+    const grievanceCommentsUrl = '{% url "grievances:grievance_comments" grievance.id %}';
+    let lastCommentSignature = '';
+
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function renderStudentComments(comments) {
+        const visibleComments = comments.filter(comment => !comment.is_internal);
+        if (!studentChatContainer) {
+            return;
+        }
+
+        if (!visibleComments.length) {
+            studentChatContainer.innerHTML = `
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-comments fa-3x mb-3"></i>
+                    <p>No messages yet. Start the conversation with the admin!</p>
+                </div>`;
+            return;
+        }
+
+        studentChatContainer.innerHTML = visibleComments.map(comment => {
+            const isStudent = comment.is_student;
+            const userName = isStudent ? 'You' : `<i class="fas fa-user-shield me-1"></i>${escapeHtml(comment.user)}`;
+            const typeBadge = comment.comment_type !== 'comment'
+                ? `<span class="badge bg-${comment.comment_type === 'status_update' ? 'info' : 'secondary'} ms-1">${escapeHtml(comment.comment_type.replace('_', ' '))}</span>`
+                : '';
+
+            return `
+                <div class="message mb-3 ${isStudent ? 'student-message' : 'admin-message'}">
+                    <div class="d-flex ${isStudent ? 'justify-content-end' : 'justify-content-start'}">
+                        <div class="message-bubble ${isStudent ? 'bg-primary text-white' : 'bg-white border'} rounded p-3" style="max-width: 75%;">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <small class="fw-bold ${isStudent ? 'text-light' : 'text-muted'}">
+                                    ${userName}
+                                    ${typeBadge}
+                                </small>
+                                <small class="${isStudent ? 'text-light' : 'text-muted'}">${new Date(comment.timestamp).toLocaleString()}</small>
+                            </div>
+                            <div>${escapeHtml(comment.message).replace(/\n/g, '<br>')}</div>
+                        </div>
+                    </div>
+                </div>`;
+        }).join('');
+    }
+
+    function refreshStudentThread() {
+        fetch(grievanceCommentsUrl, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!Array.isArray(data)) {
+                return;
+            }
+
+            const visibleSignature = data
+                .filter(comment => !comment.is_internal)
+                .map(comment => `${comment.id}:${comment.timestamp}`)
+                .join('|');
+
+            if (visibleSignature !== lastCommentSignature) {
+                const shouldStickToBottom = !studentChatContainer || studentChatContainer.scrollTop + studentChatContainer.clientHeight >= studentChatContainer.scrollHeight - 120;
+                renderStudentComments(data);
+                lastCommentSignature = visibleSignature;
+                if (studentChatContainer && shouldStickToBottom) {
+                    studentChatContainer.scrollTop = studentChatContainer.scrollHeight;
+                }
+            }
+        })
+        .catch(error => console.log('Comment refresh failed:', error));
+    }
+
+    refreshStudentThread();
+    setInterval(refreshStudentThread, 10000);
 });
 </script>
 

@@ -145,21 +145,3 @@ class AdminProfile(models.Model):
     class Meta:
         verbose_name = "Admin Profile"
         verbose_name_plural = "Admin Profiles"
-
-
-class UserActivity(models.Model):
-    """Track user login activity"""
-    
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='activities')
-    login_time = models.DateTimeField(auto_now_add=True)
-    ip_address = models.GenericIPAddressField(null=True, blank=True)
-    user_agent = models.TextField(blank=True, null=True)
-    is_successful = models.BooleanField(default=True)
-    
-    def __str__(self):
-        return f"{self.user.email} - {self.login_time}"
-    
-    class Meta:
-        verbose_name = "User Activity"
-        verbose_name_plural = "User Activities"
-        ordering = ['-login_time']

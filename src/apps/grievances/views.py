@@ -194,9 +194,20 @@ def send_otp_view(request):
     try:
         data = json.loads(request.body)
         email = data.get('email')
+        title = (data.get('title') or '').strip()
+        description = (data.get('description') or '').strip()
+        category_type = (data.get('category_type') or 'academic').strip()
+        category_id = (data.get('category_id') or '').strip()
+        department_id = (data.get('department_id') or '').strip()
         
         if email != request.user.email:
             return JsonResponse({'success': False, 'error': 'Email mismatch'})
+
+        if not all([title, description, category_id]):
+            return JsonResponse({'success': False, 'error': 'Please fill all required grievance fields before requesting OTP'})
+
+        if category_type == 'non_academic' and not department_id:
+            return JsonResponse({'success': False, 'error': 'Please select a department before requesting OTP'})
         
         # Generate OTP
         otp = ''.join(random.choices(string.digits, k=6))
@@ -317,14 +328,22 @@ def grievance_detail(request, grievance_id):
 def grievance_comments(request, grievance_id):
     """Get grievance comments"""
     try:
-        grievance = Grievance.objects.get(id=grievance_id)
-        comments = GrievanceComment.objects.filter(grievance=grievance)
+        grievance = Grievance.objects.select_related('student', 'assigned_to').get(id=grievance_id)
+
+        if not request.user.can_access_grievance(grievance):
+            return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)
+
+        comments = GrievanceComment.objects.filter(grievance=grievance).select_related('user').order_by('timestamp')
         
         return Response([
             {
-                'id': c.id,
+                'id': str(c.id),
                 'message': c.message,
-                'user': c.user.get_full_name(),
+                'user': c.user.get_full_name() if c.user else 'System',
+                'user_role': c.user.role if c.user else 'system',
+                'is_student': bool(c.user and c.user.is_student),
+                'is_internal': c.is_internal,
+                'comment_type': c.comment_type,
                 'timestamp': c.timestamp,
             }
             for c in comments

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import StudentProfile, AdminProfile, Department, UserActivity
+from .models import StudentProfile, AdminProfile, Department
 from apps.authentication.models import User
 
 
@@ -84,15 +84,6 @@ class DepartmentSerializer(serializers.ModelSerializer):
         if obj.school:
             return f"{obj.name} - {obj.school.name}"
         return obj.name
-
-
-class UserActivitySerializer(serializers.ModelSerializer):
-    """Serializer for user activity"""
-    
-    class Meta:
-        model = UserActivity
-        fields = ['login_time', 'ip_address', 'user_agent', 'is_successful']
-        read_only_fields = ['login_time', 'ip_address', 'user_agent', 'is_successful']
 
 
 class UserManagementSerializer(serializers.ModelSerializer):

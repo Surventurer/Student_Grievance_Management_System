@@ -16,6 +16,7 @@ from rest_framework.response import Response
 import json
 
 from apps.grievances.models import Grievance, Category, GrievanceComment, AuditLog, CategoryAssignment
+from apps.notifications.models import Notification
 from apps.students.models import StudentProfile, AdminProfile
 from apps.authentication.models import User
 from apps.authentication.decorators import dept_admin_required
@@ -578,6 +579,17 @@ def add_admin_response(request, grievance_id):
             comment_type='internal_note' if is_internal else 'comment',
             is_internal=is_internal
         )
+
+        if not is_internal and grievance.student and grievance.student.user:
+            from django.urls import reverse
+            from apps.notifications.models import Notification
+            Notification.objects.create(
+                recipient=grievance.student.user,
+                title='New grievance update',
+                message=f'An admin replied on grievance {grievance.grievance_id}: {admin_response[:120]}',
+                notification_type='comment',
+                related_link=reverse('students:grievance_detail', kwargs={'grievance_id': grievance.id}) + '#message-form'
+            )
         
         return JsonResponse({
             'success': True, 
