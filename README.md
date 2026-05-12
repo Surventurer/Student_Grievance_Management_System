@@ -2,7 +2,7 @@
 
 A production-ready Django web application for managing student grievances with role-based access control, automated assignment, OTP-based authentication, and real-time notifications.
 
-> **Live Demo:** Deployed on [Render](https://render.com) with [Neon PostgreSQL](https://neon.tech)
+> Deploy anywhere — Render, Railway, Fly.io, VPS, or any platform that supports Python/Django.
 
 ---
 
@@ -15,7 +15,7 @@ A production-ready Django web application for managing student grievances with r
   - [Prerequisites](#prerequisites)
   - [Environment Setup](#1-environment-setup)
   - [Local Development](#2-local-development)
-  - [Production Deployment (Render)](#3-production-deployment-render)
+  - [Production Deployment](#3-production-deployment)
 - [Environment Variables](#environment-variables)
 - [System Workflows](#system-workflows)
 - [API Endpoints](#api-endpoints)
@@ -185,32 +185,28 @@ Open **http://127.0.0.1:8000** in your browser.
 - OTP codes are sent to the configured `EMAIL_HOST_USER` Gmail account
 - The superadmin's email verification status is controlled by `DJANGO_SUPERUSER_EMAIL_VERIFIED` in `.env`
 
-### 3. Production Deployment (Render)
+### 3. Production Deployment
 
-#### Step 1 — Create a Neon Database
-1. Sign up at [neon.tech](https://neon.tech)
-2. Create a new project and copy the connection string
+This project can be deployed on **any platform** that supports Python/Django. Below are the general steps followed by platform-specific notes.
 
-#### Step 2 — Create a Render Web Service
-1. Go to [render.com](https://render.com) → **New** → **Web Service**
-2. Connect your GitHub repository
-3. Configure:
+#### Step 1 — Get a PostgreSQL Database
+You need a PostgreSQL database. Some options:
+- [Neon](https://neon.tech) — Free serverless PostgreSQL
+- [Railway](https://railway.app) — Built-in PostgreSQL add-on
+- [Supabase](https://supabase.com) — Free tier PostgreSQL
+- Self-hosted PostgreSQL on any VPS
 
-| Setting | Value |
-|---------|-------|
-| **Build Command** | `./build.sh` |
-| **Start Command** | `gunicorn --chdir src config.wsgi:application` |
-| **Python Version** | Set `PYTHON_VERSION=3.12.11` in env vars |
+#### Step 2 — Set Environment Variables
 
-#### Step 3 — Set Environment Variables on Render
-
-Add these environment variables in the Render dashboard:
+Set these environment variables on your hosting platform's dashboard:
 
 | Variable | Value |
 |----------|-------|
-| `DATABASE_URL` | Your Neon connection string |
-| `SECRET_KEY` | A long random string (use `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`) |
+| `DATABASE_URL` | Your PostgreSQL connection string |
+| `SECRET_KEY` | A long random string (generate with `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`) |
 | `DEBUG` | `False` |
+| `ALLOWED_HOSTS` | Your production domain (e.g., `my-app.onrender.com` or `my-app.up.railway.app`) |
+| `CSRF_TRUSTED_ORIGINS` | Your production URL with protocol (e.g., `https://my-app.onrender.com`) |
 | `DJANGO_SUPERUSER_EMAIL` | Your admin email |
 | `DJANGO_SUPERUSER_PASSWORD` | Your admin password |
 | `DJANGO_SUPERUSER_EMAIL_VERIFIED` | `True` |
@@ -220,19 +216,34 @@ Add these environment variables in the Render dashboard:
 | `SECURE_SSL_REDIRECT` | `True` |
 | `PYTHON_VERSION` | `3.12.11` |
 
-#### Step 4 — Deploy
-Push to your branch. Render will automatically:
-1. Install dependencies via `uv sync --frozen`
-2. Collect static files
-3. Run database migrations
-4. Create/update the superadmin with verified email and AdminProfile
+#### Step 3 — Build and Start Commands
+
+| Command | Value |
+|---------|-------|
+| **Build** | `./build.sh` |
+| **Start** | `gunicorn --chdir src config.wsgi:application` |
+
+The `build.sh` script automatically:
+1. Installs dependencies via `uv sync --frozen`
+2. Collects static files
+3. Runs database migrations
+4. Creates/updates the superadmin with verified email
+
+#### Platform-Specific Notes
+
+| Platform | Notes |
+|----------|-------|
+| **Render** | Set Build Command to `./build.sh`, Start Command to `gunicorn --chdir src config.wsgi:application`. Add env vars in the dashboard. |
+| **Railway** | Connect your GitHub repo, set the same build/start commands. Add a PostgreSQL plugin or use an external DB. |
+| **Fly.io** | Create a `fly.toml` config, set env vars with `fly secrets set`. Use `fly postgres create` for a database. |
+| **VPS (Ubuntu)** | Install Python 3.12, uv, Nginx. Run `./build.sh` then use `gunicorn` with systemd + Nginx as reverse proxy. |
 
 #### Production Security
 - `DEBUG=False` — no error details exposed
 - `SECURE_SSL_REDIRECT=True` — forces HTTPS
 - HSTS headers enabled with 1-year max-age
-- Django /admin panel is completely removed from URL routing
-- CSRF trusted origins auto-configured for Render hostname
+- Django `/admin` panel is completely removed from URL routing
+- CSRF trusted origins configured via `CSRF_TRUSTED_ORIGINS` env var
 - Static files served via WhiteNoise with compression
 
 ---
@@ -243,8 +254,9 @@ Push to your branch. Render will automatically:
 |----------|----------|---------|-------------|
 | `SECRET_KEY` | Yes | insecure default | Django secret key — **must change in production** |
 | `DEBUG` | Yes | `True` | `True` for dev, `False` for production |
-| `ALLOWED_HOSTS` | No | `localhost,127.0.0.1,*` | Comma-separated allowed hostnames |
-| `DATABASE_URL` | Yes | — | PostgreSQL connection string (Neon) |
+| `ALLOWED_HOSTS` | No | `localhost,127.0.0.1` | Comma-separated allowed hostnames |
+| `DATABASE_URL` | Yes | — | PostgreSQL connection string |
+| `CSRF_TRUSTED_ORIGINS` | No | localhost URLs | Comma-separated production URLs with protocol |
 | `EMAIL_BACKEND` | No | console backend | `django.core.mail.backends.smtp.EmailBackend` for real emails |
 | `EMAIL_HOST_USER` | Yes | — | Gmail address for sending OTPs |
 | `EMAIL_HOST_PASSWORD` | Yes | — | Gmail App Password (16 characters) |
@@ -252,7 +264,7 @@ Push to your branch. Render will automatically:
 | `DJANGO_SUPERUSER_PASSWORD` | No | — | Password for auto-created superadmin |
 | `DJANGO_SUPERUSER_EMAIL_VERIFIED` | No | `True` | Skip OTP for superadmin if `True` |
 | `SECURE_SSL_REDIRECT` | No | `True` (prod) | Set `False` for local development |
-| `PYTHON_VERSION` | No | — | Python version hint for Render |
+| `PYTHON_VERSION` | No | — | Python version hint for hosting platforms |
 
 ---
 
@@ -383,8 +395,8 @@ This project is licensed under the MIT License.
 | OTP not received | Check `EMAIL_HOST_USER` and `EMAIL_HOST_PASSWORD` (must be Gmail App Password) |
 | Superadmin can't login | Verify `DJANGO_SUPERUSER_EMAIL_VERIFIED=True` in `.env` |
 | Static files not loading in production | Run `uv run src/manage.py collectstatic --no-input` |
-| Migration conflicts on Render | Reset Neon DB: `DROP SCHEMA public CASCADE; CREATE SCHEMA public;` then redeploy |
+| Migration conflicts | Reset your DB: `DROP SCHEMA public CASCADE; CREATE SCHEMA public;` then redeploy |
 
 ---
 
-**Built with pride using Django and deployed on Render**
+**Built with Django — deploy anywhere**
