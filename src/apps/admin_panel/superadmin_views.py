@@ -475,7 +475,6 @@ def system_settings(request):
             messages.success(request, 'Workflow & SLA settings updated successfully!')
             
         elif form_type == 'experience':
-            settings_obj.enable_feedback = request.POST.get('enable_feedback') == 'on'
             settings_obj.allow_attachments_in_replies = request.POST.get('allow_attachments_in_replies') == 'on'
             settings_obj.support_hours = request.POST.get('support_hours', settings_obj.support_hours)
             messages.success(request, 'Student Experience settings updated successfully!')
@@ -554,7 +553,7 @@ def create_user(request):
                 return redirect('admin_panel:create_user')
             
             # Superadmin cannot create another superadmin
-            if role not in ['student', 'admin', 'officer']:
+            if role not in ['student', 'admin', 'officer', 'chief_warden', 'warden']:
                 messages.error(request, 'Invalid role selected. Cannot create superadmin users.')
                 return redirect('admin_panel:create_user')
             
@@ -1089,7 +1088,7 @@ def edit_user(request, user_id):
             except AdminProfile.DoesNotExist:
                 pass
                 
-        elif new_role in ['admin', 'officer']:
+        elif new_role in ['admin', 'officer', 'chief_warden', 'warden']:
             admin_data = data.get('admin_profile', {})
             print(f"Processing admin profile data: {admin_data}")
             

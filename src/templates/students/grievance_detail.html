@@ -67,47 +67,6 @@
         border: 1px solid #e0e0e0;
     }
     
-    /* Star rating styles */
-    .rating-input {
-        display: flex;
-        justify-content: center;
-        gap: 5px;
-        margin: 10px 0;
-    }
-    
-    .rating-input input[type="radio"] {
-        display: none;
-    }
-    
-    .star-label {
-        font-size: 2rem;
-        color: #ddd;
-        cursor: pointer;
-        transition: color 0.2s;
-    }
-    
-    .star-label:hover,
-    .rating-input input[type="radio"]:checked ~ .star-label,
-    .rating-input input[type="radio"]:checked + .star-label {
-        color: #ffc107;
-    }
-    
-    .rating-input:hover .star-label {
-        color: #ddd;
-    }
-    
-    .rating-input .star-label:hover,
-    .rating-input .star-label:hover ~ .star-label {
-        color: #ffc107;
-    }
-    
-    .rating-stars {
-        font-size: 1.5rem;
-    }
-    
-    .rating-stars .fa-star {
-        margin: 0 2px;
-    }
 </style>
 
 <div class="row">
@@ -323,6 +282,22 @@
                     </div>
                 </div>
                 <div class="row mb-2">
+                    <div class="col-5 fw-bold">Hosteler:</div>
+                    <div class="col-7">
+                        {% if grievance.is_hosteler %}
+                            <i class="fas fa-check text-success"></i> Yes
+                        {% else %}
+                            <i class="fas fa-times text-danger"></i> No
+                        {% endif %}
+                    </div>
+                </div>
+                {% if grievance.is_hosteler %}
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">Hostel:</div>
+                    <div class="col-7">{{ grievance.hostel_name|default:"N/A" }}{% if grievance.hostel_room_no %} ({{ grievance.hostel_room_no }}){% endif %}</div>
+                </div>
+                {% endif %}
+                <div class="row mb-2">
                     <div class="col-5 fw-bold">Submitted:</div>
                     <div class="col-7">{{ grievance.submitted_at|date:"M d, Y H:i" }}</div>
                 </div>
@@ -340,111 +315,6 @@
                 {% endif %}
             </div>
         </div>
-
-        <!-- Feedback Section (for resolved grievances) -->
-        {% if grievance.status == 'resolved' %}
-        <div class="card mt-3">
-            <div class="card-header bg-success text-white">
-                <h6 class="mb-0">
-                    <i class="fas fa-star me-2"></i>Resolution Feedback
-                </h6>
-            </div>
-            <div class="card-body">
-                {% if grievance.feedback %}
-                    <!-- Display existing feedback -->
-                    <div class="text-center mb-3">
-                        <h5>Your Rating</h5>
-                        <div class="rating-stars">
-                            {% for i in "12345" %}
-                                <i class="fas fa-star {% if i|add:0 <= grievance.feedback.rating %}text-warning{% else %}text-muted{% endif %}"></i>
-                            {% endfor %}
-                        </div>
-                        <p class="mt-2"><strong>{{ grievance.feedback.rating }}/5 Stars</strong></p>
-                    </div>
-                    
-                    {% if grievance.feedback.comments %}
-                    <div class="mb-3">
-                        <strong>Your Comments:</strong>
-                        <p class="mt-1">{{ grievance.feedback.comments }}</p>
-                    </div>
-                    {% endif %}
-                    
-                    <div class="mb-3">
-                        <strong>Satisfaction:</strong>
-                        <span class="badge bg-{% if grievance.feedback.is_satisfied %}success{% else %}warning{% endif %}">
-                            {% if grievance.feedback.is_satisfied %}Satisfied{% else %}Not Satisfied{% endif %}
-                        </span>
-                    </div>
-                    
-                    {% if grievance.feedback.improvement_suggestions %}
-                    <div class="mb-3">
-                        <strong>Suggestions:</strong>
-                        <p class="mt-1">{{ grievance.feedback.improvement_suggestions }}</p>
-                    </div>
-                    {% endif %}
-                    
-                    <small class="text-muted">
-                        Submitted on {{ grievance.feedback.created_at|date:"M d, Y H:i" }}
-                    </small>
-                {% else %}
-                    <!-- Feedback form -->
-                    <form id="feedbackForm" method="POST" action="{% url 'students:submit_feedback' grievance.id %}">
-                        {% csrf_token %}
-                        
-                        <!-- Rating -->
-                        <div class="mb-3 text-center">
-                            <label class="form-label fw-bold">Rate the resolution:</label>
-                            <div class="rating-input">
-                                {% for i in "12345" %}
-                                <input type="radio" name="rating" value="{{ i }}" id="star{{ i }}" required>
-                                <label for="star{{ i }}" class="star-label">
-                                    <i class="fas fa-star"></i>
-                                </label>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        
-                        <!-- Satisfaction -->
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Are you satisfied with the resolution?</label>
-                            <div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="is_satisfied" value="true" id="satisfied_yes" required>
-                                    <label class="form-check-label" for="satisfied_yes">
-                                        <i class="fas fa-thumbs-up text-success"></i> Yes
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="is_satisfied" value="false" id="satisfied_no">
-                                    <label class="form-check-label" for="satisfied_no">
-                                        <i class="fas fa-thumbs-down text-danger"></i> No
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Comments -->
-                        <div class="mb-3">
-                            <label for="comments" class="form-label fw-bold">Comments (Optional):</label>
-                            <textarea class="form-control" name="comments" id="comments" rows="3" 
-                                      placeholder="Share your thoughts about the resolution..."></textarea>
-                        </div>
-                        
-                        <!-- Improvement suggestions -->
-                        <div class="mb-3">
-                            <label for="improvement_suggestions" class="form-label fw-bold">Suggestions for Improvement (Optional):</label>
-                            <textarea class="form-control" name="improvement_suggestions" id="improvement_suggestions" rows="2" 
-                                      placeholder="How can we improve our service?"></textarea>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-success w-100">
-                            <i class="fas fa-paper-plane me-2"></i>Submit Feedback
-                        </button>
-                    </form>
-                {% endif %}
-            </div>
-        </div>
-        {% endif %}
 
         <!-- Quick Actions -->
         <div class="card mt-3">
@@ -516,46 +386,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Star rating functionality
-    const ratingInputs = document.querySelectorAll('.rating-input input[type="radio"]');
-    const starLabels = document.querySelectorAll('.star-label');
-    
-    // Handle star rating hover and click
-    starLabels.forEach((label, index) => {
-        label.addEventListener('mouseenter', function() {
-            highlightStars(index + 1);
-        });
-        
-        label.addEventListener('click', function() {
-            const radioInput = document.querySelector(`#star${index + 1}`);
-            if (radioInput) {
-                radioInput.checked = true;
-                highlightStars(index + 1, true);
-            }
-        });
-    });
-    
-    // Reset to selected rating when mouse leaves
-    document.querySelector('.rating-input')?.addEventListener('mouseleave', function() {
-        const checkedInput = document.querySelector('.rating-input input[type="radio"]:checked');
-        if (checkedInput) {
-            const rating = parseInt(checkedInput.value);
-            highlightStars(rating, true);
-        } else {
-            highlightStars(0);
-        }
-    });
-    
-    function highlightStars(rating, permanent = false) {
-        starLabels.forEach((label, index) => {
-            if (index < rating) {
-                label.style.color = '#ffc107';
-            } else {
-                label.style.color = permanent ? '#ddd' : '#ddd';
-            }
-        });
-    }
-    
     // Auto-scroll chat to bottom
     const chatContainer = document.querySelector('.chat-container');
     if (chatContainer) {
@@ -583,32 +413,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 100);
             }
         }, 100);
-    }
-    
-    // Form submission feedback
-    const feedbackForm = document.getElementById('feedbackForm');
-    if (feedbackForm) {
-        feedbackForm.addEventListener('submit', function(e) {
-            const rating = this.querySelector('input[name="rating"]:checked');
-            const satisfaction = this.querySelector('input[name="is_satisfied"]:checked');
-            
-            if (!rating) {
-                e.preventDefault();
-                alert('Please select a rating before submitting.');
-                return false;
-            }
-            
-            if (!satisfaction) {
-                e.preventDefault();
-                alert('Please indicate if you are satisfied with the resolution.');
-                return false;
-            }
-            
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
-            submitBtn.disabled = true;
-        });
     }
     
     // Student response form handling

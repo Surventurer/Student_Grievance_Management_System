@@ -15,7 +15,6 @@ urlpatterns = [
     path('api/track-view/', views.track_grievance_view, name='track_grievance_view'),
     path('<uuid:grievance_id>/', views.grievance_detail, name='grievance_detail'),
     path('<uuid:grievance_id>/comments/', views.grievance_comments, name='grievance_comments'),
-    path('<uuid:grievance_id>/feedback/', views.submit_feedback, name='submit_feedback'),
     path('categories/', views.category_list, name='category_list'),
     path('api/categories/', views.category_list_api, name='category_list_api'),
 ]

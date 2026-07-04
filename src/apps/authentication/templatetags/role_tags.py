@@ -41,6 +41,8 @@ def role_badge(user, size='sm'):
         'superadmin': 'danger',
         'admin': 'warning', 
         'officer': 'info',
+        'chief_warden': 'dark',
+        'warden': 'secondary',
         'student': 'success'
     }
     
@@ -59,6 +61,8 @@ def role_icon(role):
         'superadmin': 'fas fa-crown',
         'admin': 'fas fa-user-shield', 
         'officer': 'fas fa-clipboard-check',
+        'chief_warden': 'fas fa-user-tie',
+        'warden': 'fas fa-user-tag',
         'student': 'fas fa-user-graduate'
     }
     return icons.get(role, 'fas fa-user')
@@ -71,6 +75,8 @@ def role_color(role):
         'superadmin': 'text-danger',
         'admin': 'text-warning',
         'officer': 'text-info', 
+        'chief_warden': 'text-dark',
+        'warden': 'text-secondary',
         'student': 'text-success'
     }
     return colors.get(role, 'text-secondary')
@@ -91,7 +97,9 @@ def format_role_access(user):
     access_map = {
         'superadmin': "Full system access - All departments, users, and settings",
         'admin': f"Department access - Manage {getattr(user.admin_profile, 'department', 'assigned')} department",
-        'officer': f"Limited access - Handle assigned grievances in {getattr(user.admin_profile, 'department', 'assigned')} department", 
+        'officer': f"Limited access - Handle assigned grievances in {getattr(user.admin_profile, 'department', 'assigned')} department",
+        'chief_warden': f"Department access - Manage {getattr(user.admin_profile, 'department', 'assigned')} department",
+        'warden': f"Limited access - Handle assigned grievances in {getattr(user.admin_profile, 'department', 'assigned')} department",
         'student': "Student access - Submit and track own grievances"
     }
     

@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from django.core.validators import RegexValidator
 from apps.students.models import StudentProfile, School, Department
 from .models import TemporaryRegistration
 
@@ -12,6 +13,10 @@ class StudentRegistrationForm(forms.Form):
     # Student Profile fields
     name = forms.CharField(
         max_length=100,
+        validators=[RegexValidator(
+            regex=r'^[a-zA-Z\s\-\'\.]+$',
+            message='Name can only contain letters, spaces, hyphens, apostrophes, and periods.'
+        )],
         widget=forms.TextInput(attrs={
             'class': 'form-control',
             'placeholder': 'Enter your full name'
@@ -19,10 +24,15 @@ class StudentRegistrationForm(forms.Form):
     )
     
     student_id = forms.CharField(
-        max_length=50,
+        max_length=10,
+        min_length=10,
+        validators=[RegexValidator(
+            regex=r'^\d{10}$',
+            message='Student ID must be exactly 10 digits.'
+        )],
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Enter your student ID'
+            'placeholder': 'Enter 10-digit student ID'
         })
     )
     

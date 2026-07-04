@@ -315,6 +315,19 @@
                 {% endif %}
                 
                 <div class="info-row">
+                    <div class="label">Hosteler</div>
+                    <div class="value">
+                        {% if grievance.is_hosteler %}
+                            <i class="fas fa-check text-success"></i> Yes
+                            {% if grievance.hostel_name %} - {{ grievance.hostel_name }}{% endif %}
+                            {% if grievance.hostel_room_no %} ({{ grievance.hostel_room_no }}){% endif %}
+                        {% else %}
+                            <i class="fas fa-times text-danger"></i> No
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="info-row">
                     <div class="label">Submitted Date</div>
                     <div class="value">{{ grievance.submitted_at|date:"F d, Y \a\t H:i" }}</div>
                 </div>

@@ -204,7 +204,7 @@
                         
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <a class="dropdown-item text-center text-primary" href="#">
+                            <a class="dropdown-item text-center text-primary" href="{% url 'notifications_web:notification_list_view' %}">
                                 <i class="fas fa-eye me-2"></i>View All
                             </a>
                         </li>
@@ -367,7 +367,7 @@
             ${items}
             <li><hr class="dropdown-divider"></li>
             <li>
-                <a class="dropdown-item text-center text-primary" href="#">
+                <a class="dropdown-item text-center text-primary" href="/notifications/all/">
                     <i class="fas fa-eye me-2"></i>View All
                 </a>
             </li>`;

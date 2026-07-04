@@ -247,6 +247,48 @@
                         </div>
                     </div>
 
+                    <!-- Hosteler Information -->
+                    <div class="form-section">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-home me-2 d-none d-sm-inline"></i>
+                                Are you a Hosteler? <span class="required-field">*</span>
+                            </label>
+                            <div class="row">
+                                <div class="col-sm-6 col-12">
+                                    <div class="form-check p-3 border rounded mb-2">
+                                        <input class="form-check-input" type="radio" name="is_hosteler" id="hosteler_yes" value="yes">
+                                        <label class="form-check-label fw-bold" for="hosteler_yes">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            Yes
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-12">
+                                    <div class="form-check p-3 border rounded mb-2">
+                                        <input class="form-check-input" type="radio" name="is_hosteler" id="hosteler_no" value="no" checked>
+                                        <label class="form-check-label fw-bold" for="hosteler_no">
+                                            <i class="fas fa-times-circle text-danger me-2"></i>
+                                            No
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="hostelFields" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="hostel_name" class="form-label">Hostel Name <span class="required-field">*</span></label>
+                                    <input type="text" class="form-control" id="hostel_name" name="hostel_name" placeholder="e.g., Ashok Hostel">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="hostel_room_no" class="form-label">Room Number</label>
+                                    <input type="text" class="form-control" id="hostel_room_no" name="hostel_room_no" placeholder="e.g., A-101">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Anonymous Option -->
                     <div class="form-section">
                         <div class="mb-3">
@@ -333,6 +375,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const academicDepartment = document.getElementById('academic_department');
     const nonAcademicDepartment = document.getElementById('non_academic_department');
     const departmentSelect = document.getElementById('department_select');
+    const hostelerRadios = document.querySelectorAll('input[name="is_hosteler"]');
+    const hostelFields = document.getElementById('hostelFields');
 
     let otpSent = false;
     let otpVerified = false;
@@ -649,6 +693,18 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Form validation passed, submitting...');
         // Allow form to submit normally
         return true;
+    });
+
+    // Hosteler field toggle
+    hostelerRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'yes') {
+                hostelFields.style.display = 'block';
+            } else {
+                hostelFields.style.display = 'none';
+            }
+            refreshOtpButtonState();
+        });
     });
 
     // Load academic categories by default and set up departments

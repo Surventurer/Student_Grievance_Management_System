@@ -297,14 +297,6 @@
                         {% csrf_token %}
                         <input type="hidden" name="form_type" value="experience">
                         
-                        <div class="mb-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="enable_feedback" 
-                                       {% if settings.enable_feedback|default:True %}checked{% endif %}>
-                                <label class="form-check-label">Enable Post-Resolution Feedback</label>
-                            </div>
-                            <div class="form-text">Ask students to rate their experience out of 5 stars</div>
-                        </div>
                         
                         <div class="mb-3">
                             <div class="form-check form-switch">

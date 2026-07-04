@@ -20,7 +20,7 @@ class RoleValidator:
             if not hasattr(user, 'student_profile') or not user.student_profile:
                 issues.append(f"Student user {user.email} missing StudentProfile")
         
-        elif user.role in ['admin', 'officer', 'superadmin']:
+        elif user.role in ['admin', 'officer', 'superadmin', 'chief_warden', 'warden']:
             if not hasattr(user, 'admin_profile') or not user.admin_profile:
                 issues.append(f"Admin user {user.email} missing AdminProfile")
             elif user.admin_profile.role_level != user.role:
@@ -34,7 +34,7 @@ class RoleValidator:
         fixed_issues = []
         
         # Fix admin users without profiles
-        admin_users = User.objects.filter(role__in=['admin', 'officer', 'superadmin'])
+        admin_users = User.objects.filter(role__in=['admin', 'officer', 'superadmin', 'chief_warden', 'warden'])
         for user in admin_users:
             if not hasattr(user, 'admin_profile') or not user.admin_profile:
                 # Create missing admin profile
@@ -84,13 +84,21 @@ class RoleValidator:
                 'view_department_data', 'manage_department_students', 'manage_department_grievances',
                 'assign_grievances', 'view_department_reports', 'manage_department_categories'
             ],
+            'chief_warden': [
+                'view_department_data', 'manage_department_students', 'manage_department_grievances',
+                'assign_grievances', 'view_department_reports', 'manage_department_categories'
+            ],
             'officer': [
+                'view_assigned_grievances', 'update_grievance_status', 'add_comments',
+                'view_assigned_students', 'update_own_profile'
+            ],
+            'warden': [
                 'view_assigned_grievances', 'update_grievance_status', 'add_comments',
                 'view_assigned_students', 'update_own_profile'
             ],
             'student': [
                 'submit_grievances', 'view_own_grievances', 'update_own_profile',
-                'provide_feedback', 'upload_documents'
+                'upload_documents'
             ]
         }
         return permissions.get(role, [])
@@ -111,7 +119,7 @@ class RoleValidator:
             from apps.students.models import Department
             return Department.objects.all()
         
-        elif user.role == 'admin':
+        elif user.role == 'admin' or user.role == 'chief_warden':
             from apps.students.models import Department
             if hasattr(user, 'admin_profile') and user.admin_profile.department:
                 return Department.objects.filter(name=user.admin_profile.department)
@@ -136,7 +144,7 @@ class RoleValidator:
         # Check for orphaned profiles
         admin_profiles = AdminProfile.objects.select_related('user')
         for profile in admin_profiles:
-            if not profile.user or profile.user.role not in ['admin', 'officer', 'superadmin']:
+            if not profile.user or profile.user.role not in ['admin', 'officer', 'superadmin', 'chief_warden', 'warden']:
                 issues.append(f"Orphaned AdminProfile for user {profile.user.email if profile.user else 'None'}")
         
         student_profiles = StudentProfile.objects.select_related('user')

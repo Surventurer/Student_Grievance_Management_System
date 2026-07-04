@@ -16,7 +16,7 @@ import random
 import string
 from datetime import datetime, timedelta
 
-from .models import Grievance, Category, GrievanceComment, Feedback, GrievanceOTPVerification
+from .models import Grievance, Category, GrievanceComment, GrievanceOTPVerification
 from apps.students.models import StudentProfile
 from django.core.cache import cache
 
@@ -88,6 +88,9 @@ def submit_grievance_view(request):
             category_type = request.POST.get('category_type', 'academic')
             department_id = request.POST.get('department')
             is_anonymous = request.POST.get('is_anonymous') == 'on'
+            is_hosteler = request.POST.get('is_hosteler') == 'yes'
+            hostel_name = request.POST.get('hostel_name', '').strip() if is_hosteler else ''
+            hostel_room_no = request.POST.get('hostel_room_no', '').strip() if is_hosteler else ''
             otp_code = request.POST.get('otp_code', '').strip()
             
             # Validate required fields
@@ -160,7 +163,10 @@ def submit_grievance_view(request):
                 description=description,
                 category=category,
                 department=grievance_department,
-                is_anonymous=is_anonymous
+                is_anonymous=is_anonymous,
+                is_hosteler=is_hosteler,
+                hostel_name=hostel_name if is_hosteler else None,
+                hostel_room_no=hostel_room_no if is_hosteler else None
             )
             
             # Handle file uploads
@@ -399,17 +405,6 @@ def grievance_comments(request, grievance_id):
         ])
     except Grievance.DoesNotExist:
         return Response({'error': 'Grievance not found'}, status=status.HTTP_404_NOT_FOUND)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def submit_feedback(request, grievance_id):
-    """Submit feedback for a grievance"""
-    if not request.user.is_student:
-        return Response({'error': 'Only students can submit feedback'}, status=status.HTTP_403_FORBIDDEN)
-    
-    # Create feedback logic here
-    return Response({'message': 'Feedback submitted successfully'}, status=status.HTTP_201_CREATED)
 
 
 @api_view(['GET'])

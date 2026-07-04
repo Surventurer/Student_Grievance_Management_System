@@ -14,7 +14,7 @@ from datetime import timedelta
 from .models import StudentProfile, AdminProfile, Department
 from .serializers import StudentProfileSerializer, AdminProfileSerializer, DepartmentSerializer
 from apps.authentication.models import User
-from apps.grievances.models import Grievance, GrievanceComment, Feedback
+from apps.grievances.models import Grievance, GrievanceComment
 from apps.notifications.models import ReadNotification, Notification
 from django.shortcuts import get_object_or_404
 
@@ -535,58 +535,6 @@ def add_student_response(request, grievance_id):
         from django.urls import reverse
         url = reverse('students:grievance_detail', kwargs={'grievance_id': grievance_id})
         return HttpResponseRedirect(f"{url}#message-form")
-
-
-@login_required
-def submit_feedback_view(request, grievance_id):
-    """Submit feedback for resolved grievance"""
-    if not request.user.is_student:
-        messages.error(request, 'Access denied.')
-        return redirect('students:dashboard')
-    
-    if request.method != 'POST':
-        messages.error(request, 'Invalid request method.')
-        return redirect('students:grievance_detail', grievance_id=grievance_id)
-    
-    try:
-        student_profile = request.user.student_profile
-        grievance = get_object_or_404(Grievance, id=grievance_id, student=student_profile)
-        
-        # Check if grievance is resolved
-        if grievance.status != 'resolved':
-            messages.error(request, 'Feedback can only be submitted for resolved grievances.')
-            return redirect('students:grievance_detail', grievance_id=grievance_id)
-        
-        # Check if feedback already exists
-        if hasattr(grievance, 'feedback'):
-            messages.warning(request, 'Feedback has already been submitted for this grievance.')
-            return redirect('students:grievance_detail', grievance_id=grievance_id)
-        
-        rating = request.POST.get('rating')
-        comments = request.POST.get('comments', '').strip()
-        is_satisfied = request.POST.get('is_satisfied') == 'true'
-        improvement_suggestions = request.POST.get('improvement_suggestions', '').strip()
-        
-        # Validate rating
-        if not rating or not rating.isdigit() or int(rating) not in range(1, 6):
-            messages.error(request, 'Rating must be between 1 and 5.')
-            return redirect('students:grievance_detail', grievance_id=grievance_id)
-        
-        # Create feedback
-        feedback = Feedback.objects.create(
-            grievance=grievance,
-            rating=int(rating),
-            comments=comments,
-            is_satisfied=is_satisfied,
-            improvement_suggestions=improvement_suggestions
-        )
-        
-        messages.success(request, 'Thank you for your feedback! It helps us improve our services.')
-        return redirect('students:grievance_detail', grievance_id=grievance_id)
-        
-    except Exception as e:
-        messages.error(request, f'Error submitting feedback: {str(e)}')
-        return redirect('students:grievance_detail', grievance_id=grievance_id)
 
 
 @api_view(['GET'])

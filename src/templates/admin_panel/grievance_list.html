@@ -299,7 +299,13 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if grievance.student %}
+                                        {% if grievance.is_anonymous %}
+                                            <div class="text-center">
+                                                <i class="fas fa-user-secret fa-2x text-warning"></i>
+                                                <br>
+                                                <span class="text-muted fw-bold">Anonymous</span>
+                                            </div>
+                                        {% elif grievance.student %}
                                             <div>
                                                 <strong>{{ grievance.student.name|default:grievance.student.user.email }}</strong>
                                                 <br>
@@ -421,7 +427,12 @@
                                         <small class="text-muted d-block">
                                             <i class="fas fa-user me-1"></i>Student
                                         </small>
-                                        {% if grievance.student %}
+                                        {% if grievance.is_anonymous %}
+                                            <div class="text-center">
+                                                <i class="fas fa-user-secret text-warning"></i>
+                                                <span class="text-muted fw-bold">Anonymous</span>
+                                            </div>
+                                        {% elif grievance.student %}
                                             <strong>{{ grievance.student.name|default:grievance.student.user.email|truncatechars:20 }}</strong>
                                             <br>
                                             <small class="text-muted">

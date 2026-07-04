@@ -100,7 +100,7 @@
             {% if grievance.status == 'resolved' %}
             <div style="margin-top: 15px; padding: 15px; background-color: #d4edda; border-radius: 5px;">
                 <strong>✅ Resolution Details:</strong>
-                <p>Your grievance has been resolved. Please check the system for detailed information and provide your feedback.</p>
+                <p>Your grievance has been resolved. Please check the system for detailed information.</p>
             </div>
             {% elif grievance.status == 'pending' %}
             <div style="margin-top: 15px; padding: 15px; background-color: #fff3cd; border-radius: 5px;">
@@ -116,12 +116,6 @@
             View Grievance Details
         </a>
         
-        {% if grievance.status == 'resolved' %}
-        <div style="margin-top: 20px; padding: 15px; background-color: #d1ecf1; border-radius: 5px; border: 1px solid #bee5eb;">
-            <strong>📝 Feedback Requested:</strong>
-            <p>Please provide your feedback on the resolution to help us improve our service.</p>
-        </div>
-        {% endif %}
     </div>
     
     <div class="footer">

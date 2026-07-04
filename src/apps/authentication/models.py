@@ -37,6 +37,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('admin', 'Admin'),
         ('superadmin', 'Super Admin'),
         ('officer', 'Grievance Officer'),
+        ('chief_warden', 'Chief Warden'),
+        ('warden', 'Warden'),
     ]
     
     # Schema fields only - matching your database schema exactly
@@ -73,15 +75,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     @property
     def is_admin(self):
-        return self.role in ['admin', 'superadmin']
+        return self.role in ['admin', 'superadmin', 'chief_warden']
     
     @property 
     def is_officer(self):
-        return self.role == 'officer'
+        return self.role in ['officer', 'warden']
     
     @property
     def is_admin_or_officer(self):
-        return self.role in ['admin', 'superadmin', 'officer']
+        return self.role in ['admin', 'superadmin', 'officer', 'chief_warden', 'warden']
     
     @property
     def is_superadmin(self):
@@ -92,10 +94,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         """Get the department this user is assigned to"""
         if self.role == 'superadmin':
             return None  # Superadmin has access to all departments
-        elif self.role == 'admin':
+        elif self.role in ['admin', 'chief_warden']:
             # Admins are assigned as HOD of departments
             return self.headed_departments.first()
-        elif self.role == 'officer':
+        elif self.role in ['officer', 'warden']:
             # Officers are assigned through AdminProfile
             try:
                 if hasattr(self, 'admin_profile') and self.admin_profile:
@@ -166,13 +168,21 @@ class User(AbstractBaseUser, PermissionsMixin):
                 'view_department_data', 'manage_department_students', 'manage_department_grievances',
                 'assign_grievances', 'view_department_reports', 'manage_department_categories'
             ],
+            'chief_warden': [
+                'view_department_data', 'manage_department_students', 'manage_department_grievances',
+                'assign_grievances', 'view_department_reports', 'manage_department_categories'
+            ],
             'officer': [
+                'view_assigned_grievances', 'update_grievance_status', 'add_comments',
+                'view_assigned_students', 'update_own_profile'
+            ],
+            'warden': [
                 'view_assigned_grievances', 'update_grievance_status', 'add_comments',
                 'view_assigned_students', 'update_own_profile'
             ],
             'student': [
                 'submit_grievances', 'view_own_grievances', 'update_own_profile',
-                'provide_feedback', 'upload_documents'
+                'upload_documents'
             ]
         }
         
@@ -188,14 +198,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         """Check if user can access a specific grievance"""
         if self.role == 'superadmin':
             return True
-        elif self.role == 'admin':
+        elif self.role in ['admin', 'chief_warden']:
             try:
                 admin_profile = self.admin_profile
                 return (grievance.student.department == admin_profile.department or 
                        grievance.department == admin_profile.department)
             except:
                 return False
-        elif self.role == 'officer':
+        elif self.role in ['officer', 'warden']:
             try:
                 admin_profile = self.admin_profile
                 return grievance.assigned_to == admin_profile

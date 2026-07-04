@@ -45,7 +45,6 @@ class SystemSettings(models.Model):
     require_closure_remark = models.BooleanField(default=True)
 
     # Student Experience Settings
-    enable_feedback = models.BooleanField(default=True)
     allow_attachments_in_replies = models.BooleanField(default=True)
     support_hours = models.CharField(max_length=255, default='Mon-Fri, 9:00 AM - 5:00 PM')
 

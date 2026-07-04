@@ -1,4 +1,6 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -47,3 +49,21 @@ def mark_notification_read(request, notification_id):
     notification.is_read = True
     notification.save(update_fields=['is_read'])
     return Response({'success': True}, status=status.HTTP_200_OK)
+
+
+@login_required
+def notification_list_view(request):
+    """Web view to display all notifications for the current user"""
+    notifications = Notification.objects.filter(recipient=request.user).order_by('-created_at')
+    
+    paginator = Paginator(notifications, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'page_obj': page_obj,
+        'unread_count': notifications.filter(is_read=False).count(),
+        'total_count': notifications.count(),
+    }
+    
+    return render(request, 'notifications/notification_list.html', context)
