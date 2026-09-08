@@ -299,6 +299,7 @@ def login_view(request):
                     # Store user ID in session for OTP verification
                     request.session['admin_login_user_id'] = user.id
                     request.session['admin_login_email'] = user.email
+                    request.session.save()
                     
                     # Create OTP record
                     AdminLoginOTP.objects.create(
@@ -413,18 +414,33 @@ def login_view(request):
         
         # Second step: OTP verification for admin users
         else:
+            # If user is already authenticated, redirect directly to dashboard
+            if request.user.is_authenticated:
+                if getattr(request.user, 'role', None) in ['admin', 'superadmin', 'officer']:
+                    return redirect('admin_panel:dashboard')
+                return redirect('students:dashboard')
+
             user_id = request.session.get('admin_login_user_id')
-            if not user_id:
+            user = None
+            if user_id:
+                try:
+                    user = User.objects.get(id=user_id)
+                except User.DoesNotExist:
+                    user = None
+            
+            # Robust fallback: if session key dropped or expired, resolve user from submitted email
+            if not user and email:
+                user = User.objects.filter(email__iexact=email.strip()).first()
+            
+            if not user:
                 messages.error(request, 'Session expired. Please login again.')
                 return redirect('authentication:login_view')
             
             try:
-                user = User.objects.get(id=user_id)
-                
                 # Check for too many failed attempts using session-based tracking
-                failed_attempts_key = f'failed_otp_attempts_{user_id}'
+                failed_attempts_key = f'failed_otp_attempts_{user.id}'
                 failed_attempts = request.session.get(failed_attempts_key, 0)
-                last_attempt_time = request.session.get(f'last_failed_attempt_{user_id}')
+                last_attempt_time = request.session.get(f'last_failed_attempt_{user.id}')
                 
                 # Reset attempts if more than 5 minutes have passed
                 if last_attempt_time:
@@ -433,12 +449,12 @@ def login_view(request):
                         if timezone.now() - last_attempt > timedelta(minutes=5):
                             failed_attempts = 0
                             request.session.pop(failed_attempts_key, None)
-                            request.session.pop(f'last_failed_attempt_{user_id}', None)
+                            request.session.pop(f'last_failed_attempt_{user.id}', None)
                     except:
                         # If there's any error parsing the time, reset the attempts
                         failed_attempts = 0
                         request.session.pop(failed_attempts_key, None)
-                        request.session.pop(f'last_failed_attempt_{user_id}', None)
+                        request.session.pop(f'last_failed_attempt_{user.id}', None)
                 
                 if failed_attempts >= 3:
                     messages.error(request, 'Too many failed attempts. Please wait 5 minutes before trying again.')
@@ -456,12 +472,12 @@ def login_view(request):
                 if not otp_record:
                     # Increment failed attempts
                     request.session[failed_attempts_key] = failed_attempts + 1
-                    request.session[f'last_failed_attempt_{user_id}'] = timezone.now().isoformat()
+                    request.session[f'last_failed_attempt_{user.id}'] = timezone.now().isoformat()
                     
                     messages.error(request, 'Invalid OTP. Please try again.')
                     return render(request, 'authentication/login.html', {
                         'show_otp_field': True,
-                        'email': request.session.get('admin_login_email')
+                        'email': user.email
                     })
                 
                 if otp_record.is_expired:
@@ -471,7 +487,7 @@ def login_view(request):
                     request.session.pop('admin_login_email', None)
                     # Clear failed attempts since this is an expiry, not a failure
                     request.session.pop(failed_attempts_key, None)
-                    request.session.pop(f'last_failed_attempt_{user_id}', None)
+                    request.session.pop(f'last_failed_attempt_{user.id}', None)
                     return redirect('authentication:login_view')
                 
                 # OTP is valid, complete login
@@ -480,7 +496,7 @@ def login_view(request):
                 
                 # Clear failed attempts on successful login
                 request.session.pop(failed_attempts_key, None)
-                request.session.pop(f'last_failed_attempt_{user_id}', None)
+                request.session.pop(f'last_failed_attempt_{user.id}', None)
                 
                 # Clear all unused OTPs for this user
                 AdminLoginOTP.objects.filter(
@@ -488,7 +504,7 @@ def login_view(request):
                     is_used=False
                 ).update(is_used=True)
                 
-                # Clear session data
+                # Clear session staging data
                 request.session.pop('admin_login_user_id', None)
                 request.session.pop('admin_login_email', None)
                 
@@ -500,8 +516,8 @@ def login_view(request):
                 messages.success(request, 'Login successful!')
                 return redirect('admin_panel:dashboard')
                 
-            except User.DoesNotExist:
-                messages.error(request, 'Invalid session. Please login again.')
+            except Exception as e:
+                messages.error(request, 'Authentication error. Please login again.')
                 return redirect('authentication:login_view')
     
     return render(request, 'authentication/login.html')
@@ -511,15 +527,30 @@ def resend_admin_otp(request):
     """Resend OTP for admin login"""
     if request.method == 'POST':
         user_id = request.session.get('admin_login_user_id')
-        if not user_id:
+        user = None
+        if user_id:
+            try:
+                user = User.objects.get(id=user_id)
+            except User.DoesNotExist:
+                user = None
+        
+        if not user:
+            # Support email from request body or session
+            try:
+                data = json.loads(request.body.decode('utf-8')) if request.body else {}
+            except:
+                data = {}
+            email = data.get('email') or request.POST.get('email') or request.session.get('admin_login_email')
+            if email:
+                user = User.objects.filter(email__iexact=email.strip()).first()
+        
+        if not user:
             return JsonResponse({
                 'success': False,
                 'message': 'Session expired. Please login again.'
             })
         
         try:
-            user = User.objects.get(id=user_id)
-            
             # Check if there's a recent OTP request (within last 1 minute)
             recent_otp = AdminLoginOTP.objects.filter(
                 user=user,
