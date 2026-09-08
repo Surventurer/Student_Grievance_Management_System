@@ -724,18 +724,59 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     }
 }
 
-/* Stats card improvements */
-.stats-card,
-.stats-card.total,
-.stats-card.pending,
-.stats-card.resolved,
-.stats-card.rejected,
-.stats-card.bg-primary, 
-.stats-card.bg-success, 
-.stats-card.bg-warning, 
-.stats-card.bg-danger, 
-.stats-card.bg-info,
-.stats-card.bg-dark {
+/* Student Portal Solid Colored Stat Cards (Exact match to student visual spec) */
+.student-stat-card {
+    border-radius: var(--radius-md) !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.student-stat-card .card-body {
+    padding: 1.25rem 1rem !important;
+    text-align: center;
+}
+
+.student-stat-card.total {
+    background-color: #0f172a !important;
+    background: #0f172a !important;
+    color: #ffffff !important;
+}
+
+.student-stat-card.pending {
+    background-color: #d97706 !important;
+    background: #d97706 !important;
+    color: #ffffff !important;
+}
+
+.student-stat-card.resolved {
+    background-color: #059669 !important;
+    background: #059669 !important;
+    color: #ffffff !important;
+}
+
+.student-stat-card .student-stat-title {
+    font-family: var(--font-display) !important;
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+    color: #ffffff !important;
+    margin-bottom: 0.35rem !important;
+}
+
+.student-stat-card .student-stat-number {
+    font-family: var(--font-display) !important;
+    font-weight: 700 !important;
+    font-size: 1.85rem !important;
+    line-height: 1.1 !important;
+    color: #ffffff !important;
+    margin: 0 !important;
+}
+
+/* General Stats card */
+.stats-card {
     text-align: left;
     padding: 1.25rem;
     border-radius: var(--radius-md) !important;
@@ -748,12 +789,6 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     position: relative;
     overflow: hidden;
     box-shadow: none !important;
-}
-
-.stats-card:hover {
-    transform: none !important;
-    box-shadow: none !important;
-    border-color: var(--color-border-strong) !important;
 }
 
 .stats-number {

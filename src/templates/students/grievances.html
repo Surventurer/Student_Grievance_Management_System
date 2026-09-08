@@ -18,26 +18,26 @@
 <!-- Statistics Cards -->
 <div class="row mb-4">
     <div class="col-md-4">
-        <div class="card bg-primary text-white">
-            <div class="card-body text-center">
-                <h5 class="card-title">Total</h5>
-                <h3>{{ total_grievances }}</h3>
+        <div class="card student-stat-card total">
+            <div class="card-body">
+                <div class="student-stat-title">TOTAL GRIEVANCES</div>
+                <div class="student-stat-number">{{ total_grievances }}</div>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card bg-warning text-white">
-            <div class="card-body text-center">
-                <h5 class="card-title">Pending</h5>
-                <h3>{{ pending_grievances }}</h3>
+        <div class="card student-stat-card pending">
+            <div class="card-body">
+                <div class="student-stat-title">PENDING</div>
+                <div class="student-stat-number">{{ pending_grievances }}</div>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card bg-success text-white">
-            <div class="card-body text-center">
-                <h5 class="card-title">Resolved</h5>
-                <h3>{{ resolved_grievances }}</h3>
+        <div class="card student-stat-card resolved">
+            <div class="card-body">
+                <div class="student-stat-title">RESOLVED</div>
+                <div class="student-stat-number">{{ resolved_grievances }}</div>
             </div>
         </div>
     </div>
