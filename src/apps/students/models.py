@@ -99,8 +99,6 @@ class AdminProfile(models.Model):
         ('superadmin', 'Super Admin'),
         ('admin', 'Department Admin'),
         ('officer', 'Grievance Officer'),
-        ('chief_warden', 'Chief Warden'),
-        ('warden', 'Warden'),
     ]
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -128,19 +126,19 @@ class AdminProfile(models.Model):
     @property
     def can_manage_department(self):
         """Check if admin can manage department-level operations"""
-        return self.role_level in ['superadmin', 'admin', 'chief_warden']
+        return self.role_level in ['superadmin', 'admin']
     
     @property 
     def can_assign_grievances(self):
         """Check if admin can assign grievances"""
-        return self.role_level in ['superadmin', 'admin', 'chief_warden']
+        return self.role_level in ['superadmin', 'admin']
     
     @property
     def accessible_departments(self):
         """Get list of departments this admin can access"""
         if self.role_level == 'superadmin':
             return Department.objects.all()
-        elif self.role_level in ['admin', 'chief_warden'] and self.department:
+        elif self.role_level == 'admin' and self.department:
             return Department.objects.filter(name=self.department)
         return Department.objects.none()
     

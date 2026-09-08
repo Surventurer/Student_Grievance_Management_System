@@ -283,32 +283,7 @@ def create_user(request):
     return render(request, 'admin_panel/superadmin/create_user.html', context)
 
 
-@superadmin_required
-@require_http_methods(["POST"])
-def bulk_delete_users(request):
-    """Bulk delete users - Superadmin only"""
-    try:
-        data = json.loads(request.body)
-        user_ids = data.get('user_ids', [])
-        
-        if not user_ids:
-            return JsonResponse({'error': 'No users selected'}, status=400)
-        
-        # Check if trying to delete own account
-        if request.user.id in [int(uid) for uid in user_ids]:
-            return JsonResponse({'error': 'Cannot delete your own account'}, status=400)
-        
-        users_to_delete = User.objects.filter(id__in=user_ids)
-        deleted_count = users_to_delete.delete()[0]
-        
-        return JsonResponse({
-            'success': True,
-            'deleted_count': deleted_count,
-            'message': f'Successfully deleted {deleted_count} user(s)'
-        })
-        
-    except Exception as e:
-        return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+
 
 
 
@@ -554,7 +529,7 @@ def create_user(request):
                 return redirect('admin_panel:create_user')
             
             # Superadmin cannot create another superadmin
-            if role not in ['student', 'admin', 'officer', 'chief_warden', 'warden']:
+            if role not in ['student', 'admin', 'officer']:
                 messages.error(request, 'Invalid role selected. Cannot create superadmin users.')
                 return redirect('admin_panel:create_user')
             
@@ -709,11 +684,13 @@ def bulk_delete_users(request):
             return JsonResponse({'error': 'Cannot delete all superadmin accounts'}, status=400)
         
         deleted_users_info = []
+        is_sqlite = connection.vendor == 'sqlite'
         
         with transaction.atomic():
-            # For SQLite, temporarily disable foreign key checks
-            with connection.cursor() as cursor:
-                cursor.execute("PRAGMA foreign_keys = OFF")
+            # For SQLite only, temporarily disable foreign key checks
+            if is_sqlite:
+                with connection.cursor() as cursor:
+                    cursor.execute("PRAGMA foreign_keys = OFF")
             
             try:
                 # Create audit logs before deletion
@@ -757,9 +734,10 @@ def bulk_delete_users(request):
                 deleted_count = users_to_delete.delete()[0]
                 
             finally:
-                # Re-enable foreign key checks
-                with connection.cursor() as cursor:
-                    cursor.execute("PRAGMA foreign_keys = ON")
+                # Re-enable foreign key checks for SQLite only
+                if is_sqlite:
+                    with connection.cursor() as cursor:
+                        cursor.execute("PRAGMA foreign_keys = ON")
         
         return JsonResponse({
             'success': True,
@@ -1089,7 +1067,7 @@ def edit_user(request, user_id):
             except AdminProfile.DoesNotExist:
                 pass
                 
-        elif new_role in ['admin', 'officer', 'chief_warden', 'warden']:
+        elif new_role in ['admin', 'officer']:
             admin_data = data.get('admin_profile', {})
             print(f"Processing admin profile data: {admin_data}")
             

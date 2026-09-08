@@ -82,11 +82,11 @@
                     <span class="d-lg-inline d-none">Dashboard</span>
                     <span class="d-lg-none">Home</span>
                 </a>
-                {% if user_role != 'officer' and user_role != 'warden' %}
+                {% if user_role != 'officer' %}
                 <a class="nav-link text-nowrap" href="{% url 'admin_panel:grievance_list' %}">
                     <i class="fas fa-exclamation-triangle me-1"></i>
                     <span class="d-lg-inline d-none">
-                        {% if user_role == 'superadmin' %}All {% elif user_role == 'admin' or user_role == 'chief_warden' %}Department {% endif %}Grievances
+                        {% if user_role == 'superadmin' %}All {% elif user_role == 'admin' %}Department {% endif %}Grievances
                     </span>
                     <span class="d-lg-none">Cases</span>
                 </a>
@@ -105,16 +105,16 @@
                         <i class="fas fa-database me-1"></i>CRUD Management
                     </a>
                     
-                {% elif user_role == 'admin' or user_role == 'chief_warden' %}
-                    <!-- Department Admin / Chief Warden Links -->
+                {% elif user_role == 'admin' %}
+                    <!-- Department Admin Links -->
                     <a class="nav-link text-nowrap" href="{% url 'admin_panel:department_users' %}">
                         <i class="fas fa-users me-1"></i>
                         <span class="d-lg-inline d-none">Department Users</span>
                         <span class="d-lg-none">Users</span>
                     </a>
                     
-                {% elif user_role == 'officer' or user_role == 'warden' %}
-                    <!-- Officer / Warden Links -->
+                {% elif user_role == 'officer' %}
+                    <!-- Officer Links -->
                     <a class="nav-link text-nowrap" href="{% url 'admin_panel:grievance_list' %}">
                         <i class="fas fa-clipboard-list me-1"></i>
                         <span class="d-lg-inline d-none">Assigned Grievances</span>
@@ -126,7 +126,7 @@
                 <div class="nav-item dropdown d-lg-none">
                     <a class="nav-link text-nowrap dropdown-toggle" href="#" id="adminToolsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-cog me-1"></i>
-                        {% if user_role == 'superadmin' %}Super Admin{% elif user_role == 'chief_warden' %}Chief Warden{% elif user_role == 'admin' %}Department Admin{% elif user_role == 'warden' %}Warden{% elif user_role == 'officer' %}Officer{% endif %}
+                        {% if user_role == 'superadmin' %}Super Admin{% elif user_role == 'admin' %}Department Admin{% elif user_role == 'officer' %}Officer{% endif %}
                     </a>
                     <ul class="dropdown-menu">
                         {% if user_role == 'superadmin' %}
@@ -140,11 +140,11 @@
                                 <i class="fas fa-database me-2"></i>CRUD Management
                             </a></li>
 
-                        {% elif user_role == 'admin' or user_role == 'chief_warden' %}
+                        {% elif user_role == 'admin' %}
                             <li><a class="dropdown-item" href="{% url 'admin_panel:department_users' %}">
                                 <i class="fas fa-users me-2"></i>Department Users
                             </a></li>
-                        {% elif user_role == 'officer' or user_role == 'warden' %}
+                        {% elif user_role == 'officer' %}
                             <li><a class="dropdown-item" href="{% url 'admin_panel:grievance_list' %}">
                                 <i class="fas fa-clipboard-list me-2"></i>Assigned Grievances
                             </a></li>
