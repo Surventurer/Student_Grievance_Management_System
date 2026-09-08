@@ -731,7 +731,8 @@ def bulk_delete_users(request):
                     # This is handled automatically by our model changes
                 
                 # Now delete users
-                deleted_count = users_to_delete.delete()[0]
+                deleted_count = len(deleted_users_info)
+                users_to_delete.delete()
                 
             finally:
                 # Re-enable foreign key checks for SQLite only

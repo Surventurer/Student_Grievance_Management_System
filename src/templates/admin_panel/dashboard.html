@@ -40,16 +40,6 @@
         }
     }
     
-    .stats-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-    }
-    
-    .stats-card.total { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-    .stats-card.pending { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-    .stats-card.resolved { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-    .stats-card.rejected { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-    
     .stats-icon {
         position: absolute;
         top: 1rem;
@@ -190,11 +180,11 @@
                 </div>
                 <div class="btn-group">
                     {% if user_role == 'superadmin' %}
-                        <a href="{% url 'admin_panel:user_management' %}" class="btn btn-outline-danger btn-sm">
+                        <a href="{% url 'admin_panel:user_management' %}" class="btn btn-outline-secondary btn-sm">
                             <i class="fas fa-users-cog me-1"></i>
                             <span class="d-none d-sm-inline">Users</span>
                         </a>
-                        <a href="{% url 'admin_panel:system_settings' %}" class="btn btn-outline-warning btn-sm">
+                        <a href="{% url 'admin_panel:system_settings' %}" class="btn btn-outline-secondary btn-sm">
                             <i class="fas fa-cog me-1"></i>
                             <span class="d-none d-sm-inline">Settings</span>
                         </a>

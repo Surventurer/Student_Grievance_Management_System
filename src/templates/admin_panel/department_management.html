@@ -6,55 +6,60 @@
 {% block extra_css %}
 <style>
     .stats-card {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        color: white;
-        border-radius: 10px;
+        background: #ffffff;
+        color: #111827;
+        border-radius: 4px;
         padding: 1.5rem;
         margin-bottom: 1.5rem;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        border: 1px solid #e5e7eb;
+        box-shadow: none;
     }
     
     .stats-number {
-        font-size: 2.5rem;
+        font-family: var(--font-display);
+        font-size: 2rem;
         font-weight: bold;
         margin: 0;
+        color: #111827;
     }
     
     .filter-section {
-        background: #f8f9fa;
-        border-radius: 8px;
+        background: #ffffff;
+        border-radius: 4px;
         padding: 1.5rem;
         margin-bottom: 1.5rem;
-        border-left: 4px solid #f093fb;
+        border: 1px solid #e5e7eb;
     }
     
     .department-card {
-        border: none;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-        border-left: 4px solid #f093fb;
+        border: 1px solid #e5e7eb;
+        box-shadow: none;
+        transition: all 0.2s ease;
         margin-bottom: 1rem;
+        border-radius: 4px;
     }
     
     .department-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        border-color: #d1d5db;
+        box-shadow: none;
     }
     
     .dept-header {
-        background: linear-gradient(135deg, #f093fb, #f5576c);
-        color: white;
+        background: #f9fafb;
+        color: #111827;
         padding: 1rem;
-        border-radius: 8px 8px 0 0;
+        border-radius: 4px 4px 0 0;
+        border-bottom: 1px solid #e5e7eb;
     }
     
     .school-badge {
-        background: rgba(255,255,255,0.2);
-        color: white;
+        background: #f3f4f6;
+        color: #374151;
         padding: 0.25rem 0.75rem;
-        border-radius: 15px;
+        border-radius: 2px;
         font-size: 0.75rem;
         font-weight: 500;
+        border: 1px solid #e5e7eb;
     }
     
     .hod-info {
@@ -131,7 +136,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h2 class="mb-0">
-                        <i class="fas fa-sitemap me-2" style="color: #f093fb;"></i>Department Management
+                        <i class="fas fa-sitemap me-2"></i>Department Management
                     </h2>
                     <p class="text-muted mb-0">Manage academic and administrative departments</p>
                 </div>
@@ -169,7 +174,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+            <div class="stats-card">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h3 class="stats-number">{{ stats.active }}</h3>
@@ -180,7 +185,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">
+            <div class="stats-card">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h3 class="stats-number">{{ stats.with_hod }}</h3>
@@ -191,7 +196,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+            <div class="stats-card">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h3 class="stats-number">{{ stats.total_students }}</h3>

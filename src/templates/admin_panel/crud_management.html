@@ -6,54 +6,53 @@
 {% block extra_css %}
 <style>
     .crud-card {
-        border: none;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 4px;
+        box-shadow: none;
+        transition: all 0.2s ease;
+        background: #ffffff;
+        color: #111827;
         overflow: hidden;
     }
     
     .crud-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        border-color: #d1d5db;
+        box-shadow: none;
+        transform: none;
     }
     
-    .crud-card.categories {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-    
-    .crud-card.schools {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    }
-    
+    .crud-card.categories,
+    .crud-card.schools,
     .crud-card.departments {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        background: #ffffff;
     }
     
     .crud-icon {
-        font-size: 3rem;
+        font-size: 2.5rem;
         margin-bottom: 1rem;
+        color: #111827;
     }
     
     .stats-badge {
-        background: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: #f3f4f6;
+        border: 1px solid #e5e7eb;
+        color: #111827;
+        border-radius: 2px !important;
     }
     
     .quick-action-btn {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        color: white;
-        transition: all 0.3s ease;
+        background: #ffffff;
+        border: 1px solid #d1d5db;
+        color: #111827;
+        transition: all 0.15s ease;
+        border-radius: 4px;
+        font-weight: 500;
     }
     
     .quick-action-btn:hover {
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
-        transform: scale(1.05);
+        background: #f3f4f6;
+        color: #111827;
+        border-color: #9ca3af;
     }
 </style>
 {% endblock %}
