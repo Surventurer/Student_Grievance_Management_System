@@ -451,6 +451,7 @@ def system_settings(request):
         elif form_type == 'security':
             settings_obj.require_email_verification = request.POST.get('require_email_verification') == 'on'
             settings_obj.allow_student_registration = request.POST.get('allow_student_registration') == 'on'
+            settings_obj.allowed_email_domains = request.POST.get('allowed_email_domains', '').strip()
             settings_obj.session_timeout = int(request.POST.get('session_timeout', settings_obj.session_timeout))
             settings_obj.password_min_length = int(request.POST.get('password_min_length', settings_obj.password_min_length))
             messages.success(request, 'Security settings updated successfully!')

@@ -300,11 +300,23 @@
                                     </td>
                                     <td>
                                         {% if grievance.is_anonymous %}
-                                            <div class="text-center">
-                                                <i class="fas fa-user-secret fa-2x text-warning"></i>
-                                                <br>
-                                                <span class="text-muted fw-bold">Anonymous</span>
-                                            </div>
+                                            {% if user.is_superadmin and grievance.student %}
+                                                <div>
+                                                    <span class="badge bg-warning text-dark mb-1"><i class="fas fa-user-secret me-1"></i>Anonymous</span>
+                                                    <br>
+                                                    <strong>{{ grievance.student.name|default:grievance.student.user.email }}</strong>
+                                                    <br>
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-id-card me-1"></i>{{ grievance.student.student_id|default:"N/A" }}
+                                                    </small>
+                                                </div>
+                                            {% else %}
+                                                <div class="text-center">
+                                                    <i class="fas fa-user-secret fa-2x text-warning"></i>
+                                                    <br>
+                                                    <span class="text-muted fw-bold">Anonymous</span>
+                                                </div>
+                                            {% endif %}
                                         {% elif grievance.student %}
                                             <div>
                                                 <strong>{{ grievance.student.name|default:grievance.student.user.email }}</strong>
@@ -428,10 +440,18 @@
                                             <i class="fas fa-user me-1"></i>Student
                                         </small>
                                         {% if grievance.is_anonymous %}
-                                            <div class="text-center">
-                                                <i class="fas fa-user-secret text-warning"></i>
-                                                <span class="text-muted fw-bold">Anonymous</span>
-                                            </div>
+                                            {% if user.is_superadmin and grievance.student %}
+                                                <span class="badge bg-warning text-dark mb-1"><i class="fas fa-user-secret me-1"></i>Anon</span>
+                                                <br>
+                                                <strong>{{ grievance.student.name|default:grievance.student.user.email|truncatechars:20 }}</strong>
+                                                <br>
+                                                <small class="text-muted">ID: {{ grievance.student.student_id|default:"N/A" }}</small>
+                                            {% else %}
+                                                <div class="text-center">
+                                                    <i class="fas fa-user-secret text-warning"></i>
+                                                    <span class="text-muted fw-bold">Anonymous</span>
+                                                </div>
+                                            {% endif %}
                                         {% elif grievance.student %}
                                             <strong>{{ grievance.student.name|default:grievance.student.user.email|truncatechars:20 }}</strong>
                                             <br>

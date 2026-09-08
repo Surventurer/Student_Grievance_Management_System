@@ -61,11 +61,6 @@
                                    placeholder="Search by Grievance ID, Title, or Category..."
                                    value="{{ search_query }}"
                                    autocomplete="off">
-                            {% if search_query %}
-                            <button type="button" class="btn btn-outline-secondary" onclick="clearSearch()" title="Clear search">
-                                <i class="fas fa-times"></i>
-                            </button>
-                            {% endif %}
                         </div>
                         <small class="form-text text-muted">
                             Search across Grievance ID, Title, and Category fields

@@ -24,14 +24,14 @@
                     {% csrf_token %}
                     
                     <div class="mb-3">
-                        <label for="student_id" class="form-label">Student ID</label>
-                        <input type="text" class="form-control" id="student_id" name="student_id" required>
-                        <div class="form-text">Enter your Student ID (provided during registration)</div>
+                        <label for="student_id" class="form-label">System ID</label>
+                        <input type="text" class="form-control" id="student_id" name="student_id" value="{{ student_id|default:'' }}" required>
+                        <div class="form-text">Enter your 10-digit System ID (provided during registration)</div>
                     </div>
                     
                     <div class="mb-3">
                         <label for="otp" class="form-label">OTP</label>
-                        <input type="text" class="form-control" id="otp" name="otp" maxlength="6" required>
+                        <input type="text" class="form-control" id="otp" name="otp" maxlength="6" {% if student_id %}autofocus{% endif %} required>
                         <div class="form-text">Enter the 6-digit OTP sent to your email</div>
                     </div>
                     

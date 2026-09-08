@@ -129,6 +129,14 @@
                         </div>
                         
                         <div class="mb-3">
+                            <label class="form-label">Allowed Email Domain(s)</label>
+                            <input type="text" class="form-control" name="allowed_email_domains" 
+                                   value="{{ settings.allowed_email_domains|default:'' }}" 
+                                   placeholder="e.g. university.edu, student.university.edu">
+                            <small class="form-text text-muted">Comma-separated allowed domains for student registration. Leave blank to allow all valid domains.</small>
+                        </div>
+                        
+                        <div class="mb-3">
                             <label class="form-label">Session Timeout (minutes)</label>
                             <input type="number" class="form-control" name="session_timeout" 
                                    value="{{ settings.session_timeout|default:60 }}" min="15" max="480">

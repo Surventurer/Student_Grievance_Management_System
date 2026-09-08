@@ -320,12 +320,23 @@
                         {% if grievance.is_hosteler %}
                             <i class="fas fa-check text-success"></i> Yes
                             {% if grievance.hostel_name %} - {{ grievance.hostel_name }}{% endif %}
-                            {% if grievance.hostel_room_no %} ({{ grievance.hostel_room_no }}){% endif %}
+                            {% if grievance.hostel_room_no %} (Room: {{ grievance.hostel_room_no }}){% endif %}
                         {% else %}
                             <i class="fas fa-times text-danger"></i> No
                         {% endif %}
                     </div>
                 </div>
+                
+                {% if grievance.is_hosteler %}
+                <div class="info-row">
+                    <div class="label">Hostel Name</div>
+                    <div class="value fw-bold text-primary">{{ grievance.hostel_name|default:"Not specified" }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="label">Hostel Room No</div>
+                    <div class="value fw-bold text-primary">{{ grievance.hostel_room_no|default:"Not specified" }}</div>
+                </div>
+                {% endif %}
                 
                 <div class="info-row">
                     <div class="label">Submitted Date</div>
@@ -431,9 +442,9 @@
                 </h5>
                 
                 <!-- Existing Comments -->
-                {% with all_comments=grievance.comments.all|dictsort:"timestamp" %}
-                {% if all_comments %}
                 <div id="adminChatContainer" class="mb-4">
+                    {% with all_comments=grievance.comments.all|dictsort:"timestamp" %}
+                    {% if all_comments %}
                     <h6 class="fw-bold mb-3">Previous Comments:</h6>
                     {% for comment in all_comments %}
                     <div class="comment-box mb-3 {% if comment.is_internal %}border-warning{% endif %}">
@@ -462,9 +473,15 @@
                         <p class="mb-0">{{ comment.message|linebreaks }}</p>
                     </div>
                     {% endfor %}
+                    {% else %}
+                    <h6 class="fw-bold mb-3">Previous Comments:</h6>
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-comments fa-3x mb-3 text-secondary"></i>
+                        <p class="mb-0">No comments or responses yet. Start the conversation below!</p>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
                 </div>
-                {% endif %}
-                {% endwith %}
                 
                 <!-- Add New Response Form -->
                 <form id="adminResponseForm" method="POST" action="{% url 'admin_panel:add_admin_response' grievance.id %}">
@@ -537,7 +554,46 @@
                 </div>
                 
                 <div class="info-row">
-                    <div class="label">Student ID</div>
+                    <div class="label">System ID</div>
+                    <div class="value">{{ grievance.student.student_id }}</div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="label">Email</div>
+                    <div class="value">{{ grievance.student.user.email }}</div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="label">Department</div>
+                    <div class="value">{{ grievance.student.department|default:"Not specified" }}</div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="label">School</div>
+                    <div class="value">{{ grievance.student.school|default:"Not specified" }}</div>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <div class="d-grid">
+                        <a href="{% url 'admin_panel:student_detail' grievance.student.id %}" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-eye me-2"></i>
+                            <span class="d-none d-sm-inline">View Student Profile</span>
+                            <span class="d-sm-none">View Profile</span>
+                        </a>
+                    </div>
+                </div>
+                {% elif user.is_superadmin %}
+                <div class="alert alert-warning py-2 mb-3 small">
+                    <i class="fas fa-user-secret me-1"></i>
+                    <strong>Anonymous Submission:</strong> Student details are visible only to Superadmin.
+                </div>
+                <div class="info-row">
+                    <div class="label">Name</div>
+                    <div class="value">{{ grievance.student.user.get_full_name }}</div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="label">System ID</div>
                     <div class="value">{{ grievance.student.student_id }}</div>
                 </div>
                 
@@ -570,6 +626,13 @@
                     <i class="fas fa-user-secret fa-3x text-warning mb-3"></i>
                     <h6 class="text-muted">Anonymous Grievance</h6>
                     <p class="text-muted small">Student identity is protected</p>
+                    {% if grievance.is_hosteler %}
+                    <div class="p-2 bg-light rounded text-start mt-2 border">
+                        <small class="text-muted d-block fw-bold mb-1"><i class="fas fa-home me-1"></i>Hostel Details:</small>
+                        <span class="d-block small"><strong>Hostel:</strong> {{ grievance.hostel_name|default:"Not specified" }}</span>
+                        <span class="d-block small"><strong>Room:</strong> {{ grievance.hostel_room_no|default:"Not specified" }}</span>
+                    </div>
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>
@@ -746,17 +809,18 @@ function escapeHtml(value) {
 }
 
 function renderAdminComments(comments) {
-    if (!adminChatContainer) {
+    const container = document.getElementById('adminChatContainer');
+    if (!container) {
         return;
     }
 
     if (!comments.length) {
-        adminChatContainer.innerHTML = `
+        container.innerHTML = `
             <div class="mb-4">
                 <h6 class="fw-bold mb-3">Previous Comments:</h6>
                 <div class="text-center text-muted py-4">
-                    <i class="fas fa-comments fa-3x mb-3"></i>
-                    <p>No messages yet.</p>
+                    <i class="fas fa-comments fa-3x mb-3 text-secondary"></i>
+                    <p class="mb-0">No comments or responses yet. Start the conversation below!</p>
                 </div>
             </div>`;
         return;
@@ -780,12 +844,13 @@ function renderAdminComments(comments) {
         </div>
     `).join('');
 
-    adminChatContainer.innerHTML = `
+    container.innerHTML = `
         <h6 class="fw-bold mb-3">Previous Comments:</h6>
         ${html}`;
 }
 
 function refreshAdminThread() {
+    const container = document.getElementById('adminChatContainer');
     fetch(adminCommentsUrl, {
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
@@ -799,11 +864,11 @@ function refreshAdminThread() {
 
         const signature = data.map(comment => `${comment.id}:${comment.timestamp}:${comment.is_internal}`).join('|');
         if (signature !== lastAdminCommentSignature) {
-            const shouldStickToBottom = !adminChatContainer || adminChatContainer.scrollTop + adminChatContainer.clientHeight >= adminChatContainer.scrollHeight - 120;
+            const shouldStickToBottom = !container || container.scrollTop + container.clientHeight >= container.scrollHeight - 120;
             renderAdminComments(data);
             lastAdminCommentSignature = signature;
-            if (adminChatContainer && shouldStickToBottom) {
-                adminChatContainer.scrollTop = adminChatContainer.scrollHeight;
+            if (container && shouldStickToBottom) {
+                container.scrollTop = container.scrollHeight;
             }
         }
     })
@@ -811,6 +876,6 @@ function refreshAdminThread() {
 }
 
 refreshAdminThread();
-setInterval(refreshAdminThread, 10000);
+setInterval(refreshAdminThread, 3000);
 </script>
 {% endblock %}

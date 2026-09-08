@@ -9,7 +9,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+def _parse_bool(val):
+    if isinstance(val, bool):
+        return val
+    return str(val).lower().strip() in ('true', '1', 't', 'yes', 'y', 'debug')
+
+DEBUG = _parse_bool(config('DEBUG', default=True))
 
 ALLOWED_HOSTS = [host.strip() for host in config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',') if host.strip()]
 

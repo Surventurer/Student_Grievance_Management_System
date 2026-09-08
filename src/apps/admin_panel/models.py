@@ -14,6 +14,13 @@ class SystemSettings(models.Model):
     # Security Settings
     require_email_verification = models.BooleanField(default=True)
     allow_student_registration = models.BooleanField(default=True)
+    allowed_email_domains = models.CharField(
+        max_length=255, 
+        blank=True, 
+        null=True, 
+        default='',
+        help_text="Comma-separated allowed domains for registration (e.g. university.edu). Leave empty to allow any valid email."
+    )
     session_timeout = models.IntegerField(default=60, help_text="Session timeout in minutes")
     password_min_length = models.IntegerField(default=8)
     

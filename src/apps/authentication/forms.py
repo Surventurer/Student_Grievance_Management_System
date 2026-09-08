@@ -14,8 +14,8 @@ class StudentRegistrationForm(forms.Form):
     name = forms.CharField(
         max_length=100,
         validators=[RegexValidator(
-            regex=r'^[a-zA-Z\s\-\'\.]+$',
-            message='Name can only contain letters, spaces, hyphens, apostrophes, and periods.'
+            regex=r'^[a-zA-Z\s]+$',
+            message='Name can only contain letters and spaces. Numbers and special characters are not allowed.'
         )],
         widget=forms.TextInput(attrs={
             'class': 'form-control',
@@ -24,15 +24,16 @@ class StudentRegistrationForm(forms.Form):
     )
     
     student_id = forms.CharField(
+        label='System ID',
         max_length=10,
         min_length=10,
         validators=[RegexValidator(
             regex=r'^\d{10}$',
-            message='Student ID must be exactly 10 digits.'
+            message='System ID must be exactly 10 digits.'
         )],
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Enter 10-digit student ID'
+            'placeholder': 'Enter 10-digit System ID'
         })
     )
     
@@ -110,20 +111,61 @@ class StudentRegistrationForm(forms.Form):
     
     def clean_email(self):
         email = self.cleaned_data.get('email')
+        if not email:
+            return email
+        email = email.strip().lower()
+        
+        # Universal email format validation
+        import re
+        email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        if not re.match(email_regex, email):
+            raise forms.ValidationError("Please enter a valid email address.")
+        
+        # Check against allowed email domain(s) from SystemSettings if configured
+        try:
+            from apps.admin_panel.models import SystemSettings
+            settings_obj = SystemSettings.load()
+            if settings_obj and settings_obj.allowed_email_domains:
+                allowed_domains = [d.strip().lower() for d in settings_obj.allowed_email_domains.split(',') if d.strip()]
+                if allowed_domains:
+                    email_domain = email.split('@')[-1]
+                    if not any(email_domain == d or email_domain.endswith('.' + d) for d in allowed_domains):
+                        raise forms.ValidationError(f"Please use your school/university email ending with {', '.join(allowed_domains)}.")
+        except forms.ValidationError:
+            raise
+        except Exception:
+            pass
+            
         # Check both actual users and temporary registrations
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError("A user with this email already exists.")
-        if TemporaryRegistration.objects.filter(email=email, is_verified=False).exists():
-            raise forms.ValidationError("A registration with this email is already pending verification.")
+        
+        existing_temp = TemporaryRegistration.objects.filter(email=email, is_verified=False).first()
+        if existing_temp:
+            if existing_temp.is_expired:
+                existing_temp.delete()
+            else:
+                raise forms.ValidationError("A registration with this email is already pending verification. Please complete verification or wait for the OTP to expire.")
         return email
     
     def clean_student_id(self):
         student_id = self.cleaned_data.get('student_id')
+        if not student_id:
+            return student_id
+        student_id = student_id.strip()
+        if not student_id.isdigit() or len(student_id) != 10:
+            raise forms.ValidationError("System ID must be exactly 10 digits.")
+            
         # Check both actual student profiles and temporary registrations
         if StudentProfile.objects.filter(student_id=student_id).exists():
-            raise forms.ValidationError("A student with this ID already exists.")
-        if TemporaryRegistration.objects.filter(student_id=student_id, is_verified=False).exists():
-            raise forms.ValidationError("A registration with this student ID is already pending verification.")
+            raise forms.ValidationError("A student with this System ID already exists.")
+        
+        existing_temp = TemporaryRegistration.objects.filter(student_id=student_id, is_verified=False).first()
+        if existing_temp:
+            if existing_temp.is_expired:
+                existing_temp.delete()
+            else:
+                raise forms.ValidationError("A registration with this System ID is already pending verification.")
         return student_id
     
     def clean(self):

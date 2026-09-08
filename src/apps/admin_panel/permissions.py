@@ -18,7 +18,7 @@ def get_user_department(user):
     
     try:
         # Use the new department assignment system
-        if user.role in ['admin', 'officer']:
+        if user.role in ['admin', 'officer', 'chief_warden', 'warden']:
             return user.assigned_department
         elif user.role == 'student' and hasattr(user, 'student_profile') and user.student_profile:
             return user.student_profile.department
@@ -83,14 +83,14 @@ def can_access_student(user, student):
     if user.role == 'superadmin':
         return True
     
-    # Department admin can access students from their department
-    if user.role == 'admin':
+    # Department admin / Chief Warden can access students from their department
+    if user.role in ['admin', 'chief_warden']:
         user_dept = get_user_department(user)
         if user_dept:
             return student.department == user_dept
     
-    # Officers can access students who have grievances assigned to them
-    if user.role == 'officer':
+    # Officers / Wardens can access students who have grievances assigned to them
+    if user.role in ['officer', 'warden']:
         try:
             if hasattr(user, 'admin_profile') and user.admin_profile:
                 return Grievance.objects.filter(
@@ -148,7 +148,7 @@ def admin_or_higher_required(view_func):
         if not request.user.is_authenticated:
             return redirect('authentication:login')
         
-        if request.user.role not in ['superadmin', 'admin']:
+        if request.user.role not in ['superadmin', 'admin', 'chief_warden']:
             messages.error(request, 'Access denied. Admin privileges required.')
             return redirect('admin_panel:dashboard')
         

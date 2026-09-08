@@ -294,7 +294,7 @@
                 {% if grievance.is_hosteler %}
                 <div class="row mb-2">
                     <div class="col-5 fw-bold">Hostel:</div>
-                    <div class="col-7">{{ grievance.hostel_name|default:"N/A" }}{% if grievance.hostel_room_no %} ({{ grievance.hostel_room_no }}){% endif %}</div>
+                    <div class="col-7">{{ grievance.hostel_name|default:"N/A" }}{% if grievance.hostel_room_no %} (Room: {{ grievance.hostel_room_no }}){% endif %}</div>
                 </div>
                 {% endif %}
                 <div class="row mb-2">
@@ -523,7 +523,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     refreshStudentThread();
-    setInterval(refreshStudentThread, 10000);
+    setInterval(refreshStudentThread, 3000);
 });
 </script>
 

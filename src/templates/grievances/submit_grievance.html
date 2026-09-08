@@ -419,6 +419,13 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
 
+        const isHosteler = document.querySelector('input[name="is_hosteler"]:checked')?.value === 'yes';
+        const hostelName = document.getElementById('hostel_name')?.value.trim();
+        if (isHosteler && !hostelName) {
+            if (showAlerts) alert('Please enter your Hostel Name.');
+            return false;
+        }
+
         return true;
     }
 
@@ -706,6 +713,8 @@ document.addEventListener('DOMContentLoaded', function() {
             refreshOtpButtonState();
         });
     });
+
+    document.getElementById('hostel_name')?.addEventListener('input', refreshOtpButtonState);
 
     // Load academic categories by default and set up departments
     loadCategories('academic');

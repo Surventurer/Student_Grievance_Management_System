@@ -82,11 +82,11 @@
                     <span class="d-lg-inline d-none">Dashboard</span>
                     <span class="d-lg-none">Home</span>
                 </a>
-                {% if user_role != 'officer' %}
+                {% if user_role != 'officer' and user_role != 'warden' %}
                 <a class="nav-link text-nowrap" href="{% url 'admin_panel:grievance_list' %}">
                     <i class="fas fa-exclamation-triangle me-1"></i>
                     <span class="d-lg-inline d-none">
-                        {% if user_role == 'superadmin' %}All {% elif user_role == 'admin' %}Department {% endif %}Grievances
+                        {% if user_role == 'superadmin' %}All {% elif user_role == 'admin' or user_role == 'chief_warden' %}Department {% endif %}Grievances
                     </span>
                     <span class="d-lg-none">Cases</span>
                 </a>
@@ -105,16 +105,16 @@
                         <i class="fas fa-database me-1"></i>CRUD Management
                     </a>
                     
-                {% elif user_role == 'admin' %}
-                    <!-- Department Admin Links -->
+                {% elif user_role == 'admin' or user_role == 'chief_warden' %}
+                    <!-- Department Admin / Chief Warden Links -->
                     <a class="nav-link text-nowrap" href="{% url 'admin_panel:department_users' %}">
                         <i class="fas fa-users me-1"></i>
                         <span class="d-lg-inline d-none">Department Users</span>
                         <span class="d-lg-none">Users</span>
                     </a>
                     
-                {% elif user_role == 'officer' %}
-                    <!-- Officer Links -->
+                {% elif user_role == 'officer' or user_role == 'warden' %}
+                    <!-- Officer / Warden Links -->
                     <a class="nav-link text-nowrap" href="{% url 'admin_panel:grievance_list' %}">
                         <i class="fas fa-clipboard-list me-1"></i>
                         <span class="d-lg-inline d-none">Assigned Grievances</span>
@@ -126,7 +126,7 @@
                 <div class="nav-item dropdown d-lg-none">
                     <a class="nav-link text-nowrap dropdown-toggle" href="#" id="adminToolsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-cog me-1"></i>
-                        {% if user_role == 'superadmin' %}Super Admin{% elif user_role == 'admin' %}Department Admin{% elif user_role == 'officer' %}Officer{% endif %}
+                        {% if user_role == 'superadmin' %}Super Admin{% elif user_role == 'chief_warden' %}Chief Warden{% elif user_role == 'admin' %}Department Admin{% elif user_role == 'warden' %}Warden{% elif user_role == 'officer' %}Officer{% endif %}
                     </a>
                     <ul class="dropdown-menu">
                         {% if user_role == 'superadmin' %}
@@ -140,11 +140,11 @@
                                 <i class="fas fa-database me-2"></i>CRUD Management
                             </a></li>
 
-                        {% elif user_role == 'admin' %}
+                        {% elif user_role == 'admin' or user_role == 'chief_warden' %}
                             <li><a class="dropdown-item" href="{% url 'admin_panel:department_users' %}">
                                 <i class="fas fa-users me-2"></i>Department Users
                             </a></li>
-                        {% elif user_role == 'officer' %}
+                        {% elif user_role == 'officer' or user_role == 'warden' %}
                             <li><a class="dropdown-item" href="{% url 'admin_panel:grievance_list' %}">
                                 <i class="fas fa-clipboard-list me-2"></i>Assigned Grievances
                             </a></li>
@@ -390,12 +390,23 @@
         }
     }
 
+    function getCsrfToken() {
+        const input = document.querySelector('[name=csrfmiddlewaretoken]');
+        if (input && input.value) return input.value;
+        return getCookie('csrftoken') || '';
+    }
+
     function refreshNotifications() {
+        const csrfToken = getCsrfToken();
+        const headers = {
+            'X-Requested-With': 'XMLHttpRequest'
+        };
+        if (csrfToken) {
+            headers['X-CSRFToken'] = csrfToken;
+        }
+
         fetch(notificationsApiUrl, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-            }
+            headers: headers
         })
         .then(response => response.json())
         .then(data => {
@@ -403,6 +414,14 @@
             updateNotificationBadge(data.count || 0);
         })
         .catch(error => console.log('Notification refresh failed:', error));
+    }
+
+    if (notificationsDropdown) {
+        notificationsDropdown.addEventListener('click', function(e) {
+            if (this.getAttribute('href') === '#') {
+                e.preventDefault();
+            }
+        });
     }
 
     document.addEventListener('click', function(e) {
@@ -418,23 +437,29 @@
         }
 
         e.preventDefault();
+        const csrfToken = getCsrfToken();
+        const headers = {
+            'X-Requested-With': 'XMLHttpRequest'
+        };
+        if (csrfToken) {
+            headers['X-CSRFToken'] = csrfToken;
+        }
+
         fetch(`${markNotificationReadUrlBase}${notificationId}/`, {
             method: 'POST',
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+            headers: headers
         })
         .finally(() => {
-            refreshNotifications();
             if (href && href !== '#') {
                 window.location.href = href;
+            } else {
+                refreshNotifications();
             }
         });
     });
 
     refreshNotifications();
-    setInterval(refreshNotifications, 30000);
+    setInterval(refreshNotifications, 15000);
     </script>
     {% endif %}
     

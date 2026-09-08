@@ -758,8 +758,10 @@ def student_registration(request):
                 except Exception as email_error:
                     messages.warning(request, f'Registration saved! However, we could not send the verification email. Your Student ID is: {temp_registration.student_id}. Please contact support.')
                 
-                # Redirect to email verification page
-                return redirect('authentication:verify_email_view')
+                # Store in session and redirect to email verification page with student_id prefilled
+                request.session['pending_student_id'] = temp_registration.student_id
+                from django.urls import reverse
+                return redirect(f"{reverse('authentication:verify_email_view')}?student_id={temp_registration.student_id}")
                     
             except Exception as e:
                 messages.error(request, f'Registration failed: {str(e)}')
@@ -807,22 +809,24 @@ def load_departments(request):
 
 def verify_email_view(request):
     """Web view for email verification"""
+    student_id = request.GET.get('student_id') or request.session.get('pending_student_id', '')
+    
     if request.method == 'POST':
-        student_id = request.POST.get('student_id')  # Changed from registration_id to student_id
-        otp = request.POST.get('otp')
+        student_id = request.POST.get('student_id', '').strip()
+        otp = request.POST.get('otp', '').strip()
         
         try:
-            # Look for temporary registration by student_id instead of id
+            # Look for temporary registration by student_id
             temp_registration = TemporaryRegistration.objects.get(student_id=student_id, is_verified=False)
             
             if temp_registration.otp != otp:
                 messages.error(request, 'Invalid OTP. Please check and try again.')
-                return render(request, 'authentication/verify_email.html')
+                return render(request, 'authentication/verify_email.html', {'student_id': student_id})
             
             if temp_registration.is_expired:
                 messages.error(request, 'OTP has expired. Please register again.')
                 temp_registration.delete()  # Clean up expired registration
-                return render(request, 'authentication/verify_email.html')
+                return render(request, 'authentication/verify_email.html', {'student_id': student_id})
             
             # Create actual user and student profile
             try:
@@ -831,6 +835,8 @@ def verify_email_view(request):
                 # Mark temp registration as verified and delete it
                 temp_registration.is_verified = True
                 temp_registration.delete()  # Clean up after successful verification
+                if 'pending_student_id' in request.session:
+                    del request.session['pending_student_id']
                 
                 messages.success(request, f'Email verified successfully! Welcome {student_profile.name}! You can now log in.')
                 return redirect('authentication:login_view')
@@ -839,11 +845,11 @@ def verify_email_view(request):
                 messages.error(request, 'An error occurred while creating your account. Please try again.')
             
         except TemporaryRegistration.DoesNotExist:
-            messages.error(request, 'Registration not found or already verified. Please check your Student ID.')
+            messages.error(request, 'Registration not found or already verified. Please check your System ID.')
         except Exception as e:
             messages.error(request, 'An error occurred. Please try again.')
     
-    return render(request, 'authentication/verify_email.html')
+    return render(request, 'authentication/verify_email.html', {'student_id': student_id})
 
 
 def verify_student_email_view(request):
