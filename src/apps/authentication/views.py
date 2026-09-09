@@ -328,7 +328,10 @@ def login_view(request):
                             print(f"Expires in: 5 minutes")
                             print(f"{'='*60}\n")
                         
-                        messages.success(request, f'OTP has been sent to your email. Please enter it below to complete login. [DEV: Check console for OTP]')
+                        otp_msg = 'OTP has been sent to your email. Please enter it below to complete login.'
+                        if settings.DEBUG:
+                            otp_msg += ' [DEV: Check console for OTP]'
+                        messages.success(request, otp_msg)
                         return render(request, 'authentication/login.html', {
                             'show_otp_field': True,
                             'email': email
@@ -342,7 +345,9 @@ def login_view(request):
                             print(f"OTP Code: {otp}")
                             print(f"Error: {str(e)}")
                             print(f"{'='*60}\n")
-                        messages.info(request, f'Email failed. For development, your OTP is: {otp}')
+                            messages.info(request, f'Email failed. For development, your OTP is: {otp}')
+                        else:
+                            messages.error(request, 'Failed to send OTP to your email. Please try again or contact administrator.')
                         return render(request, 'authentication/login.html', {
                             'show_otp_field': True,
                             'email': email
