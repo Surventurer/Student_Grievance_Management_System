@@ -6,53 +6,129 @@
 {% block extra_css %}
 <style>
     .crud-card {
-        border: 1px solid #e5e7eb;
+        border: 1px solid transparent;
         border-radius: 4px;
-        box-shadow: none;
-        transition: all 0.2s ease;
-        background: #ffffff;
-        color: #111827;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        color: #ffffff;
         overflow: hidden;
     }
     
     .crud-card:hover {
-        border-color: #d1d5db;
-        box-shadow: none;
-        transform: none;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.2), 0 6px 8px -4px rgba(0, 0, 0, 0.1);
     }
     
-    .crud-card.categories,
-    .crud-card.schools,
+    /* Dedicated Theme Colors for CRUD Entities (distinct from Grievance Status Colors) */
+    .crud-card.categories {
+        background: #312e81 !important; /* Deep Indigo */
+        border-color: #312e81 !important;
+    }
+    
+    .crud-card.schools {
+        background: #1e293b !important; /* Cool Slate 800 */
+        border-color: #1e293b !important;
+    }
+    
     .crud-card.departments {
-        background: #ffffff;
+        background: #075985 !important; /* Deep Steel Blue 800 */
+        border-color: #075985 !important;
+    }
+    
+    .crud-card .card-title {
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #ffffff !important;
     }
     
     .crud-icon {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        color: #111827;
+        font-size: 2.75rem;
+        margin-bottom: 1.25rem;
+        color: rgba(255, 255, 255, 0.75);
+        transition: transform 0.25s ease, color 0.25s ease;
+    }
+    
+    .crud-card:hover .crud-icon {
+        color: #ffffff;
+        transform: scale(1.08);
     }
     
     .stats-badge {
-        background: #f3f4f6;
-        border: 1px solid #e5e7eb;
-        color: #111827;
-        border-radius: 2px !important;
+        background: rgba(255, 255, 255, 0.12) !important;
+        border: 1px solid rgba(255, 255, 255, 0.22) !important;
+        color: #ffffff !important;
+    .crud-stat-box {
+        background: rgba(0, 0, 0, 0.22) !important;
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+        border-radius: 4px !important;
+        backdrop-filter: blur(4px);
+        padding: 0.65rem 0.75rem !important;
+        transition: all 0.2s ease;
+    }
+    
+    .stats-badge small {
+        color: rgba(255, 255, 255, 0.85);
+    .crud-stat-box:hover {
+        background: rgba(0, 0, 0, 0.35) !important;
+        border-color: rgba(255, 255, 255, 0.4) !important;
+    }
+    
+    .crud-stat-label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        color: rgba(255, 255, 255, 0.85) !important;
+        margin-bottom: 0.25rem;
+    }
+    
+    .stats-badge strong {
+        color: #ffffff;
+    .crud-stat-number {
+        display: block;
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+        font-weight: 700;
+        line-height: 1.2;
+        color: #ffffff !important;
+    }
+
+    /* Fallback safety for any badge within crud-card */
+    .crud-card .badge,
+    .crud-card .stats-badge {
+        background: rgba(0, 0, 0, 0.22) !important;
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+        color: #ffffff !important;
+    }
+    .crud-card .badge *,
+    .crud-card .stats-badge * {
+        color: #ffffff !important;
     }
     
     .quick-action-btn {
-        background: #ffffff;
-        border: 1px solid #d1d5db;
-        color: #111827;
-        transition: all 0.15s ease;
+        background: rgba(255, 255, 255, 0.15) !important;
+        border: 1px solid rgba(255, 255, 255, 0.28) !important;
+        color: #ffffff !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         border-radius: 4px;
-        font-weight: 500;
+        font-weight: 600;
+        font-size: 0.8125rem;
+        letter-spacing: 0.025em;
+        text-transform: uppercase;
+        padding: 0.5rem 0.75rem;
     }
     
     .quick-action-btn:hover {
-        background: #f3f4f6;
-        color: #111827;
-        border-color: #9ca3af;
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border-color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 </style>
 {% endblock %}
@@ -76,20 +152,29 @@
     <div class="row mb-4">
         <div class="col-md-4">
             <div class="card crud-card categories h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-tags crud-icon"></i>
-                    <h5 class="card-title mb-3">Categories</h5>
-                    <div class="row text-center mb-3">
-                        <div class="col-6">
-                            <div class="stats-badge badge rounded-pill p-2 w-100 mb-2">
-                                <small>Total</small><br>
-                                <strong>{{ stats.categories }}</strong>
+                <div class="card-body text-center d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="fas fa-tags crud-icon"></i>
+                        <h5 class="card-title mb-3">Categories</h5>
+                        <div class="row text-center mb-3">
+                        <div class="row text-center mb-3 g-2">
+                            <div class="col-6">
+                                <div class="stats-badge badge rounded-pill p-2 w-100 mb-2">
+                                    <small>Total</small><br>
+                                    <strong style="font-size: 1.25rem;">{{ stats.categories }}</strong>
+                                <div class="crud-stat-box">
+                                    <span class="crud-stat-label">Total</span>
+                                    <span class="crud-stat-number">{{ stats.categories }}</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="stats-badge badge rounded-pill p-2 w-100 mb-2">
-                                <small>Active</small><br>
-                                <strong>{{ stats.active_categories }}</strong>
+                            <div class="col-6">
+                                <div class="stats-badge badge rounded-pill p-2 w-100 mb-2">
+                                    <small>Active</small><br>
+                                    <strong style="font-size: 1.25rem;">{{ stats.active_categories }}</strong>
+                                <div class="crud-stat-box">
+                                    <span class="crud-stat-label">Active</span>
+                                    <span class="crud-stat-number">{{ stats.active_categories }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -107,13 +192,18 @@
 
         <div class="col-md-4">
             <div class="card crud-card schools h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-university crud-icon"></i>
-                    <h5 class="card-title mb-3">Schools</h5>
-                    <div class="text-center mb-3">
-                        <div class="stats-badge badge rounded-pill p-3 w-75">
-                            <small>Total Schools</small><br>
-                            <strong style="font-size: 1.5rem;">{{ stats.schools }}</strong>
+                <div class="card-body text-center d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="fas fa-university crud-icon"></i>
+                        <h5 class="card-title mb-3">Schools</h5>
+                        <div class="text-center mb-3">
+                            <div class="stats-badge badge rounded-pill p-3 w-75 mx-auto">
+                                <small>Total Schools</small><br>
+                                <strong style="font-size: 1.5rem;">{{ stats.schools }}</strong>
+                            <div class="crud-stat-box mx-auto" style="max-width: 220px;">
+                                <span class="crud-stat-label">Total Schools</span>
+                                <span class="crud-stat-number">{{ stats.schools }}</span>
+                            </div>
                         </div>
                     </div>
                     <div class="d-grid gap-2">
@@ -130,13 +220,18 @@
 
         <div class="col-md-4">
             <div class="card crud-card departments h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-building crud-icon"></i>
-                    <h5 class="card-title mb-3">Departments</h5>
-                    <div class="text-center mb-3">
-                        <div class="stats-badge badge rounded-pill p-3 w-75">
-                            <small>Total Departments</small><br>
-                            <strong style="font-size: 1.5rem;">{{ stats.departments }}</strong>
+                <div class="card-body text-center d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="fas fa-building crud-icon"></i>
+                        <h5 class="card-title mb-3">Departments</h5>
+                        <div class="text-center mb-3">
+                            <div class="stats-badge badge rounded-pill p-3 w-75 mx-auto">
+                                <small>Total Departments</small><br>
+                                <strong style="font-size: 1.5rem;">{{ stats.departments }}</strong>
+                            <div class="crud-stat-box mx-auto" style="max-width: 220px;">
+                                <span class="crud-stat-label">Total Departments</span>
+                                <span class="crud-stat-number">{{ stats.departments }}</span>
+                            </div>
                         </div>
                     </div>
                     <div class="d-grid gap-2">
