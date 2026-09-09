@@ -813,6 +813,113 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     opacity: 0.5;
 }
 
+/* Solid Colored Stats Cards (Matching Student & Superadmin visual spec) */
+.stats-card.total {
+    background: #0f172a !important;
+    background-color: #0f172a !important;
+    border-color: #0f172a !important;
+    color: #ffffff !important;
+}
+
+.stats-card.pending {
+    background: #d97706 !important;
+    background-color: #d97706 !important;
+    border-color: #d97706 !important;
+    color: #ffffff !important;
+}
+
+.stats-card.resolved,
+.stats-card.active {
+    background: #059669 !important;
+    background-color: #059669 !important;
+    border-color: #059669 !important;
+    color: #ffffff !important;
+}
+
+.stats-card.rejected,
+.stats-card.inactive {
+    background: #dc2626 !important;
+    background-color: #dc2626 !important;
+    border-color: #dc2626 !important;
+    color: #ffffff !important;
+}
+
+/* Ensure white text and translucent icons inside solid stats cards */
+.stats-card.total .stats-number,
+.stats-card.pending .stats-number,
+.stats-card.resolved .stats-number,
+.stats-card.active .stats-number,
+.stats-card.rejected .stats-number,
+.stats-card.inactive .stats-number,
+.stats-card.total h3,
+.stats-card.pending h3,
+.stats-card.resolved h3,
+.stats-card.active h3,
+.stats-card.rejected h3,
+.stats-card.inactive h3 {
+    color: #ffffff !important;
+}
+
+.stats-card.total .stats-label,
+.stats-card.pending .stats-label,
+.stats-card.resolved .stats-label,
+.stats-card.active .stats-label,
+.stats-card.rejected .stats-label,
+.stats-card.inactive .stats-label,
+.stats-card.total p,
+.stats-card.pending p,
+.stats-card.resolved p,
+.stats-card.active p,
+.stats-card.rejected p,
+.stats-card.inactive p,
+.stats-card.total h5,
+.stats-card.pending h5,
+.stats-card.resolved h5,
+.stats-card.active h5,
+.stats-card.rejected h5,
+.stats-card.inactive h5,
+.stats-card.total .card-title,
+.stats-card.pending .card-title,
+.stats-card.resolved .card-title,
+.stats-card.active .card-title,
+.stats-card.rejected .card-title,
+.stats-card.inactive .card-title,
+.stats-card.total small,
+.stats-card.pending small,
+.stats-card.resolved small,
+.stats-card.active small,
+.stats-card.rejected small,
+.stats-card.inactive small {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.05em !important;
+}
+
+.stats-card.total [class*="text-"],
+.stats-card.pending [class*="text-"],
+.stats-card.resolved [class*="text-"],
+.stats-card.active [class*="text-"],
+.stats-card.rejected [class*="text-"],
+.stats-card.inactive [class*="text-"] {
+    color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.stats-card.total .stats-icon,
+.stats-card.pending .stats-icon,
+.stats-card.resolved .stats-icon,
+.stats-card.active .stats-icon,
+.stats-card.rejected .stats-icon,
+.stats-card.inactive .stats-icon,
+.stats-card.total i,
+.stats-card.pending i,
+.stats-card.resolved i,
+.stats-card.active i,
+.stats-card.rejected i,
+.stats-card.inactive i {
+    color: rgba(255, 255, 255, 0.45) !important;
+    opacity: 1 !important;
+}
+
 @media (max-width: 575.98px) {
     .stats-card {
         padding: 1rem;

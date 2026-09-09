@@ -16,31 +16,81 @@
 .role-officer { background-color: #f3f4f6; color: #111827; border: 1px solid #d1d5db; }
 .role-student { background-color: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
 
-.stats-card {
-    border: 1px solid #e5e7eb;
-    background: #ffffff;
-    border-radius: 4px;
-    box-shadow: none;
-    transition: all 0.2s ease;
+/* User Management Cool Slate Solid Stat Cards */
+.stats-card.user-total {
+    background: #1e293b !important;
+    background-color: #1e293b !important;
+    border-color: #1e293b !important;
+    color: #ffffff !important;
 }
 
-.stats-card:hover {
-    border-color: #d1d5db;
-    box-shadow: none;
+.stats-card.user-active {
+    background: #334155 !important;
+    background-color: #334155 !important;
+    border-color: #334155 !important;
+    color: #ffffff !important;
 }
 
-.stats-card h3 {
-    font-weight: 700;
+.stats-card.user-verified {
+    background: #1e1b4b !important;
+    background-color: #1e1b4b !important;
+    border-color: #1e1b4b !important;
+    color: #ffffff !important;
+}
+
+.stats-card.user-pending {
+    background: #075985 !important;
+    background-color: #075985 !important;
+    border-color: #075985 !important;
+    color: #ffffff !important;
+}
+
+.stats-card[class*="user-"] h3,
+.stats-card[class*="user-"] h5,
+.stats-card[class*="user-"] .card-title,
+.stats-card[class*="user-"] [class*="text-"] {
+    color: #ffffff !important;
+}
+
+.stats-card[class*="user-"] .card-title {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 0.85rem !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+    font-weight: 700 !important;
+}
+
+.stats-card[class*="user-"] .stats-icon {
+    color: rgba(255, 255, 255, 0.45) !important;
+    opacity: 1 !important;
+}
+
+/* Role distribution clean monochrome styling */
+.role-dist-number {
+    font-family: var(--font-display);
     font-size: 2rem;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-    color: #212529 !important;
+    font-weight: 700;
+    color: #1e293b !important;
+    margin-bottom: 0.35rem;
 }
 
-.stats-card h5 {
+.role-badge-neutral {
+    display: inline-block;
+    font-size: 0.75rem;
     font-weight: 600;
-    font-size: 0.95rem;
-    margin-bottom: 8px;
-    opacity: 0.85;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px;
+    background-color: #f1f5f9;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+}
+
+.role-badge-superadmin-neutral {
+    background-color: #0f172a;
+    color: #ffffff;
+    border: 1px solid #0f172a;
 }
 
 .stats-card .card-body {
@@ -190,7 +240,7 @@ tr:has(.user-checkbox:checked) td {
     <!-- Statistics Cards -->
     <div class="row mb-4">
         <div class="col-md-3">
-            <div class="card stats-card">
+            <div class="card stats-card user-total">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
@@ -203,7 +253,7 @@ tr:has(.user-checkbox:checked) td {
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card stats-card">
+            <div class="card stats-card user-active">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
@@ -216,7 +266,7 @@ tr:has(.user-checkbox:checked) td {
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card stats-card">
+            <div class="card stats-card user-verified">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
@@ -229,7 +279,7 @@ tr:has(.user-checkbox:checked) td {
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card stats-card">
+            <div class="card stats-card user-pending">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
@@ -254,26 +304,26 @@ tr:has(.user-checkbox:checked) td {
                     <div class="row text-center">
                         <div class="col-md-3">
                             <div class="p-3 border-end">
-                                <h4 class="text-danger fw-bold">{{ superadmins_count|default:0 }}</h4>
-                                <span class="role-badge role-superadmin">Super Admins</span>
+                                <h4 class="role-dist-number">{{ superadmins_count|default:0 }}</h4>
+                                <span class="role-badge-neutral role-badge-superadmin-neutral">Super Admins</span>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="p-3 border-end">
-                                <h4 class="text-warning fw-bold">{{ admins_count|default:0 }}</h4>
-                                <span class="role-badge role-admin">Department Admins</span>
+                                <h4 class="role-dist-number">{{ admins_count|default:0 }}</h4>
+                                <span class="role-badge-neutral">Department Admins</span>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="p-3 border-end">
-                                <h4 class="text-info fw-bold">{{ officers_count|default:0 }}</h4>
-                                <span class="role-badge role-officer">Officers</span>
+                                <h4 class="role-dist-number">{{ officers_count|default:0 }}</h4>
+                                <span class="role-badge-neutral">Officers</span>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="p-3">
-                                <h4 class="text-success fw-bold">{{ students_count|default:0 }}</h4>
-                                <span class="role-badge role-student">Students</span>
+                                <h4 class="role-dist-number">{{ students_count|default:0 }}</h4>
+                                <span class="role-badge-neutral">Students</span>
                             </div>
                         </div>
                     </div>
