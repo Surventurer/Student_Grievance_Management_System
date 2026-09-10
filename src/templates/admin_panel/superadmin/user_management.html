@@ -832,6 +832,19 @@ This action cannot be undone!`;
         if (data.success) {
             alert(`Successfully deleted ${data.deleted_count} user(s)!`);
             
+            // Trigger CSV download if provided by backend
+            if (data.csv_report) {
+                const blob = new Blob([data.csv_report], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `deleted_users_backup_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }
+            
             // Remove deleted rows from the table
             if (data.deleted_users) {
                 data.deleted_users.forEach(user => {

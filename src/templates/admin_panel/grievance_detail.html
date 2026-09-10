@@ -729,6 +729,52 @@ function updateGrievanceStatus(grievanceId, status) {
     }
 }
 
+// Real-Time Chat using WebSockets
+const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+const chatSocket = new WebSocket(
+    wsProtocol + '//' + window.location.host + '/ws/grievances/{{ grievance.id }}/chat/'
+);
+
+chatSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    const container = document.getElementById('adminChatContainer');
+    if (!container) return;
+    
+    // Remove empty state message if it exists
+    const emptyState = container.querySelector('.fa-comments.fa-3x');
+    if (emptyState) {
+        container.innerHTML = '<h6 class="fw-bold mb-3">Previous Comments:</h6>';
+    }
+
+    const messageHtml = `
+        <div class="comment-box mb-3 ${data.is_internal ? 'border-warning' : ''}">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <strong>
+                        ${data.is_student
+                            ? '<i class="fas fa-user me-1 text-primary"></i>' + escapeHtml(data.user_name) + ' (Student)'
+                            : '<i class="fas fa-user-shield me-1 text-success"></i>' + escapeHtml(data.user_name) + ' (Admin)'}
+                    </strong>
+                    ${data.is_internal ? '<span class="badge bg-warning ms-1">Internal</span>' : ''}
+                </div>
+                <small class="text-muted">${escapeHtml(data.timestamp)}</small>
+            </div>
+            <p class="mb-0">${escapeHtml(data.message).replace(/\n/g, '<br>')}</p>
+        </div>
+    `;
+
+    const shouldStickToBottom = !container || container.scrollTop + container.clientHeight >= container.scrollHeight - 120;
+    container.insertAdjacentHTML('beforeend', messageHtml);
+    
+    if (container && shouldStickToBottom) {
+        container.scrollTop = container.scrollHeight;
+    }
+};
+
+chatSocket.onclose = function(e) {
+    console.error('Chat socket closed unexpectedly');
+};
+
 // Handle admin response form submission
 document.getElementById('adminResponseForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -741,26 +787,19 @@ document.getElementById('adminResponseForm').addEventListener('submit', function
         return;
     }
     
+    chatSocket.send(JSON.stringify({
+        'message': responseText,
+        'is_internal': false
+    }));
+    
+    document.getElementById('admin_response').value = '';
+    
+    // Post via HTTP anyway for backup and email notifications, but silently
     fetch(this.action, {
         method: 'POST',
         body: formData,
-        headers: {
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            document.getElementById('admin_response').value = '';
-            refreshAdminThread();
-        } else {
-            alert('Error adding response: ' + (data.error || 'Unknown error'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error adding response');
-    });
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    }).catch(console.error);
 });
 
 // Function to submit internal note
@@ -772,6 +811,14 @@ function submitInternalNote() {
         return;
     }
     
+    chatSocket.send(JSON.stringify({
+        'message': responseText,
+        'is_internal': true
+    }));
+    
+    document.getElementById('admin_response').value = '';
+    
+    // Post via HTTP anyway for backup and email notifications
     const formData = new FormData();
     formData.append('admin_response', responseText);
     formData.append('is_internal', 'true');
@@ -780,27 +827,16 @@ function submitInternalNote() {
     fetch('{% url "admin_panel:add_admin_response" grievance.id %}', {
         method: 'POST',
         body: formData,
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            document.getElementById('admin_response').value = '';
-            refreshAdminThread();
-        } else {
-            alert('Error adding internal note: ' + (data.error || 'Unknown error'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error adding internal note');
-    });
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    }).catch(console.error);
 }
 
-const adminChatContainer = document.getElementById('adminChatContainer');
+// Load initial thread
+
 const adminCommentsUrl = '{% url "grievances:grievance_comments" grievance.id %}';
-let lastAdminCommentSignature = '';
 
 function escapeHtml(value) {
+    if (!value) return '';
     return String(value)
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
@@ -811,9 +847,7 @@ function escapeHtml(value) {
 
 function renderAdminComments(comments) {
     const container = document.getElementById('adminChatContainer');
-    if (!container) {
-        return;
-    }
+    if (!container) return;
 
     if (!comments.length) {
         container.innerHTML = `
@@ -850,33 +884,22 @@ function renderAdminComments(comments) {
         ${html}`;
 }
 
-function refreshAdminThread() {
+function loadInitialThread() {
     const container = document.getElementById('adminChatContainer');
     fetch(adminCommentsUrl, {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
     })
     .then(response => response.json())
     .then(data => {
-        if (!Array.isArray(data)) {
-            return;
-        }
-
-        const signature = data.map(comment => `${comment.id}:${comment.timestamp}:${comment.is_internal}`).join('|');
-        if (signature !== lastAdminCommentSignature) {
-            const shouldStickToBottom = !container || container.scrollTop + container.clientHeight >= container.scrollHeight - 120;
+        if (Array.isArray(data)) {
             renderAdminComments(data);
-            lastAdminCommentSignature = signature;
-            if (container && shouldStickToBottom) {
+            if (container) {
                 container.scrollTop = container.scrollHeight;
             }
         }
     })
-    .catch(error => console.log('Admin comment refresh failed:', error));
+    .catch(console.error);
 }
-
-refreshAdminThread();
-setInterval(refreshAdminThread, 3000);
+loadInitialThread();
 </script>
 {% endblock %}

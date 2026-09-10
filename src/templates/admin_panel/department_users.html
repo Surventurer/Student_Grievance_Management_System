@@ -867,6 +867,20 @@ function performBulkAction(action) {
             console.log('Response data:', data);
             if (data.success) {
                 alert(data.message);
+                
+                // Trigger CSV download if provided by backend
+                if (data.csv_report) {
+                    const blob = new Blob([data.csv_report], { type: 'text/csv' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `deleted_department_users_backup_${new Date().toISOString().split('T')[0]}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                }
+                
                 location.reload();
             } else {
                 alert(data.error || 'Operation failed');
