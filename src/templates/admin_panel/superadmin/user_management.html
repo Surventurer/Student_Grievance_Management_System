@@ -2096,8 +2096,6 @@ async function saveHodAssignment(userId, departmentId) {
 
 <!-- CSRF Token -->
 <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-{% endblock %}
-
 <!-- Import CSV Modal -->
 <div class="modal fade" id="importCsvModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -2130,3 +2128,5 @@ async function saveHodAssignment(userId, departmentId) {
         </div>
     </div>
 </div>
+
+{% endblock %}

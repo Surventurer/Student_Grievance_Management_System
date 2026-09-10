@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
+
 {% block title %}All Grievances - Admin Panel{% endblock %}
 
 {% block extra_css %}
@@ -839,7 +840,6 @@ function bulkDeleteGrievances(grievanceIds) {
 
 <!-- Add CSRF token for AJAX requests -->
 {% csrf_token %}
-{% endblock %}
 <!-- Bulk Update Status Modal -->
 <div class="modal fade" id="bulkUpdateStatusModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -938,3 +938,4 @@ function performBulkReassign() {
     });
 }
 </script>
+{% endblock %}

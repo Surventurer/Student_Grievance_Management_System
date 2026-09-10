@@ -108,7 +108,6 @@ urlpatterns = [
     
     # System Settings (Superadmin Only)
     path('superadmin/settings/', superadmin_views.system_settings, name='system_settings'),
-    path('superadmin/permissions/', superadmin_views.manage_role_permissions, name='manage_role_permissions'),
     
     # Audit Logs (Superadmin Only)
     path('superadmin/audit-logs/', superadmin_views.audit_logs_view, name='superadmin_audit_logs'),

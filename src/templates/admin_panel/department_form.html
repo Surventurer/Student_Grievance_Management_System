@@ -406,6 +406,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectedHod = document.getElementById('selectedHod');
     const hiddenHodInput = document.getElementById('head_of_department');
     
+    // Event delegation for dynamically added HOD options
+    hodOptions.addEventListener('click', function(e) {
+        const option = e.target.closest('.hod-option');
+        if (option) {
+            const id = option.getAttribute('data-user-id');
+            const name = option.getAttribute('data-user-name');
+            const email = option.getAttribute('data-user-email');
+            const role = option.getAttribute('data-user-role');
+            selectHOD(id, name, email, role);
+        }
+    });
+
     let searchTimeout;
     
     hodSearch.addEventListener('input', function() {
@@ -440,7 +452,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.users && data.users.length > 0) {
                     hodOptions.innerHTML = data.users.map(user => `
-                        <div class="hod-option" onclick="selectHOD(${user.id}, '${user.name}', '${user.email}', '${user.role}')">
+                        <div class="hod-option" data-user-id="${user.id}" data-user-name="${user.name}" data-user-email="${user.email}" data-user-role="${user.role}">
                             <div class="d-flex align-items-center">
                                 <div class="me-3">
                                     <i class="fas fa-user-circle fa-2x text-muted"></i>
@@ -504,10 +516,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // HOD selection functions
 function selectHOD(id, name, email, title) {
-    document.getElementById('head_of_department').value = id;
-    document.getElementById('selectedHodName').textContent = name;
-    document.getElementById('selectedHodEmail').textContent = email;
-    document.getElementById('selectedHod').style.display = 'block';
+    const headInput = document.getElementById('head_of_department');
+    if (headInput) headInput.value = id;
+    
+    // In case the elements were somehow removed from the DOM, recreate them
+    let hodEl = document.getElementById('selectedHod');
+    if (!hodEl) {
+        hodEl = document.createElement('div');
+        hodEl.id = 'selectedHod';
+        // Insert it right after the hodOptions div
+        const hodOptions = document.getElementById('hodOptions');
+        if (hodOptions) {
+            hodOptions.parentNode.insertBefore(hodEl, hodOptions.nextSibling);
+        }
+    }
+    
+    // Always rebuild the inner HTML to guarantee the elements exist
+    hodEl.innerHTML = `
+        <div class="alert alert-info">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>${name}</strong><br>
+                    <small class="text-muted">${email}</small>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearHodSelection()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    hodEl.style.display = 'block';
     
     // Hide search options
     document.getElementById('hodOptions').innerHTML = `
@@ -519,16 +557,23 @@ function selectHOD(id, name, email, title) {
 }
 
 function clearHodSelection() {
-    document.getElementById('head_of_department').value = '';
-    document.getElementById('selectedHod').style.display = 'none';
-    document.getElementById('hodSearch').value = '';
+    const headInput = document.getElementById('head_of_department');
+    const hodEl = document.getElementById('selectedHod');
+    const searchInput = document.getElementById('hodSearch');
+    const hodOptions = document.getElementById('hodOptions');
     
-    document.getElementById('hodOptions').innerHTML = `
-        <div class="text-center text-muted py-3">
-            <i class="fas fa-search fa-2x mb-2 opacity-50"></i>
-            <p>Search for users to assign as HOD</p>
-        </div>
-    `;
+    if (headInput) headInput.value = '';
+    if (hodEl) hodEl.style.display = 'none';
+    if (searchInput) searchInput.value = '';
+    
+    if (hodOptions) {
+        hodOptions.innerHTML = `
+            <div class="text-center text-muted py-3">
+                <i class="fas fa-search fa-2x mb-2 opacity-50"></i>
+                <p>Search for users to assign as HOD</p>
+            </div>
+        `;
+    }
 }
 </script>
 {% endblock %}
