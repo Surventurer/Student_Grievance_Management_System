@@ -253,6 +253,14 @@
                                             <span class="d-none d-sm-inline">Clear Selection</span>
                                             <span class="d-sm-none">Clear</span>
                                         </button>
+                                        <button type="button" class="btn btn-primary btn-sm" onclick="showBulkUpdateStatusModal()" id="bulkUpdateStatusBtn">
+                                            <i class="fas fa-edit me-1"></i>
+                                            <span class="d-none d-sm-inline">Update Status</span>
+                                        </button>
+                                        <button type="button" class="btn btn-info btn-sm text-white" onclick="showBulkReassignModal()" id="bulkReassignBtn">
+                                            <i class="fas fa-user-edit me-1"></i>
+                                            <span class="d-none d-sm-inline">Reassign</span>
+                                        </button>
                                         <button type="button" class="btn btn-danger btn-sm" onclick="confirmBulkDelete()" id="bulkDeleteBtn">
                                             <i class="fas fa-trash me-1"></i>
                                             <span class="d-none d-sm-inline">Delete Selected</span>
@@ -832,3 +840,101 @@ function bulkDeleteGrievances(grievanceIds) {
 <!-- Add CSRF token for AJAX requests -->
 {% csrf_token %}
 {% endblock %}
+<!-- Bulk Update Status Modal -->
+<div class="modal fade" id="bulkUpdateStatusModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Update Status</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Select a new status for the <strong id="bulkUpdateStatusCount">0</strong> selected grievance(s):</p>
+                <select class="form-select" id="bulkStatusSelect">
+                    <option value="pending">Pending</option>
+                    <option value="pending_student">Pending Student Reply</option>
+                    <option value="resolved">Resolved</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="performBulkUpdateStatus()">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Reassign Modal -->
+<div class="modal fade" id="bulkReassignModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="fas fa-user-edit me-2"></i>Reassign Grievances</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Select a new assignee for the <strong id="bulkReassignCount">0</strong> selected grievance(s):</p>
+                <!-- This would ideally be populated dynamically, for now just a text input for ID or simple select -->
+                <p class="text-muted small">Please assign individually for now, dynamic assignee list requires additional backend endpoint.</p>
+                <input type="number" class="form-control" id="bulkAssigneeId" placeholder="Admin Profile ID">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-info text-white" onclick="performBulkReassign()">Reassign</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showBulkUpdateStatusModal() {
+    document.getElementById('bulkUpdateStatusCount').innerText = getSelectedGrievances().length;
+    new bootstrap.Modal(document.getElementById('bulkUpdateStatusModal')).show();
+}
+
+function performBulkUpdateStatus() {
+    const grievanceIds = getSelectedGrievances();
+    const status = document.getElementById('bulkStatusSelect').value;
+    
+    fetch('/admin-panel/api/bulk-update-grievances-status/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({ grievance_ids: grievanceIds, status: status })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) window.location.reload();
+        else alert('Error: ' + data.error);
+    });
+}
+
+function showBulkReassignModal() {
+    document.getElementById('bulkReassignCount').innerText = getSelectedGrievances().length;
+    new bootstrap.Modal(document.getElementById('bulkReassignModal')).show();
+}
+
+function performBulkReassign() {
+    const grievanceIds = getSelectedGrievances();
+    const assigneeId = document.getElementById('bulkAssigneeId').value;
+    
+    if(!assigneeId) { alert('Please enter an Assignee ID'); return; }
+    
+    fetch('/admin-panel/api/bulk-reassign-grievances/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({ grievance_ids: grievanceIds, assignee_id: assigneeId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) window.location.reload();
+        else alert('Error: ' + data.error);
+    });
+}
+</script>

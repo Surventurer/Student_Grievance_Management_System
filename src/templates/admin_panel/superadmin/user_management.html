@@ -231,6 +231,9 @@ tr:has(.user-checkbox:checked) td {
             <p class="text-muted">Superadmin-only access • Manage all users and roles</p>
         </div>
         <div class="btn-group">
+            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#importCsvModal">
+                <i class="fas fa-file-csv"></i> Import CSV
+            </button>
             <a href="{% url 'admin_panel:create_user' %}" class="btn btn-primary">
                 <i class="fas fa-user-plus"></i> Create User
             </a>
@@ -2094,3 +2097,36 @@ async function saveHodAssignment(userId, departmentId) {
 <!-- CSRF Token -->
 <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 {% endblock %}
+
+<!-- Import CSV Modal -->
+<div class="modal fade" id="importCsvModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{% url 'admin_panel:import_users_csv' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fas fa-file-csv me-2"></i>Import Users from CSV</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Please upload a CSV file with the following columns in exact order:</p>
+                    <ol class="small text-muted">
+                        <li>Email Address</li>
+                        <li>Password</li>
+                        <li>Role (student, admin, officer)</li>
+                        <li>Full Name</li>
+                        <li>Student ID / Employee ID</li>
+                        <li>Department Code / Name</li>
+                    </ol>
+                    <div class="mb-3">
+                        <input type="file" class="form-control" name="csv_file" accept=".csv" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -79,6 +79,7 @@ class Grievance(models.Model):
     
     STATUS_CHOICES = [
         ('pending', 'Pending'),
+        ('pending_student', 'Pending Student Reply'),
         ('resolved', 'Resolved'),
         ('rejected', 'Rejected'),
     ]
@@ -107,6 +108,11 @@ class Grievance(models.Model):
     escalation_level = models.IntegerField(default=0, help_text="0=Normal, 1=Admin, 2=Superadmin")
     is_appealed = models.BooleanField(default=False)
     is_archived = models.BooleanField(default=False, help_text="Soft delete flag")
+    
+    # SLA Pause Tracking
+    sla_pause_time = models.DateTimeField(null=True, blank=True, help_text="Time when status changed to pending_student")
+    accumulated_sla_pause_minutes = models.IntegerField(default=0, help_text="Total minutes SLA was paused")
+    
     expected_resolution_date = models.DateTimeField(null=True, blank=True)
     actual_resolution_date = models.DateTimeField(null=True, blank=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
@@ -191,17 +197,20 @@ class Grievance(models.Model):
             assigned_admin = self.category.default_admin
             assignment_reason = "Category default admin"
         
-        # Step 4: Fallback to any available admin for the department
+        # Step 4: Fallback to any available admin for the department (Load-Balanced)
         if not assigned_admin and student_department:
             try:
+                from django.db.models import Count, Q
                 fallback_admin = AdminProfile.objects.filter(
                     department__iexact=student_department,
                     role_level__in=['admin', 'officer']
-                ).first()
+                ).annotate(
+                    active_count=Count('assigned_grievances', filter=Q(assigned_grievances__status__in=['pending', 'pending_student']))
+                ).order_by('active_count').first()
                 
                 if fallback_admin:
                     assigned_admin = fallback_admin
-                    assignment_reason = f"Department fallback: {student_department}"
+                    assignment_reason = f"Load-balanced assignment: {student_department}"
             except Exception as e:
                 print(f"Error finding fallback admin: {e}")
         

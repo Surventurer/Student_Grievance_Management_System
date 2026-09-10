@@ -71,3 +71,5 @@ class SystemSettings(models.Model):
         """ Load the singleton instance """
         obj, created = cls.objects.get_or_create(pk=1)
         return obj
+
+

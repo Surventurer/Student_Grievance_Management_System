@@ -160,11 +160,21 @@ def update_grievance_status(request, grievance_id):
         data = json.loads(request.body)
         new_status = data.get('status')
         
-        if new_status in ['pending', 'resolved', 'rejected']:
+        if new_status in ['pending', 'pending_student', 'resolved', 'rejected']:
+            old_status = grievance.status
+            
+            # Handle SLA pause tracking
+            if new_status == 'pending_student' and old_status != 'pending_student':
+                grievance.sla_pause_time = timezone.now()
+            elif old_status == 'pending_student' and new_status != 'pending_student':
+                if grievance.sla_pause_time:
+                    pause_duration = timezone.now() - grievance.sla_pause_time
+                    grievance.accumulated_sla_pause_minutes += int(pause_duration.total_seconds() / 60)
+                    grievance.sla_pause_time = None
+                    
             grievance.status = new_status
             if new_status in ['resolved', 'rejected']:
-                grievance.resolved_at = timezone.now()
-                grievance.resolved_by = request.user
+                grievance.actual_resolution_date = timezone.now()
             grievance.save()
             
             # Create audit log
@@ -397,3 +407,101 @@ def bulk_delete_grievances(request):
         print(f"Error in bulk_delete_grievances: {e}")
         return JsonResponse({'error': 'An error occurred while deleting grievances'}, status=500)
 
+
+@require_http_methods(["POST"])
+def bulk_update_grievances_status(request):
+    if not request.user.is_admin_or_officer:
+        return JsonResponse({'error': 'Access denied'}, status=403)
+        
+    try:
+        data = json.loads(request.body)
+        grievance_ids = data.get('grievance_ids', [])
+        new_status = data.get('status')
+        
+        if not grievance_ids or not new_status:
+            return JsonResponse({'error': 'Grievance IDs and status are required'}, status=400)
+            
+        if new_status not in ['pending', 'pending_student', 'resolved', 'rejected']:
+            return JsonResponse({'error': 'Invalid status'}, status=400)
+            
+        # Get accessible grievances
+        accessible_grievances = request.user.get_accessible_grievances()
+        grievances_to_update = accessible_grievances.filter(id__in=grievance_ids)
+        
+        updated_count = 0
+        with transaction.atomic():
+            for grievance in grievances_to_update:
+                old_status = grievance.status
+                if new_status == 'pending_student' and old_status != 'pending_student':
+                    grievance.sla_pause_time = timezone.now()
+                elif old_status == 'pending_student' and new_status != 'pending_student':
+                    if grievance.sla_pause_time:
+                        pause_duration = timezone.now() - grievance.sla_pause_time
+                        grievance.accumulated_sla_pause_minutes += int(pause_duration.total_seconds() / 60)
+                        grievance.sla_pause_time = None
+                        
+                grievance.status = new_status
+                if new_status in ['resolved', 'rejected']:
+                    grievance.actual_resolution_date = timezone.now()
+                grievance.save()
+                
+                AuditLog.objects.create(
+                    user=request.user,
+                    action='update',
+                    target_model='Grievance',
+                    target_id=str(grievance.id),
+                    description=f'Bulk changed status to {new_status}',
+                    ip_address=request.META.get('REMOTE_ADDR', '')
+                )
+                updated_count += 1
+                
+        return JsonResponse({'success': True, 'updated_count': updated_count})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@require_http_methods(["POST"])
+def bulk_reassign_grievances(request):
+    if not request.user.is_admin_or_officer:
+        return JsonResponse({'error': 'Access denied'}, status=403)
+        
+    try:
+        data = json.loads(request.body)
+        grievance_ids = data.get('grievance_ids', [])
+        assignee_id = data.get('assignee_id')
+        
+        if not grievance_ids or not assignee_id:
+            return JsonResponse({'error': 'Grievance IDs and Assignee ID are required'}, status=400)
+            
+        assignee = get_object_or_404(AdminProfile, id=assignee_id)
+        
+        accessible_grievances = request.user.get_accessible_grievances()
+        grievances_to_update = accessible_grievances.filter(id__in=grievance_ids)
+        
+        updated_count = 0
+        with transaction.atomic():
+            for grievance in grievances_to_update:
+                old_assignee = grievance.assigned_to
+                grievance.assigned_to = assignee
+                grievance.save()
+                
+                GrievanceAssignmentHistory.objects.create(
+                    grievance=grievance,
+                    previous_assignee=old_assignee,
+                    new_assignee=assignee,
+                    assigned_by=request.user,
+                    reason="Bulk reassignment"
+                )
+                
+                AuditLog.objects.create(
+                    user=request.user,
+                    action='assign',
+                    target_model='Grievance',
+                    target_id=str(grievance.id),
+                    description=f'Bulk reassigned to {assignee}',
+                    ip_address=request.META.get('REMOTE_ADDR', '')
+                )
+                updated_count += 1
+                
+        return JsonResponse({'success': True, 'updated_count': updated_count})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

@@ -275,6 +275,13 @@ def student_actions_api(request):
         affected_students = []
         
         if action == 'delete':
+            # Export data before deletion
+            import io
+            import csv
+            csv_buffer = io.StringIO()
+            csv_writer = csv.writer(csv_buffer)
+            csv_writer.writerow(['Student ID', 'Name', 'Email', 'Grievance ID', 'Title', 'Status', 'Submitted At'])
+            
             # Complete deletion including all related data
             for student in students:
                 affected_students.append({
@@ -284,6 +291,14 @@ def student_actions_api(request):
                     'email': student.user.email,
                     'grievance_count': student.grievances.count()
                 })
+                
+                # Write grievance data to CSV
+                grievances = student.grievances.all()
+                if grievances.exists():
+                    for g in grievances:
+                        csv_writer.writerow([student.student_id, student.name, student.user.email, g.grievance_id, g.title, g.status, g.submitted_at])
+                else:
+                    csv_writer.writerow([student.student_id, student.name, student.user.email, 'No Grievances', 'N/A', 'N/A', 'N/A'])
                 
                 # Log the deletion
                 try:
@@ -303,6 +318,7 @@ def student_actions_api(request):
                 student.user.delete()
             
             affected_count = len(affected_students)
+            csv_report = csv_buffer.getvalue()
             
         elif action in ['suspend', 'activate']:
             # Suspend or activate students
@@ -338,13 +354,18 @@ def student_actions_api(request):
             
             affected_count = students.count()
         
-        return JsonResponse({
+        response_data = {
             'success': True,
             'action': action,
             'affected_count': affected_count,
             'affected_students': affected_students,
             'message': f'Successfully {action}d {affected_count} student(s)'
-        })
+        }
+        
+        if action == 'delete':
+            response_data['csv_report'] = csv_report
+            
+        return JsonResponse(response_data)
         
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON data'}, status=400)

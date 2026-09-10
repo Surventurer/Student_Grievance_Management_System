@@ -686,6 +686,12 @@ def bulk_delete_users(request):
         deleted_users_info = []
         is_sqlite = connection.vendor == 'sqlite'
         
+        import io
+        import csv
+        csv_buffer = io.StringIO()
+        csv_writer = csv.writer(csv_buffer)
+        csv_writer.writerow(['User Email', 'Role', 'Grievance ID', 'Title', 'Status', 'Submitted At'])
+        
         with transaction.atomic():
             # For SQLite only, temporarily disable foreign key checks
             if is_sqlite:
@@ -700,6 +706,17 @@ def bulk_delete_users(request):
                         'email': user.email,
                         'role': user.role
                     })
+                    
+                    # Write user and grievance data to CSV before deletion
+                    if user.role == 'student' and hasattr(user, 'student_profile') and user.student_profile:
+                        grievances = user.student_profile.grievances.all()
+                        if grievances.exists():
+                            for g in grievances:
+                                csv_writer.writerow([user.email, user.role, g.grievance_id, g.title, g.status, g.submitted_at])
+                        else:
+                            csv_writer.writerow([user.email, user.role, 'No Grievances', 'N/A', 'N/A', 'N/A'])
+                    else:
+                        csv_writer.writerow([user.email, user.role, 'N/A', 'N/A', 'N/A', 'N/A'])
                     
                     # Create audit log before deletion
                     AuditLog.objects.create(
@@ -728,11 +745,12 @@ def bulk_delete_users(request):
                         user.admin_profile.delete()
                     
                     # Set user references to NULL in remaining records (audit logs, etc.)
-                    # This is handled automatically by our model changes
-                
-                # Now delete users
-                deleted_count = len(deleted_users_info)
-                users_to_delete.delete()
+                    AuditLog.objects.filter(user=user).update(user=None)
+                    GrievanceStatusHistory.objects.filter(changed_by=user).update(changed_by=None)
+                    GrievanceComment.objects.filter(user=user).update(user=None)
+                    
+                    # Finally delete the user
+                    user.delete()
                 
             finally:
                 # Re-enable foreign key checks for SQLite only
@@ -740,11 +758,13 @@ def bulk_delete_users(request):
                     with connection.cursor() as cursor:
                         cursor.execute("PRAGMA foreign_keys = ON")
         
+        deleted_count = len(deleted_users_info)
         return JsonResponse({
             'success': True,
             'deleted_count': deleted_count,
             'deleted_users': deleted_users_info,
-            'message': f'Successfully deleted {deleted_count} user(s)'
+            'message': f'Successfully deleted {deleted_count} user(s)',
+            'csv_report': csv_buffer.getvalue()
         })
         
     except json.JSONDecodeError:
@@ -1168,3 +1188,118 @@ def get_schools_departments(request):
     except Exception as e:
         print(f"Error in get_schools_departments: {str(e)}")
         return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+
+@superadmin_required
+def import_users_csv(request):
+    if request.method == 'POST' and request.FILES.get('csv_file'):
+        import csv
+        import io
+        from django.contrib.auth.hashers import make_password
+        
+        csv_file = request.FILES['csv_file']
+        if not csv_file.name.endswith('.csv'):
+            messages.error(request, 'Please upload a valid CSV file.')
+            return redirect('admin_panel:user_management')
+            
+        dataset = csv_file.read().decode('UTF-8')
+        io_string = io.StringIO(dataset)
+        reader = csv.reader(io_string, delimiter=',')
+        
+        header = next(reader, None)  # Skip header
+        created_count = 0
+        error_count = 0
+        
+        with transaction.atomic():
+            for row in reader:
+                try:
+                    if len(row) >= 6: # email, password, role, name, student_id/emp_id, department
+                        email = row[0].strip()
+                        password = row[1].strip()
+                        role = row[2].strip()
+                        name = row[3].strip()
+                        sid_eid = row[4].strip()
+                        dept = row[5].strip()
+                        
+                        if User.objects.filter(email=email).exists():
+                            error_count += 1
+                            continue
+                            
+                        user = User.objects.create(
+                            email=email,
+                            role=role,
+                            is_email_verified=True
+                        )
+                        user.set_password(password)
+                        user.save()
+                        
+                        if role == 'student':
+                            StudentProfile.objects.create(
+                                user=user, name=name, student_id=sid_eid, department=dept, school="Default"
+                            )
+                        else:
+                            AdminProfile.objects.create(
+                                user=user, role_level=role, employee_id=sid_eid, department=dept
+                            )
+                        created_count += 1
+                except Exception as e:
+                    error_count += 1
+                    
+        messages.success(request, f'Successfully imported {created_count} users. {error_count} errors.')
+    return redirect('admin_panel:user_management')
+
+@superadmin_required
+def manage_role_permissions(request):
+    from apps.authentication.models import RolePermission, User
+    
+    if request.method == 'POST':
+        role = request.POST.get('role')
+        # All available permissions in the system
+        all_perms = [
+            'view_all_data', 'manage_users', 'manage_system', 'manage_categories',
+            'view_audit_logs', 'manage_auto_assignment', 'delete_users', 
+            'modify_roles', 'system_backup', 'database_access',
+            'view_department_data', 'manage_department_students', 'manage_department_grievances',
+            'assign_grievances', 'view_department_reports', 'manage_department_categories',
+            'view_assigned_grievances', 'update_grievance_status', 'add_comments',
+            'view_assigned_students', 'update_own_profile',
+            'submit_grievances', 'view_own_grievances', 'upload_documents'
+        ]
+        
+        perms_dict = {}
+        for p in all_perms:
+            perms_dict[p] = request.POST.get(p) == 'on'
+            
+        rp, created = RolePermission.objects.get_or_create(role=role)
+        rp.permissions = perms_dict
+        rp.save()
+        messages.success(request, f'Permissions updated for {role}')
+        return redirect('admin_panel:manage_role_permissions')
+        
+    roles = [role for role in User.ROLE_CHOICES if role[0] != 'superadmin']
+    role_permissions = {}
+    
+    for r_code, r_name in roles:
+        rp, created = RolePermission.objects.get_or_create(role=r_code)
+        if created:
+            # Seed with default permissions
+            dummy_user = User(role=r_code)
+            all_p = [
+                'view_all_data', 'manage_users', 'manage_system', 'manage_categories',
+                'view_audit_logs', 'manage_auto_assignment', 'delete_users', 
+                'modify_roles', 'system_backup', 'database_access',
+                'view_department_data', 'manage_department_students', 'manage_department_grievances',
+                'assign_grievances', 'view_department_reports', 'manage_department_categories',
+                'view_assigned_grievances', 'update_grievance_status', 'add_comments',
+                'view_assigned_students', 'update_own_profile',
+                'submit_grievances', 'view_own_grievances', 'upload_documents'
+            ]
+            default_dict = {p: dummy_user.has_permission(p) for p in all_p}
+            rp.permissions = default_dict
+            rp.save()
+        role_permissions[r_code] = rp.permissions
+        
+    context = {
+        'roles': roles,
+        'role_permissions': role_permissions
+    }
+    return render(request, 'admin_panel/superadmin/role_permissions.html', context)

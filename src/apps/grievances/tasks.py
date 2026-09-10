@@ -10,7 +10,7 @@ def check_sla_and_escalate():
     """Check pending grievances and escalate those that have breached SLA."""
     # Get grievances that might need escalation
     grievances = Grievance.objects.filter(
-        status__in=['pending', 'under_review'],
+        status='pending', # 'pending_student' doesn't breach SLA
         is_escalated=False,
         is_archived=False
     ).select_related('category', 'assigned_to', 'student')
@@ -20,7 +20,15 @@ def check_sla_and_escalate():
 
     for grievance in grievances:
         if grievance.category and grievance.category.sla_hours:
-            breach_time = grievance.submitted_at + timedelta(hours=grievance.category.sla_hours)
+            # We add the accumulated pause minutes to the breach time
+            pause_td = timedelta(minutes=grievance.accumulated_sla_pause_minutes)
+            breach_time = grievance.submitted_at + timedelta(hours=grievance.category.sla_hours) + pause_td
+            
+            # Simple Business hours handling: If breach time falls on weekend, shift to Monday
+            if breach_time.weekday() >= 5: # 5 = Sat, 6 = Sun
+                days_to_add = 7 - breach_time.weekday()
+                breach_time += timedelta(days=days_to_add)
+                
             if now > breach_time:
                 # SLA breached, time to escalate
                 escalated = escalate_grievance(grievance)

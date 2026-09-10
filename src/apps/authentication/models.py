@@ -155,29 +155,32 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
     def has_permission(self, permission):
-        """Check if user has specific permission based on role"""
-        permission_map = {
-            'superadmin': [
-                'view_all_data', 'manage_users', 'manage_system', 'manage_categories',
-                'view_audit_logs', 'manage_auto_assignment', 'delete_users', 
-                'modify_roles', 'system_backup', 'database_access'
-            ],
-            'admin': [
-                'view_department_data', 'manage_department_students', 'manage_department_grievances',
-                'assign_grievances', 'view_department_reports', 'manage_department_categories'
-            ],
-            'officer': [
-                'view_assigned_grievances', 'update_grievance_status', 'add_comments',
-                'view_assigned_students', 'update_own_profile'
-            ],
-            'student': [
-                'submit_grievances', 'view_own_grievances', 'update_own_profile',
-                'upload_documents'
-            ]
-        }
-        
-        user_permissions = permission_map.get(self.role, [])
-        return permission in user_permissions
+        """Check if user has specific permission based on role dynamically from DB"""
+        if self.role == 'superadmin':
+            return True # Superadmin has all permissions implicitly
+            
+        try:
+            # Import here to avoid circular imports if necessary
+            from apps.authentication.models import RolePermission
+            role_perm = RolePermission.objects.get(role=self.role)
+            return role_perm.permissions.get(permission, False)
+        except Exception:
+            # Fallback to defaults if DB entry doesn't exist
+            permission_map = {
+                'admin': [
+                    'view_department_data', 'manage_department_students', 'manage_department_grievances',
+                    'assign_grievances', 'view_department_reports', 'manage_department_categories'
+                ],
+                'officer': [
+                    'view_assigned_grievances', 'update_grievance_status', 'add_comments',
+                    'view_assigned_students', 'update_own_profile'
+                ],
+                'student': [
+                    'submit_grievances', 'view_own_grievances', 'update_own_profile',
+                    'upload_documents'
+                ]
+            }
+            return permission in permission_map.get(self.role, [])
     
     @property
     def role_display(self):
@@ -314,3 +317,11 @@ class TemporaryRegistration(models.Model):
         )
         
         return user, student_profile
+
+class RolePermission(models.Model):
+    """Dynamic permissions for roles"""
+    role = models.CharField(max_length=20, choices=User.ROLE_CHOICES, unique=True)
+    permissions = models.JSONField(default=dict, help_text="JSON mapping of permission names to booleans")
+    
+    def __str__(self):
+        return f"Permissions for {self.get_role_display()}"
