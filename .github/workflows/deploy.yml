@@ -72,13 +72,10 @@ jobs:
 
           echo "Using: $(docker compose version)"
 
-<<<<<<< HEAD
-=======
           # Stop and remove any stale/orphaned containers from previous crashed runs
           docker compose down --remove-orphans 2>/dev/null || true
           docker rm -f $(docker ps -aq --filter "name=sgs_") 2>/dev/null || true
 
->>>>>>> beta
           # Build and launch containers with modern Docker Compose v2
           docker compose build
           docker compose up -d --remove-orphans
