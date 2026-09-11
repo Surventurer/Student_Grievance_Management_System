@@ -35,8 +35,12 @@ jobs:
             elif [ -f ~/.env ]; then
               echo "Copying .env from home directory..."
               cp ~/.env .env
+            elif [ -f .env.example ]; then
+              echo "::warning ::No deployment .env found; falling back to .env.example. Update with production values."
+              cp .env.example .env
             else
-              echo "::warning ::No .env file found in workspace! If this is the first deployment, please ensure a .env or .env.proud file exists on the server."
+              echo "::error ::No .env file found in workspace! Please ensure a .env, .env.prod, or .env.proud file exists on the server."
+              exit 1
             fi
           else
             echo "✓ .env file present."
