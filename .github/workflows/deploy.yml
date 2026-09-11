@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-      - beta
-      - 'release/**'
   workflow_dispatch: # Allows manual trigger from GitHub Actions tab
 
 jobs:
@@ -58,35 +56,25 @@ jobs:
           # Ensure full standard PATH is available in non-interactive runner shells
           export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/snap/bin:$HOME/.local/bin:$PATH"
 
-          # Detect compose binary
-          DOCKER_COMPOSE=""
-          if docker compose version >/dev/null 2>&1; then
-            DOCKER_COMPOSE="docker compose"
-          elif command -v docker-compose >/dev/null 2>&1; then
-            DOCKER_COMPOSE="docker-compose"
-          elif [ -x /usr/local/bin/docker-compose ]; then
-            DOCKER_COMPOSE="/usr/local/bin/docker-compose"
-          elif [ -x /usr/bin/docker-compose ]; then
-            DOCKER_COMPOSE="/usr/bin/docker-compose"
-          elif [ -x /snap/bin/docker-compose ]; then
-            DOCKER_COMPOSE="/snap/bin/docker-compose"
+          # If Docker Compose v2 is not installed, install it in user's docker plugins
+          if ! docker compose version >/dev/null 2>&1; then
+            echo "Docker Compose v2 not found. Installing latest Docker Compose v2 into ~/.docker/cli-plugins/..."
+            mkdir -p "$HOME/.docker/cli-plugins"
+            ARCH=$(uname -m)
+            case "$ARCH" in
+              x86_64) COMPOSE_ARCH="x86_64" ;;
+              aarch64|arm64) COMPOSE_ARCH="aarch64" ;;
+              *) COMPOSE_ARCH="$ARCH" ;;
+            esac
+            curl -sSL "https://github.com/docker/compose/releases/latest/download/docker-compose-linux-${COMPOSE_ARCH}" -o "$HOME/.docker/cli-plugins/docker-compose"
+            chmod +x "$HOME/.docker/cli-plugins/docker-compose"
           fi
 
-          if [ -z "$DOCKER_COMPOSE" ]; then
-            echo "::error ::Neither 'docker compose' nor 'docker-compose' was found on this runner server!"
-            echo "------------------------------------------------------------------------"
-            echo "To fix this, log into your server and run:"
-            echo "  sudo apt-get update && sudo apt-get install -y docker-compose-plugin"
-            echo "  sudo usermod -aG docker \$USER"
-            echo "------------------------------------------------------------------------"
-            exit 1
-          fi
+          echo "Using: $(docker compose version)"
 
-          echo "Using compose command: $DOCKER_COMPOSE"
-
-          # Build and launch containers
-          $DOCKER_COMPOSE build
-          $DOCKER_COMPOSE up -d --remove-orphans
+          # Build and launch containers with modern Docker Compose v2
+          docker compose build
+          docker compose up -d --remove-orphans
 
           # Cleanup dangling images to keep server storage clean
           docker image prune -f
