@@ -9,12 +9,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+def _parse_bool(val):
+    if isinstance(val, bool):
+        return val
+    return str(val).lower().strip() in ('true', '1', 't', 'yes', 'y', 'debug')
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
+DEBUG = _parse_bool(config('DEBUG', default=True))
+
+ALLOWED_HOSTS = [host.strip() for host in config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',') if host.strip()]
 
 # Application definition
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -69,6 +75,25 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
+
+# Channels / Redis config
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(config('REDIS_HOST', default='127.0.0.1'), config('REDIS_PORT', default=6379, cast=int))],
+        },
+    },
+}
+
+# Redis Caching framework
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": f"redis://{config('REDIS_HOST', default='127.0.0.1')}:{config('REDIS_PORT', default=6379)}/1",
+    }
+}
 
 # Database — always requires DATABASE_URL (PostgreSQL via Neon)
 DATABASES = {
@@ -147,9 +172,34 @@ CORS_ALLOWED_ORIGINS = [
 # Allow all origins in development (can be restricted in production)
 CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=True, cast=bool)
 
-# CSRF trusted origins — add your production domain(s) via CSRF_TRUSTED_ORIGINS in .env
-_default_csrf = 'http://localhost:8000,http://127.0.0.1:8000,http://localhost:9000,http://127.0.0.1:9000'
-CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default=_default_csrf).split(',')
+# CSRF trusted origins — automatically trust localhost, 127.0.0.1, 0.0.0.0, all ALLOWED_HOSTS, and any configured origins
+_trusted = {
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'http://0.0.0.0:8000',
+    'http://localhost',
+    'http://127.0.0.1',
+    'http://0.0.0.0',
+    'https://localhost:8000',
+    'https://127.0.0.1:8000',
+    'https://0.0.0.0:8000',
+}
+for host in ALLOWED_HOSTS:
+    if host and host != '*':
+        _clean_host = host.split(':')[0]
+        _trusted.add(f'http://{_clean_host}:8000')
+        _trusted.add(f'http://{_clean_host}')
+        _trusted.add(f'https://{_clean_host}:8000')
+        _trusted.add(f'https://{_clean_host}')
+
+_extra_csrf = config('CSRF_TRUSTED_ORIGINS', default='')
+if _extra_csrf:
+    for origin in _extra_csrf.split(','):
+        origin = origin.strip()
+        if origin:
+            _trusted.add(origin)
+
+CSRF_TRUSTED_ORIGINS = sorted(_trusted)
 
 # Email settings
 EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
@@ -172,14 +222,14 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = config('MAX_UPLOAD_SIZE', default=10485760, cast=i
 DATA_UPLOAD_MAX_MEMORY_SIZE = config('MAX_UPLOAD_SIZE', default=10485760, cast=int)
 
 # Security settings
-if not DEBUG:
-    SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=True, cast=bool)
+SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
+if SECURE_SSL_REDIRECT:
     SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=31536000, cast=int)
     SECURE_HSTS_INCLUDE_SUBDOMAINS = config('SECURE_HSTS_INCLUDE_SUBDOMAINS', default=True, cast=bool)
     SECURE_HSTS_PRELOAD = config('SECURE_HSTS_PRELOAD', default=True, cast=bool)
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 else:
-    # Explicitly disable all HTTPS enforcement in development
-    SECURE_SSL_REDIRECT = False
     SECURE_HSTS_SECONDS = 0
     SECURE_HSTS_INCLUDE_SUBDOMAINS = False
     SECURE_HSTS_PRELOAD = False

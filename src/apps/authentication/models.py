@@ -156,28 +156,37 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def has_permission(self, permission):
         """Check if user has specific permission based on role"""
+        # Super admin has all permissions
+        if self.role == 'superadmin':
+            return True
+            
         permission_map = {
-            'superadmin': [
-                'view_all_data', 'manage_users', 'manage_system', 'manage_categories',
-                'view_audit_logs', 'manage_auto_assignment', 'delete_users', 
-                'modify_roles', 'system_backup', 'database_access'
-            ],
             'admin': [
-                'view_department_data', 'manage_department_students', 'manage_department_grievances',
-                'assign_grievances', 'view_department_reports', 'manage_department_categories'
+                'view_department_data',
+                'manage_department_students',
+                'manage_department_grievances',
+                'assign_grievances',
+                'view_department_reports',
+                'manage_department_categories'
             ],
             'officer': [
-                'view_assigned_grievances', 'update_grievance_status', 'add_comments',
-                'view_assigned_students', 'update_own_profile'
+                'view_assigned_grievances',
+                'update_grievance_status',
+                'add_comments',
+                'view_assigned_students',
+                'update_own_profile'
             ],
             'student': [
-                'submit_grievances', 'view_own_grievances', 'update_own_profile',
-                'provide_feedback', 'upload_documents'
+                'submit_grievances',
+                'view_own_grievances',
+                'update_own_profile',
+                'upload_documents'
             ]
         }
         
-        user_permissions = permission_map.get(self.role, [])
-        return permission in user_permissions
+        # Get permissions for user's role, default to empty list if role not found
+        role_permissions = permission_map.get(self.role, [])
+        return permission in role_permissions
     
     @property
     def role_display(self):
@@ -314,3 +323,4 @@ class TemporaryRegistration(models.Model):
         )
         
         return user, student_profile
+

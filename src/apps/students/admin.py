@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import StudentProfile, AdminProfile, Department, UserActivity, School
+from .models import StudentProfile, AdminProfile, Department, School
 
 
 @admin.register(School)
@@ -70,20 +70,3 @@ class DepartmentAdmin(admin.ModelAdmin):
             'fields': ('name', 'school')
         }),
     )
-
-
-@admin.register(UserActivity)
-class UserActivityAdmin(admin.ModelAdmin):
-    """Admin configuration for UserActivity"""
-    
-    list_display = ['user', 'login_time', 'ip_address', 'is_successful']
-    list_filter = ['is_successful', 'login_time']
-    search_fields = ['user__email', 'ip_address']
-    ordering = ['-login_time']
-    readonly_fields = ['user', 'login_time', 'ip_address', 'user_agent', 'is_successful']
-    
-    def has_add_permission(self, request):
-        return False
-    
-    def has_change_permission(self, request, obj=None):
-        return False

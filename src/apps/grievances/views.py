@@ -16,8 +16,37 @@ import random
 import string
 from datetime import datetime, timedelta
 
-from .models import Grievance, Category, GrievanceComment, Feedback, GrievanceOTPVerification
+from .models import Grievance, Category, GrievanceComment, GrievanceOTPVerification
 from apps.students.models import StudentProfile
+from django.core.cache import cache
+
+
+def is_user_viewing_grievance(user, grievance_id):
+    """Check if user is currently viewing a grievance"""
+    if not user or not user.is_authenticated:
+        return False
+    viewing_grievance_id = cache.get(f'viewing_grievance_{user.id}')
+    return str(viewing_grievance_id) == str(grievance_id)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def track_grievance_view(request):
+    """Track that a user is viewing a specific grievance"""
+    try:
+        data = json.loads(request.body)
+        grievance_id = data.get('grievance_id')
+        
+        if grievance_id:
+            # Store in cache which grievance the user is viewing (expires in 1 hour)
+            cache.set(f'viewing_grievance_{request.user.id}', grievance_id, timeout=3600)
+            return JsonResponse({'success': True, 'message': 'Viewing tracked'})
+        else:
+            # Clear the viewing status
+            cache.delete(f'viewing_grievance_{request.user.id}')
+            return JsonResponse({'success': True, 'message': 'Viewing cleared'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
 
 @api_view(['GET'])
@@ -59,6 +88,9 @@ def submit_grievance_view(request):
             category_type = request.POST.get('category_type', 'academic')
             department_id = request.POST.get('department')
             is_anonymous = request.POST.get('is_anonymous') == 'on'
+            is_hosteler = request.POST.get('is_hosteler') == 'yes'
+            hostel_name = request.POST.get('hostel_name', '').strip() if is_hosteler else ''
+            hostel_room_no = request.POST.get('hostel_room_no', '').strip() if is_hosteler else ''
             otp_code = request.POST.get('otp_code', '').strip()
             
             # Validate required fields
@@ -131,7 +163,10 @@ def submit_grievance_view(request):
                 description=description,
                 category=category,
                 department=grievance_department,
-                is_anonymous=is_anonymous
+                is_anonymous=is_anonymous,
+                is_hosteler=is_hosteler,
+                hostel_name=hostel_name if is_hosteler else None,
+                hostel_room_no=hostel_room_no if is_hosteler else None
             )
             
             # Handle file uploads
@@ -194,9 +229,20 @@ def send_otp_view(request):
     try:
         data = json.loads(request.body)
         email = data.get('email')
+        title = (data.get('title') or '').strip()
+        description = (data.get('description') or '').strip()
+        category_type = (data.get('category_type') or 'academic').strip()
+        category_id = (data.get('category_id') or '').strip()
+        department_id = (data.get('department_id') or '').strip()
         
         if email != request.user.email:
             return JsonResponse({'success': False, 'error': 'Email mismatch'})
+
+        if not all([title, description, category_id]):
+            return JsonResponse({'success': False, 'error': 'Please fill all required grievance fields before requesting OTP'})
+
+        if category_type == 'non_academic' and not department_id:
+            return JsonResponse({'success': False, 'error': 'Please select a department before requesting OTP'})
         
         # Generate OTP
         otp = ''.join(random.choices(string.digits, k=6))
@@ -221,9 +267,29 @@ def send_otp_view(request):
                 [email],
                 fail_silently=False,
             )
+            
+            # For development: print OTP to console
+            if settings.DEBUG:
+                print(f"\n{'='*60}")
+                print(f"✉️  GRIEVANCE SUBMISSION OTP")
+                print(f"Email: {email}")
+                print(f"OTP Code: {otp}")
+                print(f"Expires in: 10 minutes")
+                print(f"{'='*60}\n")
+            
             return JsonResponse({'success': True})
         except Exception as e:
             print(f"Email sending failed: {e}")
+            
+            # For development: still print OTP even if email fails
+            if settings.DEBUG:
+                print(f"\n{'='*60}")
+                print(f"⚠️  EMAIL FAILED - GRIEVANCE SUBMISSION OTP")
+                print(f"Email: {email}")
+                print(f"OTP Code: {otp}")
+                print(f"Error: {str(e)}")
+                print(f"{'='*60}\n")
+            
             return JsonResponse({'success': True})  # Return success even if email fails for demo
         
     except Exception as e:
@@ -317,31 +383,28 @@ def grievance_detail(request, grievance_id):
 def grievance_comments(request, grievance_id):
     """Get grievance comments"""
     try:
-        grievance = Grievance.objects.get(id=grievance_id)
-        comments = GrievanceComment.objects.filter(grievance=grievance)
+        grievance = Grievance.objects.select_related('student', 'assigned_to').get(id=grievance_id)
+
+        if not request.user.can_access_grievance(grievance):
+            return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)
+
+        comments = GrievanceComment.objects.filter(grievance=grievance).select_related('user').order_by('timestamp')
         
         return Response([
             {
-                'id': c.id,
+                'id': str(c.id),
                 'message': c.message,
-                'user': c.user.get_full_name(),
+                'user': c.user.get_full_name() if c.user else 'System',
+                'user_role': c.user.role if c.user else 'system',
+                'is_student': bool(c.user and c.user.is_student),
+                'is_internal': c.is_internal,
+                'comment_type': c.comment_type,
                 'timestamp': c.timestamp,
             }
             for c in comments
         ])
     except Grievance.DoesNotExist:
         return Response({'error': 'Grievance not found'}, status=status.HTTP_404_NOT_FOUND)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def submit_feedback(request, grievance_id):
-    """Submit feedback for a grievance"""
-    if not request.user.is_student:
-        return Response({'error': 'Only students can submit feedback'}, status=status.HTTP_403_FORBIDDEN)
-    
-    # Create feedback logic here
-    return Response({'message': 'Feedback submitted successfully'}, status=status.HTTP_201_CREATED)
 
 
 @api_view(['GET'])

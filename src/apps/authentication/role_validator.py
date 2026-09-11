@@ -90,7 +90,7 @@ class RoleValidator:
             ],
             'student': [
                 'submit_grievances', 'view_own_grievances', 'update_own_profile',
-                'provide_feedback', 'upload_documents'
+                'upload_documents'
             ]
         }
         return permissions.get(role, [])

@@ -24,18 +24,18 @@
     }
     
     .message-bubble.student {
-        background: linear-gradient(135deg, #007bff, #0056b3);
-        color: white;
+        background: #111827;
+        color: #ffffff;
         margin-left: auto;
-        border-bottom-right-radius: 4px;
+        border-radius: 4px;
     }
     
     .message-bubble.admin {
         background: #ffffff;
-        color: #333;
-        border: 1px solid #e0e0e0;
-        border-bottom-left-radius: 4px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        color: #111827;
+        border: 1px solid #e5e7eb;
+        border-radius: 4px;
+        box-shadow: none;
     }
     
     .message-meta {
@@ -67,47 +67,6 @@
         border: 1px solid #e0e0e0;
     }
     
-    /* Star rating styles */
-    .rating-input {
-        display: flex;
-        justify-content: center;
-        gap: 5px;
-        margin: 10px 0;
-    }
-    
-    .rating-input input[type="radio"] {
-        display: none;
-    }
-    
-    .star-label {
-        font-size: 2rem;
-        color: #ddd;
-        cursor: pointer;
-        transition: color 0.2s;
-    }
-    
-    .star-label:hover,
-    .rating-input input[type="radio"]:checked ~ .star-label,
-    .rating-input input[type="radio"]:checked + .star-label {
-        color: #ffc107;
-    }
-    
-    .rating-input:hover .star-label {
-        color: #ddd;
-    }
-    
-    .rating-input .star-label:hover,
-    .rating-input .star-label:hover ~ .star-label {
-        color: #ffc107;
-    }
-    
-    .rating-stars {
-        font-size: 1.5rem;
-    }
-    
-    .rating-stars .fa-star {
-        margin: 0 2px;
-    }
 </style>
 
 <div class="row">
@@ -196,7 +155,7 @@
                     </h6>
                     
                     <!-- Chat Messages Container -->
-                    <div class="chat-container border rounded p-3" style="max-height: 500px; overflow-y: auto; background-color: #f8f9fa;">
+                    <div id="studentChatContainer" class="chat-container border rounded p-3" style="max-height: 500px; overflow-y: auto; background-color: #f8f9fa;">
                         {% if public_comments %}
                             {% for comment in public_comments %}
                             {% if not comment.is_internal %}
@@ -323,6 +282,22 @@
                     </div>
                 </div>
                 <div class="row mb-2">
+                    <div class="col-5 fw-bold">Hosteler:</div>
+                    <div class="col-7">
+                        {% if grievance.is_hosteler %}
+                            <i class="fas fa-check text-success"></i> Yes
+                        {% else %}
+                            <i class="fas fa-times text-danger"></i> No
+                        {% endif %}
+                    </div>
+                </div>
+                {% if grievance.is_hosteler %}
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">Hostel:</div>
+                    <div class="col-7">{{ grievance.hostel_name|default:"N/A" }}{% if grievance.hostel_room_no %} (Room: {{ grievance.hostel_room_no }}){% endif %}</div>
+                </div>
+                {% endif %}
+                <div class="row mb-2">
                     <div class="col-5 fw-bold">Submitted:</div>
                     <div class="col-7">{{ grievance.submitted_at|date:"M d, Y H:i" }}</div>
                 </div>
@@ -341,111 +316,6 @@
             </div>
         </div>
 
-        <!-- Feedback Section (for resolved grievances) -->
-        {% if grievance.status == 'resolved' %}
-        <div class="card mt-3">
-            <div class="card-header bg-success text-white">
-                <h6 class="mb-0">
-                    <i class="fas fa-star me-2"></i>Resolution Feedback
-                </h6>
-            </div>
-            <div class="card-body">
-                {% if grievance.feedback %}
-                    <!-- Display existing feedback -->
-                    <div class="text-center mb-3">
-                        <h5>Your Rating</h5>
-                        <div class="rating-stars">
-                            {% for i in "12345" %}
-                                <i class="fas fa-star {% if i|add:0 <= grievance.feedback.rating %}text-warning{% else %}text-muted{% endif %}"></i>
-                            {% endfor %}
-                        </div>
-                        <p class="mt-2"><strong>{{ grievance.feedback.rating }}/5 Stars</strong></p>
-                    </div>
-                    
-                    {% if grievance.feedback.comments %}
-                    <div class="mb-3">
-                        <strong>Your Comments:</strong>
-                        <p class="mt-1">{{ grievance.feedback.comments }}</p>
-                    </div>
-                    {% endif %}
-                    
-                    <div class="mb-3">
-                        <strong>Satisfaction:</strong>
-                        <span class="badge bg-{% if grievance.feedback.is_satisfied %}success{% else %}warning{% endif %}">
-                            {% if grievance.feedback.is_satisfied %}Satisfied{% else %}Not Satisfied{% endif %}
-                        </span>
-                    </div>
-                    
-                    {% if grievance.feedback.improvement_suggestions %}
-                    <div class="mb-3">
-                        <strong>Suggestions:</strong>
-                        <p class="mt-1">{{ grievance.feedback.improvement_suggestions }}</p>
-                    </div>
-                    {% endif %}
-                    
-                    <small class="text-muted">
-                        Submitted on {{ grievance.feedback.created_at|date:"M d, Y H:i" }}
-                    </small>
-                {% else %}
-                    <!-- Feedback form -->
-                    <form id="feedbackForm" method="POST" action="{% url 'students:submit_feedback' grievance.id %}">
-                        {% csrf_token %}
-                        
-                        <!-- Rating -->
-                        <div class="mb-3 text-center">
-                            <label class="form-label fw-bold">Rate the resolution:</label>
-                            <div class="rating-input">
-                                {% for i in "12345" %}
-                                <input type="radio" name="rating" value="{{ i }}" id="star{{ i }}" required>
-                                <label for="star{{ i }}" class="star-label">
-                                    <i class="fas fa-star"></i>
-                                </label>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        
-                        <!-- Satisfaction -->
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Are you satisfied with the resolution?</label>
-                            <div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="is_satisfied" value="true" id="satisfied_yes" required>
-                                    <label class="form-check-label" for="satisfied_yes">
-                                        <i class="fas fa-thumbs-up text-success"></i> Yes
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="is_satisfied" value="false" id="satisfied_no">
-                                    <label class="form-check-label" for="satisfied_no">
-                                        <i class="fas fa-thumbs-down text-danger"></i> No
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Comments -->
-                        <div class="mb-3">
-                            <label for="comments" class="form-label fw-bold">Comments (Optional):</label>
-                            <textarea class="form-control" name="comments" id="comments" rows="3" 
-                                      placeholder="Share your thoughts about the resolution..."></textarea>
-                        </div>
-                        
-                        <!-- Improvement suggestions -->
-                        <div class="mb-3">
-                            <label for="improvement_suggestions" class="form-label fw-bold">Suggestions for Improvement (Optional):</label>
-                            <textarea class="form-control" name="improvement_suggestions" id="improvement_suggestions" rows="2" 
-                                      placeholder="How can we improve our service?"></textarea>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-success w-100">
-                            <i class="fas fa-paper-plane me-2"></i>Submit Feedback
-                        </button>
-                    </form>
-                {% endif %}
-            </div>
-        </div>
-        {% endif %}
-
         <!-- Quick Actions -->
         <div class="card mt-3">
             <div class="card-header">
@@ -456,7 +326,7 @@
                     <a href="{% url 'students:grievances' %}" class="btn btn-outline-primary">
                         <i class="fas fa-list"></i> View All Grievances
                     </a>
-                    <a href="{% url 'grievances:submit_grievance' %}" class="btn btn-success">
+                    <a href="{% url 'grievances_web:submit_grievance' %}" class="btn btn-success">
                         <i class="fas fa-plus"></i> Submit New Grievance
                     </a>
                     {% if grievance.status == 'resolved' or grievance.status == 'rejected' %}
@@ -477,6 +347,33 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Track that user is viewing this grievance
+    const grievanceId = '{{ grievance.id }}';
+    if (grievanceId) {
+        fetch('/api/grievances/api/track-view/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ grievance_id: grievanceId })
+        }).catch(err => console.log('Tracking error:', err));
+    }
+    
+    // Clear tracking when user leaves the page
+    window.addEventListener('beforeunload', function() {
+        if (grievanceId) {
+            fetch('/api/grievances/api/track-view/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ grievance_id: null })
+            }).catch(err => console.log('Tracking clear error:', err));
+        }
+    });
+    
     // Auto-hide success messages after 5 seconds
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
@@ -488,46 +385,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 5000);
         }
     });
-    
-    // Star rating functionality
-    const ratingInputs = document.querySelectorAll('.rating-input input[type="radio"]');
-    const starLabels = document.querySelectorAll('.star-label');
-    
-    // Handle star rating hover and click
-    starLabels.forEach((label, index) => {
-        label.addEventListener('mouseenter', function() {
-            highlightStars(index + 1);
-        });
-        
-        label.addEventListener('click', function() {
-            const radioInput = document.querySelector(`#star${index + 1}`);
-            if (radioInput) {
-                radioInput.checked = true;
-                highlightStars(index + 1, true);
-            }
-        });
-    });
-    
-    // Reset to selected rating when mouse leaves
-    document.querySelector('.rating-input')?.addEventListener('mouseleave', function() {
-        const checkedInput = document.querySelector('.rating-input input[type="radio"]:checked');
-        if (checkedInput) {
-            const rating = parseInt(checkedInput.value);
-            highlightStars(rating, true);
-        } else {
-            highlightStars(0);
-        }
-    });
-    
-    function highlightStars(rating, permanent = false) {
-        starLabels.forEach((label, index) => {
-            if (index < rating) {
-                label.style.color = '#ffc107';
-            } else {
-                label.style.color = permanent ? '#ddd' : '#ddd';
-            }
-        });
-    }
     
     // Auto-scroll chat to bottom
     const chatContainer = document.querySelector('.chat-container');
@@ -558,32 +415,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     }
     
-    // Form submission feedback
-    const feedbackForm = document.getElementById('feedbackForm');
-    if (feedbackForm) {
-        feedbackForm.addEventListener('submit', function(e) {
-            const rating = this.querySelector('input[name="rating"]:checked');
-            const satisfaction = this.querySelector('input[name="is_satisfied"]:checked');
-            
-            if (!rating) {
-                e.preventDefault();
-                alert('Please select a rating before submitting.');
-                return false;
-            }
-            
-            if (!satisfaction) {
-                e.preventDefault();
-                alert('Please indicate if you are satisfied with the resolution.');
-                return false;
-            }
-            
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
-            submitBtn.disabled = true;
-        });
-    }
-    
     // Student response form handling
     const studentResponseForm = document.getElementById('studentResponseForm');
     if (studentResponseForm) {
@@ -602,12 +433,167 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.disabled = true;
             
             // Store scroll position of chat container before submission
-            const chatContainer = document.querySelector('.chat-container');
+            const chatContainer = document.getElementById('studentChatContainer');
             if (chatContainer) {
                 sessionStorage.setItem('chatScrollPosition', chatContainer.scrollTop);
             }
         });
     }
+
+    const studentChatContainer = document.getElementById('studentChatContainer');
+    const grievanceCommentsUrl = '{% url "grievances:grievance_comments" grievance.id %}';
+    let lastCommentSignature = '';
+
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function renderStudentComments(comments) {
+        const visibleComments = comments.filter(comment => !comment.is_internal);
+        if (!studentChatContainer) {
+            return;
+        }
+
+        if (!visibleComments.length) {
+            studentChatContainer.innerHTML = `
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-comments fa-3x mb-3"></i>
+                    <p>No messages yet. Start the conversation with the admin!</p>
+                </div>`;
+            return;
+        }
+
+        studentChatContainer.innerHTML = visibleComments.map(comment => {
+            const isStudent = comment.is_student;
+            const userName = isStudent ? 'You' : `<i class="fas fa-user-shield me-1"></i>${escapeHtml(comment.user)}`;
+            const typeBadge = comment.comment_type !== 'comment'
+                ? `<span class="badge bg-${comment.comment_type === 'status_update' ? 'info' : 'secondary'} ms-1">${escapeHtml(comment.comment_type.replace('_', ' '))}</span>`
+                : '';
+
+            return `
+                <div class="message mb-3 ${isStudent ? 'student-message' : 'admin-message'}">
+                    <div class="d-flex ${isStudent ? 'justify-content-end' : 'justify-content-start'}">
+                        <div class="message-bubble ${isStudent ? 'bg-primary text-white' : 'bg-white border'} rounded p-3" style="max-width: 75%;">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <small class="fw-bold ${isStudent ? 'text-light' : 'text-muted'}">
+                                    ${userName}
+                                    ${typeBadge}
+                                </small>
+                                <small class="${isStudent ? 'text-light' : 'text-muted'}">${new Date(comment.timestamp).toLocaleString()}</small>
+                            </div>
+                            <div>${escapeHtml(comment.message).replace(/\n/g, '<br>')}</div>
+                        </div>
+                    </div>
+                </div>`;
+        }).join('');
+    }
+
+    // Real-Time Chat using WebSockets
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const chatSocket = new WebSocket(
+        wsProtocol + '//' + window.location.host + '/ws/grievances/{{ grievance.id }}/chat/'
+    );
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        if (data.is_internal) return; // Ignore internal notes for students
+
+        const isStudent = data.is_student;
+        const userName = isStudent ? 'You' : `<i class="fas fa-user-shield me-1"></i>${escapeHtml(data.user_name)}`;
+        const typeBadge = ''; // Real-time currently only sends standard comments
+
+        const messageHtml = `
+            <div class="message mb-3 ${isStudent ? 'student-message' : 'admin-message'}">
+                <div class="d-flex ${isStudent ? 'justify-content-end' : 'justify-content-start'}">
+                    <div class="message-bubble ${isStudent ? 'bg-primary text-white' : 'bg-white border'} rounded p-3" style="max-width: 75%;">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small class="fw-bold ${isStudent ? 'text-light' : 'text-muted'}">
+                                ${userName}
+                                ${typeBadge}
+                            </small>
+                            <small class="${isStudent ? 'text-light' : 'text-muted'}">${escapeHtml(data.timestamp)}</small>
+                        </div>
+                        <div>${escapeHtml(data.message).replace(/\n/g, '<br>')}</div>
+                    </div>
+                </div>
+            </div>`;
+            
+        // Remove empty state message if it exists
+        const emptyState = studentChatContainer.querySelector('.fa-comments.fa-3x');
+        if (emptyState) {
+            studentChatContainer.innerHTML = '';
+        }
+
+        const shouldStickToBottom = !studentChatContainer || studentChatContainer.scrollTop + studentChatContainer.clientHeight >= studentChatContainer.scrollHeight - 120;
+        studentChatContainer.insertAdjacentHTML('beforeend', messageHtml);
+        
+        if (studentChatContainer && shouldStickToBottom) {
+            studentChatContainer.scrollTop = studentChatContainer.scrollHeight;
+        }
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    // Replace the standard form submission with a WebSocket message
+    if (studentResponseForm) {
+        // Remove old listener
+        const oldForm = studentResponseForm;
+        const newForm = oldForm.cloneNode(true);
+        oldForm.parentNode.replaceChild(newForm, oldForm);
+
+        newForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const textarea = this.querySelector('textarea[name="student_response"]');
+            const message = textarea.value.trim();
+            
+            if (!message) {
+                alert('Please enter a message before sending.');
+                textarea.focus();
+                return false;
+            }
+            
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'is_internal': false
+            }));
+            
+            textarea.value = '';
+            
+            // Post via HTTP anyway for backup and email notifications, but silently
+            fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }).catch(console.error);
+        });
+    }
+
+    // Load initial messages via HTTP once
+    function loadInitialThread() {
+        fetch(grievanceCommentsUrl, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (Array.isArray(data)) {
+                renderStudentComments(data);
+                if (studentChatContainer) {
+                    studentChatContainer.scrollTop = studentChatContainer.scrollHeight;
+                }
+            }
+        })
+        .catch(console.error);
+    }
+    loadInitialThread();
 });
 </script>
 

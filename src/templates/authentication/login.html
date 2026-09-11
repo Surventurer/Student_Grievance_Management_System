@@ -117,25 +117,55 @@ document.addEventListener('DOMContentLoaded', function() {
     const countdownElement = document.getElementById('countdown');
     let countdownInterval;
     
+    const otpForm = document.getElementById('otpForm');
+    const submitBtn = otpForm ? otpForm.querySelector('button[type="submit"]') : null;
+    let isSubmitting = false;
+
     // Auto-focus OTP input
     otpInput.focus();
     
-    // Only allow numbers in OTP input
+    function submitFormSafely() {
+        if (isSubmitting) return;
+        isSubmitting = true;
+        
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Verifying...';
+        }
+        otpInput.readOnly = true;
+        otpForm.submit();
+    }
+
+    // Only allow numbers in OTP input and auto-submit on 6th digit
     otpInput.addEventListener('input', function(e) {
         this.value = this.value.replace(/[^0-9]/g, '');
-        if (this.value.length === 6) {
-            document.getElementById('otpForm').submit();
+        if (this.value.length === 6 && !isSubmitting) {
+            submitFormSafely();
         }
     });
+
+    if (otpForm) {
+        otpForm.addEventListener('submit', function(e) {
+            if (isSubmitting) {
+                e.preventDefault();
+                return false;
+            }
+            submitFormSafely();
+        });
+    }
     
     // Resend OTP functionality
     resendBtn.addEventListener('click', function() {
+        const emailInput = document.querySelector('input[name="email"]');
+        const emailVal = emailInput ? emailInput.value : '';
+
         fetch('{% url "authentication:resend_admin_otp" %}', {
             method: 'POST',
             headers: {
                 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
                 'Content-Type': 'application/json',
-            }
+            },
+            body: JSON.stringify({ email: emailVal })
         })
         .then(response => response.json())
         .then(data => {

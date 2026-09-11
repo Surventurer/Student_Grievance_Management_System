@@ -79,6 +79,7 @@ class Grievance(models.Model):
     
     STATUS_CHOICES = [
         ('pending', 'Pending'),
+        ('pending_student', 'Pending Student Reply'),
         ('resolved', 'Resolved'),
         ('rejected', 'Rejected'),
     ]
@@ -100,10 +101,18 @@ class Grievance(models.Model):
     priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium')
     assigned_to = models.ForeignKey(AdminProfile, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_grievances')
     is_anonymous = models.BooleanField(default=False)
+    is_hosteler = models.BooleanField(default=False, help_text="Whether the student is a hosteler")
+    hostel_name = models.CharField(max_length=100, blank=True, null=True, help_text="Name of the hostel")
+    hostel_room_no = models.CharField(max_length=50, blank=True, null=True, help_text="Hostel room number")
     is_escalated = models.BooleanField(default=False)
     escalation_level = models.IntegerField(default=0, help_text="0=Normal, 1=Admin, 2=Superadmin")
     is_appealed = models.BooleanField(default=False)
     is_archived = models.BooleanField(default=False, help_text="Soft delete flag")
+    
+    # SLA Pause Tracking
+    sla_pause_time = models.DateTimeField(null=True, blank=True, help_text="Time when status changed to pending_student")
+    accumulated_sla_pause_minutes = models.IntegerField(default=0, help_text="Total minutes SLA was paused")
+    
     expected_resolution_date = models.DateTimeField(null=True, blank=True)
     actual_resolution_date = models.DateTimeField(null=True, blank=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
@@ -188,17 +197,20 @@ class Grievance(models.Model):
             assigned_admin = self.category.default_admin
             assignment_reason = "Category default admin"
         
-        # Step 4: Fallback to any available admin for the department
+        # Step 4: Fallback to any available admin for the department (Load-Balanced)
         if not assigned_admin and student_department:
             try:
+                from django.db.models import Count, Q
                 fallback_admin = AdminProfile.objects.filter(
                     department__iexact=student_department,
                     role_level__in=['admin', 'officer']
-                ).first()
+                ).annotate(
+                    active_count=Count('assigned_grievances', filter=Q(assigned_grievances__status__in=['pending', 'pending_student']))
+                ).order_by('active_count').first()
                 
                 if fallback_admin:
                     assigned_admin = fallback_admin
-                    assignment_reason = f"Department fallback: {student_department}"
+                    assignment_reason = f"Load-balanced assignment: {student_department}"
             except Exception as e:
                 print(f"Error finding fallback admin: {e}")
         
@@ -305,21 +317,6 @@ class GrievanceAssignmentHistory(models.Model):
         prev_name = self.previous_assignee.user.get_full_name() if self.previous_assignee else "Unassigned"
         new_name = self.new_assignee.user.get_full_name() if self.new_assignee else "Unassigned"
         return f"{self.grievance.title}: {prev_name} → {new_name}"
-
-
-class Feedback(models.Model):
-    """Grievance feedback model"""
-    
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    grievance = models.OneToOneField(Grievance, on_delete=models.CASCADE, related_name='feedback')
-    rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
-    comments = models.TextField(blank=True, null=True)
-    is_satisfied = models.BooleanField(default=True)
-    improvement_suggestions = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    def __str__(self):
-        return f"Feedback for {self.grievance.title} - {self.rating}/5"
 
 
 class AuditLog(models.Model):

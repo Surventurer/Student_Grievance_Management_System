@@ -11,11 +11,11 @@ from django.db.models import Q, Count, Max
 from django.utils import timezone
 from datetime import timedelta
 
-from .models import StudentProfile, AdminProfile, Department, UserActivity
+from .models import StudentProfile, AdminProfile, Department
 from .serializers import StudentProfileSerializer, AdminProfileSerializer, DepartmentSerializer
 from apps.authentication.models import User
-from apps.grievances.models import Grievance, GrievanceComment, Feedback
-from apps.notifications.models import ReadNotification
+from apps.grievances.models import Grievance, GrievanceComment
+from apps.notifications.models import ReadNotification, Notification
 from django.shortcuts import get_object_or_404
 
 
@@ -275,23 +275,6 @@ def departments(request):
     return Response(serializer.data)
 
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def user_activity(request):
-    """Get user login activity"""
-    activities = UserActivity.objects.filter(user=request.user).order_by('-login_time')[:10]
-    
-    return Response([
-        {
-            'login_time': activity.login_time,
-            'ip_address': activity.ip_address,
-            'user_agent': activity.user_agent,
-            'is_successful': activity.is_successful,
-        }
-        for activity in activities
-    ])
-
-
 # Web views
 @login_required
 def student_dashboard_view(request):
@@ -523,6 +506,22 @@ def add_student_response(request, grievance_id):
             comment_type='comment',
             is_internal=False  # Student responses are always public
         )
+
+        # Only create notification if admin is not currently viewing the grievance
+        if grievance.assigned_to and grievance.assigned_to.user:
+            from apps.grievances.views import is_user_viewing_grievance
+            admin_user = grievance.assigned_to.user
+            
+            # Check if admin is viewing this grievance
+            if not is_user_viewing_grievance(admin_user, grievance.id):
+                from django.urls import reverse
+                Notification.objects.create(
+                    recipient=admin_user,
+                    title='New student message',
+                    message=f'Student replied on grievance {grievance.grievance_id}: {student_response[:120]}',
+                    notification_type='comment',
+                    related_link=reverse('admin_panel:grievance_detail', args=[grievance.id]) + '#admin_response'
+                )
         
         # Redirect with fragment to maintain scroll position near message form
         from django.http import HttpResponseRedirect
@@ -536,58 +535,6 @@ def add_student_response(request, grievance_id):
         from django.urls import reverse
         url = reverse('students:grievance_detail', kwargs={'grievance_id': grievance_id})
         return HttpResponseRedirect(f"{url}#message-form")
-
-
-@login_required
-def submit_feedback_view(request, grievance_id):
-    """Submit feedback for resolved grievance"""
-    if not request.user.is_student:
-        messages.error(request, 'Access denied.')
-        return redirect('students:dashboard')
-    
-    if request.method != 'POST':
-        messages.error(request, 'Invalid request method.')
-        return redirect('students:grievance_detail', grievance_id=grievance_id)
-    
-    try:
-        student_profile = request.user.student_profile
-        grievance = get_object_or_404(Grievance, id=grievance_id, student=student_profile)
-        
-        # Check if grievance is resolved
-        if grievance.status != 'resolved':
-            messages.error(request, 'Feedback can only be submitted for resolved grievances.')
-            return redirect('students:grievance_detail', grievance_id=grievance_id)
-        
-        # Check if feedback already exists
-        if hasattr(grievance, 'feedback'):
-            messages.warning(request, 'Feedback has already been submitted for this grievance.')
-            return redirect('students:grievance_detail', grievance_id=grievance_id)
-        
-        rating = request.POST.get('rating')
-        comments = request.POST.get('comments', '').strip()
-        is_satisfied = request.POST.get('is_satisfied') == 'true'
-        improvement_suggestions = request.POST.get('improvement_suggestions', '').strip()
-        
-        # Validate rating
-        if not rating or not rating.isdigit() or int(rating) not in range(1, 6):
-            messages.error(request, 'Rating must be between 1 and 5.')
-            return redirect('students:grievance_detail', grievance_id=grievance_id)
-        
-        # Create feedback
-        feedback = Feedback.objects.create(
-            grievance=grievance,
-            rating=int(rating),
-            comments=comments,
-            is_satisfied=is_satisfied,
-            improvement_suggestions=improvement_suggestions
-        )
-        
-        messages.success(request, 'Thank you for your feedback! It helps us improve our services.')
-        return redirect('students:grievance_detail', grievance_id=grievance_id)
-        
-    except Exception as e:
-        messages.error(request, f'Error submitting feedback: {str(e)}')
-        return redirect('students:grievance_detail', grievance_id=grievance_id)
 
 
 @api_view(['GET'])

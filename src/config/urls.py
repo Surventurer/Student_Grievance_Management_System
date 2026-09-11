@@ -13,7 +13,8 @@ urlpatterns = [
     path('api/students/', include(('apps.students.urls', 'students'), namespace='students_api')),
     path('api/grievances/', include('apps.grievances.urls')),
     path('api/admin-panel/', include(('apps.admin_panel.urls', 'admin_panel'), namespace='admin_api')),
-    path('api/notifications/', include('apps.notifications.urls')),
+    path('api/notifications/', include(('apps.notifications.urls', 'notifications'), namespace='notifications_api')),
+    path('notifications/', include(('apps.notifications.urls', 'notifications'), namespace='notifications_web')),
     path('auth/', include('apps.authentication.urls')),  # For web views
     path('students/', include('apps.students.urls')),  # For student web views
     path('grievances/', include(('apps.grievances.urls', 'grievances'), namespace='grievances_web')),  # For grievance web views

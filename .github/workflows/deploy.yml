@@ -1,0 +1,56 @@
+name: Deploy to Production VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  deploy:
+    name: Deploy App on Self-Hosted Runner
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          clean: false # Prevents git clean from removing untracked server files (like .env)
+
+      - name: Verify Environment File (.env)
+        run: |
+          if [ ! -f .env ]; then
+            if [ -f ../.env ]; then
+              echo "Copying .env from parent directory..."
+              cp ../.env .env
+            elif [ -f ~/.env ]; then
+              echo "Copying .env from home directory..."
+              cp ~/.env .env
+            else
+              echo "::warning ::No .env file found in workspace! If this is the first deployment, please create a .env file with your production environment variables."
+            fi
+          else
+            echo "✓ .env file present."
+          fi
+
+      - name: Deploy with Docker Compose
+        run: |
+          # Detect compose binary (v2 'docker compose' or v1 'docker-compose')
+          if docker compose version >/dev/null 2>&1; then
+            DOCKER_COMPOSE="docker compose"
+          else
+            DOCKER_COMPOSE="docker-compose"
+          fi
+
+          echo "Using compose command: $DOCKER_COMPOSE"
+
+          # Build and launch containers
+          $DOCKER_COMPOSE build
+          $DOCKER_COMPOSE up -d --remove-orphans
+
+          # Cleanup dangling images to keep server storage clean
+          docker image prune -f
+
+      - name: Show Running Containers
+        run: |
+          docker ps --filter "name=sgs_"

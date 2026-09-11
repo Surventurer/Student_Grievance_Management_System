@@ -283,32 +283,7 @@ def create_user(request):
     return render(request, 'admin_panel/superadmin/create_user.html', context)
 
 
-@superadmin_required
-@require_http_methods(["POST"])
-def bulk_delete_users(request):
-    """Bulk delete users - Superadmin only"""
-    try:
-        data = json.loads(request.body)
-        user_ids = data.get('user_ids', [])
-        
-        if not user_ids:
-            return JsonResponse({'error': 'No users selected'}, status=400)
-        
-        # Check if trying to delete own account
-        if request.user.id in [int(uid) for uid in user_ids]:
-            return JsonResponse({'error': 'Cannot delete your own account'}, status=400)
-        
-        users_to_delete = User.objects.filter(id__in=user_ids)
-        deleted_count = users_to_delete.delete()[0]
-        
-        return JsonResponse({
-            'success': True,
-            'deleted_count': deleted_count,
-            'message': f'Successfully deleted {deleted_count} user(s)'
-        })
-        
-    except Exception as e:
-        return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+
 
 
 
@@ -451,6 +426,7 @@ def system_settings(request):
         elif form_type == 'security':
             settings_obj.require_email_verification = request.POST.get('require_email_verification') == 'on'
             settings_obj.allow_student_registration = request.POST.get('allow_student_registration') == 'on'
+            settings_obj.allowed_email_domains = request.POST.get('allowed_email_domains', '').strip()
             settings_obj.session_timeout = int(request.POST.get('session_timeout', settings_obj.session_timeout))
             settings_obj.password_min_length = int(request.POST.get('password_min_length', settings_obj.password_min_length))
             messages.success(request, 'Security settings updated successfully!')
@@ -475,7 +451,6 @@ def system_settings(request):
             messages.success(request, 'Workflow & SLA settings updated successfully!')
             
         elif form_type == 'experience':
-            settings_obj.enable_feedback = request.POST.get('enable_feedback') == 'on'
             settings_obj.allow_attachments_in_replies = request.POST.get('allow_attachments_in_replies') == 'on'
             settings_obj.support_hours = request.POST.get('support_hours', settings_obj.support_hours)
             messages.success(request, 'Student Experience settings updated successfully!')
@@ -709,11 +684,19 @@ def bulk_delete_users(request):
             return JsonResponse({'error': 'Cannot delete all superadmin accounts'}, status=400)
         
         deleted_users_info = []
+        is_sqlite = connection.vendor == 'sqlite'
+        
+        import io
+        import csv
+        csv_buffer = io.StringIO()
+        csv_writer = csv.writer(csv_buffer)
+        csv_writer.writerow(['User Email', 'Role', 'Grievance ID', 'Title', 'Status', 'Submitted At'])
         
         with transaction.atomic():
-            # For SQLite, temporarily disable foreign key checks
-            with connection.cursor() as cursor:
-                cursor.execute("PRAGMA foreign_keys = OFF")
+            # For SQLite only, temporarily disable foreign key checks
+            if is_sqlite:
+                with connection.cursor() as cursor:
+                    cursor.execute("PRAGMA foreign_keys = OFF")
             
             try:
                 # Create audit logs before deletion
@@ -723,6 +706,17 @@ def bulk_delete_users(request):
                         'email': user.email,
                         'role': user.role
                     })
+                    
+                    # Write user and grievance data to CSV before deletion
+                    if user.role == 'student' and hasattr(user, 'student_profile') and user.student_profile:
+                        grievances = user.student_profile.grievances.all()
+                        if grievances.exists():
+                            for g in grievances:
+                                csv_writer.writerow([user.email, user.role, g.grievance_id, g.title, g.status, g.submitted_at])
+                        else:
+                            csv_writer.writerow([user.email, user.role, 'No Grievances', 'N/A', 'N/A', 'N/A'])
+                    else:
+                        csv_writer.writerow([user.email, user.role, 'N/A', 'N/A', 'N/A', 'N/A'])
                     
                     # Create audit log before deletion
                     AuditLog.objects.create(
@@ -751,21 +745,26 @@ def bulk_delete_users(request):
                         user.admin_profile.delete()
                     
                     # Set user references to NULL in remaining records (audit logs, etc.)
-                    # This is handled automatically by our model changes
-                
-                # Now delete users
-                deleted_count = users_to_delete.delete()[0]
+                    AuditLog.objects.filter(user=user).update(user=None)
+                    GrievanceStatusHistory.objects.filter(changed_by=user).update(changed_by=None)
+                    GrievanceComment.objects.filter(user=user).update(user=None)
+                    
+                    # Finally delete the user
+                    user.delete()
                 
             finally:
-                # Re-enable foreign key checks
-                with connection.cursor() as cursor:
-                    cursor.execute("PRAGMA foreign_keys = ON")
+                # Re-enable foreign key checks for SQLite only
+                if is_sqlite:
+                    with connection.cursor() as cursor:
+                        cursor.execute("PRAGMA foreign_keys = ON")
         
+        deleted_count = len(deleted_users_info)
         return JsonResponse({
             'success': True,
             'deleted_count': deleted_count,
             'deleted_users': deleted_users_info,
-            'message': f'Successfully deleted {deleted_count} user(s)'
+            'message': f'Successfully deleted {deleted_count} user(s)',
+            'csv_report': csv_buffer.getvalue()
         })
         
     except json.JSONDecodeError:
@@ -1189,3 +1188,62 @@ def get_schools_departments(request):
     except Exception as e:
         print(f"Error in get_schools_departments: {str(e)}")
         return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+
+@superadmin_required
+def import_users_csv(request):
+    if request.method == 'POST' and request.FILES.get('csv_file'):
+        import csv
+        import io
+        from django.contrib.auth.hashers import make_password
+        
+        csv_file = request.FILES['csv_file']
+        if not csv_file.name.endswith('.csv'):
+            messages.error(request, 'Please upload a valid CSV file.')
+            return redirect('admin_panel:user_management')
+            
+        dataset = csv_file.read().decode('UTF-8')
+        io_string = io.StringIO(dataset)
+        reader = csv.reader(io_string, delimiter=',')
+        
+        header = next(reader, None)  # Skip header
+        created_count = 0
+        error_count = 0
+        
+        with transaction.atomic():
+            for row in reader:
+                try:
+                    if len(row) >= 6: # email, password, role, name, student_id/emp_id, department
+                        email = row[0].strip()
+                        password = row[1].strip()
+                        role = row[2].strip()
+                        name = row[3].strip()
+                        sid_eid = row[4].strip()
+                        dept = row[5].strip()
+                        
+                        if User.objects.filter(email=email).exists():
+                            error_count += 1
+                            continue
+                            
+                        user = User.objects.create(
+                            email=email,
+                            role=role,
+                            is_email_verified=True
+                        )
+                        user.set_password(password)
+                        user.save()
+                        
+                        if role == 'student':
+                            StudentProfile.objects.create(
+                                user=user, name=name, student_id=sid_eid, department=dept, school="Default"
+                            )
+                        else:
+                            AdminProfile.objects.create(
+                                user=user, role_level=role, employee_id=sid_eid, department=dept
+                            )
+                        created_count += 1
+                except Exception as e:
+                    error_count += 1
+                    
+        messages.success(request, f'Successfully imported {created_count} users. {error_count} errors.')
+    return redirect('admin_panel:user_management')
+

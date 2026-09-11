@@ -331,19 +331,7 @@ function initializeResponsiveFeatures() {
 
 // Handle mobile dropdown positioning
 function handleMobileDropdowns() {
-    const dropdowns = document.querySelectorAll('.dropdown-menu');
-    dropdowns.forEach(dropdown => {
-        dropdown.addEventListener('show.bs.dropdown', function() {
-            if (window.innerWidth <= 576) {
-                // Force dropdown to be full width on mobile
-                this.style.position = 'fixed';
-                this.style.left = '1rem';
-                this.style.right = '1rem';
-                this.style.width = 'auto';
-                this.style.transform = 'none';
-            }
-        });
-    });
+    // Let Bootstrap 5 handle positioning natively
 }
 
 // Initialize responsive tables

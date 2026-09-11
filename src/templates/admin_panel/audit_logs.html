@@ -7,55 +7,59 @@
 <style>
     .audit-card {
         background: #fff;
-        border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        padding: 2rem;
-        margin-bottom: 2rem;
-        border: 1px solid #e9ecef;
+        background: #ffffff;
+        border-radius: 4px;
+        box-shadow: none;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e5e7eb;
     }
     
     .stats-row {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 15px;
-        color: white;
-        padding: 2rem;
-        margin-bottom: 2rem;
+        background: #ffffff;
+        border-radius: 4px;
+        color: #111827;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e5e7eb;
     }
     
     .stat-card {
-        background: rgba(255,255,255,0.1);
-        border-radius: 10px;
-        padding: 1.5rem;
+        background: #f9fafb;
+        border-radius: 4px;
+        padding: 1rem;
         text-align: center;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.2);
+        border: 1px solid #e5e7eb;
+        color: #111827;
     }
     
     .audit-item {
-        border-left: 4px solid #007bff;
+        border: 1px solid #e5e7eb;
+        border-left: 3px solid #111827;
         padding: 1rem;
-        margin-bottom: 1rem;
-        background: #f8f9fa;
-        border-radius: 0 10px 10px 0;
-        transition: all 0.3s ease;
+        margin-bottom: 0.75rem;
+        background: #ffffff;
+        border-radius: 4px;
+        transition: all 0.15s ease;
     }
     
     .audit-item:hover {
-        background: #e9ecef;
-        transform: translateX(5px);
+        background: #f9fafb;
+        border-color: #d1d5db;
+        transform: none;
     }
     
-    .audit-item.create { border-left-color: #28a745; }
-    .audit-item.update { border-left-color: #ffc107; }
-    .audit-item.delete { border-left-color: #dc3545; }
-    .audit-item.login { border-left-color: #17a2b8; }
-    .audit-item.logout { border-left-color: #6c757d; }
-    .audit-item.assign { border-left-color: #fd7e14; }
-    .audit-item.status_change { border-left-color: #e83e8c; }
+    .audit-item.create { border-left-color: #059669; }
+    .audit-item.update { border-left-color: #111827; }
+    .audit-item.delete { border-left-color: #dc2626; }
+    .audit-item.login { border-left-color: #111827; }
+    .audit-item.logout { border-left-color: #9ca3af; }
+    .audit-item.assign { border-left-color: #111827; }
+    .audit-item.status_change { border-left-color: #111827; }
     
     .audit-time {
-        font-size: 0.85rem;
-        color: #6c757d;
+        font-size: 0.8rem;
+        color: #6b7280;
         font-weight: 500;
     }
     

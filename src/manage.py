@@ -7,6 +7,10 @@ import sys
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+    if len(sys.argv) >= 2 and sys.argv[1] == 'runserver':
+        default_addrport = os.environ.get('DJANGO_RUNSERVER_ADDRPORT', '0.0.0.0:8000')
+        if len(sys.argv) == 2 or sys.argv[2].startswith('-'):
+            sys.argv.insert(2, default_addrport)
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

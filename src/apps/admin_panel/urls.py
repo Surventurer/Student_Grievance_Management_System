@@ -16,6 +16,8 @@ urlpatterns = [
     path('grievances/<uuid:grievance_id>/add-response/', views.add_admin_response, name='add_admin_response'),
     path('api/grievance-stats/', views.grievance_stats_api, name='grievance_stats_api'),
     path('api/bulk-delete-grievances/', views.bulk_delete_grievances, name='bulk_delete_grievances'),
+    path('api/bulk-update-grievances-status/', views.bulk_update_grievances_status, name='bulk_update_grievances_status'),
+    path('api/bulk-reassign-grievances/', views.bulk_reassign_grievances, name='bulk_reassign_grievances'),
     
     # Audit Logs
     path('audit-logs/', views.audit_logs_view, name='audit_logs'),
@@ -97,6 +99,7 @@ urlpatterns = [
     path('superadmin/users/bulk-delete/', superadmin_views.bulk_delete_users, name='bulk_delete_users'),
     path('superadmin/users/bulk-deactivate/', superadmin_views.bulk_deactivate_users, name='bulk_deactivate_users'),
     path('superadmin/users/bulk-activate/', superadmin_views.bulk_activate_users, name='bulk_activate_users'),
+    path('superadmin/users/import-csv/', superadmin_views.import_users_csv, name='import_users_csv'),
     
     # Temporary Registration Management (Part of User Management)
     path('superadmin/temp-registrations/<int:temp_id>/approve/', superadmin_views.approve_temporary_registration, name='approve_temp_registration'),

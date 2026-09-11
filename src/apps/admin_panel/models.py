@@ -14,6 +14,13 @@ class SystemSettings(models.Model):
     # Security Settings
     require_email_verification = models.BooleanField(default=True)
     allow_student_registration = models.BooleanField(default=True)
+    allowed_email_domains = models.CharField(
+        max_length=255, 
+        blank=True, 
+        null=True, 
+        default='',
+        help_text="Comma-separated allowed domains for registration (e.g. university.edu). Leave empty to allow any valid email."
+    )
     session_timeout = models.IntegerField(default=60, help_text="Session timeout in minutes")
     password_min_length = models.IntegerField(default=8)
     
@@ -45,7 +52,6 @@ class SystemSettings(models.Model):
     require_closure_remark = models.BooleanField(default=True)
 
     # Student Experience Settings
-    enable_feedback = models.BooleanField(default=True)
     allow_attachments_in_replies = models.BooleanField(default=True)
     support_hours = models.CharField(max_length=255, default='Mon-Fri, 9:00 AM - 5:00 PM')
 
@@ -65,3 +71,5 @@ class SystemSettings(models.Model):
         """ Load the singleton instance """
         obj, created = cls.objects.get_or_create(pk=1)
         return obj
+
+

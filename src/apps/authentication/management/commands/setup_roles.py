@@ -193,7 +193,64 @@ class Command(BaseCommand):
                 )
                 self.stdout.write(f'Created admin: {admin_user.email}')
 
-        # 3. Create Officers  
+        # 3. Create Chief Warden (Admin for Hostel Administration)
+        chief_warden_user, created = User.objects.get_or_create(
+            email='chiefwarden@university.edu',
+            defaults={
+                'role': 'admin',
+                'is_staff': True,
+                'is_email_verified': True,
+                'password': make_password('admin123')
+            }
+        )
+        
+        if created:
+            AdminProfile.objects.create(
+                user=chief_warden_user,
+                name='Chief Warden',
+                role_level='admin',
+                employee_id='CW001',
+                department='Hostel Administration'
+            )
+            self.stdout.write(f'Created chief warden (Admin): {chief_warden_user.email}')
+
+        # 4. Create Wardens (Officers for Hostel Administration)
+        warden_data = [
+            {
+                'email': 'warden1@university.edu',
+                'name': 'Warden 1',
+                'employee_id': 'WDN001',
+                'department': 'Hostel Administration'
+            },
+            {
+                'email': 'warden2@university.edu',
+                'name': 'Warden 2',
+                'employee_id': 'WDN002',
+                'department': 'Hostel Administration'
+            }
+        ]
+        
+        for warden_info in warden_data:
+            warden_user, created = User.objects.get_or_create(
+                email=warden_info['email'],
+                defaults={
+                    'role': 'officer',
+                    'is_email_verified': True,
+                    'password': make_password('warden123')
+                }
+            )
+            
+            if created:
+                AdminProfile.objects.create(
+                    user=warden_user,
+                    name=warden_info['name'],
+                    role_level='officer',
+                    employee_id=warden_info['employee_id'],
+                    department=warden_info['department']
+                )
+                self.stdout.write(f'Created warden (Officer): {warden_user.email}')
+
+        # 5. Create Officers  
         officer_data = [
             {
                 'email': 'officer1@university.edu',
@@ -226,7 +283,7 @@ class Command(BaseCommand):
                 )
                 self.stdout.write(f'Created officer: {officer_user.email}')
 
-        # 4. Create Students
+        # 6. Create Students
         student_data = [
             {
                 'email': 'student1@university.edu',
@@ -291,6 +348,22 @@ class Command(BaseCommand):
         for email, dept in admins:
             self.stdout.write(f'  Email: {email}')
             self.stdout.write(f'  Password: admin123')
+            self.stdout.write(f'  Department: {dept}')
+            self.stdout.write('')
+        
+        self.stdout.write('\n⚫ CHIEF WARDEN (Admin - Hostel):')
+        self.stdout.write('  Email: chiefwarden@university.edu')
+        self.stdout.write('  Password: admin123')
+        self.stdout.write('  Department: Hostel Administration')
+        
+        self.stdout.write('\n🔘 WARDENS (Officers - Hostel):')
+        wardens = [
+            ('warden1@university.edu', 'Hostel Administration'),
+            ('warden2@university.edu', 'Hostel Administration')
+        ]
+        for email, dept in wardens:
+            self.stdout.write(f'  Email: {email}')
+            self.stdout.write(f'  Password: warden123')
             self.stdout.write(f'  Department: {dept}')
             self.stdout.write('')
         

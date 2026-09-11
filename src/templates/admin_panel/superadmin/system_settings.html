@@ -6,8 +6,9 @@
 {% block extra_css %}
 <style>
 .settings-section {
-    border-left: 4px solid #007bff;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-left: 3px solid #111827;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
 }
 .permission-matrix {
     font-size: 0.875rem;
@@ -15,12 +16,12 @@
 .permission-badge {
     font-size: 0.75rem;
     padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
+    border-radius: 2px;
 }
-.role-superadmin { background-color: #dc3545; color: white; }
-.role-admin { background-color: #fd7e14; color: white; }
-.role-officer { background-color: #0dcaf0; color: white; }
-.role-student { background-color: #198754; color: white; }
+.role-superadmin { background-color: #111827; color: white; border: 1px solid #111827; }
+.role-admin { background-color: #f3f4f6; color: #111827; border: 1px solid #d1d5db; }
+.role-officer { background-color: #f3f4f6; color: #111827; border: 1px solid #d1d5db; }
+.role-student { background-color: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
 </style>
 {% endblock %}
 
@@ -126,6 +127,14 @@
                                        {% if settings.allow_student_registration|default:True %}checked{% endif %}>
                                 <label class="form-check-label">Allow Student Registration</label>
                             </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Allowed Email Domain(s)</label>
+                            <input type="text" class="form-control" name="allowed_email_domains" 
+                                   value="{{ settings.allowed_email_domains|default:'' }}" 
+                                   placeholder="e.g. university.edu, student.university.edu">
+                            <small class="form-text text-muted">Comma-separated allowed domains for student registration. Leave blank to allow all valid domains.</small>
                         </div>
                         
                         <div class="mb-3">
@@ -297,14 +306,6 @@
                         {% csrf_token %}
                         <input type="hidden" name="form_type" value="experience">
                         
-                        <div class="mb-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="enable_feedback" 
-                                       {% if settings.enable_feedback|default:True %}checked{% endif %}>
-                                <label class="form-check-label">Enable Post-Resolution Feedback</label>
-                            </div>
-                            <div class="form-text">Ask students to rate their experience out of 5 stars</div>
-                        </div>
                         
                         <div class="mb-3">
                             <div class="form-check form-switch">

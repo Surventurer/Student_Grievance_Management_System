@@ -11,22 +11,21 @@
     padding: 0.375rem 0.75rem;
     border-radius: 0.375rem;
 }
-.role-admin { background-color: #fd7e14; color: white; }
-.role-officer { background-color: #0dcaf0; color: white; }
-.role-student { background-color: #198754; color: white; }
+.role-admin { background-color: #f3f4f6; color: #111827; border: 1px solid #d1d5db; }
+.role-officer { background-color: #f3f4f6; color: #111827; border: 1px solid #d1d5db; }
+.role-student { background-color: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
 
 .stats-card {
-    border-left: 4px solid #007bff;
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-    transition: all 0.3s ease;
-    border: 1px solid rgba(0, 123, 255, 0.1);
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    border-radius: 4px;
+    box-shadow: none;
+    transition: all 0.2s ease;
 }
 
 .stats-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-color: #d1d5db;
+    box-shadow: none;
 }
 
 /* Form validation styles */
@@ -104,63 +103,57 @@
 }
 
 .user-table th {
-    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-    color: white;
+    background: #f9fafb;
+    color: #374151;
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.75rem;
     letter-spacing: 0.5px;
-    border: none;
-    padding: 1rem 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0.75rem;
 }
 
 .user-table td {
     vertical-align: middle;
-    border-color: #e9ecef;
+    border-color: #e5e7eb;
     padding: 0.75rem;
 }
 
 .user-table tbody tr:hover {
-    background-color: #f8f9fa;
-    transform: scale(1.01);
-    transition: all 0.2s ease;
+    background-color: #f9fafb;
 }
 
 .filter-card {
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
 }
 
 .filter-card .card-header {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-bottom: 1px solid #dee2e6;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
     font-weight: 600;
 }
 
 .btn-custom {
-    border-radius: 8px;
+    border-radius: 4px;
     font-weight: 500;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.btn-custom:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: none;
 }
 
 .pagination .page-link {
-    border-radius: 8px;
+    border-radius: 4px;
     margin: 0 2px;
-    border: none;
-    color: #007bff;
+    border: 1px solid #e5e7eb;
+    color: #111827;
 }
 
 .pagination .page-item.active .page-link {
-    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-    border: none;
+    background: #111827;
+    border-color: #111827;
+    color: #ffffff;
 }
 </style>
 {% endblock %}
@@ -186,7 +179,7 @@
 <!-- Statistics Cards -->
 <div class="row mb-4">
     <div class="col-md-3">
-        <div class="card stats-card">
+        <div class="card stats-card total">
             <div class="card-body text-center">
                 <h3 class="text-primary">{{ total_users }}</h3>
                 <h5 class="text-muted">Total Users</h5>
@@ -194,7 +187,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card stats-card">
+        <div class="card stats-card active">
             <div class="card-body text-center">
                 <h3 class="text-success">{{ active_users }}</h3>
                 <h5 class="text-muted">Active Users</h5>
@@ -202,7 +195,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card stats-card">
+        <div class="card stats-card resolved">
             <div class="card-body text-center">
                 <h3 class="text-info">{{ student_count }}</h3>
                 <h5 class="text-muted">Students</h5>
@@ -210,7 +203,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card stats-card">
+        <div class="card stats-card pending">
             <div class="card-body text-center">
                 <h3 class="text-warning">{{ officer_count }}</h3>
                 <h5 class="text-muted">Officers</h5>
@@ -874,6 +867,20 @@ function performBulkAction(action) {
             console.log('Response data:', data);
             if (data.success) {
                 alert(data.message);
+                
+                // Trigger CSV download if provided by backend
+                if (data.csv_report) {
+                    const blob = new Blob([data.csv_report], { type: 'text/csv' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `deleted_department_users_backup_${new Date().toISOString().split('T')[0]}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                }
+                
                 location.reload();
             } else {
                 alert(data.error || 'Operation failed');

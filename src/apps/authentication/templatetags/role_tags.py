@@ -91,7 +91,7 @@ def format_role_access(user):
     access_map = {
         'superadmin': "Full system access - All departments, users, and settings",
         'admin': f"Department access - Manage {getattr(user.admin_profile, 'department', 'assigned')} department",
-        'officer': f"Limited access - Handle assigned grievances in {getattr(user.admin_profile, 'department', 'assigned')} department", 
+        'officer': f"Limited access - Handle assigned grievances in {getattr(user.admin_profile, 'department', 'assigned')} department",
         'student': "Student access - Submit and track own grievances"
     }
     
