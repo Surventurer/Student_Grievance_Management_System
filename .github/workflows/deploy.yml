@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - beta
       - 'release/**'
   workflow_dispatch: # Allows manual trigger from GitHub Actions tab
 
@@ -24,48 +25,33 @@ jobs:
         env:
           PROD_ENV: ${{ secrets.PROD_ENV }}
         run: |
-          if [ ! -f .env ]; then
-            if [ -f .env.proud ]; then
-            if [ -n "$PROD_ENV" ]; then
-              echo "Creating .env from GitHub Secret PROD_ENV..."
-              echo "$PROD_ENV" > .env
-            elif [ -f ~/.env ]; then
-              echo "Copying .env from home directory (~/.env)..."
-              cp ~/.env .env
-            elif [ -f ~/actions-runner/.env ]; then
-              echo "Copying .env from ~/actions-runner/.env..."
-              cp ~/actions-runner/.env .env
-            elif [ -f .env.proud ]; then
-              echo "Found .env.proud in workspace, copying to .env..."
-              cp .env.proud .env
-            elif [ -f .env.prod ]; then
-              echo "Found .env.prod in workspace, copying to .env..."
-              cp .env.prod .env
-            elif [ -f ../.env ]; then
-              echo "Copying .env from parent directory..."
-              cp ../.env .env
-            elif [ -f ~/.env ]; then
-              echo "Copying .env from home directory..."
-              cp ~/.env .env
-            elif [ -f ../../.env ]; then
-              cp ../../.env .env
-            elif [ -f ../../../.env ]; then
-              cp ../../../.env .env
-            else
-              echo "::warning ::No .env file found in workspace! If this is the first deployment, please ensure a .env or .env.proud file exists on the server."
-              echo "::error ::No .env file found!"
-              echo "------------------------------------------------------------------------"
-              echo "Docker Compose requires a .env file containing your production settings."
-              echo "To fix this, log into your VPS and run:"
-              echo "  nano /home/github/.env"
-              echo "(Paste your environment variables there and save)"
-              echo "------------------------------------------------------------------------"
-              exit 1
-            fi
-          else
-            echo "✓ .env file present."
+          if [ -f .env ]; then
+            echo "✓ .env file already exists in workspace."
+            exit 0
           fi
-          echo "✓ .env file is present and ready."
+
+          if [ -n "$PROD_ENV" ]; then
+            echo "Creating .env from GitHub Secret PROD_ENV..."
+            printf '%s\n' "$PROD_ENV" > .env
+            exit 0
+          fi
+
+          for env_path in "$HOME/.env" "$HOME/actions-runner/.env" "../.env" "../../.env" "../../../.env" ".env.proud" ".env.prod"; do
+            if [ -f "$env_path" ]; then
+              echo "Found env file at $env_path, copying to .env..."
+              cp "$env_path" .env
+              exit 0
+            fi
+          done
+
+          echo "::error ::No .env file found!"
+          echo "------------------------------------------------------------------------"
+          echo "Docker Compose requires a .env file containing your production settings."
+          echo "To fix this, log into your VPS and run:"
+          echo "  nano /home/github/.env"
+          echo "(Paste your environment variables there and save)"
+          echo "------------------------------------------------------------------------"
+          exit 1
 
       - name: Deploy with Docker Compose
         run: |
