@@ -4,12 +4,15 @@ on:
   push:
     branches:
       - main
+      - 'release/**'
   workflow_dispatch: # Allows manual trigger from GitHub Actions tab
 
 jobs:
   deploy:
     name: Deploy App on Self-Hosted Runner
     runs-on: self-hosted
+    env:
+      PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
 
     steps:
       - name: Checkout repository
@@ -20,14 +23,20 @@ jobs:
       - name: Verify Environment File (.env)
         run: |
           if [ ! -f .env ]; then
-            if [ -f ../.env ]; then
+            if [ -f .env.proud ]; then
+              echo "Found .env.proud in workspace, copying to .env..."
+              cp .env.proud .env
+            elif [ -f .env.prod ]; then
+              echo "Found .env.prod in workspace, copying to .env..."
+              cp .env.prod .env
+            elif [ -f ../.env ]; then
               echo "Copying .env from parent directory..."
               cp ../.env .env
             elif [ -f ~/.env ]; then
               echo "Copying .env from home directory..."
               cp ~/.env .env
             else
-              echo "::warning ::No .env file found in workspace! If this is the first deployment, please create a .env file with your production environment variables."
+              echo "::warning ::No .env file found in workspace! If this is the first deployment, please ensure a .env or .env.proud file exists on the server."
             fi
           else
             echo "✓ .env file present."
@@ -35,11 +44,31 @@ jobs:
 
       - name: Deploy with Docker Compose
         run: |
-          # Detect compose binary (v2 'docker compose' or v1 'docker-compose')
+          # Ensure full standard PATH is available in non-interactive runner shells
+          export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/snap/bin:$HOME/.local/bin:$PATH"
+
+          # Detect compose binary
+          DOCKER_COMPOSE=""
           if docker compose version >/dev/null 2>&1; then
             DOCKER_COMPOSE="docker compose"
-          else
+          elif command -v docker-compose >/dev/null 2>&1; then
             DOCKER_COMPOSE="docker-compose"
+          elif [ -x /usr/local/bin/docker-compose ]; then
+            DOCKER_COMPOSE="/usr/local/bin/docker-compose"
+          elif [ -x /usr/bin/docker-compose ]; then
+            DOCKER_COMPOSE="/usr/bin/docker-compose"
+          elif [ -x /snap/bin/docker-compose ]; then
+            DOCKER_COMPOSE="/snap/bin/docker-compose"
+          fi
+
+          if [ -z "$DOCKER_COMPOSE" ]; then
+            echo "::error ::Neither 'docker compose' nor 'docker-compose' was found on this runner server!"
+            echo "------------------------------------------------------------------------"
+            echo "To fix this, log into your server and run:"
+            echo "  sudo apt-get update && sudo apt-get install -y docker-compose-plugin"
+            echo "  sudo usermod -aG docker \$USER"
+            echo "------------------------------------------------------------------------"
+            exit 1
           fi
 
           echo "Using compose command: $DOCKER_COMPOSE"
