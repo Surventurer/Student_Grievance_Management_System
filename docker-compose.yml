@@ -22,7 +22,6 @@ services:
         max-file: "3"
 
   celery_worker:
-    build: .
     image: sgs-web:latest
     container_name: sgs_celery_worker
     restart: always
@@ -34,6 +33,7 @@ services:
       - REDIS_PORT=6379
       - REDIS_URL=redis://redis:6379/0
     depends_on:
+      - web
       - redis
     logging:
       driver: "json-file"
@@ -42,7 +42,6 @@ services:
         max-file: "3"
 
   celery_beat:
-    build: .
     image: sgs-web:latest
     container_name: sgs_celery_beat
     restart: always
@@ -54,6 +53,7 @@ services:
       - REDIS_PORT=6379
       - REDIS_URL=redis://redis:6379/0
     depends_on:
+      - web
       - redis
     logging:
       driver: "json-file"
