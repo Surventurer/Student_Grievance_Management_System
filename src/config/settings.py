@@ -16,7 +16,10 @@ def _parse_bool(val):
 
 DEBUG = _parse_bool(config('DEBUG', default=True))
 
-ALLOWED_HOSTS = [host.strip() for host in config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',') if host.strip()]
+_raw_allowed = config('ALLOWED_HOSTS', default='*')
+ALLOWED_HOSTS = [host.strip().strip("'\"") for host in _raw_allowed.split(',') if host.strip()]
+if not ALLOWED_HOSTS or '*' in ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
