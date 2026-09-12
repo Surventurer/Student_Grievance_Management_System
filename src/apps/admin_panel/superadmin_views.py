@@ -17,7 +17,10 @@ import json
 from apps.authentication.decorators import superadmin_required, api_superadmin_required
 from apps.authentication.models import User, TemporaryRegistration, AdminLoginOTP
 from apps.students.models import StudentProfile, AdminProfile, Department, School
-from apps.grievances.models import Grievance, Category, AuditLog
+from apps.grievances.models import (
+    Grievance, Category, AuditLog, GrievanceComment,
+    GrievanceStatusHistory, GrievanceAssignmentHistory
+)
 
 
 @superadmin_required
@@ -747,6 +750,7 @@ def bulk_delete_users(request):
                     # Set user references to NULL in remaining records (audit logs, etc.)
                     AuditLog.objects.filter(user=user).update(user=None)
                     GrievanceStatusHistory.objects.filter(changed_by=user).update(changed_by=None)
+                    GrievanceAssignmentHistory.objects.filter(assigned_by=user).update(assigned_by=None)
                     GrievanceComment.objects.filter(user=user).update(user=None)
                     
                     # Finally delete the user
