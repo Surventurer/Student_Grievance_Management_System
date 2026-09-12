@@ -34,6 +34,12 @@ staticfiles/
 
 # Environment variables
 .env
+.env.*
+*.env
+proud.env
+prod.env
+.env.proud
+.env.prod
 .venv
 env/
 venv/
