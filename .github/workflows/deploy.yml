@@ -76,12 +76,17 @@ jobs:
           docker compose down --remove-orphans 2>/dev/null || true
           docker rm -f $(docker ps -aq --filter "name=sgs_") 2>/dev/null || true
 
+          # Free up all stopped containers, unused images, and build cache before building
+          docker system prune -a -f --volumes 2>/dev/null || true
+          docker builder prune -a -f 2>/dev/null || true
+
           # Build and launch containers with modern Docker Compose v2
           docker compose build
           docker compose up -d --remove-orphans
 
-          # Cleanup dangling images to keep server storage clean
-          docker image prune -f
+          # Cleanup unused images and build cache to keep server storage clean
+          docker image prune -a -f --filter "until=1h" 2>/dev/null || docker image prune -f
+          docker builder prune -f 2>/dev/null || true
 
       - name: Show Running Containers
         run: |
