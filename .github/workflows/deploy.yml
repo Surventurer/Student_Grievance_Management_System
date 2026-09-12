@@ -76,6 +76,10 @@ jobs:
           docker compose down --remove-orphans 2>/dev/null || true
           docker rm -f $(docker ps -aq --filter "name=sgs_") 2>/dev/null || true
 
+          # Free up build cache and old layers to prevent disk exhaustion
+          docker builder prune -f 2>/dev/null || true
+          docker image prune -f 2>/dev/null || true
+
           # Build and launch containers with modern Docker Compose v2
           docker compose build
           docker compose up -d --remove-orphans

@@ -5,7 +5,8 @@ FROM python:3.12-slim-bookworm
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     UV_COMPILE_BYTECODE=1 \
-    UV_SYSTEM_PYTHON=1
+    UV_SYSTEM_PYTHON=1 \
+    UV_NO_CACHE=1
 
 # Install system dependencies required for psycopg2, pillow, etc.
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -23,8 +24,8 @@ WORKDIR /app
 # Copy the entire application
 COPY . .
 
-# Install dependencies using uv
-RUN uv pip install .
+# Install dependencies using uv without cache
+RUN uv pip install --no-cache .
 
 # Run collectstatic so Whitenoise can serve the minified files
 RUN cd src && \
