@@ -23,14 +23,16 @@ jobs:
         env:
           PROD_ENV: ${{ secrets.PROD_ENV }}
         run: |
-          if [ -f .env ]; then
-            echo "✓ .env file already exists in workspace."
+          # 1. If PROD_ENV is set in GitHub Secrets, always update .env to keep secrets synced
+          if [ -n "$PROD_ENV" ]; then
+            echo "Updating .env from GitHub Secret PROD_ENV..."
+            printf '%s\n' "$PROD_ENV" > .env
             exit 0
           fi
 
-          if [ -n "$PROD_ENV" ]; then
-            echo "Creating .env from GitHub Secret PROD_ENV..."
-            printf '%s\n' "$PROD_ENV" > .env
+          # 2. If .env already exists and no new secret was provided, keep it
+          if [ -f .env ]; then
+            echo "✓ Existing .env file found in workspace."
             exit 0
           fi
 

@@ -20,6 +20,11 @@ _raw_allowed = config('ALLOWED_HOSTS', default='*')
 ALLOWED_HOSTS = [host.strip().strip("'\"") for host in _raw_allowed.split(',') if host.strip()]
 if not ALLOWED_HOSTS or '*' in ALLOWED_HOSTS:
     ALLOWED_HOSTS = ['*']
+else:
+    # Always permit local LAN IPs (192.168.1.x, 192.168.0.x)
+    for i in range(1, 255):
+        ALLOWED_HOSTS.append(f'192.168.1.{i}')
+        ALLOWED_HOSTS.append(f'192.168.0.{i}')
 
 # Application definition
 INSTALLED_APPS = [
