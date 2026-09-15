@@ -74,14 +74,47 @@ class GrievanceViewSet(viewsets.ModelViewSet):
                 
         return Grievance.objects.none()
         
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        if not (hasattr(user, 'is_student') and user.is_student):
+            return Response({"error": "Only students can submit grievances."}, status=status.HTTP_403_FORBIDDEN)
+            
+        otp_code = request.data.get('otp_code')
+        if not otp_code:
+            return Response({"error": "otp_code is required"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        from .models import GrievanceOTPVerification
+        email_verification = GrievanceOTPVerification.objects.filter(
+            email=user.email,
+            otp=otp_code,
+            is_verified=False
+        ).first()
+        
+        if not email_verification or email_verification.is_expired:
+            return Response({'error': 'Invalid or expired OTP'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        # Call standard create
+        response = super().create(request, *args, **kwargs)
+        
+        # If successfully created, mark OTP as verified
+        if response.status_code == status.HTTP_201_CREATED:
+            email_verification.is_verified = True
+            email_verification.save()
+            
+            # Auto-assign
+            try:
+                grievance_id = response.data.get('id')
+                grievance = Grievance.objects.get(id=grievance_id)
+                grievance.auto_assign()
+            except Exception:
+                pass
+                
+        return response
+
     def perform_create(self, serializer):
         user = self.request.user
-        if hasattr(user, 'is_student') and user.is_student:
-            student_profile = get_object_or_404(StudentProfile, user=user)
-            serializer.save(student=student_profile)
-        else:
-            # Only students can create grievances via API in this basic setup
-            raise permissions.PermissionDenied("Only students can submit grievances.")
+        student_profile = get_object_or_404(StudentProfile, user=user)
+        serializer.save(student=student_profile)
 
     @action(detail=True, methods=['post'])
     def add_comment(self, request, pk=None):

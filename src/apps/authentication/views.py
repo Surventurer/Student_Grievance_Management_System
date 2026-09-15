@@ -16,6 +16,8 @@ from rest_framework.authtoken.models import Token
 import json
 import random
 import string
+import hashlib
+import hmac
 from datetime import timedelta
 
 from .models import User, EmailVerification, PasswordReset, TemporaryRegistration, AdminLoginOTP
@@ -23,6 +25,122 @@ from .serializers import UserRegistrationSerializer, UserLoginSerializer, Passwo
 from .forms import StudentRegistrationForm
 from apps.students.models import Department, School
 from apps.admin_panel.audit_utils import log_login_action, log_logout_action
+from django.core.cache import cache
+
+# Fallback in-memory store for non-security operations / development mode
+_memory_cache = {}
+
+
+def is_development_mode():
+    """Check whether application is running in explicit development mode"""
+    env = getattr(settings, 'ENVIRONMENT', 'development')
+    if isinstance(env, str):
+        env = env.lower().strip()
+    return bool(getattr(settings, 'DEBUG', False) and env == 'development')
+
+
+class SecurityCacheUnavailable(Exception):
+    """Raised when Redis security cache is unavailable and fail-closed policy is triggered"""
+    pass
+
+
+def hash_staff_otp(user_id, otp):
+    """Compute server-secret backed HMAC-SHA256 hash for staff OTP"""
+    server_secret = str(getattr(settings, 'SECRET_KEY', 'default-sgms-secret')).encode('utf-8')
+    message = f"{user_id}:{otp}".encode('utf-8')
+    return hmac.new(server_secret, message, hashlib.sha256).hexdigest()
+
+
+def verify_staff_otp(user_id, otp, expected_hash):
+    """Constant-time comparison for HMAC-SHA256 staff OTP verification"""
+    if not expected_hash or not otp:
+        return False
+    actual_hash = hash_staff_otp(user_id, otp)
+    return hmac.compare_digest(actual_hash, expected_hash)
+
+
+def safe_cache_get(key, default=None):
+    """Safely get from cache with silent in-memory fallback (for non-security operations)"""
+    try:
+        val = cache.get(key, None)
+        if val is not None:
+            return val
+    except Exception:
+        pass
+    return _memory_cache.get(key, default)
+
+
+def safe_cache_set(key, value, timeout=300):
+    """Safely set to cache with silent in-memory fallback (for non-security operations)"""
+    try:
+        cache.set(key, value, timeout=timeout)
+    except Exception:
+        pass
+    _memory_cache[key] = value
+
+
+def safe_cache_delete(key):
+    """Safely delete from cache with silent in-memory fallback (for non-security operations)"""
+    try:
+        cache.delete(key)
+    except Exception:
+        pass
+    _memory_cache.pop(key, None)
+
+
+def security_cache_get(key, default=None):
+    """
+    Security-critical cache retrieval (rate limiting, OTP verification).
+    In production: strictly requires Redis; raises SecurityCacheUnavailable on outage.
+    In development: safely falls back to local in-memory store.
+    """
+    try:
+        val = cache.get(key, None)
+        if val is not None:
+            return val
+        return default
+    except Exception as e:
+        if is_development_mode():
+            return _memory_cache.get(key, default)
+        raise SecurityCacheUnavailable("Security cache backend is unreachable") from e
+
+
+def security_cache_set(key, value, timeout=300):
+    """
+    Security-critical cache storage.
+    In production: strictly requires Redis; raises SecurityCacheUnavailable on outage.
+    In development: safely falls back to local in-memory store.
+    """
+    try:
+        cache.set(key, value, timeout=timeout)
+    except Exception as e:
+        if is_development_mode():
+            _memory_cache[key] = value
+            return
+        raise SecurityCacheUnavailable("Security cache backend is unreachable") from e
+
+
+def security_cache_delete(key):
+    """
+    Security-critical cache deletion.
+    In production: strictly requires Redis; raises SecurityCacheUnavailable on outage.
+    In development: safely falls back to local in-memory store.
+    """
+    try:
+        cache.delete(key)
+    except Exception as e:
+        if is_development_mode():
+            _memory_cache.pop(key, None)
+            return
+        raise SecurityCacheUnavailable("Security cache backend is unreachable") from e
+
+
+def get_client_ip(request):
+    """Safely extract client IP from request headers"""
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        return x_forwarded_for.split(',')[0].strip()
+    return request.META.get('REMOTE_ADDR', '127.0.0.1')
 
 
 def generate_otp():
@@ -125,6 +243,9 @@ def login_user(request):
         user = authenticate(username=email, password=password)
         
         if user:
+            if user.role != 'student':
+                return Response({'error': 'Staff must login via the web portal for 2FA verification'}, status=status.HTTP_403_FORBIDDEN)
+                
             if not user.is_email_verified:
                 return Response({'error': 'Please verify your email first'}, status=status.HTTP_400_BAD_REQUEST)
             
@@ -246,29 +367,18 @@ def login_view(request):
         password = request.POST.get('password')
         otp_code = request.POST.get('otp')
         
-        # Rate limiting for login attempts
-        if not otp_code:  # Only for initial login, not OTP verification
-            login_attempts_key = f'login_attempts_{email}'
-            login_attempts = request.session.get(login_attempts_key, 0)
-            last_login_attempt_time = request.session.get(f'last_login_attempt_{email}')
-            
-            # Reset attempts if more than 5 minutes have passed
-            if last_login_attempt_time:
-                try:
-                    last_attempt = timezone.datetime.fromisoformat(last_login_attempt_time)
-                    if timezone.now() - last_attempt > timedelta(minutes=5):
-                        login_attempts = 0
-                        request.session.pop(login_attempts_key, None)
-                        request.session.pop(f'last_login_attempt_{email}', None)
-                except:
-                    # If there's any error parsing the time, reset the attempts
-                    login_attempts = 0
-                    request.session.pop(login_attempts_key, None)
-                    request.session.pop(f'last_login_attempt_{email}', None)
-            
-            # Check if too many attempts
-            if login_attempts >= 5:
-                messages.error(request, 'Too many failed login attempts. Please wait 5 minutes before trying again.')
+        client_ip = get_client_ip(request)
+        login_rate_key = f'rl_login_{client_ip}_{email.lower().strip()}' if email else f'rl_login_{client_ip}'
+        
+        # Distributed rate limiting for login attempts via Redis (fail-closed in production)
+        if not otp_code:
+            try:
+                login_attempts = security_cache_get(login_rate_key, 0) or 0
+                if login_attempts >= 5:
+                    messages.error(request, 'Too many failed login attempts. Please wait 5 minutes before trying again.')
+                    return render(request, 'authentication/login.html')
+            except SecurityCacheUnavailable:
+                messages.error(request, 'Authentication service temporarily unavailable. Please try again.')
                 return render(request, 'authentication/login.html')
         
         # First step: Email and password validation
@@ -285,23 +395,31 @@ def login_view(request):
                     messages.error(request, 'Please verify your email first')
                     return render(request, 'authentication/login.html')
                 
-                # For admin and superadmin users, require OTP
-                if user.role in ['admin', 'superadmin']:
+                # For admin, superadmin, and officer users, require OTP
+                if user.role in ['admin', 'superadmin', 'officer']:
                     # Clear successful login attempts
                     login_attempts_key = f'login_attempts_{email}'
                     request.session.pop(login_attempts_key, None)
                     request.session.pop(f'last_login_attempt_{email}', None)
                     
-                    # Generate and send OTP
+                    # Generate OTP and calculate HMAC-SHA256 backed by server secret
                     otp = generate_otp()
                     expires_at = timezone.now() + timedelta(minutes=5)
+                    otp_hash = hash_staff_otp(user.id, otp)
+                    
+                    # Store HMAC hash in security cache (TTL: 5 minutes / 300s)
+                    try:
+                        security_cache_set(f'staff_otp_hash_{user.id}', otp_hash, timeout=300)
+                    except SecurityCacheUnavailable:
+                        messages.error(request, 'Authentication service temporarily unavailable. Please try again.')
+                        return render(request, 'authentication/login.html')
                     
                     # Store user ID in session for OTP verification
                     request.session['admin_login_user_id'] = user.id
                     request.session['admin_login_email'] = user.email
                     request.session.save()
                     
-                    # Create OTP record
+                    # Create OTP record in database for immutable audit logging
                     AdminLoginOTP.objects.create(
                         user=user,
                         otp=otp,
@@ -309,117 +427,111 @@ def login_view(request):
                         session_key=request.session.session_key
                     )
                     
+                    show_dev = getattr(settings, 'SHOW_DEV_OTP', False) or (settings.DEBUG and is_development_mode())
+                    dev_otp_val = otp if show_dev else None
+                    
                     # Send OTP via email
                     try:
                         send_mail(
-                            'Admin Login Verification - OTP',
-                            f'Your OTP for admin login is: {otp}. This code will expire in 5 minutes.\n\nIf you did not attempt to login, please contact the system administrator immediately.',
+                            'Staff Login Verification - OTP',
+                            f'Your OTP for login is: {otp}. This code will expire in 5 minutes.\n\nIf you did not attempt to login, please contact the system administrator immediately.',
                             settings.EMAIL_HOST_USER,
                             [user.email],
                             fail_silently=False,
                         )
                         
                         # For development: print OTP to console
-                        if settings.DEBUG:
+                        if show_dev:
                             print(f"\n{'='*60}")
-                            print(f"🔑 ADMIN LOGIN OTP")
+                            print(f"🔑 STAFF LOGIN OTP")
                             print(f"Email: {user.email}")
                             print(f"OTP Code: {otp}")
                             print(f"Expires in: 5 minutes")
                             print(f"{'='*60}\n")
                         
                         otp_msg = 'OTP has been sent to your email. Please enter it below to complete login.'
-                        if settings.DEBUG:
-                            otp_msg += ' [DEV: Check console for OTP]'
+                        if show_dev:
+                            otp_msg += f' [DEV CODE: {otp}]'
                         messages.success(request, otp_msg)
                         return render(request, 'authentication/login.html', {
                             'show_otp_field': True,
-                            'email': email
+                            'email': email,
+                            'dev_otp': dev_otp_val
                         })
                     except Exception as e:
-                        # For development: show OTP in error message if email fails
-                        if settings.DEBUG:
+                        if show_dev:
                             print(f"\n{'='*60}")
-                            print(f"⚠️  EMAIL FAILED - ADMIN LOGIN OTP")
+                            print(f"⚠️  EMAIL FAILED - STAFF LOGIN OTP")
                             print(f"Email: {user.email}")
                             print(f"OTP Code: {otp}")
                             print(f"Error: {str(e)}")
                             print(f"{'='*60}\n")
-                            messages.info(request, f'Email failed. For development, your OTP is: {otp}')
+                            messages.info(request, f'Development Mode: Your verification OTP is: {otp}')
                         else:
                             messages.error(request, 'Failed to send OTP to your email. Please try again or contact administrator.')
                         return render(request, 'authentication/login.html', {
                             'show_otp_field': True,
-                            'email': email
+                            'email': email,
+                            'dev_otp': dev_otp_val
                         })
                 
                 # For students, login directly to student dashboard
                 elif user.role == 'student':
-                    # Clear successful login attempts
                     login_attempts_key = f'login_attempts_{email}'
                     request.session.pop(login_attempts_key, None)
                     request.session.pop(f'last_login_attempt_{email}', None)
                     
-                    # Ensure student has a profile
+                    try:
+                        security_cache_delete(login_rate_key)
+                    except Exception:
+                        pass
+                    
                     try:
                         student_profile = user.student_profile
                         login(request, user)
                         log_login_action(user, request, success=True)
                         return redirect('students:dashboard')
-                    except:
+                    except Exception:
                         messages.error(request, 'Student profile not found. Please contact administrator.')
-                        return render(request, 'authentication/login.html')
-                
-                # For officers, login directly to admin dashboard 
-                elif user.role == 'officer':
-                    # Clear successful login attempts
-                    login_attempts_key = f'login_attempts_{email}'
-                    request.session.pop(login_attempts_key, None)
-                    request.session.pop(f'last_login_attempt_{email}', None)
-                    
-                    # Ensure officer has an admin profile
-                    try:
-                        admin_profile = user.admin_profile
-                        login(request, user)
-                        log_login_action(user, request, success=True)
-                        return redirect('admin_panel:dashboard')
-                    except:
-                        messages.error(request, 'Officer profile not found. Please contact administrator.')
                         return render(request, 'authentication/login.html')
                     
                 # For other roles, redirect appropriately 
                 else:
-                    # Clear successful login attempts
                     login_attempts_key = f'login_attempts_{email}'
                     request.session.pop(login_attempts_key, None)
                     request.session.pop(f'last_login_attempt_{email}', None)
+                    
+                    try:
+                        security_cache_delete(login_rate_key)
+                    except Exception:
+                        pass
                     
                     login(request, user)
                     log_login_action(user, request, success=True)
                     return redirect('admin_panel:dashboard')
             else:
-                # Check if user exists but is inactive (Django's authenticate() returns None for inactive users)
+                # Check if user exists but is inactive
                 try:
                     inactive_user = User.objects.get(email=email, is_active=False)
-                    # Verify the password manually for inactive users
                     if inactive_user.check_password(password):
                         reason = inactive_user.deactivation_reason or "Your account has been deactivated by the administrator."
                         messages.error(request, f'Account Deactivated: {reason}')
                         return render(request, 'authentication/login.html', {'deactivation_reason': reason})
                 except User.DoesNotExist:
-                    pass  # User doesn't exist or is active but password is wrong
+                    pass
                 
-                # Increment failed login attempts
-                login_attempts_key = f'login_attempts_{email}'
-                login_attempts = request.session.get(login_attempts_key, 0)
-                request.session[login_attempts_key] = login_attempts + 1
-                request.session[f'last_login_attempt_{email}'] = timezone.now().isoformat()
+                # Increment failed login attempts via security cache
+                try:
+                    login_attempts = security_cache_get(login_rate_key, 0) or 0
+                    security_cache_set(login_rate_key, login_attempts + 1, timeout=300)
+                except SecurityCacheUnavailable:
+                    messages.error(request, 'Authentication service temporarily unavailable. Please try again.')
+                    return render(request, 'authentication/login.html')
                 
                 messages.error(request, 'Invalid email or password')
         
-        # Second step: OTP verification for admin users
+        # Second step: OTP verification for staff users
         else:
-            # If user is already authenticated, redirect directly to dashboard
             if request.user.is_authenticated:
                 if getattr(request.user, 'role', None) in ['admin', 'superadmin', 'officer']:
                     return redirect('admin_panel:dashboard')
@@ -433,7 +545,6 @@ def login_view(request):
                 except User.DoesNotExist:
                     user = None
             
-            # Robust fallback: if session key dropped or expired, resolve user from submitted email
             if not user and email:
                 user = User.objects.filter(email__iexact=email.strip()).first()
             
@@ -442,85 +553,86 @@ def login_view(request):
                 return redirect('authentication:login_view')
             
             try:
-                # Check for too many failed attempts using session-based tracking
-                failed_attempts_key = f'failed_otp_attempts_{user.id}'
-                failed_attempts = request.session.get(failed_attempts_key, 0)
-                last_attempt_time = request.session.get(f'last_failed_attempt_{user.id}')
-                
-                # Reset attempts if more than 5 minutes have passed
-                if last_attempt_time:
-                    try:
-                        last_attempt = timezone.datetime.fromisoformat(last_attempt_time)
-                        if timezone.now() - last_attempt > timedelta(minutes=5):
-                            failed_attempts = 0
-                            request.session.pop(failed_attempts_key, None)
-                            request.session.pop(f'last_failed_attempt_{user.id}', None)
-                    except:
-                        # If there's any error parsing the time, reset the attempts
-                        failed_attempts = 0
-                        request.session.pop(failed_attempts_key, None)
-                        request.session.pop(f'last_failed_attempt_{user.id}', None)
+                # Rate limit OTP attempts (Max 3 attempts, 5-minute timeout)
+                otp_rate_key = f'rl_otp_{client_ip}_{user.id}'
+                failed_attempts = security_cache_get(otp_rate_key, 0) or 0
                 
                 if failed_attempts >= 3:
-                    messages.error(request, 'Too many failed attempts. Please wait 5 minutes before trying again.')
-                    # Clear session data
+                    messages.error(request, 'Too many failed OTP attempts. Please wait 5 minutes before trying again.')
                     request.session.pop('admin_login_user_id', None)
                     request.session.pop('admin_login_email', None)
                     return redirect('authentication:login_view')
                 
-                otp_record = AdminLoginOTP.objects.filter(
-                    user=user,
-                    otp=otp_code,
-                    is_used=False
-                ).order_by('-created_at').first()
+                # Query Redis security cache for HMAC-SHA256 hash
+                cached_hash = security_cache_get(f'staff_otp_hash_{user.id}', None)
                 
-                if not otp_record:
-                    # Increment failed attempts
-                    request.session[failed_attempts_key] = failed_attempts + 1
-                    request.session[f'last_failed_attempt_{user.id}'] = timezone.now().isoformat()
+                is_valid = False
+                otp_clean = otp_code.strip() if otp_code else ''
+                
+                if not is_development_mode():
+                    # STRICT PRODUCTION RULE:
+                    # 1. If cached_hash is None -> Key has expired in Redis (300s TTL) or was not set.
+                    #    DO NOT fall back to AdminLoginOTP in DB. Fail as expired immediately!
+                    if not cached_hash:
+                        messages.error(request, 'OTP has expired. Please login again.')
+                        request.session.pop('admin_login_user_id', None)
+                        request.session.pop('admin_login_email', None)
+                        return redirect('authentication:login_view')
+                    
+                    # 2. Verify HMAC-SHA256 hash in constant time
+                    is_valid = verify_staff_otp(user.id, otp_clean, cached_hash)
+                else:
+                    # DEVELOPMENT MODE:
+                    # Check cached HMAC hash first
+                    if cached_hash:
+                        is_valid = verify_staff_otp(user.id, otp_clean, cached_hash)
+                    
+                    # If memory cache was cleared on local dev restart, allow checking active AdminLoginOTP
+                    if not is_valid:
+                        dev_db_otp = AdminLoginOTP.objects.filter(
+                            user=user,
+                            otp=otp_clean,
+                            is_used=False
+                        ).order_by('-created_at').first()
+                        if dev_db_otp and not dev_db_otp.is_expired:
+                            is_valid = True
+                
+                if not is_valid:
+                    failed_attempts = security_cache_get(otp_rate_key, 0)
+                    security_cache_set(otp_rate_key, failed_attempts + 1, timeout=300)
                     
                     messages.error(request, 'Invalid OTP. Please try again.')
+                    show_dev = getattr(settings, 'SHOW_DEV_OTP', False) or (settings.DEBUG and is_development_mode())
                     return render(request, 'authentication/login.html', {
                         'show_otp_field': True,
-                        'email': user.email
+                        'email': user.email,
+                        'dev_otp': otp_clean if show_dev else None
                     })
                 
-                if otp_record.is_expired:
-                    messages.error(request, 'OTP has expired. Please login again.')
-                    # Clear session data
-                    request.session.pop('admin_login_user_id', None)
-                    request.session.pop('admin_login_email', None)
-                    # Clear failed attempts since this is an expiry, not a failure
-                    request.session.pop(failed_attempts_key, None)
-                    request.session.pop(f'last_failed_attempt_{user.id}', None)
-                    return redirect('authentication:login_view')
+                # OTP is valid: Complete staff login
+                # 1. Clear security cache keys
+                security_cache_delete(otp_rate_key)
+                security_cache_delete(login_rate_key)
+                security_cache_delete(f'staff_otp_hash_{user.id}')
                 
-                # OTP is valid, complete login
-                otp_record.is_used = True
-                otp_record.save()
-                
-                # Clear failed attempts on successful login
-                request.session.pop(failed_attempts_key, None)
-                request.session.pop(f'last_failed_attempt_{user.id}', None)
-                
-                # Clear all unused OTPs for this user
+                # 2. Mark database OTP records is_used=True for audit log preservation
                 AdminLoginOTP.objects.filter(
                     user=user,
                     is_used=False
                 ).update(is_used=True)
                 
-                # Clear session staging data
+                # 3. Clean session staging data
                 request.session.pop('admin_login_user_id', None)
                 request.session.pop('admin_login_email', None)
                 
                 login(request, user)
-                
-                # Log successful admin login
                 log_login_action(user, request, success=True)
-                
                 messages.success(request, 'Login successful!')
                 return redirect('admin_panel:dashboard')
                 
+            except SecurityCacheUnavailable:
+                messages.error(request, 'Authentication service temporarily unavailable. Please try again.')
+                return redirect('authentication:login_view')
             except Exception as e:
                 messages.error(request, 'Authentication error. Please login again.')
                 return redirect('authentication:login_view')
@@ -529,7 +641,7 @@ def login_view(request):
 
 
 def resend_admin_otp(request):
-    """Resend OTP for admin login"""
+    """Resend OTP for admin login with HMAC-SHA256 security cache update"""
     if request.method == 'POST':
         user_id = request.session.get('admin_login_user_id')
         user = None
@@ -540,10 +652,9 @@ def resend_admin_otp(request):
                 user = None
         
         if not user:
-            # Support email from request body or session
             try:
                 data = json.loads(request.body.decode('utf-8')) if request.body else {}
-            except:
+            except Exception:
                 data = {}
             email = data.get('email') or request.POST.get('email') or request.session.get('admin_login_email')
             if email:
@@ -569,17 +680,27 @@ def resend_admin_otp(request):
                     'message': 'Please wait 1 minute before requesting a new OTP.'
                 })
             
-            # Generate new OTP
+            # Generate new OTP & calculate HMAC-SHA256
             otp = generate_otp()
             expires_at = timezone.now() + timedelta(minutes=5)
+            otp_hash = hash_staff_otp(user.id, otp)
             
-            # Invalidate previous unused OTPs
+            # Update security cache
+            try:
+                security_cache_set(f'staff_otp_hash_{user.id}', otp_hash, timeout=300)
+            except SecurityCacheUnavailable:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Authentication service temporarily unavailable. Please try again.'
+                })
+            
+            # Invalidate previous unused OTPs in DB
             AdminLoginOTP.objects.filter(
                 user=user,
                 is_used=False
             ).update(is_used=True)
             
-            # Create new OTP record
+            # Create new OTP record for audit logging
             AdminLoginOTP.objects.create(
                 user=user,
                 otp=otp,
@@ -587,21 +708,31 @@ def resend_admin_otp(request):
                 session_key=request.session.session_key
             )
             
+            show_dev = getattr(settings, 'SHOW_DEV_OTP', False) or (settings.DEBUG and is_development_mode())
+            
             # Send new OTP via email
             try:
                 send_mail(
-                    'Admin Login Verification - New OTP',
-                    f'Your new OTP for admin login is: {otp}. This code will expire in 5 minutes.\n\nIf you did not attempt to login, please contact the system administrator immediately.',
+                    'Staff Login Verification - New OTP',
+                    f'Your new OTP for staff login is: {otp}. This code will expire in 5 minutes.\n\nIf you did not attempt to login, please contact the system administrator immediately.',
                     settings.EMAIL_HOST_USER,
                     [user.email],
                     fail_silently=False,
                 )
                 
+                msg = 'New OTP has been sent to your email.'
+                if show_dev:
+                    msg += f' [DEV CODE: {otp}]'
                 return JsonResponse({
                     'success': True,
-                    'message': 'New OTP has been sent to your email.'
+                    'message': msg
                 })
             except Exception as e:
+                if show_dev:
+                    return JsonResponse({
+                        'success': True,
+                        'message': f'DEV MODE: New OTP is {otp} (Email sending failed).'
+                    })
                 return JsonResponse({
                     'success': False,
                     'message': 'Failed to send OTP. Please try again.'

@@ -682,6 +682,11 @@ def update_department_user_role(request, user_id):
         
         if new_role not in [choice[0] for choice in User.ROLE_CHOICES]:
             return JsonResponse({'error': 'Invalid role'}, status=400)
+            
+        # Security: Prevent department admins from creating or modifying superadmins
+        if not request.user.is_superadmin:
+            if new_role == 'superadmin' or user.role == 'superadmin':
+                return JsonResponse({'error': 'Access denied: Only Superadmins can manage superadmin roles'}, status=403)
         
         # Check department access
         if not request.user.is_superadmin:

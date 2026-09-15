@@ -592,7 +592,7 @@ def category_management(request):
 @require_http_methods(["GET", "POST"])
 def category_create(request):
     """Create new category"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
+    if not can_manage_categories(request.user):
         messages.error(request, 'Access denied - Admin privileges required')
         return redirect('authentication:login')
     
@@ -603,6 +603,10 @@ def category_create(request):
             keywords = request.POST.get('keywords', '').strip()
             is_active = request.POST.get('is_active') == 'on'
             auto_assign_enabled = request.POST.get('auto_assign_enabled') == 'on'
+            try:
+                sla_hours = max(1, int(request.POST.get('sla_hours', 48)))
+            except (ValueError, TypeError):
+                sla_hours = 48
             
             if not name or not category_type:
                 messages.error(request, 'Name and category type are required')
@@ -625,7 +629,8 @@ def category_create(request):
                 category_type=category_type,
                 keywords=keywords,
                 is_active=is_active,
-                auto_assign_enabled=auto_assign_enabled
+                auto_assign_enabled=auto_assign_enabled,
+                sla_hours=sla_hours
             )
             
             # Create audit log
@@ -656,7 +661,7 @@ def category_create(request):
 @require_http_methods(["GET", "POST"])
 def category_edit(request, category_id):
     """Edit existing category"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
+    if not can_manage_categories(request.user):
         messages.error(request, 'Access denied - Admin privileges required')
         return redirect('authentication:login')
     
@@ -669,6 +674,10 @@ def category_edit(request, category_id):
             keywords = request.POST.get('keywords', '').strip()
             is_active = request.POST.get('is_active') == 'on'
             auto_assign_enabled = request.POST.get('auto_assign_enabled') == 'on'
+            try:
+                sla_hours = max(1, int(request.POST.get('sla_hours', category.sla_hours or 48)))
+            except (ValueError, TypeError):
+                sla_hours = category.sla_hours or 48
             
             if not name or not category_type:
                 messages.error(request, 'Name and category type are required')
@@ -697,6 +706,7 @@ def category_edit(request, category_id):
             category.keywords = keywords
             category.is_active = is_active
             category.auto_assign_enabled = auto_assign_enabled
+            category.sla_hours = sla_hours
             category.save()
             
             # Create audit log
@@ -728,7 +738,7 @@ def category_edit(request, category_id):
 @require_http_methods(["POST"])
 def category_delete(request, category_id):
     """Delete category"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
+    if not can_manage_categories(request.user):
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     try:

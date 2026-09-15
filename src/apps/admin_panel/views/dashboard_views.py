@@ -59,6 +59,8 @@ def admin_dashboard(request):
         pending_grievances = accessible_grievances.filter(status='pending').count()
         resolved_grievances = accessible_grievances.filter(status='resolved').count()
         rejected_grievances = accessible_grievances.filter(status='rejected').count()
+        escalated_grievances = accessible_grievances.filter(is_escalated=True).count()
+        appealed_grievances = accessible_grievances.filter(is_appealed=True).count()
         recent_grievances = accessible_grievances.order_by('-submitted_at')[:10]
         
         # Student statistics
@@ -127,6 +129,8 @@ def admin_dashboard(request):
             'pending_grievances': pending_grievances,
             'resolved_grievances': resolved_grievances,
             'rejected_grievances': rejected_grievances,
+            'escalated_grievances': escalated_grievances,
+            'appealed_grievances': appealed_grievances,
             'recent_grievances': recent_grievances,
             'category_stats': category_stats,
             'monthly_stats': monthly_stats,

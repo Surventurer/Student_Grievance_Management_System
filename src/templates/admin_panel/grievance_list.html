@@ -309,23 +309,11 @@
                                     </td>
                                     <td>
                                         {% if grievance.is_anonymous %}
-                                            {% if user.is_superadmin and grievance.student %}
-                                                <div>
-                                                    <span class="badge bg-warning text-dark mb-1"><i class="fas fa-user-secret me-1"></i>Anonymous</span>
-                                                    <br>
-                                                    <strong>{{ grievance.student.name|default:grievance.student.user.email }}</strong>
-                                                    <br>
-                                                    <small class="text-muted">
-                                                        <i class="fas fa-id-card me-1"></i>{{ grievance.student.student_id|default:"N/A" }}
-                                                    </small>
-                                                </div>
-                                            {% else %}
-                                                <div class="text-center">
-                                                    <i class="fas fa-user-secret fa-2x text-warning"></i>
-                                                    <br>
-                                                    <span class="text-muted fw-bold">Anonymous</span>
-                                                </div>
-                                            {% endif %}
+                                            <div class="text-center">
+                                                <i class="fas fa-user-secret fa-2x text-warning"></i>
+                                                <br>
+                                                <span class="badge bg-warning text-dark"><i class="fas fa-shield-alt me-1"></i>Anonymous</span>
+                                            </div>
                                         {% elif grievance.student %}
                                             <div>
                                                 <strong>{{ grievance.student.name|default:grievance.student.user.email }}</strong>
@@ -352,20 +340,44 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if grievance.status == 'pending' %}
-                                            <span class="badge bg-warning">
-                                                <i class="fas fa-clock me-1"></i>Pending
-                                            </span>
-                                        {% elif grievance.status == 'resolved' %}
-                                            <span class="badge bg-success">
-                                                <i class="fas fa-check-circle me-1"></i>Resolved
-                                            </span>
-                                        {% elif grievance.status == 'rejected' %}
+                                        <div>
+                                            {% if grievance.status == 'pending' %}
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="fas fa-clock me-1"></i>Pending
+                                                </span>
+                                            {% elif grievance.status == 'in_progress' %}
+                                                <span class="badge bg-primary">
+                                                    <i class="fas fa-spinner fa-spin me-1"></i>In Progress
+                                                </span>
+                                            {% elif grievance.status == 'pending_student' %}
+                                                <span class="badge bg-info text-dark">
+                                                    <i class="fas fa-pause-circle me-1"></i>SLA Paused
+                                                </span>
+                                            {% elif grievance.status == 'resolved' %}
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check-circle me-1"></i>Resolved
+                                                </span>
+                                            {% elif grievance.status == 'rejected' %}
+                                                <span class="badge bg-danger">
+                                                    <i class="fas fa-times-circle me-1"></i>Rejected
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ grievance.status|title }}</span>
+                                            {% endif %}
+                                        </div>
+                                        {% if grievance.is_escalated %}
+                                        <div class="mt-1">
                                             <span class="badge bg-danger">
-                                                <i class="fas fa-times-circle me-1"></i>Rejected
+                                                <i class="fas fa-arrow-up me-1"></i>L{{ grievance.escalation_level }} Escalated
                                             </span>
-                                        {% else %}
-                                            <span class="badge bg-secondary">{{ grievance.status|title }}</span>
+                                        </div>
+                                        {% endif %}
+                                        {% if grievance.is_appealed %}
+                                        <div class="mt-1">
+                                            <span class="badge bg-info">
+                                                <i class="fas fa-gavel me-1"></i>Appealed
+                                            </span>
+                                        </div>
                                         {% endif %}
                                     </td>
                                     <td>
@@ -416,8 +428,16 @@
                                             <strong class="text-primary">{{ grievance.grievance_id }}</strong>
                                         </h6>
                                         {% if grievance.status == 'pending' %}
-                                            <span class="badge bg-warning">
+                                            <span class="badge bg-warning text-dark">
                                                 <i class="fas fa-clock me-1"></i>Pending
+                                            </span>
+                                        {% elif grievance.status == 'in_progress' %}
+                                            <span class="badge bg-primary">
+                                                <i class="fas fa-spinner fa-spin me-1"></i>In Progress
+                                            </span>
+                                        {% elif grievance.status == 'pending_student' %}
+                                            <span class="badge bg-info text-dark">
+                                                <i class="fas fa-pause-circle me-1"></i>SLA Paused
                                             </span>
                                         {% elif grievance.status == 'resolved' %}
                                             <span class="badge bg-success">
@@ -429,6 +449,12 @@
                                             </span>
                                         {% else %}
                                             <span class="badge bg-secondary">{{ grievance.status|title }}</span>
+                                        {% endif %}
+                                        {% if grievance.is_escalated %}
+                                        <span class="badge bg-danger ms-1">L{{ grievance.escalation_level }}</span>
+                                        {% endif %}
+                                        {% if grievance.is_appealed %}
+                                        <span class="badge bg-info ms-1">Appeal</span>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -449,18 +475,7 @@
                                             <i class="fas fa-user me-1"></i>Student
                                         </small>
                                         {% if grievance.is_anonymous %}
-                                            {% if user.is_superadmin and grievance.student %}
-                                                <span class="badge bg-warning text-dark mb-1"><i class="fas fa-user-secret me-1"></i>Anon</span>
-                                                <br>
-                                                <strong>{{ grievance.student.name|default:grievance.student.user.email|truncatechars:20 }}</strong>
-                                                <br>
-                                                <small class="text-muted">ID: {{ grievance.student.student_id|default:"N/A" }}</small>
-                                            {% else %}
-                                                <div class="text-center">
-                                                    <i class="fas fa-user-secret text-warning"></i>
-                                                    <span class="text-muted fw-bold">Anonymous</span>
-                                                </div>
-                                            {% endif %}
+                                            <span class="badge bg-warning text-dark"><i class="fas fa-shield-alt me-1"></i>Anonymous</span>
                                         {% elif grievance.student %}
                                             <strong>{{ grievance.student.name|default:grievance.student.user.email|truncatechars:20 }}</strong>
                                             <br>

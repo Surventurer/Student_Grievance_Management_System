@@ -14,7 +14,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = ['email', 'username', 'first_name', 'last_name', 'password', 'password_confirm', 'role']
         extra_kwargs = {
-            'role': {'default': 'student'}
+            'role': {'read_only': True, 'default': 'student'}
         }
     
     def validate(self, attrs):

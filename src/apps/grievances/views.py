@@ -20,12 +20,40 @@ from .models import Grievance, Category, GrievanceComment, GrievanceOTPVerificat
 from apps.students.models import StudentProfile
 from django.core.cache import cache
 
+_view_cache = {}
+
+
+def _safe_view_cache_get(key, default=None):
+    try:
+        val = cache.get(key)
+        if val is not None:
+            return val
+    except Exception:
+        pass
+    return _view_cache.get(key, default)
+
+
+def _safe_view_cache_set(key, val, timeout=3600):
+    try:
+        cache.set(key, val, timeout=timeout)
+    except Exception:
+        pass
+    _view_cache[key] = val
+
+
+def _safe_view_cache_delete(key):
+    try:
+        cache.delete(key)
+    except Exception:
+        pass
+    _view_cache.pop(key, None)
+
 
 def is_user_viewing_grievance(user, grievance_id):
     """Check if user is currently viewing a grievance"""
     if not user or not user.is_authenticated:
         return False
-    viewing_grievance_id = cache.get(f'viewing_grievance_{user.id}')
+    viewing_grievance_id = _safe_view_cache_get(f'viewing_grievance_{user.id}')
     return str(viewing_grievance_id) == str(grievance_id)
 
 
@@ -39,11 +67,11 @@ def track_grievance_view(request):
         
         if grievance_id:
             # Store in cache which grievance the user is viewing (expires in 1 hour)
-            cache.set(f'viewing_grievance_{request.user.id}', grievance_id, timeout=3600)
+            _safe_view_cache_set(f'viewing_grievance_{request.user.id}', grievance_id, timeout=3600)
             return JsonResponse({'success': True, 'message': 'Viewing tracked'})
         else:
             # Clear the viewing status
-            cache.delete(f'viewing_grievance_{request.user.id}')
+            _safe_view_cache_delete(f'viewing_grievance_{request.user.id}')
             return JsonResponse({'success': True, 'message': 'Viewing cleared'})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
@@ -171,17 +199,33 @@ def submit_grievance_view(request):
             
             # Handle file uploads
             supporting_docs = request.FILES.getlist('supporting_docs')
+            allowed_extensions = {'.pdf', '.jpg', '.jpeg', '.png', '.doc', '.docx', '.txt'}
+            allowed_mime_types = {
+                'application/pdf',
+                'image/jpeg',
+                'image/png',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'text/plain'
+            }
+            import os
             for file in supporting_docs:
-                if file.size <= 5 * 1024 * 1024:  # 5MB limit
-                    # Create attachment record
-                    from .models import GrievanceAttachment
-                    GrievanceAttachment.objects.create(
-                        grievance=grievance,
-                        file=file,
-                        file_name=file.name,
-                        file_size=file.size,
-                        file_type=file.content_type
-                    )
+                ext = os.path.splitext(file.name)[1].lower()
+                if ext not in allowed_extensions or (file.content_type and file.content_type.lower() not in allowed_mime_types):
+                    messages.warning(request, f'File "{file.name}" was skipped: unsupported file format.')
+                    continue
+                if file.size > 5 * 1024 * 1024:  # 5MB limit
+                    messages.warning(request, f'File "{file.name}" was skipped: exceeds 5MB limit.')
+                    continue
+                # Create attachment record
+                from .models import GrievanceAttachment
+                GrievanceAttachment.objects.create(
+                    grievance=grievance,
+                    file=file,
+                    file_name=file.name,
+                    file_size=file.size,
+                    file_type=file.content_type or 'application/octet-stream'
+                )
             
             # Mark OTP as verified
             email_verification.is_verified = True
@@ -281,7 +325,7 @@ def send_otp_view(request):
         except Exception as e:
             print(f"Email sending failed: {e}")
             
-            # For development: still print OTP even if email fails
+            # For development: show OTP in dev message if email fails
             if settings.DEBUG:
                 print(f"\n{'='*60}")
                 print(f"⚠️  EMAIL FAILED - GRIEVANCE SUBMISSION OTP")
@@ -289,11 +333,12 @@ def send_otp_view(request):
                 print(f"OTP Code: {otp}")
                 print(f"Error: {str(e)}")
                 print(f"{'='*60}\n")
+                return JsonResponse({'success': True, 'dev_otp': otp, 'message': f'Dev mode: OTP is {otp}'})
             
-            return JsonResponse({'success': True})  # Return success even if email fails for demo
+            return JsonResponse({'success': False, 'error': 'Failed to deliver OTP to the provided email address. Please try again or contact support.'}, status=500)
         
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)})
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 
 @require_http_methods(["POST"])

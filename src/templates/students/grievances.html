@@ -152,9 +152,17 @@
                             </td>
                             <td>{{ grievance.department|default:"N/A" }}</td>
                             <td>
-                                <span class="badge bg-{% if grievance.status == 'pending' %}warning{% elif grievance.status == 'resolved' %}success{% else %}danger{% endif %}">
-                                    {{ grievance.get_status_display }}
-                                </span>
+                                <div>
+                                    <span class="badge bg-{% if grievance.status == 'pending' %}warning text-dark{% elif grievance.status == 'in_progress' %}primary{% elif grievance.status == 'pending_student' %}info text-dark{% elif grievance.status == 'resolved' %}success{% else %}danger{% endif %}">
+                                        {{ grievance.get_status_display }}
+                                    </span>
+                                </div>
+                                {% if grievance.is_escalated %}
+                                    <div class="mt-1"><span class="badge bg-danger"><i class="fas fa-arrow-up me-1"></i>L{{ grievance.escalation_level }}</span></div>
+                                {% endif %}
+                                {% if grievance.is_appealed %}
+                                    <div class="mt-1"><span class="badge bg-info"><i class="fas fa-gavel me-1"></i>Appealed</span></div>
+                                {% endif %}
                             </td>
                             <td>{{ grievance.submitted_at|date:"M d, Y H:i" }}</td>
                             <td>

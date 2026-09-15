@@ -10,18 +10,25 @@
             <div class="card-body">
                 <h2 class="card-title text-center mb-4">
                     {% if show_otp_field %}
-                        Admin Verification
+                        <i class="fas fa-shield-alt text-primary me-2"></i>Staff Verification
                     {% else %}
                         Login
                     {% endif %}
                 </h2>
                 
                 {% if show_otp_field %}
-                    <!-- OTP Verification Form for Admins -->
-                    <div class="alert alert-info mb-4">
+                    <!-- OTP Verification Form for Staff / Admins -->
+                    <div class="alert alert-info mb-3">
                         <i class="fas fa-shield-alt me-2"></i>
-                        <strong>Admin Security:</strong> Please enter the OTP sent to <strong>{{ email }}</strong> to complete your login.
+                        <strong>Staff Security:</strong> Two-factor authentication required for Officers and Administrators. Enter the 6-digit OTP sent to <strong>{{ email }}</strong> to complete login.
                     </div>
+                    
+                    {% if dev_otp %}
+                    <div class="alert alert-warning mb-3 border-warning">
+                        <i class="fas fa-laptop-code me-2"></i>
+                        <strong>Development Mode:</strong> Your OTP code is <strong class="fs-5 text-dark px-2 py-1 bg-white rounded border border-warning ms-1">{{ dev_otp }}</strong>
+                    </div>
+                    {% endif %}
                     
                     <form method="post" id="otpForm">
                         {% csrf_token %}

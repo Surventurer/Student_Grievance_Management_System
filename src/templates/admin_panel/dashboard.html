@@ -248,18 +248,18 @@
     {% endif %}
 
     <!-- Statistics Cards -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 col-sm-6 col-6">
-            <div class="stats-card total">
+    <div class="row mb-4 g-3">
+        <div class="col-xl-2 col-md-4 col-sm-6 col-6">
+            <div class="stats-card total h-100">
                 <div class="stats-icon">
                     <i class="fas fa-clipboard-list"></i>
                 </div>
                 <div class="stats-number">{{ total_grievances|default:0 }}</div>
-                <div class="stats-label">Total</div>
+                <div class="stats-label">Total Cases</div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6 col-sm-6 col-6">
-            <div class="stats-card pending">
+        <div class="col-xl-2 col-md-4 col-sm-6 col-6">
+            <div class="stats-card pending h-100">
                 <div class="stats-icon">
                     <i class="fas fa-clock"></i>
                 </div>
@@ -267,8 +267,8 @@
                 <div class="stats-label">Pending</div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6 col-sm-6 col-6">
-            <div class="stats-card resolved">
+        <div class="col-xl-2 col-md-4 col-sm-6 col-6">
+            <div class="stats-card resolved h-100">
                 <div class="stats-icon">
                     <i class="fas fa-check-circle"></i>
                 </div>
@@ -276,13 +276,31 @@
                 <div class="stats-label">Resolved</div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6 col-sm-6 col-6">
-            <div class="stats-card rejected">
+        <div class="col-xl-2 col-md-4 col-sm-6 col-6">
+            <div class="stats-card rejected h-100">
                 <div class="stats-icon">
                     <i class="fas fa-times-circle"></i>
                 </div>
                 <div class="stats-number">{{ rejected_grievances|default:0 }}</div>
                 <div class="stats-label">Rejected</div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-sm-6 col-6">
+            <div class="stats-card h-100 bg-danger text-white border-0 shadow-sm" style="border-radius: 8px; padding: 1.25rem; position: relative; overflow: hidden;">
+                <div class="stats-icon" style="position: absolute; right: 1rem; top: 1rem; opacity: 0.3; font-size: 2.25rem;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stats-number" style="font-size: 2.25rem; font-weight: bold;">{{ escalated_grievances|default:0 }}</div>
+                <div class="stats-label" style="font-size: 0.95rem; font-weight: 500;">Escalated (L1/L2)</div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-sm-6 col-6">
+            <div class="stats-card h-100 bg-info text-white border-0 shadow-sm" style="border-radius: 8px; padding: 1.25rem; position: relative; overflow: hidden;">
+                <div class="stats-icon" style="position: absolute; right: 1rem; top: 1rem; opacity: 0.3; font-size: 2.25rem;">
+                    <i class="fas fa-gavel"></i>
+                </div>
+                <div class="stats-number" style="font-size: 2.25rem; font-weight: bold;">{{ appealed_grievances|default:0 }}</div>
+                <div class="stats-label" style="font-size: 0.95rem; font-weight: 500;">Appeals Filed</div>
             </div>
         </div>
     </div>

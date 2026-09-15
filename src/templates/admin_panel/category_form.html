@@ -134,6 +134,11 @@
                             </option>
                             {% endfor %}
                         </select>
+                    <div class="mb-3">
+                        <label for="sla_hours" class="form-label fw-bold">SLA Target Resolution Time (Hours)</label>
+                        <input type="number" class="form-control" id="sla_hours" name="sla_hours" min="1" max="720"
+                               value="{% if category %}{{ category.sla_hours|default:48 }}{% elif form_data %}{{ form_data.sla_hours|default:48 }}{% else %}48{% endif %}" required>
+                        <div class="form-text">Expected turnaround resolution time in hours (Standard: 48–72 hours)</div>
                     </div>
                 </div>
 

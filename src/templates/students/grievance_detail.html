@@ -108,16 +108,55 @@
                     <span class="badge bg-secondary me-2">{{ grievance.grievance_id }}</span>
                     {{ grievance.title }}
                 </h5>
-                <span class="badge bg-{% if grievance.status == 'pending' %}warning{% elif grievance.status == 'resolved' %}success{% else %}danger{% endif %} fs-6">
+                <span class="badge bg-{% if grievance.status == 'pending' %}warning text-dark{% elif grievance.status == 'in_progress' %}primary{% elif grievance.status == 'pending_student' %}info text-dark{% elif grievance.status == 'resolved' %}success{% else %}danger{% endif %} fs-6">
                     {{ grievance.get_status_display }}
+                    {% if grievance.status == 'pending_student' %}(Action Required){% endif %}
                 </span>
             </div>
             <div class="card-body">
+                {% if grievance.status == 'pending_student' %}
+                <div class="alert alert-warning mb-4">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Action Required:</strong> The grievance handling officer has requested additional clarification from you. Please reply in the communication thread below so the case can resume.
+                </div>
+                {% endif %}
+
                 <!-- Description -->
                 <div class="mb-4">
                     <h6 class="fw-bold text-muted">Description</h6>
                     <p class="mb-0">{{ grievance.description|linebreaks }}</p>
                 </div>
+
+                <!-- Appeals History -->
+                {% if appeals %}
+                <div class="mb-4">
+                    <h6 class="fw-bold text-muted">
+                        <i class="fas fa-gavel me-2"></i>Appeals History ({{ appeals|length }} of 2 allowed)
+                    </h6>
+                    <div class="list-group">
+                        {% for appeal in appeals %}
+                        <div class="list-group-item border rounded mb-2 bg-light">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold text-dark">Appeal #{{ forloop.revcounter }}</span>
+                                <span class="badge bg-{% if appeal.status == 'accepted' %}success{% elif appeal.status == 'rejected' %}danger{% else %}warning text-dark{% endif %}">
+                                    {{ appeal.get_status_display }}
+                                </span>
+                            </div>
+                            <p class="mb-2 small"><strong>Grounds:</strong> {{ appeal.reason }}</p>
+                            {% if appeal.review_notes %}
+                            <div class="alert alert-white border p-2 mb-1 small bg-white">
+                                <strong>Supervisory Review Remarks:</strong> {{ appeal.review_notes }}
+                                {% if appeal.reviewed_by %}
+                                <br><small class="text-muted">Reviewed by: {{ appeal.reviewed_by.user.get_full_name }}</small>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                            <small class="text-muted d-block mt-1"><i class="fas fa-calendar-alt me-1"></i>Filed: {{ appeal.created_at|date:"M d, Y H:i" }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
 
                 <!-- Supporting Documents -->
                 {% if grievance.attachments.all %}
@@ -250,8 +289,16 @@
                 <div class="row mb-2">
                     <div class="col-5 fw-bold">Status:</div>
                     <div class="col-7">
-                        <span class="badge bg-{% if grievance.status == 'pending' %}warning{% elif grievance.status == 'resolved' %}success{% else %}danger{% endif %}">
+                        <span class="badge bg-{% if grievance.status == 'pending' %}warning text-dark{% elif grievance.status == 'in_progress' %}primary{% elif grievance.status == 'pending_student' %}info text-dark{% elif grievance.status == 'resolved' %}success{% else %}danger{% endif %}">
                             {{ grievance.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-5 fw-bold">SLA Target:</div>
+                    <div class="col-7">
+                        <span class="badge bg-secondary">
+                            {{ grievance.effective_sla_hours|default:grievance.category.sla_hours|default:48 }} Hours
                         </span>
                     </div>
                 </div>
@@ -330,13 +377,32 @@
                         <i class="fas fa-plus"></i> Submit New Grievance
                     </a>
                     {% if grievance.status == 'resolved' or grievance.status == 'rejected' %}
-                        {% if not grievance.is_appealed %}
-                        <form method="POST" action="{% url 'students:appeal_grievance' grievance.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-warning w-100" onclick="return confirm('Are you sure you want to appeal this resolution? This will notify higher authorities and re-open the grievance for review.');">
-                                <i class="fas fa-exclamation-circle"></i> Appeal Resolution
-                            </button>
-                        </form>
+                        {% if grievance.appeals.count < 2 %}
+                        <button type="button" class="btn btn-warning w-100" data-bs-toggle="collapse" data-bs-target="#appealFormCollapse">
+                            <i class="fas fa-exclamation-circle"></i> Appeal Resolution ({% if grievance.appeals.count == 0 %}1st{% else %}2nd{% endif %} of 2)
+                        </button>
+                        <div class="collapse mt-2" id="appealFormCollapse">
+                            <div class="card card-body bg-light border">
+                                <form method="POST" action="{% url 'students:appeal_grievance' grievance.id %}" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="mb-2">
+                                        <label class="form-label small fw-bold">Reason for Appeal / New Grounds:</label>
+                                        <textarea class="form-control form-control-sm" name="reason" rows="3" placeholder="Explain why the resolution is unsatisfactory or describe new evidence..." required></textarea>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label small fw-bold">Attach New Evidence (Optional, max 5MB):</label>
+                                        <input type="file" class="form-control form-control-sm" name="evidence_file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.txt">
+                                    </div>
+                                    <button type="submit" class="btn btn-danger btn-sm w-100" onclick="return confirm('Submit appeal for supervisory review?');">
+                                        Confirm & Submit Appeal
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-secondary small py-2 mb-0 text-center">
+                            <i class="fas fa-lock me-1"></i> Maximum appeals (2) reached for this grievance.
+                        </div>
                         {% endif %}
                     {% endif %}
                 </div>

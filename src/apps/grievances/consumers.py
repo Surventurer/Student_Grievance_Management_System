@@ -50,19 +50,27 @@ class GrievanceChatConsumer(AsyncWebsocketConsumer):
 
         if message:
             # Save comment to database
-            comment = await self.save_comment(user, self.grievance_id, message, is_internal)
+            comment, is_anonymous = await self.save_comment(user, self.grievance_id, message, is_internal)
             
+            is_student = hasattr(user, 'is_student') and user.is_student
+            if is_student and is_anonymous:
+                user_name = 'Anonymous Student'
+                user_email = 'hidden@anonymous.local'
+            else:
+                user_name = user.get_full_name() or user.email
+                user_email = user.email
+
             # Send message to room group
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     'type': 'chat_message',
                     'message': message,
-                    'user_name': user.get_full_name() or user.email,
-                    'user_email': user.email,
+                    'user_name': user_name,
+                    'user_email': user_email,
                     'timestamp': comment.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
                     'is_internal': is_internal,
-                    'is_student': hasattr(user, 'is_student') and user.is_student
+                    'is_student': is_student
                 }
             )
 
@@ -99,10 +107,13 @@ class GrievanceChatConsumer(AsyncWebsocketConsumer):
                 return True
             if hasattr(user, 'is_student') and user.is_student:
                 return grievance.student.user == user
+            admin_profile = getattr(user, 'admin_profile', None)
             if hasattr(user, 'is_officer') and user.is_officer:
-                return grievance.assigned_to and grievance.assigned_to.user == user
+                is_assigned = grievance.assigned_to and grievance.assigned_to.user == user
+                is_dept = bool(admin_profile and admin_profile.department and grievance.department and grievance.department.strip().lower() == admin_profile.department.strip().lower())
+                return is_assigned or is_dept
             if hasattr(user, 'is_admin') and user.is_admin:
-                return grievance.department == user.adminprofile.department
+                return bool(admin_profile and admin_profile.department and grievance.department and grievance.department.strip().lower() == admin_profile.department.strip().lower())
             return False
         except Exception:
             return False
@@ -110,9 +121,10 @@ class GrievanceChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def save_comment(self, user, grievance_id, message, is_internal):
         grievance = Grievance.objects.get(id=grievance_id)
-        return GrievanceComment.objects.create(
+        comment = GrievanceComment.objects.create(
             grievance=grievance,
             user=user,
             message=message,
             is_internal=is_internal
         )
+        return comment, grievance.is_anonymous

@@ -721,40 +721,27 @@ def bulk_delete_users(request):
                     else:
                         csv_writer.writerow([user.email, user.role, 'N/A', 'N/A', 'N/A', 'N/A'])
                     
-                    # Create audit log before deletion
+                # Safely soft-deactivate users and archive records instead of destructive hard deletes
+                for user in users_to_delete:
+                    # Deactivate user account
+                    user.is_active = False
+                    user.deactivation_reason = "Account removed via User Management (Soft Deleted for compliance)"
+                    user.save(update_fields=['is_active', 'deactivation_reason'])
+                    
+                    # Archive grievances rather than destroying them
+                    if hasattr(user, 'student_profile') and user.student_profile:
+                        user.student_profile.grievances.all().update(is_archived=True)
+                    
+                    # Log compliance action
                     AuditLog.objects.create(
                         user=request.user,
                         action='delete',
-                        description=f'Bulk deleted user {user.email} (Role: {user.get_role_display()})',
+                        description=f'Soft-deleted user {user.email} (Role: {user.get_role_display()}) - preserved historical audit trail',
                         target_model='User',
                         target_id=str(user.id),
                         ip_address=request.META.get('REMOTE_ADDR'),
                         user_agent=request.META.get('HTTP_USER_AGENT', '')
                     )
-                
-                # Manually delete related objects in correct order to avoid foreign key issues
-                for user in users_to_delete:
-                    # Delete related objects first
-                    if hasattr(user, 'student_profile') and user.student_profile:
-                        # Delete grievances first (they reference student profile)
-                        user.student_profile.grievances.all().delete()
-                        # Delete student profile
-                        user.student_profile.delete()
-                    
-                    if hasattr(user, 'admin_profile') and user.admin_profile:
-                        # Update any category assignments that reference this admin
-                        user.admin_profile.category_assignments.all().delete()
-                        # Delete admin profile
-                        user.admin_profile.delete()
-                    
-                    # Set user references to NULL in remaining records (audit logs, etc.)
-                    AuditLog.objects.filter(user=user).update(user=None)
-                    GrievanceStatusHistory.objects.filter(changed_by=user).update(changed_by=None)
-                    GrievanceAssignmentHistory.objects.filter(assigned_by=user).update(assigned_by=None)
-                    GrievanceComment.objects.filter(user=user).update(user=None)
-                    
-                    # Finally delete the user
-                    user.delete()
                 
             finally:
                 # Re-enable foreign key checks for SQLite only

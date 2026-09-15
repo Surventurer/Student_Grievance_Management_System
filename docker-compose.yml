@@ -8,13 +8,16 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - .env
+      - ${ENV_FILE:-.env}
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - media_data:/app/src/media
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
     logging:
       driver: "json-file"
       options:
@@ -22,19 +25,24 @@ services:
         max-file: "3"
 
   celery_worker:
+    build: .
     image: sgs-web:latest
     container_name: sgs_celery_worker
     restart: always
     command: sh -c "cd src && celery -A config worker --loglevel=info"
     env_file:
-      - .env
+      - ${ENV_FILE:-.env}
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - media_data:/app/src/media
     depends_on:
-      - web
-      - redis
+      redis:
+        condition: service_healthy
+      web:
+        condition: service_started
     logging:
       driver: "json-file"
       options:
@@ -42,19 +50,22 @@ services:
         max-file: "3"
 
   celery_beat:
+    build: .
     image: sgs-web:latest
     container_name: sgs_celery_beat
     restart: always
     command: sh -c "cd src && celery -A config beat --loglevel=info"
     env_file:
-      - .env
+      - ${ENV_FILE:-.env}
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_URL=redis://redis:6379/0
     depends_on:
-      - web
-      - redis
+      redis:
+        condition: service_healthy
+      web:
+        condition: service_started
     logging:
       driver: "json-file"
       options:
@@ -70,6 +81,11 @@ services:
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     logging:
       driver: "json-file"
       options:
@@ -78,3 +94,4 @@ services:
 
 volumes:
   redis_data:
+  media_data:

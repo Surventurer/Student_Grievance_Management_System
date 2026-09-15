@@ -14,6 +14,7 @@ urlpatterns = [
     path('grievances/<uuid:grievance_id>/', views.grievance_detail_view, name='grievance_detail'),
     path('grievances/<uuid:grievance_id>/update-status/', views.update_grievance_status, name='update_grievance_status'),
     path('grievances/<uuid:grievance_id>/add-response/', views.add_admin_response, name='add_admin_response'),
+    path('grievances/<uuid:grievance_id>/appeal-decision/', views.process_grievance_appeal, name='process_grievance_appeal'),
     path('api/grievance-stats/', views.grievance_stats_api, name='grievance_stats_api'),
     path('api/bulk-delete-grievances/', views.bulk_delete_grievances, name='bulk_delete_grievances'),
     path('api/bulk-update-grievances-status/', views.bulk_update_grievances_status, name='bulk_update_grievances_status'),
@@ -48,6 +49,7 @@ urlpatterns = [
     
     # Reports
     path('reports/', views.reports_dashboard, name='reports_dashboard'),
+    path('reports/export-csv/', views.download_grievances_csv, name='download_grievances_csv'),
     
     # CRUD Management
     path('manage/', views.crud_management, name='crud_management'),

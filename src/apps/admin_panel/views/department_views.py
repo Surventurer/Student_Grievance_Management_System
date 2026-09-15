@@ -67,7 +67,7 @@ def departments_api(request):
 @login_required
 def department_management(request):
     """Department management view"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
+    if not request.user.is_superadmin:
         messages.error(request, 'Access denied - Admin privileges required')
         return redirect('authentication:login')
     
@@ -161,7 +161,7 @@ def department_management(request):
 @require_http_methods(["GET"])
 def departments_api(request):
     """API endpoint for getting departments list"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
+    if not request.user.is_superadmin:
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     from apps.students.models import Department
@@ -190,8 +190,8 @@ def departments_api(request):
 @require_http_methods(["GET", "POST"])
 def user_hod_assignment_api(request, user_id):
     """API endpoint for getting/setting user HOD assignment"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
-        return JsonResponse({'error': 'Access denied'}, status=403)
+    if not hasattr(request.user, 'is_superadmin') or not request.user.is_superadmin:
+        return JsonResponse({'error': 'Access denied: Superadmin privileges required'}, status=403)
     
     from apps.authentication.models import User
     from apps.students.models import Department
@@ -284,7 +284,7 @@ def user_hod_assignment_api(request, user_id):
 @require_http_methods(["GET", "POST"])
 def department_create(request):
     """Create new department"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
+    if not request.user.is_superadmin:
         messages.error(request, 'Access denied - Admin privileges required')
         return redirect('authentication:login')
     
@@ -379,7 +379,7 @@ def department_create(request):
 @require_http_methods(["GET", "POST"])
 def department_edit(request, department_id):
     """Edit existing department"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
+    if not request.user.is_superadmin:
         messages.error(request, 'Access denied - Admin privileges required')
         return redirect('authentication:login')
     
@@ -497,7 +497,7 @@ def department_edit(request, department_id):
 @require_http_methods(["POST"])
 def department_delete(request, department_id):
     """Delete department"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
+    if not request.user.is_superadmin:
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     try:
@@ -545,7 +545,7 @@ def department_delete(request, department_id):
 @require_http_methods(["POST"])
 def bulk_activate_departments(request):
     """Bulk activate departments"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
+    if not request.user.is_superadmin:
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     try:
@@ -588,7 +588,7 @@ def bulk_activate_departments(request):
 @require_http_methods(["POST"])
 def bulk_deactivate_departments(request):
     """Bulk deactivate departments"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
+    if not request.user.is_superadmin:
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     try:
@@ -631,7 +631,7 @@ def bulk_deactivate_departments(request):
 @require_http_methods(["POST"])
 def bulk_delete_departments(request):
     """Bulk delete departments"""
-    if not hasattr(request.user, 'is_admin') or not request.user.is_admin_or_officer:
+    if not request.user.is_superadmin:
         return JsonResponse({'error': 'Access denied'}, status=403)
     
     try:

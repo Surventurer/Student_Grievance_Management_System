@@ -15,6 +15,8 @@ def _parse_bool(val):
     return str(val).lower().strip() in ('true', '1', 't', 'yes', 'y', 'debug')
 
 DEBUG = _parse_bool(config('DEBUG', default=True))
+ENVIRONMENT = config('ENVIRONMENT', default='development').lower().strip()
+SHOW_DEV_OTP = DEBUG and (ENVIRONMENT == 'development')
 
 _raw_allowed = config('ALLOWED_HOSTS', default='*')
 ALLOWED_HOSTS = [host.strip().strip("'\"") for host in _raw_allowed.split(',') if host.strip()]

@@ -24,7 +24,8 @@ from rest_framework.response import Response
 
 from apps.grievances.models import (
     Grievance, Category, GrievanceComment, AuditLog, CategoryAssignment,
-    GrievanceAttachment, GrievanceStatusHistory, GrievanceAssignmentHistory
+    GrievanceAttachment, GrievanceStatusHistory, GrievanceAssignmentHistory,
+    Appeal
 )
 from apps.notifications.models import Notification
 from apps.students.models import School, Department, StudentProfile, AdminProfile
@@ -104,13 +105,16 @@ def grievance_detail(request, grievance_id):
     
     try:
         grievance = Grievance.objects.get(id=grievance_id)
+        is_anon = getattr(grievance, 'is_anonymous', False)
+        student_identifier = 'Anonymous' if is_anon else (grievance.student.student_id if grievance.student else None)
         return Response({
             'id': grievance.id,
             'title': grievance.title,
             'description': grievance.description,
             'status': grievance.status,
-            'student': grievance.student.student_id,
-            'category': grievance.category.name,
+            'student': student_identifier,
+            'is_anonymous': is_anon,
+            'category': grievance.category.name if grievance.category else None,
             'submitted_at': grievance.submitted_at,
             'assigned_to': grievance.assigned_to.user.get_full_name() if grievance.assigned_to else None,
         })
@@ -134,8 +138,14 @@ def grievance_detail_view(request, grievance_id):
             messages.error(request, 'Access denied - You can only view grievances from your department or assigned to you')
             return redirect('admin_panel:grievance_list')
         
+        # Fetch appeals and appeal evidence attachments
+        appeals = grievance.appeals.select_related('student__user', 'reviewed_by__user').order_by('-created_at')
+        appeal_attachments = grievance.attachments.filter(file_name__startswith='[Appeal #')
+        
         context = {
             'grievance': grievance,
+            'appeals': appeals,
+            'appeal_attachments': appeal_attachments,
             'user_role': user.role,
             'can_manage_categories': can_manage_categories(user),
         }
@@ -145,6 +155,127 @@ def grievance_detail_view(request, grievance_id):
     except Grievance.DoesNotExist:
         messages.error(request, 'Grievance not found')
         return redirect('admin_panel:grievance_list')
+
+
+@login_required
+@department_access_required
+def process_grievance_appeal(request, grievance_id):
+    """Process decision on a student grievance appeal (Accept & Reopen or Uphold Resolution)"""
+    if not request.user.is_admin_or_officer:
+        messages.error(request, 'Access denied.')
+        return redirect('admin_panel:grievance_list')
+    
+    grievance = get_object_or_404(Grievance, id=grievance_id)
+    
+    from apps.admin_panel.permissions import can_access_grievance
+    if not can_access_grievance(request.user, grievance):
+        messages.error(request, 'Access denied - You can only view grievances from your department or assigned to you.')
+        return redirect('admin_panel:grievance_list')
+        
+    if request.method == 'POST':
+        action = request.POST.get('action')  # 'accept' or 'reject'
+        decision_notes = request.POST.get('decision_notes', '').strip()
+        appeal_id = request.POST.get('appeal_id')
+        
+        appeal = None
+        if appeal_id:
+            appeal = Appeal.objects.filter(id=appeal_id, grievance=grievance).first()
+        if not appeal:
+            appeal = grievance.appeals.filter(status='pending').order_by('-created_at').first()
+            
+        admin_prof = getattr(request.user, 'admin_profile', None)
+        
+        if action == 'accept':
+            # Reopen grievance for supervisory re-hearing
+            grievance.status = 'in_progress'
+            grievance.is_appealed = False
+            grievance.resolved_at = None
+            grievance.resolution_notes = None
+            grievance.save()
+            
+            if appeal:
+                appeal.status = 'accepted'
+                appeal.review_notes = decision_notes or 'Appeal accepted for institutional re-examination.'
+                appeal.reviewed_by = admin_prof
+                appeal.save()
+                
+            # Create AuditLog
+            AuditLog.objects.create(
+                user=request.user,
+                action='update',
+                target_model='Grievance',
+                target_id=str(grievance.id),
+                description=f'Appeal accepted by {request.user.get_full_name()} for grievance {grievance.grievance_id}. Case reopened for re-investigation.',
+                ip_address=request.META.get('REMOTE_ADDR', ''),
+                user_agent=request.META.get('HTTP_USER_AGENT', '')[:255]
+            )
+            
+            # Create comment in thread
+            GrievanceComment.objects.create(
+                grievance=grievance,
+                user=request.user,
+                message=f"Appeal Accepted: Case reopened for supervisory re-hearing.\nOfficer Remarks: {decision_notes or 'Reopening for further inquiry.'}",
+                comment_type='status_update',
+                is_internal=False
+            )
+            
+            # Notify student
+            if grievance.student and grievance.student.user:
+                from django.urls import reverse
+                Notification.objects.create(
+                    recipient=grievance.student.user,
+                    title='Appeal Accepted - Case Reopened',
+                    message=f'Your appeal for grievance #{grievance.grievance_id} has been accepted and reopened for supervisory re-examination.',
+                    notification_type='status_change',
+                    related_link=reverse('students:grievance_detail', kwargs={'grievance_id': grievance.id})
+                )
+                
+            messages.success(request, 'Appeal accepted successfully. Grievance reopened for supervisory review.')
+            
+        elif action == 'reject':
+            if appeal:
+                appeal.status = 'rejected'
+                appeal.review_notes = decision_notes or 'Appeal reviewed and prior resolution upheld.'
+                appeal.reviewed_by = admin_prof
+                appeal.save()
+                
+            grievance.is_appealed = False
+            grievance.save()
+            
+            # Create AuditLog
+            AuditLog.objects.create(
+                user=request.user,
+                action='update',
+                target_model='Grievance',
+                target_id=str(grievance.id),
+                description=f'Appeal rejected/resolution upheld by {request.user.get_full_name()} for grievance {grievance.grievance_id}.',
+                ip_address=request.META.get('REMOTE_ADDR', ''),
+                user_agent=request.META.get('HTTP_USER_AGENT', '')[:255]
+            )
+            
+            # Create comment
+            GrievanceComment.objects.create(
+                grievance=grievance,
+                user=request.user,
+                message=f"Appeal Reviewed: Prior resolution upheld.\nSupervisory Justification: {decision_notes or 'After review, the existing resolution stands.'}",
+                comment_type='status_update',
+                is_internal=False
+            )
+            
+            # Notify student
+            if grievance.student and grievance.student.user:
+                from django.urls import reverse
+                Notification.objects.create(
+                    recipient=grievance.student.user,
+                    title='Appeal Decision - Resolution Upheld',
+                    message=f'Your appeal for grievance #{grievance.grievance_id} was reviewed. The existing resolution has been upheld.',
+                    notification_type='status_change',
+                    related_link=reverse('students:grievance_detail', kwargs={'grievance_id': grievance.id})
+                )
+                
+            messages.info(request, 'Appeal decision recorded. Original resolution upheld.')
+            
+    return redirect('admin_panel:grievance_detail', grievance_id=grievance.id)
 
 
 
@@ -157,6 +288,11 @@ def update_grievance_status(request, grievance_id):
     
     try:
         grievance = get_object_or_404(Grievance, id=grievance_id)
+        
+        from apps.admin_panel.permissions import can_access_grievance
+        if not can_access_grievance(request.user, grievance):
+            return JsonResponse({'success': False, 'error': 'Access denied: You cannot modify this grievance'}, status=403)
+            
         data = json.loads(request.body)
         new_status = data.get('status')
         
@@ -358,8 +494,9 @@ def bulk_delete_grievances(request):
         if not grievance_ids:
             return JsonResponse({'error': 'No grievance IDs provided'}, status=400)
         
-        # Validate that all IDs are valid UUIDs and grievances exist
-        grievances_to_delete = Grievance.objects.filter(id__in=grievance_ids)
+        # Validate that all IDs are valid UUIDs and grievances exist within user's accessible scope
+        accessible_grievances = request.user.get_accessible_grievances()
+        grievances_to_delete = accessible_grievances.filter(id__in=grievance_ids)
         
         if not grievances_to_delete.exists():
             return JsonResponse({'error': 'No valid grievances found'}, status=404)
@@ -473,6 +610,9 @@ def bulk_reassign_grievances(request):
             return JsonResponse({'error': 'Grievance IDs and Assignee ID are required'}, status=400)
             
         assignee = get_object_or_404(AdminProfile, id=assignee_id)
+        
+        if not request.user.is_superadmin and request.user.department_name and request.user.department_name.lower() != (assignee.department or '').lower():
+            return JsonResponse({'error': 'Access denied: Assignee belongs to a different department'}, status=403)
         
         accessible_grievances = request.user.get_accessible_grievances()
         grievances_to_update = accessible_grievances.filter(id__in=grievance_ids)

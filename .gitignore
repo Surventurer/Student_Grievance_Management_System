@@ -1,12 +1,46 @@
-*.pyc
+# Byte-compiled / optimized / DLL files
 __pycache__/
+*.py[cod]
+*$py.class
+*.pyc
 *.pyo
 *.pyd
+
+# C extensions
+*.so
+
+# Distribution / packaging
 .Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
 env/
-pip-log.txt
-pip-delete-this-directory.txt
-.tox
+env.bak/
+venv.bak/
+.uv/
+
+# Testing and Coverage
+.tox/
+.nox/
 .coverage
 .coverage.*
 .cache
@@ -14,25 +48,30 @@ nosetests.xml
 coverage.xml
 *.cover
 *.log
-.git
-.mypy_cache
-.pytest_cache
-.hypothesis
+.hypothesis/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
-# Django
-*.log
+# Django local database & logs
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+*.log
 src/logs/
+src/logs/*
 
-# Media files
+# Media uploads (user uploaded files)
 media/
+src/media/
+src/media/*
+!src/media/.gitkeep
 
-# Static files (if using collectstatic)
+# Static files (collected)
 staticfiles/
+src/staticfiles/
 
-# Environment variables
+# Sensitive Environment variable files - NEVER commit!
 .env
 .env.*
 *.env
@@ -40,19 +79,16 @@ proud.env
 prod.env
 .env.proud
 .env.prod
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+.env.local
 
-# IDEs
+# IDE & Editor files
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+*.sublime-workspace
+*.sublime-project
 
 # OS generated files
 .DS_Store
@@ -63,18 +99,9 @@ venv.bak/
 ehthumbs.db
 Thumbs.db
 
-# Migration files (keep initial migrations)
-*/migrations/*
-!*/migrations/__init__.py
-!*/migrations/0001_initial.py
-
-# UV
-.uv/
-
-Grivances portal project ankur bhaiya
-src/logs/*
-
-Integrating Advanced Grievance Workflows.md
+# Project temporary scratch & notes
+scratch/
+Grivances portal project ankur bhaiya/
 grivances chat.json
 explain.md
-.env.proud
+Integrating Advanced Grievance Workflows.md

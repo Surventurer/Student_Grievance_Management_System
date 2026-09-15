@@ -467,9 +467,14 @@ def student_grievance_detail_view(request, grievance_id):
     # Mark all notifications for this grievance as read
     mark_grievance_notifications_read(request.user, grievance)
     
+    appeals = grievance.appeals.select_related('reviewed_by__user').order_by('-created_at')
+    appeal_attachments = grievance.attachments.filter(file_name__startswith='[Appeal #')
+    
     context = {
         'student_profile': student_profile,
         'grievance': grievance,
+        'appeals': appeals,
+        'appeal_attachments': appeal_attachments,
     }
     
     return render(request, 'students/grievance_detail.html', context)
@@ -612,23 +617,59 @@ def appeal_grievance_view(request, grievance_id):
             messages.error(request, 'You can only appeal resolved or rejected grievances.')
             return redirect('students:grievance_detail', grievance_id=grievance_id)
             
-        if grievance.is_appealed:
-            messages.warning(request, 'This grievance has already been appealed.')
+        appeal_count = grievance.appeals.count()
+        if appeal_count >= 2:
+            messages.warning(request, 'Maximum appeal limit reached (2 appeals allowed). Further appeals cannot be submitted.')
             return redirect('students:grievance_detail', grievance_id=grievance_id)
             
-        # Create Appeal
+        # Read reason from POST request
+        reason = request.POST.get('reason', '').strip() or "Appealed by student with new grounds/evidence."
+        
+        # Handle optional new supporting document
+        evidence_file = request.FILES.get('evidence_file')
+        if evidence_file:
+            allowed_extensions = {'.pdf', '.jpg', '.jpeg', '.png', '.doc', '.docx', '.txt'}
+            import os
+            ext = os.path.splitext(evidence_file.name)[1].lower()
+            if ext in allowed_extensions and evidence_file.size <= 5 * 1024 * 1024:
+                from apps.grievances.models import GrievanceAttachment
+                GrievanceAttachment.objects.create(
+                    grievance=grievance,
+                    file=evidence_file,
+                    file_name=f"[Appeal #{appeal_count + 1} Evidence] {evidence_file.name}",
+                    file_size=evidence_file.size,
+                    file_type=evidence_file.content_type or 'application/octet-stream'
+                )
+        
+        # Create Appeal record
         Appeal.objects.create(
             grievance=grievance,
             student=student_profile,
-            reason="Appealed by student from dashboard"
+            reason=reason
         )
         
-        # Update Grievance
+        # Re-open the grievance
         grievance.is_appealed = True
-        grievance.status = 'pending' # Re-open the grievance
+        grievance.status = 'pending'
         grievance.save()
         
-        messages.success(request, 'Your appeal has been submitted successfully and the grievance has been re-opened.')
+        # Escalate grievance to supervisory authority
+        from apps.grievances.tasks import escalate_grievance
+        escalated = escalate_grievance(grievance, is_appeal=True, appeal_reason=reason)
+        
+        # Create a system comment in the grievance thread
+        from apps.grievances.models import GrievanceComment
+        GrievanceComment.objects.create(
+            grievance=grievance,
+            user=request.user,
+            message=f"Appeal #{appeal_count + 1} submitted: {reason}",
+            is_internal=False
+        )
+        
+        messages.success(
+            request, 
+            'Your appeal has been submitted successfully. The grievance has been re-opened and escalated to the supervisory authority for review.'
+        )
         return redirect('students:grievance_detail', grievance_id=grievance_id)
         
     except Exception as e:

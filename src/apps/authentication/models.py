@@ -130,18 +130,36 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     def get_accessible_grievances(self):
         """Get grievances this user can access based on their role"""
+        from apps.grievances.models import Grievance
+        from django.db.models import Q
+
         if self.is_superadmin:
             # Superadmin can see all grievances
-            from apps.grievances.models import Grievance
             return Grievance.objects.filter(is_archived=False)
-        elif self.role in ['admin', 'officer'] and self.assigned_department:
-            # Department admin/hod can only see grievances from their department students
-            from apps.grievances.models import Grievance
-            accessible_students = self.get_accessible_students()
-            return Grievance.objects.filter(student__in=accessible_students, is_archived=False)
+        elif self.role in ['admin', 'officer']:
+            query = Q()
+            dept_name = None
+            if self.assigned_department:
+                dept_name = self.assigned_department.name
+            elif hasattr(self, 'admin_profile') and self.admin_profile:
+                dept_name = self.admin_profile.department
+
+            # 1. Any grievance assigned directly to this user's admin profile
+            if hasattr(self, 'admin_profile') and self.admin_profile:
+                query |= Q(assigned_to=self.admin_profile)
+
+            # 2. Any grievance targeting this user's department
+            if dept_name:
+                query |= Q(department__iexact=dept_name)
+                # For academic department admins, also include grievances filed by their students
+                if self.role == 'admin':
+                    query |= Q(student__department__iexact=dept_name)
+
+            if query:
+                return Grievance.objects.filter(query, is_archived=False).distinct()
+            return Grievance.objects.none()
         else:
             # Students see their own grievances
-            from apps.grievances.models import Grievance
             if hasattr(self, 'student_profile') and self.student_profile:
                 return Grievance.objects.filter(student=self.student_profile, is_archived=False)
             return Grievance.objects.none()
@@ -197,25 +215,39 @@ class User(AbstractBaseUser, PermissionsMixin):
         """Check if user can access a specific grievance"""
         if self.role == 'superadmin':
             return True
-        elif self.role == 'admin':
+        elif self.role in ['admin', 'officer']:
             try:
-                admin_profile = self.admin_profile
-                return (grievance.student.department == admin_profile.department or 
-                       grievance.department == admin_profile.department)
-            except:
+                admin_profile = getattr(self, 'admin_profile', None)
+                if not admin_profile:
+                    return False
+                # Direct assignment
+                if grievance.assigned_to == admin_profile:
+                    return True
+                # Department match
+                dept_name = admin_profile.department
+                if dept_name and grievance.department and grievance.department.strip().lower() == dept_name.strip().lower():
+                    return True
+                # Academic department admin can also view grievances from their students
+                if self.role == 'admin' and dept_name and grievance.student and grievance.student.department:
+                    if grievance.student.department.strip().lower() == dept_name.strip().lower():
+                        return True
                 return False
-        elif self.role == 'officer':
-            try:
-                admin_profile = self.admin_profile
-                return grievance.assigned_to == admin_profile
-            except:
+            except Exception:
                 return False
         elif self.role == 'student':
             try:
-                return grievance.student == self.student_profile
-            except:
+                return grievance.student == getattr(self, 'student_profile', None)
+            except Exception:
                 return False
         return False
+
+    def delete(self, using=None, keep_parents=False):
+        """Soft-delete user account to preserve audit records and compliance"""
+        self.is_active = False
+        self.deactivation_reason = self.deactivation_reason or "Account soft-deleted"
+        self.save(update_fields=['is_active', 'deactivation_reason'])
+        if hasattr(self, 'student_profile') and self.student_profile:
+            self.student_profile.grievances.all().update(is_archived=True)
 
 
 class EmailVerification(models.Model):

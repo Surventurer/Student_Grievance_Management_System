@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.core.validators import FileExtensionValidator
 from apps.students.models import StudentProfile, AdminProfile
 import uuid
 
@@ -128,11 +129,31 @@ class Grievance(models.Model):
     
     def __str__(self):
         return f"{self.title} - {self.student.student_id}"
+
+    def delete(self, using=None, keep_parents=False):
+        """Soft delete grievance to preserve compliance records"""
+        self.is_archived = True
+        self.save(update_fields=['is_archived'])
     
     @property
     def grievance_id(self):
         """Generate a human-readable grievance ID"""
         return f"GRV-{str(self.id)[:8].upper()}"
+
+    @property
+    def effective_sla_hours(self):
+        """Calculate dynamic SLA hours based on Category SLA and Grievance Priority"""
+        base_hours = self.category.sla_hours if (self.category and self.category.sla_hours) else 48
+        
+        priority_multipliers = {
+            'urgent': 0.25,
+            'high': 0.5,
+            'medium': 1.0,
+            'low': 1.5,
+        }
+        multiplier = priority_multipliers.get(self.priority, 1.0)
+        calculated_hours = int(base_hours * multiplier)
+        return max(calculated_hours, 6)
     
     def auto_assign(self):
         """Enhanced auto-assign grievance based on category assignments and department"""
@@ -149,23 +170,28 @@ class Grievance(models.Model):
         assigned_admin = None
         assignment_reason = "No assignment found"
         
-        # Try to get department from student profile
-        try:
-            student_department = self.student.department if hasattr(self.student, 'department') else None
-        except Exception:
-            student_department = None
+        # Determine target department:
+        # Priority 1: Department targeted on the grievance (e.g., Hostel, Accounts, Library, etc.)
+        # Priority 2: Fallback to student's academic department if grievance department is unspecified
+        target_department = self.department.strip() if self.department else None
+        if not target_department:
+            try:
+                if hasattr(self, 'student') and hasattr(self.student, 'department') and self.student.department:
+                    target_department = self.student.department.strip()
+            except Exception:
+                target_department = None
         
-        # Step 1: Try to find specific department assignment
-        if student_department:
+        # Step 1: Try to find specific department assignment for this category
+        if target_department:
             assignment = CategoryAssignment.objects.filter(
                 category=self.category,
-                department__iexact=student_department,
+                department__iexact=target_department,
                 is_active=True
             ).order_by('-priority_level').first()
             
             if assignment:
                 assigned_admin = assignment.assigned_admin
-                assignment_reason = f"Department-specific assignment: {student_department}"
+                assignment_reason = f"Department-specific assignment: {target_department}"
         
         # Step 2: Try keyword matching in CategoryAssignment
         if not assigned_admin:
@@ -197,12 +223,12 @@ class Grievance(models.Model):
             assigned_admin = self.category.default_admin
             assignment_reason = "Category default admin"
         
-        # Step 4: Fallback to any available admin for the department (Load-Balanced)
-        if not assigned_admin and student_department:
+        # Step 4: Fallback to any available admin for the target department (Load-Balanced)
+        if not assigned_admin and target_department:
             try:
                 from django.db.models import Count, Q
                 fallback_admin = AdminProfile.objects.filter(
-                    department__iexact=student_department,
+                    department__iexact=target_department,
                     role_level__in=['admin', 'officer']
                 ).annotate(
                     active_count=Count('assigned_grievances', filter=Q(assigned_grievances__status__in=['pending', 'pending_student']))
@@ -210,7 +236,7 @@ class Grievance(models.Model):
                 
                 if fallback_admin:
                     assigned_admin = fallback_admin
-                    assignment_reason = f"Load-balanced assignment: {student_department}"
+                    assignment_reason = f"Load-balanced assignment: {target_department}"
             except Exception as e:
                 print(f"Error finding fallback admin: {e}")
         
@@ -243,9 +269,14 @@ class Grievance(models.Model):
 class GrievanceAttachment(models.Model):
     """Grievance attachment model"""
     
+    ALLOWED_EXTENSIONS = ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx', 'txt']
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     grievance = models.ForeignKey(Grievance, on_delete=models.CASCADE, related_name='attachments')
-    file = models.FileField(upload_to='grievance_attachments/')
+    file = models.FileField(
+        upload_to='grievance_attachments/',
+        validators=[FileExtensionValidator(allowed_extensions=ALLOWED_EXTENSIONS)]
+    )
     file_name = models.CharField(max_length=255)
     file_size = models.IntegerField()
     file_type = models.CharField(max_length=50)

@@ -12,18 +12,25 @@ from apps.students.models import StudentProfile
 
 
 def get_user_department(user):
-    """Get the department of the logged-in admin user"""
+    """Get the department name of the logged-in user"""
+    if not user or not user.is_authenticated:
+        return None
     if user.role == 'superadmin':
         return None  # Superadmin has access to all departments
     
     try:
-        # Use the new department assignment system
         if user.role in ['admin', 'officer']:
-            return user.assigned_department
-        elif user.role == 'student' and hasattr(user, 'student_profile') and user.student_profile:
-            return user.student_profile.department
+            dept = getattr(user, 'assigned_department', None)
+            if dept:
+                return dept.name if hasattr(dept, 'name') else str(dept)
+            admin_profile = getattr(user, 'admin_profile', None)
+            if admin_profile and admin_profile.department:
+                return admin_profile.department
+        elif user.role == 'student':
+            student_profile = getattr(user, 'student_profile', None)
+            if student_profile and student_profile.department:
+                return student_profile.department
     except Exception as e:
-        # Handle case where profile doesn't exist
         print(f"Error getting user department: {e}")
         
     return None
@@ -65,15 +72,16 @@ def can_access_department_data(user, department_name):
         return True
     
     user_dept = get_user_department(user)
-    if not user_dept:
+    if not user_dept or not department_name:
         return False
     
-    return user_dept == department_name
+    return str(user_dept).strip().lower() == str(department_name).strip().lower()
 
 
 def can_access_grievance(user, grievance):
     """Check if user can access a specific grievance"""
-    # Use the new User model access methods
+    if hasattr(user, 'can_access_grievance'):
+        return user.can_access_grievance(grievance)
     accessible_grievances = user.get_accessible_grievances()
     return accessible_grievances.filter(id=grievance.id).exists()
 
@@ -86,8 +94,8 @@ def can_access_student(user, student):
     # Department admin can access students from their department
     if user.role == 'admin':
         user_dept = get_user_department(user)
-        if user_dept:
-            return student.department == user_dept
+        if user_dept and student and student.department:
+            return student.department.strip().lower() == str(user_dept).strip().lower()
     
     # Officers can access students who have grievances assigned to them
     if user.role == 'officer':

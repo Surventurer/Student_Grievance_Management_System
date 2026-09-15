@@ -104,13 +104,20 @@ def download_grievances_csv(request):
             days_diff = (grievance.updated_at - grievance.submitted_at).days
             days_to_resolve = str(days_diff)
         
+        is_anon = getattr(grievance, 'is_anonymous', False)
+        student_id = 'Anonymous' if is_anon else (grievance.student.student_id if grievance.student else '')
+        student_name = 'Anonymous Student' if is_anon else (grievance.student.name if grievance.student else '')
+        student_email = 'Hidden' if is_anon else (grievance.student.user.email if grievance.student and grievance.student.user else '')
+        school = 'Confidential' if is_anon else (grievance.student.school if grievance.student else '')
+        department = 'Confidential' if is_anon else (grievance.student.department if grievance.student else '')
+
         writer.writerow([
             f'GRV-{grievance.id}',
-            grievance.student.student_id if grievance.student else '',
-            grievance.student.name if grievance.student else '',
-            grievance.student.user.email if grievance.student and grievance.student.user else '',
-            grievance.student.school if grievance.student else '',
-            grievance.student.department if grievance.student else '',
+            student_id,
+            student_name,
+            student_email,
+            school,
+            department,
             grievance.category.name if grievance.category else '',
             grievance.title,
             grievance.description[:200] + '...' if len(grievance.description) > 200 else grievance.description,
