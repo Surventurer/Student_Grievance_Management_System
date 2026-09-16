@@ -50,7 +50,12 @@ class GrievanceChatConsumer(AsyncWebsocketConsumer):
 
         if message:
             # Save comment to database
-            comment, is_anonymous = await self.save_comment(user, self.grievance_id, message, is_internal)
+            comment, is_anonymous, err = await self.save_comment(user, self.grievance_id, message, is_internal)
+            if err or not comment:
+                await self.send(text_data=json.dumps({
+                    'error': err or 'This grievance is closed. Chat is unavailable.'
+                }))
+                return
             
             is_student = hasattr(user, 'is_student') and user.is_student
             if is_student and is_anonymous:
@@ -65,6 +70,8 @@ class GrievanceChatConsumer(AsyncWebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'chat_message',
+                    'id': str(comment.id),
+                    'comment_id': str(comment.id),
                     'message': message,
                     'user_name': user_name,
                     'user_email': user_email,
@@ -82,6 +89,7 @@ class GrievanceChatConsumer(AsyncWebsocketConsumer):
         timestamp = event['timestamp']
         is_internal = event.get('is_internal', False)
         is_student = event.get('is_student', False)
+        comment_id = event.get('id') or event.get('comment_id')
         
         user = self.scope['user']
         
@@ -91,12 +99,19 @@ class GrievanceChatConsumer(AsyncWebsocketConsumer):
 
         # Send message to WebSocket
         await self.send(text_data=json.dumps({
+            'id': comment_id,
+            'comment_id': comment_id,
             'message': message,
             'user_name': user_name,
             'user_email': user_email,
             'timestamp': timestamp,
             'is_internal': is_internal,
-            'is_student': is_student
+            'is_student': is_student,
+            'attachment_url': event.get('attachment_url'),
+            'attachment_name': event.get('attachment_name'),
+            'status_changed': event.get('status_changed', False),
+            'new_status': event.get('new_status'),
+            'new_status_display': event.get('new_status_display')
         }))
 
     @database_sync_to_async
@@ -120,11 +135,16 @@ class GrievanceChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def save_comment(self, user, grievance_id, message, is_internal):
-        grievance = Grievance.objects.get(id=grievance_id)
-        comment = GrievanceComment.objects.create(
-            grievance=grievance,
-            user=user,
-            message=message,
-            is_internal=is_internal
-        )
-        return comment, grievance.is_anonymous
+        try:
+            grievance = Grievance.objects.get(id=grievance_id)
+            if grievance.status in ['resolved', 'rejected']:
+                return None, False, f"This grievance is {grievance.status}. Communication is closed."
+            comment = GrievanceComment.objects.create(
+                grievance=grievance,
+                user=user,
+                message=message,
+                is_internal=is_internal
+            )
+            return comment, grievance.is_anonymous, None
+        except Exception as e:
+            return None, False, str(e)

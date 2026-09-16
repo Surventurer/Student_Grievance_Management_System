@@ -51,6 +51,20 @@ def mark_notification_read(request, notification_id):
     return Response({'success': True}, status=status.HTTP_200_OK)
 
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def mark_all_notifications_read(request):
+    """Mark all unread notifications as read for the current user"""
+    updated_count = Notification.objects.filter(
+        recipient=request.user,
+        is_read=False
+    ).update(is_read=True)
+    return Response({
+        'success': True,
+        'cleared_count': updated_count
+    }, status=status.HTTP_200_OK)
+
+
 @login_required
 def notification_list_view(request):
     """Web view to display all notifications for the current user"""

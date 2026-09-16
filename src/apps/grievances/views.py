@@ -435,12 +435,24 @@ def grievance_comments(request, grievance_id):
 
         comments = GrievanceComment.objects.filter(grievance=grievance).select_related('user').order_by('timestamp')
         
-        return Response([
+        # Security: Students must NEVER see internal staff notes
+        if hasattr(request.user, 'is_student') and request.user.is_student:
+            comments = comments.filter(is_internal=False)
+
+        def resolve_comment_user_name(c):
+            if not c.user:
+                return 'System'
+            if c.user.is_student and grievance.is_anonymous:
+                return 'Anonymous Student'
+            return c.user.get_full_name() or c.user.email
+        
+        resp = Response([
             {
                 'id': str(c.id),
+                'comment_id': str(c.id),
                 'message': c.message,
-                'user': c.user.get_full_name() if c.user else 'System',
-                'user_role': c.user.role if c.user else 'system',
+                'user': resolve_comment_user_name(c),
+                'user_role': 'student' if (c.user and c.user.is_student and grievance.is_anonymous) else (c.user.role if c.user else 'system'),
                 'is_student': bool(c.user and c.user.is_student),
                 'is_internal': c.is_internal,
                 'comment_type': c.comment_type,
@@ -448,6 +460,10 @@ def grievance_comments(request, grievance_id):
             }
             for c in comments
         ])
+        resp['X-Grievance-Status'] = grievance.status
+        resp['X-Grievance-Status-Display'] = grievance.get_status_display()
+        resp['Access-Control-Expose-Headers'] = 'X-Grievance-Status, X-Grievance-Status-Display'
+        return resp
     except Grievance.DoesNotExist:
         return Response({'error': 'Grievance not found'}, status=status.HTTP_404_NOT_FOUND)
 

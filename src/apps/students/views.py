@@ -469,12 +469,14 @@ def student_grievance_detail_view(request, grievance_id):
     
     appeals = grievance.appeals.select_related('reviewed_by__user').order_by('-created_at')
     appeal_attachments = grievance.attachments.filter(file_name__startswith='[Appeal #')
+    latest_resolution = grievance.status_history.filter(new_status__in=['resolved', 'rejected']).order_by('-timestamp').first()
     
     context = {
         'student_profile': student_profile,
         'grievance': grievance,
         'appeals': appeals,
         'appeal_attachments': appeal_attachments,
+        'latest_resolution': latest_resolution,
     }
     
     return render(request, 'students/grievance_detail.html', context)
@@ -494,40 +496,205 @@ def add_student_response(request, grievance_id):
     try:
         student_profile = request.user.student_profile
         grievance = get_object_or_404(Grievance, id=grievance_id, student=student_profile)
+        is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'application/json' in request.META.get('HTTP_ACCEPT', '')
+
+        # Lock communication if grievance is resolved or rejected
+        if grievance.status in ['resolved', 'rejected']:
+            status_text = 'resolved' if grievance.status == 'resolved' else 'rejected'
+            err_msg = f'This grievance has been {status_text}. No further messages can be sent unless an appeal is filed.'
+            if is_ajax:
+                return JsonResponse({
+                    'success': False,
+                    'error': err_msg
+                }, status=400)
+            messages.info(request, err_msg)
+            from django.urls import reverse
+            return redirect(reverse('students:grievance_detail', kwargs={'grievance_id': grievance_id}))
+
         student_response = request.POST.get('student_response', '').strip()
         
-        if not student_response:
-            messages.error(request, 'Response cannot be empty.')
+        if not student_response and not request.FILES.get('attachment'):
+            if is_ajax:
+                return JsonResponse({'success': False, 'error': 'Response message or file attachment is required.'}, status=400)
+            messages.error(request, 'Response message or file attachment is required.')
             from django.http import HttpResponseRedirect
             from django.urls import reverse
             url = reverse('students:grievance_detail', kwargs={'grievance_id': grievance_id})
             return HttpResponseRedirect(f"{url}#message-form")
+            
+        attachment_obj = None
+        attachment_file = request.FILES.get('attachment')
+        if attachment_file:
+            import os
+            from apps.grievances.models import GrievanceAttachment
+            ext = os.path.splitext(attachment_file.name)[1].lower().lstrip('.')
+            if ext not in GrievanceAttachment.ALLOWED_EXTENSIONS:
+                if is_ajax:
+                    return JsonResponse({'success': False, 'error': f'Invalid file type. Allowed: {", ".join(GrievanceAttachment.ALLOWED_EXTENSIONS)}'}, status=400)
+                messages.error(request, f'Invalid file type. Allowed: {", ".join(GrievanceAttachment.ALLOWED_EXTENSIONS)}')
+                from django.http import HttpResponseRedirect
+                from django.urls import reverse
+                return HttpResponseRedirect(f"{reverse('students:grievance_detail', kwargs={'grievance_id': grievance_id})}#message-form")
+            if attachment_file.size > 10 * 1024 * 1024:
+                if is_ajax:
+                    return JsonResponse({'success': False, 'error': 'Attachment exceeds maximum size of 10MB'}, status=400)
+                messages.error(request, 'Attachment exceeds maximum size of 10MB')
+                from django.http import HttpResponseRedirect
+                from django.urls import reverse
+                return HttpResponseRedirect(f"{reverse('students:grievance_detail', kwargs={'grievance_id': grievance_id})}#message-form")
+                
+            attachment_obj = GrievanceAttachment.objects.create(
+                grievance=grievance,
+                file=attachment_file,
+                file_name=f"[Student Response] {attachment_file.name}",
+                file_size=attachment_file.size,
+                file_type=attachment_file.content_type or ext
+            )
+
+        full_message = student_response
+        if attachment_obj:
+            tag = f"\n📎 Attached: {attachment_file.name}"
+            full_message = (full_message + tag) if full_message else f"📎 Attached: {attachment_file.name}"
         
         # Create the student response comment
         comment = GrievanceComment.objects.create(
             grievance=grievance,
             user=request.user,
-            message=student_response,
+            message=full_message,
             comment_type='comment',
             is_internal=False  # Student responses are always public
         )
 
-        # Only create notification if admin is not currently viewing the grievance
-        if grievance.assigned_to and grievance.assigned_to.user:
-            from apps.grievances.views import is_user_viewing_grievance
-            admin_user = grievance.assigned_to.user
+        # Automatic SLA Unpause & Status Transition if case was Awaiting Student Reply
+        status_changed = False
+        if grievance.status == 'pending_student':
+            old_status = grievance.status
+            if grievance.sla_pause_time:
+                pause_duration = timezone.now() - grievance.sla_pause_time
+                grievance.accumulated_sla_pause_minutes += int(pause_duration.total_seconds() / 60)
+                grievance.sla_pause_time = None
             
-            # Check if admin is viewing this grievance
+            grievance.status = 'pending'
+            grievance.save()
+            status_changed = True
+
+            # Record formal Status History
+            from apps.grievances.models import GrievanceStatusHistory
+            GrievanceStatusHistory.objects.create(
+                grievance=grievance,
+                previous_status=old_status,
+                new_status='pending',
+                changed_by=request.user,
+                reason='Student replied in communication thread; SLA clock resumed.'
+            )
+
+            # Record AuditLog
+            from apps.grievances.models import AuditLog
+            AuditLog.objects.create(
+                user=request.user,
+                action='update',
+                target_model='Grievance',
+                target_id=str(grievance.id),
+                description=f'Grievance {grievance.grievance_id} auto-resumed to pending upon student reply. SLA unpaused.',
+                ip_address=request.META.get('REMOTE_ADDR', ''),
+                user_agent=request.META.get('HTTP_USER_AGENT', '')[:255]
+            )
+
+            # Add automated system status comment in the thread
+            status_comment = GrievanceComment.objects.create(
+                grievance=grievance,
+                user=None,
+                message="Case status automatically returned to Active (Pending): Student replied to inquiry; SLA clock resumed.",
+                comment_type='status_update',
+                is_internal=False
+            )
+
+        # Broadcast live to connected WebSockets via Channel Layer
+        try:
+            from asgiref.sync import async_to_sync
+            from channels.layers import get_channel_layer
+            channel_layer = get_channel_layer()
+            if channel_layer:
+                user_name = 'Anonymous Student' if grievance.is_anonymous else (request.user.get_full_name() or request.user.email)
+                user_email = 'hidden@anonymous.local' if grievance.is_anonymous else request.user.email
+                async_to_sync(channel_layer.group_send)(
+                    f'chat_{grievance.id}',
+                    {
+                        'type': 'chat_message',
+                        'id': str(comment.id),
+                        'comment_id': str(comment.id),
+                        'message': full_message,
+                        'user_name': user_name,
+                        'user_email': user_email,
+                        'timestamp': comment.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+                        'is_internal': False,
+                        'is_student': True,
+                        'status_changed': status_changed,
+                        'new_status': grievance.status if status_changed else None,
+                        'new_status_display': grievance.get_status_display() if status_changed else None,
+                        'attachment_url': attachment_obj.file.url if attachment_obj else None,
+                        'attachment_name': attachment_file.name if attachment_obj else None
+                    }
+                )
+                if status_changed:
+                    async_to_sync(channel_layer.group_send)(
+                        f'chat_{grievance.id}',
+                        {
+                            'type': 'chat_message',
+                            'id': str(status_comment.id),
+                            'comment_id': str(status_comment.id),
+                            'message': status_comment.message,
+                            'user_name': 'System',
+                            'user_email': 'system@university.local',
+                            'timestamp': status_comment.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+                            'is_internal': False,
+                            'is_student': False
+                        }
+                    )
+        except Exception as ws_err:
+            print(f"WebSocket broadcast warning: {ws_err}")
+
+        # Notification delivery to assigned officer or department admin(s)
+        from apps.notifications.models import Notification
+        recipients = set()
+        if grievance.assigned_to and grievance.assigned_to.user:
+            recipients.add(grievance.assigned_to.user)
+        else:
+            from apps.admin_panel.models import AdminProfile
+            dept_admins = AdminProfile.objects.filter(department=grievance.department, user__is_active=True).select_related('user')
+            for a in dept_admins:
+                recipients.add(a.user)
+        
+        notif_msg = f'Student reply received on #{grievance.grievance_id}: {full_message[:120]}'
+        if status_changed:
+            notif_msg = f'Student replied on #{grievance.grievance_id}. SLA timer resumed and case returned to active status.'
+
+        from apps.grievances.views import is_user_viewing_grievance
+        from django.urls import reverse
+
+        for admin_user in recipients:
             if not is_user_viewing_grievance(admin_user, grievance.id):
-                from django.urls import reverse
                 Notification.objects.create(
                     recipient=admin_user,
-                    title='New student message',
-                    message=f'Student replied on grievance {grievance.grievance_id}: {student_response[:120]}',
+                    title='Student Response Received' if status_changed else 'New student message',
+                    message=notif_msg,
                     notification_type='comment',
                     related_link=reverse('admin_panel:grievance_detail', args=[grievance.id]) + '#admin_response'
                 )
         
+        if is_ajax:
+            return JsonResponse({
+                'success': True,
+                'id': str(comment.id),
+                'comment_id': str(comment.id),
+                'timestamp': comment.timestamp.strftime('%b %d, %Y %H:%M'),
+                'status_changed': status_changed,
+                'new_status': grievance.status if status_changed else None,
+                'new_status_display': grievance.get_status_display() if status_changed else None,
+                'attachment_url': attachment_obj.file.url if attachment_obj else None,
+                'attachment_name': attachment_file.name if attachment_obj else None
+            })
+
         # Redirect with fragment to maintain scroll position near message form
         from django.http import HttpResponseRedirect
         from django.urls import reverse
@@ -535,6 +702,9 @@ def add_student_response(request, grievance_id):
         return HttpResponseRedirect(f"{url}#message-form")
         
     except Exception as e:
+        is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'application/json' in request.META.get('HTTP_ACCEPT', '')
+        if is_ajax:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
         messages.error(request, f'Error sending response: {str(e)}')
         from django.http import HttpResponseRedirect
         from django.urls import reverse
@@ -659,13 +829,108 @@ def appeal_grievance_view(request, grievance_id):
         
         # Create a system comment in the grievance thread
         from apps.grievances.models import GrievanceComment
-        GrievanceComment.objects.create(
+        appeal_comment = GrievanceComment.objects.create(
             grievance=grievance,
             user=request.user,
             message=f"Appeal #{appeal_count + 1} submitted: {reason}",
+            comment_type='status_update',
             is_internal=False
         )
-        
+
+        # Broadcast live appeal status update to WebSocket channel layer
+        try:
+            from asgiref.sync import async_to_sync
+            from channels.layers import get_channel_layer
+            channel_layer = get_channel_layer()
+            if channel_layer:
+                sender_name = 'Anonymous Student' if grievance.is_anonymous else request.user.get_full_name()
+                sender_email = 'hidden@anonymous.local' if grievance.is_anonymous else request.user.email
+                async_to_sync(channel_layer.group_send)(
+                    f'chat_{grievance.id}',
+                    {
+                        'type': 'chat_message',
+                        'id': str(appeal_comment.id),
+                        'comment_id': str(appeal_comment.id),
+                        'message': f"Appeal #{appeal_count + 1} submitted: {reason}",
+                        'user_name': sender_name,
+                        'user_email': sender_email,
+                        'timestamp': appeal_comment.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+                        'is_internal': False,
+                        'is_student': True,
+                        'status_changed': True,
+                        'new_status': 'pending',
+                        'new_status_display': 'Pending (Appealed)'
+                    }
+                )
+        except Exception as ws_err:
+            print(f"WebSocket broadcast error on appeal: {ws_err}")
+
+        # Send in-app notifications and email alerts to all relevant admins & officers
+        try:
+            from apps.notifications.models import Notification
+            from apps.authentication.models import User, AdminProfile
+            from django.urls import reverse
+
+            staff_recipients = set()
+
+            # 1. Assigned officer
+            if grievance.assigned_to and grievance.assigned_to.user and grievance.assigned_to.user.is_active:
+                staff_recipients.add(grievance.assigned_to.user)
+
+            # 2. Department Admins / HODs for this department
+            if grievance.department:
+                dept_admins = AdminProfile.objects.filter(
+                    department__iexact=grievance.department.strip(),
+                    user__is_active=True
+                ).select_related('user')
+                for da in dept_admins:
+                    if da.user and da.user.is_active:
+                        staff_recipients.add(da.user)
+
+            # 3. Superadmins (Appellate Authority)
+            for sa in User.objects.filter(is_superadmin=True, is_active=True):
+                staff_recipients.add(sa)
+
+            admin_link = reverse('admin_panel:grievance_detail', kwargs={'grievance_id': grievance.id})
+            appeal_title = f"Appeal #{appeal_count + 1} Filed: #{grievance.grievance_id}"
+            appeal_msg = f'Student filed Appeal #{appeal_count + 1} on grievance #{grievance.grievance_id} ("{grievance.title}"). Grounds: {reason[:140]}'
+
+            # Create in-app notifications for each staff member
+            for staff_user in staff_recipients:
+                Notification.objects.create(
+                    recipient=staff_user,
+                    title=appeal_title,
+                    message=appeal_msg,
+                    notification_type='appeal',
+                    related_link=admin_link
+                )
+
+            # Send email notifications to staff members
+            from django.core.mail import send_mail
+            from django.conf import settings
+            staff_emails = [u.email for u in staff_recipients if u.email]
+            if staff_emails:
+                email_subj = f"URGENT: Appeal Filed for Grievance #{grievance.grievance_id}"
+                email_body = (
+                    f"A student has filed Appeal #{appeal_count + 1} on grievance #{grievance.grievance_id}.\n\n"
+                    f"Title: {grievance.title}\n"
+                    f"Department: {grievance.department or 'N/A'}\n"
+                    f"Priority: {grievance.get_priority_display()}\n\n"
+                    f"Appeal Reason / Grounds:\n{reason}\n\n"
+                    f"The grievance has been reopened and escalated for supervisory review.\n"
+                    f"Please log in to the admin panel to examine evidence and adjudicate.\n\n"
+                    f"Student Grievance Management System"
+                )
+                send_mail(
+                    email_subj,
+                    email_body,
+                    settings.DEFAULT_FROM_EMAIL,
+                    staff_emails,
+                    fail_silently=True
+                )
+        except Exception as notif_err:
+            print(f"Error dispatching appeal notifications to admins: {notif_err}")
+
         messages.success(
             request, 
             'Your appeal has been submitted successfully. The grievance has been re-opened and escalated to the supervisory authority for review.'

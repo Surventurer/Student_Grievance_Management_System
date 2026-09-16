@@ -34,11 +34,15 @@ class GrievanceCommentSerializer(serializers.ModelSerializer):
         
     def get_user_name(self, obj):
         if obj.user:
+            if getattr(obj.user, 'is_student', False) and getattr(obj.grievance, 'is_anonymous', False):
+                return "Anonymous Student"
             return obj.user.get_full_name() or obj.user.email
         return "System"
         
     def get_user_email(self, obj):
         if obj.user:
+            if getattr(obj.user, 'is_student', False) and getattr(obj.grievance, 'is_anonymous', False):
+                return "hidden@anonymous.local"
             return obj.user.email
         return None
 

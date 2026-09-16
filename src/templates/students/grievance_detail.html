@@ -67,6 +67,78 @@
         border: 1px solid #e0e0e0;
     }
     
+    @keyframes messageGlow {
+        0% { background-color: rgba(13, 110, 253, 0.16); }
+        100% { background-color: inherit; }
+    }
+    .message-highlight-pulse {
+        animation: messageGlow 2.5s ease-out;
+    }
+
+    @keyframes fileAttachPopIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.82) translateY(6px);
+        }
+        70% {
+            opacity: 1;
+            transform: scale(1.03) translateY(-1px);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+    @keyframes fileAttachPopOut {
+        0% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        100% {
+            opacity: 0;
+            transform: scale(0.8) translateY(5px);
+        }
+    }
+    @keyframes fileIconBounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-3px) scale(1.15); }
+    }
+    .file-preview-chip {
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        border-radius: 6px;
+        background-color: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        display: inline-flex;
+        align-items: center;
+    }
+    .file-preview-chip.file-preview-active {
+        animation: fileAttachPopIn 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    .file-preview-chip.file-preview-removing {
+        animation: fileAttachPopOut 0.2s cubic-bezier(0.4, 0, 1, 1) forwards;
+    }
+    .file-preview-chip .file-type-icon {
+        display: inline-block;
+        transition: transform 0.2s ease;
+        animation: fileIconBounce 0.45s ease-out;
+    }
+    .file-preview-chip .btn-close {
+        transition: transform 0.2s ease, opacity 0.2s ease;
+        opacity: 0.65;
+    }
+    .file-preview-chip .btn-close:hover {
+        transform: rotate(90deg) scale(1.15);
+        opacity: 1;
+    }
+    .file-attach-btn {
+        transition: all 0.2s ease;
+    }
+    .file-attach-btn.attach-btn-active {
+        border-color: #0d6efd !important;
+        background-color: rgba(13, 110, 253, 0.06) !important;
+        color: #0d6efd !important;
+    }
 </style>
 
 <div class="row">
@@ -108,17 +180,33 @@
                     <span class="badge bg-secondary me-2">{{ grievance.grievance_id }}</span>
                     {{ grievance.title }}
                 </h5>
-                <span class="badge bg-{% if grievance.status == 'pending' %}warning text-dark{% elif grievance.status == 'in_progress' %}primary{% elif grievance.status == 'pending_student' %}info text-dark{% elif grievance.status == 'resolved' %}success{% else %}danger{% endif %} fs-6">
+                <span id="grievanceStatusBadge" class="badge bg-{% if grievance.status == 'pending' %}warning text-dark{% elif grievance.status == 'in_progress' %}primary{% elif grievance.status == 'pending_student' %}info text-dark{% elif grievance.status == 'resolved' %}success{% else %}danger{% endif %} fs-6">
                     {{ grievance.get_status_display }}
                     {% if grievance.status == 'pending_student' %}(Action Required){% endif %}
                 </span>
             </div>
             <div class="card-body">
                 {% if grievance.status == 'pending_student' %}
-                <div class="alert alert-warning mb-4">
+                <div id="actionRequiredAlert" class="alert alert-warning mb-4">
                     <i class="fas fa-exclamation-triangle me-2"></i>
                     <strong>Action Required:</strong> The grievance handling officer has requested additional clarification from you. Please reply in the communication thread below so the case can resume.
                 </div>
+                {% endif %}
+
+                {% if grievance.status == 'resolved' or grievance.status == 'rejected' %}
+                {% if latest_resolution and latest_resolution.reason %}
+                <div class="alert alert-{% if grievance.status == 'resolved' %}success{% else %}danger{% endif %} mb-4 border">
+                    <h6 class="fw-bold mb-1">
+                        <i class="fas fa-{% if grievance.status == 'resolved' %}check-circle{% else %}times-circle{% endif %} me-2"></i>
+                        Official {{ grievance.get_status_display }} Statement
+                    </h6>
+                    <div class="mt-2 text-dark">{{ latest_resolution.reason|linebreaks }}</div>
+                    <small class="text-muted d-block mt-2">
+                        Recorded on {{ latest_resolution.timestamp|date:"M d, Y H:i" }}
+                        {% if latest_resolution.changed_by %} by {{ latest_resolution.changed_by.get_full_name|default:latest_resolution.changed_by.email }}{% endif %}
+                    </small>
+                </div>
+                {% endif %}
                 {% endif %}
 
                 <!-- Description -->
@@ -198,7 +286,7 @@
                         {% if public_comments %}
                             {% for comment in public_comments %}
                             {% if not comment.is_internal %}
-                            <div class="message mb-3 {% if comment.user.is_student %}student-message{% else %}admin-message{% endif %}">
+                            <div class="message mb-3 {% if comment.user.is_student %}student-message{% else %}admin-message{% endif %}" data-comment-id="{{ comment.id }}">
                                 <div class="d-flex {% if comment.user.is_student %}justify-content-end{% else %}justify-content-start{% endif %}">
                                     <div class="message-bubble {% if comment.user.is_student %}bg-primary text-white{% else %}bg-white border{% endif %} rounded p-3" style="max-width: 75%;">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
@@ -234,25 +322,35 @@
                     </div>
                     
                     <!-- Reply Form -->
-                    {% if grievance.status != 'resolved' %}
                     <div id="message-form"></div>
-                    <form id="studentResponseForm" method="POST" action="{% url 'students:add_student_response' grievance.id %}" class="mt-3">
+                    <form id="studentResponseForm" method="POST" action="{% url 'students:add_student_response' grievance.id %}" enctype="multipart/form-data" class="mt-3 {% if grievance.status == 'resolved' or grievance.status == 'rejected' %}d-none{% endif %}">
                         {% csrf_token %}
-                        <div class="input-group">
+                        <div class="input-group mb-2">
                             <textarea class="form-control" id="student_response" name="student_response" rows="2" 
-                                      placeholder="Type your message to the admin..." required></textarea>
-                            <button type="submit" class="btn btn-primary">
+                                      placeholder="Type your message to the administration..."></textarea>
+                            <button type="submit" class="btn btn-primary px-4">
                                 <i class="fas fa-paper-plane me-1"></i>Send
                             </button>
                         </div>
-                        <small class="text-muted">Your message will be sent to the assigned admin</small>
-                    </form>
-                    {% else %}
-                        <div class="alert alert-info mt-3">
-                            <i class="fas fa-info-circle me-2"></i>
-                            This grievance has been resolved. No further messages can be sent.
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <label for="student_attachment" id="student_attachment_label" class="btn btn-sm btn-outline-secondary mb-0 file-attach-btn">
+                                <i class="fas fa-paperclip me-1"></i>Attach File (Max 10MB)
+                            </label>
+                            <input type="file" id="student_attachment" name="attachment" class="d-none" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.txt" onchange="handleStudentFileSelect(this)">
+                            
+                            <span id="student_file_preview" class="file-preview-chip badge bg-light text-dark border p-2 d-none align-items-center gap-2">
+                                <i id="student_file_icon" class="fas fa-file text-primary file-type-icon"></i>
+                                <span id="student_file_name" class="small fw-normal"></span>
+                                <button type="button" class="btn-close btn-close-sm ms-1" style="font-size: 0.65rem;" onclick="clearStudentFile()" title="Remove file"></button>
+                            </span>
                         </div>
-                    {% endif %}
+                        <small class="text-muted d-block mt-1">Accepted: PDF, PNG, JPG, DOCX, TXT. Messages and files are securely recorded in the official grievance ledger.</small>
+                    </form>
+
+                    <div id="studentChatClosedAlert" class="alert alert-secondary mt-3 {% if grievance.status != 'resolved' and grievance.status != 'rejected' %}d-none{% endif %}">
+                        <i class="fas fa-lock me-2"></i>
+                        This grievance has been <span id="studentChatClosedStatusLabel">{% if grievance.status == 'rejected' %}rejected{% else %}resolved{% endif %}</span>. No further messages can be sent unless an appeal is filed.
+                    </div>
                 </div>
                 {% endwith %}
             </div>
@@ -412,6 +510,94 @@
 </div>
 
 <script>
+window.ACTIVE_GRIEVANCE_ID = '{{ grievance.id }}';
+window.CURRENT_GRIEVANCE_STATUS = '{{ grievance.status }}';
+let isStudentAutoReloading = false;
+
+function triggerStudentStatusAutoRefresh(newStatus) {
+    if (!newStatus || newStatus === window.CURRENT_GRIEVANCE_STATUS || isStudentAutoReloading) return;
+    isStudentAutoReloading = true;
+    window.CURRENT_GRIEVANCE_STATUS = newStatus;
+    setTimeout(() => {
+        window.location.reload();
+    }, 800);
+}
+
+function getStudentFileTypeIconInfo(filename) {
+    const ext = filename.split('.').pop().toLowerCase();
+    if (ext === 'pdf') {
+        return { icon: 'fa-file-pdf', color: 'text-danger' };
+    } else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+        return { icon: 'fa-file-image', color: 'text-success' };
+    } else if (['doc', 'docx'].includes(ext)) {
+        return { icon: 'fa-file-word', color: 'text-primary' };
+    } else if (['txt', 'csv'].includes(ext)) {
+        return { icon: 'fa-file-alt', color: 'text-info' };
+    }
+    return { icon: 'fa-file', color: 'text-secondary' };
+}
+
+function handleStudentFileSelect(input) {
+    const preview = document.getElementById('student_file_preview');
+    const nameSpan = document.getElementById('student_file_name');
+    const icon = document.getElementById('student_file_icon');
+    const label = document.getElementById('student_attachment_label');
+
+    if (input && input.files && input.files[0]) {
+        const file = input.files[0];
+        if (file.size > 10 * 1024 * 1024) {
+            alert('File exceeds 10MB limit.');
+            clearStudentFile();
+            return;
+        }
+
+        // Set contextual icon matching file extension
+        if (icon) {
+            const iconInfo = getStudentFileTypeIconInfo(file.name);
+            icon.className = `fas ${iconInfo.icon} ${iconInfo.color} file-type-icon`;
+        }
+
+        if (nameSpan) {
+            nameSpan.textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+        }
+
+        // Trigger pop-in spring animation
+        if (preview) {
+            preview.classList.remove('d-none', 'file-preview-removing');
+            preview.classList.remove('file-preview-active');
+            void preview.offsetWidth; // Force CSS reflow to replay animation
+            preview.classList.add('d-inline-flex', 'file-preview-active');
+        }
+
+        if (label) {
+            label.classList.add('attach-btn-active');
+        }
+    } else {
+        clearStudentFile();
+    }
+}
+
+function clearStudentFile() {
+    const input = document.getElementById('student_attachment');
+    const preview = document.getElementById('student_file_preview');
+    const label = document.getElementById('student_attachment_label');
+
+    if (input) input.value = '';
+    if (label) label.classList.remove('attach-btn-active');
+
+    if (preview && !preview.classList.contains('d-none')) {
+        preview.classList.remove('file-preview-active');
+        preview.classList.add('file-preview-removing');
+        setTimeout(() => {
+            preview.classList.add('d-none');
+            preview.classList.remove('d-inline-flex', 'file-preview-removing');
+        }, 190);
+    }
+}
+
+window.handleStudentFileSelect = handleStudentFileSelect;
+window.clearStudentFile = clearStudentFile;
+
 document.addEventListener('DOMContentLoaded', function() {
     // Track that user is viewing this grievance
     const grievanceId = '{{ grievance.id }}';
@@ -424,6 +610,14 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify({ grievance_id: grievanceId })
         }).catch(err => console.log('Tracking error:', err));
+    }
+
+    // Bind file attachment input listener
+    const studentFileInput = document.getElementById('student_attachment');
+    if (studentFileInput) {
+        studentFileInput.addEventListener('change', function() {
+            handleStudentFileSelect(this);
+        });
     }
     
     // Clear tracking when user leaves the page
@@ -481,36 +675,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     }
     
-    // Student response form handling
-    const studentResponseForm = document.getElementById('studentResponseForm');
-    if (studentResponseForm) {
-        studentResponseForm.addEventListener('submit', function(e) {
-            const textarea = this.querySelector('textarea[name="student_response"]');
-            if (!textarea.value.trim()) {
-                e.preventDefault();
-                alert('Please enter a message before sending.');
-                textarea.focus();
-                return false;
-            }
-            
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Sending...';
-            submitBtn.disabled = true;
-            
-            // Store scroll position of chat container before submission
-            const chatContainer = document.getElementById('studentChatContainer');
-            if (chatContainer) {
-                sessionStorage.setItem('chatScrollPosition', chatContainer.scrollTop);
-            }
-        });
-    }
-
     const studentChatContainer = document.getElementById('studentChatContainer');
     const grievanceCommentsUrl = '{% url "grievances:grievance_comments" grievance.id %}';
-    let lastCommentSignature = '';
+    const knownStudentCommentIds = new Set();
+    const recentStudentFingerprints = new Map();
 
     function escapeHtml(value) {
+        if (!value) return '';
         return String(value)
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
@@ -519,62 +690,91 @@ document.addEventListener('DOMContentLoaded', function() {
             .replace(/'/g, '&#39;');
     }
 
-    function renderStudentComments(comments) {
-        const visibleComments = comments.filter(comment => !comment.is_internal);
-        if (!studentChatContainer) {
-            return;
+    function updateStudentStatusUI(newStatus, newStatusDisplay) {
+        const statusBadge = document.getElementById('grievanceStatusBadge');
+        if (statusBadge && newStatusDisplay) {
+            statusBadge.textContent = newStatusDisplay;
+            let badgeClass = 'bg-secondary';
+            if (newStatus === 'pending') badgeClass = 'bg-warning text-dark';
+            else if (newStatus === 'in_progress') badgeClass = 'bg-primary';
+            else if (newStatus === 'pending_student') badgeClass = 'bg-info text-dark';
+            else if (newStatus === 'resolved') badgeClass = 'bg-success';
+            else if (newStatus === 'rejected') badgeClass = 'bg-danger';
+            statusBadge.className = 'badge ' + badgeClass + ' fs-6';
+        }
+        const actionAlert = document.getElementById('actionRequiredAlert');
+        if (actionAlert) {
+            actionAlert.style.display = (newStatus === 'pending_student') ? 'block' : 'none';
         }
 
-        if (!visibleComments.length) {
-            studentChatContainer.innerHTML = `
-                <div class="text-center text-muted py-4">
-                    <i class="fas fa-comments fa-3x mb-3"></i>
-                    <p>No messages yet. Start the conversation with the admin!</p>
-                </div>`;
-            return;
+        const responseForm = document.getElementById('studentResponseForm');
+        const closedAlert = document.getElementById('studentChatClosedAlert');
+        if (responseForm && closedAlert) {
+            if (newStatus === 'resolved' || newStatus === 'rejected') {
+                responseForm.classList.add('d-none');
+                closedAlert.classList.remove('d-none');
+                const label = document.getElementById('studentChatClosedStatusLabel');
+                if (label) {
+                    label.textContent = newStatus === 'rejected' ? 'rejected' : 'resolved';
+                }
+            } else {
+                responseForm.classList.remove('d-none');
+                closedAlert.classList.add('d-none');
+            }
         }
 
-        studentChatContainer.innerHTML = visibleComments.map(comment => {
-            const isStudent = comment.is_student;
-            const userName = isStudent ? 'You' : `<i class="fas fa-user-shield me-1"></i>${escapeHtml(comment.user)}`;
-            const typeBadge = comment.comment_type !== 'comment'
-                ? `<span class="badge bg-${comment.comment_type === 'status_update' ? 'info' : 'secondary'} ms-1">${escapeHtml(comment.comment_type.replace('_', ' '))}</span>`
-                : '';
-
-            return `
-                <div class="message mb-3 ${isStudent ? 'student-message' : 'admin-message'}">
-                    <div class="d-flex ${isStudent ? 'justify-content-end' : 'justify-content-start'}">
-                        <div class="message-bubble ${isStudent ? 'bg-primary text-white' : 'bg-white border'} rounded p-3" style="max-width: 75%;">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <small class="fw-bold ${isStudent ? 'text-light' : 'text-muted'}">
-                                    ${userName}
-                                    ${typeBadge}
-                                </small>
-                                <small class="${isStudent ? 'text-light' : 'text-muted'}">${new Date(comment.timestamp).toLocaleString()}</small>
-                            </div>
-                            <div>${escapeHtml(comment.message).replace(/\n/g, '<br>')}</div>
-                        </div>
-                    </div>
-                </div>`;
-        }).join('');
+        if (newStatus && newStatus !== window.CURRENT_GRIEVANCE_STATUS) {
+            triggerStudentStatusAutoRefresh(newStatus);
+        }
     }
 
-    // Real-Time Chat using WebSockets
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const chatSocket = new WebSocket(
-        wsProtocol + '//' + window.location.host + '/ws/grievances/{{ grievance.id }}/chat/'
-    );
-
-    chatSocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
+    function appendStudentMessage(data, isLive = false) {
         if (data.is_internal) return; // Ignore internal notes for students
+        if (!studentChatContainer) return;
+
+        const commentId = data.id || data.comment_id;
+        if (commentId) {
+            const idStr = String(commentId);
+            if (knownStudentCommentIds.has(idStr) || studentChatContainer.querySelector(`[data-comment-id="${idStr}"]`)) {
+                return;
+            }
+            knownStudentCommentIds.add(idStr);
+        }
+
+        const messageText = (data.message || '').trim();
+        const fp = messageText.toLowerCase().replace(/\s+/g, ' ') + '::' + Boolean(data.is_student);
+        if (recentStudentFingerprints.has(fp)) {
+            const prevTime = recentStudentFingerprints.get(fp);
+            if (Date.now() - prevTime < 8000) {
+                return;
+            }
+        }
+        recentStudentFingerprints.set(fp, Date.now());
+
+        // Remove empty state message if it exists
+        const emptyState = studentChatContainer.querySelector('.fa-comments');
+        if (emptyState) {
+            studentChatContainer.innerHTML = '';
+        }
 
         const isStudent = data.is_student;
-        const userName = isStudent ? 'You' : `<i class="fas fa-user-shield me-1"></i>${escapeHtml(data.user_name)}`;
-        const typeBadge = ''; // Real-time currently only sends standard comments
+        const userName = isStudent ? 'You' : `<i class="fas fa-user-shield me-1"></i>${escapeHtml(data.user_name || 'Staff')}`;
+        const typeBadge = (data.comment_type && data.comment_type !== 'comment')
+            ? `<span class="badge bg-${data.comment_type === 'status_update' ? 'info' : 'secondary'} ms-1">${escapeHtml(data.comment_type.replace('_', ' '))}</span>`
+            : '';
 
+        const attachmentHtml = data.attachment_url ? `
+            <div class="mt-2 pt-2 border-top border-${isStudent ? 'light' : 'secondary'}">
+                <a href="${escapeHtml(data.attachment_url)}" target="_blank" class="btn btn-sm ${isStudent ? 'btn-light text-primary' : 'btn-outline-primary'} py-1 px-2">
+                    <i class="fas fa-paperclip me-1"></i>${escapeHtml(data.attachment_name || 'Download Attachment')}
+                </a>
+            </div>
+        ` : '';
+
+        const timeText = data.timestamp || new Date().toLocaleString();
+        const highlightClass = isLive ? ' message-highlight-pulse' : '';
         const messageHtml = `
-            <div class="message mb-3 ${isStudent ? 'student-message' : 'admin-message'}">
+            <div class="message mb-3 ${isStudent ? 'student-message' : 'admin-message'}${highlightClass}" data-comment-id="${commentId || ''}">
                 <div class="d-flex ${isStudent ? 'justify-content-end' : 'justify-content-start'}">
                     <div class="message-bubble ${isStudent ? 'bg-primary text-white' : 'bg-white border'} rounded p-3" style="max-width: 75%;">
                         <div class="d-flex justify-content-between align-items-center mb-1">
@@ -582,84 +782,200 @@ document.addEventListener('DOMContentLoaded', function() {
                                 ${userName}
                                 ${typeBadge}
                             </small>
-                            <small class="${isStudent ? 'text-light' : 'text-muted'}">${escapeHtml(data.timestamp)}</small>
+                            <small class="${isStudent ? 'text-light' : 'text-muted'}">${escapeHtml(timeText)}</small>
                         </div>
-                        <div>${escapeHtml(data.message).replace(/\n/g, '<br>')}</div>
+                        <div>${escapeHtml(messageText).replace(/\n/g, '<br>')}</div>
+                        ${attachmentHtml}
                     </div>
                 </div>
             </div>`;
-            
-        // Remove empty state message if it exists
-        const emptyState = studentChatContainer.querySelector('.fa-comments.fa-3x');
-        if (emptyState) {
-            studentChatContainer.innerHTML = '';
+
+        if (data.status_changed && data.new_status_display) {
+            updateStudentStatusUI(data.new_status, data.new_status_display);
         }
 
-        const shouldStickToBottom = !studentChatContainer || studentChatContainer.scrollTop + studentChatContainer.clientHeight >= studentChatContainer.scrollHeight - 120;
+        const shouldStickToBottom = !studentChatContainer || (studentChatContainer.scrollTop + studentChatContainer.clientHeight >= studentChatContainer.scrollHeight - 140);
         studentChatContainer.insertAdjacentHTML('beforeend', messageHtml);
-        
-        if (studentChatContainer && shouldStickToBottom) {
-            studentChatContainer.scrollTop = studentChatContainer.scrollHeight;
+        if (shouldStickToBottom) {
+            studentChatContainer.scrollTo({ top: studentChatContainer.scrollHeight, behavior: 'smooth' });
         }
-    };
+    }
 
-    chatSocket.onclose = function(e) {
-        console.error('Chat socket closed unexpectedly');
-    };
+    // WebSocket Auto-Reconnect Engine
+    let studentChatSocket = null;
+    let studentSocketReconnectTimer = null;
+    let isStudentSocketConnecting = false;
 
-    // Replace the standard form submission with a WebSocket message
+    function connectStudentChatWebSocket() {
+        if (isStudentSocketConnecting) return;
+        isStudentSocketConnecting = true;
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const socketUrl = wsProtocol + '//' + window.location.host + '/ws/grievances/{{ grievance.id }}/chat/';
+
+        try {
+            studentChatSocket = new WebSocket(socketUrl);
+
+            studentChatSocket.onopen = function() {
+                isStudentSocketConnecting = false;
+                if (studentSocketReconnectTimer) {
+                    clearTimeout(studentSocketReconnectTimer);
+                    studentSocketReconnectTimer = null;
+                }
+            };
+
+            studentChatSocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                if (data.error) {
+                    console.warn('Chat notification:', data.error);
+                    return;
+                }
+                appendStudentMessage(data, true);
+                if (data.new_status || data.status_changed) {
+                    updateStudentStatusUI(data.new_status, data.new_status_display);
+                    triggerStudentStatusAutoRefresh(data.new_status);
+                }
+            };
+
+            studentChatSocket.onclose = function() {
+                isStudentSocketConnecting = false;
+                if (!studentSocketReconnectTimer) {
+                    studentSocketReconnectTimer = setTimeout(connectStudentChatWebSocket, 3000);
+                }
+            };
+
+            studentChatSocket.onerror = function() {
+                try { studentChatSocket.close(); } catch (_) {}
+            };
+        } catch (err) {
+            isStudentSocketConnecting = false;
+            if (!studentSocketReconnectTimer) {
+                studentSocketReconnectTimer = setTimeout(connectStudentChatWebSocket, 4000);
+            }
+        }
+    }
+    connectStudentChatWebSocket();
+
+    // Unified form submission: Single post with real-time broadcast
+    const studentResponseForm = document.getElementById('studentResponseForm');
     if (studentResponseForm) {
-        // Remove old listener
-        const oldForm = studentResponseForm;
-        const newForm = oldForm.cloneNode(true);
-        oldForm.parentNode.replaceChild(newForm, oldForm);
-
-        newForm.addEventListener('submit', function(e) {
+        studentResponseForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const textarea = this.querySelector('textarea[name="student_response"]');
+            const fileInput = document.getElementById('student_attachment');
+            const hasFile = fileInput && fileInput.files.length > 0;
             const message = textarea.value.trim();
             
-            if (!message) {
-                alert('Please enter a message before sending.');
+            if (!message && !hasFile) {
+                alert('Please enter a message or attach a file before sending.');
                 textarea.focus();
                 return false;
             }
-            
-            chatSocket.send(JSON.stringify({
-                'message': message,
-                'is_internal': false
-            }));
-            
-            textarea.value = '';
-            
-            // Post via HTTP anyway for backup and email notifications, but silently
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) submitBtn.disabled = true;
+
+            const formData = new FormData(this);
             fetch(this.action, {
                 method: 'POST',
-                body: new FormData(this),
+                body: formData,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
-            }).catch(console.error);
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    textarea.value = '';
+                    clearStudentFile();
+                    if (data.status_changed && data.new_status_display) {
+                        updateStudentStatusUI(data.new_status, data.new_status_display);
+                    }
+                    const commentId = String(data.id || data.comment_id || '');
+                    const fp = message.toLowerCase().replace(/\s+/g, ' ') + '::true';
+                    if (commentId) knownStudentCommentIds.add(commentId);
+                    recentStudentFingerprints.set(fp, Date.now());
+
+                    const existingEl = commentId ? studentChatContainer.querySelector(`[data-comment-id="${commentId}"]`) : null;
+                    if (!existingEl && (!studentChatSocket || studentChatSocket.readyState !== WebSocket.OPEN)) {
+                        appendStudentMessage({
+                            id: data.id || data.comment_id,
+                            comment_id: data.comment_id || data.id,
+                            message: message || ('📎 Attached: ' + (data.attachment_name || 'file')),
+                            user_name: 'You',
+                            is_student: true,
+                            is_internal: false,
+                            timestamp: data.timestamp || new Date().toLocaleString(),
+                            status_changed: data.status_changed,
+                            new_status_display: data.new_status_display,
+                            new_status: data.new_status,
+                            attachment_url: data.attachment_url,
+                            attachment_name: data.attachment_name
+                        }, false);
+                    }
+                } else {
+                    alert('Error sending message: ' + (data.error || 'Failed'));
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('Failed to send message. Please try again.');
+            })
+            .finally(() => {
+                if (submitBtn) submitBtn.disabled = false;
+            });
         });
     }
 
-    // Load initial messages via HTTP once
-    function loadInitialThread() {
+    function seedExistingStudentComments() {
+        if (!studentChatContainer) return;
+        studentChatContainer.querySelectorAll('.message').forEach(box => {
+            const id = box.getAttribute('data-comment-id');
+            if (id) knownStudentCommentIds.add(id);
+            const text = box.querySelector('div:last-child')?.textContent.trim() || '';
+            const isStudent = box.classList.contains('student-message');
+            const fp = text.toLowerCase().replace(/\s+/g, ' ') + '::' + Boolean(isStudent);
+            if (text) recentStudentFingerprints.set(fp, Date.now());
+        });
+    }
+
+    function syncLatestStudentComments() {
         fetch(grievanceCommentsUrl, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
-        .then(response => response.json())
+        .then(response => {
+            const headerStatus = response.headers.get('X-Grievance-Status');
+            if (headerStatus && headerStatus !== window.CURRENT_GRIEVANCE_STATUS) {
+                triggerStudentStatusAutoRefresh(headerStatus);
+            }
+            return response.json();
+        })
         .then(data => {
             if (Array.isArray(data)) {
-                renderStudentComments(data);
-                if (studentChatContainer) {
-                    studentChatContainer.scrollTop = studentChatContainer.scrollHeight;
-                }
+                data.forEach(comment => {
+                    if (comment.is_internal) return;
+                    const commentId = String(comment.id || comment.comment_id || '');
+                    if (commentId && (knownStudentCommentIds.has(commentId) || studentChatContainer.querySelector(`[data-comment-id="${commentId}"]`))) {
+                        return;
+                    }
+                    const timeStr = new Date(comment.timestamp).toLocaleString();
+                    appendStudentMessage({
+                        id: comment.id,
+                        comment_id: comment.comment_id,
+                        message: comment.message,
+                        user_name: comment.user,
+                        is_internal: comment.is_internal,
+                        is_student: comment.is_student,
+                        timestamp: timeStr,
+                        comment_type: comment.comment_type
+                    }, true);
+                });
             }
         })
         .catch(console.error);
     }
-    loadInitialThread();
+
+    seedExistingStudentComments();
+    setInterval(syncLatestStudentComments, 3500);
 });
 </script>
 

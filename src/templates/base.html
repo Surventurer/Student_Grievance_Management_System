@@ -170,49 +170,54 @@
                         </span>
                         {% endif %}
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end" style="width: 350px; max-height: 400px; overflow-y: auto;">
-                        <li class="dropdown-header">
-                            <i class="fas fa-bell me-2"></i>Recent Notifications
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 p-0" style="width: 360px; max-width: 95vw;">
+                        <li class="p-2 px-3 border-bottom d-flex justify-content-between align-items-center bg-light rounded-top-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-bell text-primary me-2"></i>
+                                <span class="fw-bold text-dark small text-uppercase" style="letter-spacing: 0.5px;">Notifications</span>
+                                {% if general_notifications_count > 0 %}
+                                <span class="badge bg-danger rounded-pill ms-2" id="trayUnreadBadge" style="font-size: 0.65rem;">{{ general_notifications_count }} new</span>
+                                {% endif %}
+                            </div>
+                            {% if general_notifications_count > 0 %}
+                            <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 text-primary small fw-semibold" id="clearAllNotificationsBtn" style="font-size: 0.75rem;">
+                                <i class="fas fa-check-double me-1"></i>Clear All
+                            </button>
+                            {% endif %}
                         </li>
                         
-                        <!-- General Notifications (System, Escalations, etc.) -->
-                        {% if general_notifications %}
-                            {% for notification in general_notifications %}
-                            <li>
-                                <a class="dropdown-item py-2 border-bottom notification-link" 
-                                   href="{{ notification.related_link|default:'#' }}"
-                                   data-notification-id="{{ notification.id }}">
-                                    <div class="d-flex">
-                                        <div class="flex-grow-1">
-                                            <div class="fw-bold text-primary small">
-                                                <i class="fas fa-info-circle me-1"></i>{{ notification.title }}
-                                            </div>
-                                            <div class="text-dark">{{ notification.message|truncatechars:80 }}</div>
-                                            <div class="text-muted small mt-1">
-                                                <i class="fas fa-clock me-1"></i>{{ notification.created_at|timesince }} ago
+                        <div class="notification-scroll-tray" style="max-height: 380px; overflow-y: auto; -webkit-overflow-scrolling: touch;">
+                            <!-- General Notifications (System, Comments, Escalations, etc.) -->
+                            {% if general_notifications %}
+                                {% for notification in general_notifications %}
+                                <li>
+                                    <a class="dropdown-item py-2 border-bottom notification-link" 
+                                       href="{{ notification.related_link|default:'#' }}"
+                                       data-notification-id="{{ notification.id }}">
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1">
+                                                <div class="fw-bold text-primary small">
+                                                    <i class="fas fa-info-circle me-1"></i>{{ notification.title }}
+                                                </div>
+                                                <div class="text-dark small">{{ notification.message|truncatechars:85 }}</div>
+                                                <div class="text-muted small mt-1" style="font-size: 0.72rem;">
+                                                    <i class="fas fa-clock me-1"></i>{{ notification.created_at|timesince }} ago
+                                                </div>
                                             </div>
                                         </div>
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            {% else %}
+                                <li>
+                                    <div class="dropdown-item-text text-center text-muted py-4 px-3">
+                                        <i class="fas fa-bell-slash fa-2x mb-2 text-secondary opacity-50"></i>
+                                        <div class="small fw-semibold">No new notifications</div>
+                                        <div class="text-muted" style="font-size: 0.75rem;">You're completely caught up!</div>
                                     </div>
-                                </a>
-                            </li>
-                            {% endfor %}
-                        {% endif %}
-
-                        {% if not general_notifications %}
-                            <li>
-                                <div class="dropdown-item-text text-center text-muted py-3">
-                                    <i class="fas fa-inbox fa-2x mb-2"></i>
-                                    <br>No new messages
-                                </div>
-                            </li>
-                        {% endif %}
-                        
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item text-center text-primary" href="{% url 'notifications_web:notification_list_view' %}">
-                                <i class="fas fa-eye me-2"></i>View All
-                            </a>
-                        </li>
+                                </li>
+                            {% endif %}
+                        </div>
                     </ul>
                 </div>
                 
@@ -274,6 +279,9 @@
         {% endblock %}
     </main>
     
+    <!-- Smartphone-Style Floating Push Toast Container -->
+    <div id="phoneNotificationToastContainer" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1095; pointer-events: none;"></div>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/main.js' %}"></script>
     
@@ -297,10 +305,20 @@
 
     const notificationsApiUrl = '/api/notifications/list/';
     const markNotificationReadUrlBase = '/api/notifications/mark-read/';
+    const markAllNotificationsReadUrl = '/api/notifications/mark-all-read/';
     const notificationsDropdown = document.getElementById('notificationsDropdown');
     const notificationsMenu = notificationsDropdown ? notificationsDropdown.nextElementSibling : null;
 
+    // Track seen notification IDs to detect fresh incoming notifications for toast popups
+    const seenNotificationIds = new Set();
+    {% if general_notifications %}
+        {% for n in general_notifications %}
+            seenNotificationIds.add('{{ n.id }}');
+        {% endfor %}
+    {% endif %}
+
     function escapeHtml(value) {
+        if (!value) return '';
         return String(value)
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
@@ -340,8 +358,8 @@
                             <div class="fw-bold text-primary small">
                                 <i class="fas ${iconClass} me-1"></i>${escapeHtml(notification.title)}
                             </div>
-                            <div class="text-dark">${escapeHtml(notification.message).slice(0, 80)}</div>
-                            <div class="text-muted small mt-1">
+                            <div class="text-dark small">${escapeHtml(notification.message).slice(0, 85)}</div>
+                            <div class="text-muted small mt-1" style="font-size: 0.72rem;">
                                 <i class="fas fa-clock me-1"></i>${formatRelativeTime(notification.created_at)}
                             </div>
                         </div>
@@ -355,27 +373,34 @@
             return;
         }
 
-        const items = notifications.length
+        const count = notifications.length;
+        const items = count
             ? notifications.map(notificationMarkup).join('')
             : `
                 <li>
-                    <div class="dropdown-item-text text-center text-muted py-3">
-                        <i class="fas fa-inbox fa-2x mb-2"></i>
-                        <br>No new notifications
+                    <div class="dropdown-item-text text-center text-muted py-4 px-3">
+                        <i class="fas fa-bell-slash fa-2x mb-2 text-secondary opacity-50"></i>
+                        <div class="small fw-semibold">No new notifications</div>
+                        <div class="text-muted" style="font-size: 0.75rem;">You're completely caught up!</div>
                     </div>
                 </li>`;
 
         notificationsMenu.innerHTML = `
-            <li class="dropdown-header">
-                <i class="fas fa-bell me-2"></i>Recent Notifications
+            <li class="p-2 px-3 border-bottom d-flex justify-content-between align-items-center bg-light rounded-top-3">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-bell text-primary me-2"></i>
+                    <span class="fw-bold text-dark small text-uppercase" style="letter-spacing: 0.5px;">Notifications</span>
+                    ${count > 0 ? `<span class="badge bg-danger rounded-pill ms-2" id="trayUnreadBadge" style="font-size: 0.65rem;">${count} new</span>` : ''}
+                </div>
+                ${count > 0 ? `
+                <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 text-primary small fw-semibold" id="clearAllNotificationsBtn" style="font-size: 0.75rem;">
+                    <i class="fas fa-check-double me-1"></i>Clear All
+                </button>` : ''}
             </li>
-            ${items}
-            <li><hr class="dropdown-divider"></li>
-            <li>
-                <a class="dropdown-item text-center text-primary" href="/notifications/all/">
-                    <i class="fas fa-eye me-2"></i>View All
-                </a>
-            </li>`;
+            <div class="notification-scroll-tray" style="max-height: 380px; overflow-y: auto; -webkit-overflow-scrolling: touch;">
+                ${items}
+            </div>
+        `;
     }
 
     function updateNotificationBadge(count) {
@@ -401,6 +426,97 @@
         return getCookie('csrftoken') || '';
     }
 
+    function showPhonePushToast(notification) {
+        const container = document.getElementById('phoneNotificationToastContainer');
+        if (!container) return;
+
+        const iconMap = {
+            escalation: 'fa-triangle-exclamation text-danger',
+            appeal: 'fa-rotate-left text-info',
+            comment: 'fa-comment-dots text-primary',
+            new_assignment: 'fa-user-check text-success',
+            system: 'fa-circle-info text-secondary',
+            status_update: 'fa-rotate text-warning'
+        };
+        const iconClass = iconMap[notification.notification_type] || 'fa-bell text-primary';
+        const href = notification.related_link || '#';
+
+        const toastEl = document.createElement('div');
+        toastEl.className = 'toast align-items-center border-0 shadow-lg mb-2 text-dark bg-white rounded-3 overflow-hidden animate__animated animate__fadeInDown';
+        toastEl.setAttribute('role', 'alert');
+        toastEl.setAttribute('aria-live', 'assertive');
+        toastEl.setAttribute('aria-atomic', 'true');
+        toastEl.style.minWidth = '310px';
+        toastEl.style.maxWidth = '370px';
+        toastEl.style.cursor = 'pointer';
+        toastEl.style.pointerEvents = 'auto';
+
+        toastEl.innerHTML = `
+            <div class="toast-header bg-light py-2 px-3 border-bottom">
+                <i class="fas ${iconClass} me-2 fs-6"></i>
+                <strong class="me-auto text-dark small">SGMS Alert</strong>
+                <small class="text-muted">Just now</small>
+                <button type="button" class="btn-close ms-2 btn-close-sm" data-bs-dismiss="toast" aria-label="Close" onclick="event.stopPropagation();"></button>
+            </div>
+            <div class="toast-body p-3">
+                <div class="fw-bold small text-primary mb-1">${escapeHtml(notification.title)}</div>
+                <div class="text-secondary small mb-2">${escapeHtml(notification.message).slice(0, 95)}</div>
+                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                    <span class="text-primary small fw-semibold"><i class="fas fa-comments me-1"></i>Tap to open chat</span>
+                    <i class="fas fa-chevron-right text-muted small"></i>
+                </div>
+            </div>
+        `;
+
+        toastEl.addEventListener('click', function(e) {
+            if (e.target.closest('.btn-close')) return;
+            const csrfToken = getCsrfToken();
+            const headers = { 'X-Requested-With': 'XMLHttpRequest' };
+            if (csrfToken) headers['X-CSRFToken'] = csrfToken;
+
+            fetch(markNotificationReadUrlBase + notification.id + '/', {
+                method: 'POST',
+                headers: headers
+            }).finally(() => {
+                if (href && href !== '#') {
+                    window.location.href = href;
+                } else {
+                    refreshNotifications();
+                }
+            });
+        });
+
+        container.appendChild(toastEl);
+        const bsToast = new bootstrap.Toast(toastEl, { delay: 6500 });
+        bsToast.show();
+        toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
+    }
+
+    function clearAllNotifications() {
+        const clearBtn = document.getElementById('clearAllNotificationsBtn');
+        if (clearBtn) {
+            clearBtn.disabled = true;
+            clearBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Clearing...';
+        }
+
+        const csrfToken = getCsrfToken();
+        const headers = { 'X-Requested-With': 'XMLHttpRequest' };
+        if (csrfToken) headers['X-CSRFToken'] = csrfToken;
+
+        fetch(markAllNotificationsReadUrl, {
+            method: 'POST',
+            headers: headers
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                updateNotificationBadge(0);
+                renderNotificationsMenu([]);
+            }
+        })
+        .catch(err => console.error('Error clearing notifications:', err));
+    }
+
     function refreshNotifications() {
         const csrfToken = getCsrfToken();
         const headers = {
@@ -415,21 +531,43 @@
         })
         .then(response => response.json())
         .then(data => {
-            renderNotificationsMenu(data.notifications || []);
-            updateNotificationBadge(data.count || 0);
+            const notifications = data.notifications || [];
+            const count = data.count || 0;
+            const activeId = window.ACTIVE_GRIEVANCE_ID || '';
+
+            // Check for newly arrived notifications
+            notifications.forEach(n => {
+                if (!seenNotificationIds.has(n.id)) {
+                    seenNotificationIds.add(n.id);
+                    // Check if current user is already looking at this grievance's chat
+                    if (activeId && n.related_link && n.related_link.includes(activeId)) {
+                        // Suppress popup & silently mark read since user is actively chatting
+                        fetch(markNotificationReadUrlBase + n.id + '/', {
+                            method: 'POST',
+                            headers: headers
+                        }).catch(console.error);
+                    } else {
+                        // Show phone push toast banner
+                        showPhonePushToast(n);
+                    }
+                }
+            });
+
+            renderNotificationsMenu(notifications);
+            updateNotificationBadge(count);
         })
         .catch(error => console.log('Notification refresh failed:', error));
     }
 
-    if (notificationsDropdown) {
-        notificationsDropdown.addEventListener('click', function(e) {
-            if (this.getAttribute('href') === '#') {
-                e.preventDefault();
-            }
-        });
-    }
-
+    // Global listener for notification clicks and Clear All button
     document.addEventListener('click', function(e) {
+        const clearBtn = e.target.closest('#clearAllNotificationsBtn');
+        if (clearBtn) {
+            e.preventDefault();
+            clearAllNotifications();
+            return;
+        }
+
         const link = e.target.closest('.notification-link');
         if (!link) {
             return;
@@ -462,6 +600,14 @@
             }
         });
     });
+
+    if (notificationsDropdown) {
+        notificationsDropdown.addEventListener('click', function(e) {
+            if (this.getAttribute('href') === '#') {
+                e.preventDefault();
+            }
+        });
+    }
 
     refreshNotifications();
     setInterval(refreshNotifications, 15000);

@@ -124,6 +124,9 @@ class GrievanceViewSet(viewsets.ModelViewSet):
         if not message:
             return Response({"error": "Message is required"}, status=status.HTTP_400_BAD_REQUEST)
             
+        if grievance.status in ['resolved', 'rejected']:
+            return Response({"error": f"This grievance is {grievance.status}. Communication is closed until an appeal or reopen occurs."}, status=status.HTTP_400_BAD_REQUEST)
+            
         is_internal = request.data.get('is_internal', False)
         
         # Students cannot create internal notes

@@ -184,28 +184,43 @@ function displaySearchResults(results) {
 
 // Update grievance status
 function updateGrievanceStatus(grievanceId, status) {
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    let csrfToken = '';
+    const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (csrfInput && csrfInput.value) {
+        csrfToken = csrfInput.value;
+    } else if (typeof getCookie === 'function') {
+        csrfToken = getCookie('csrftoken') || '';
+    }
 
-    fetch(`/api/grievances/${grievanceId}/status/`, {
-        method: 'PATCH',
+    fetch(`/admin-panel/grievances/${grievanceId}/update-status/`, {
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken
+            'X-CSRFToken': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest'
         },
-        body: JSON.stringify({ status: status })
+        body: JSON.stringify({ 
+            status: status,
+            resolution_notes: `Status updated to ${status} via quick action.`
+        })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => { throw new Error(err.error || `HTTP ${response.status}`); });
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             showAlert('success', 'Status updated successfully');
             location.reload();
         } else {
-            showAlert('error', 'Failed to update status');
+            showAlert('error', data.error || 'Failed to update status');
         }
     })
     .catch(error => {
         console.error('Error updating status:', error);
-        showAlert('error', 'An error occurred while updating status');
+        showAlert('error', error.message || 'An error occurred while updating status');
     });
 }
 

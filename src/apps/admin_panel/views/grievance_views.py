@@ -211,13 +211,39 @@ def process_grievance_appeal(request, grievance_id):
             )
             
             # Create comment in thread
-            GrievanceComment.objects.create(
+            appeal_comment = GrievanceComment.objects.create(
                 grievance=grievance,
                 user=request.user,
                 message=f"Appeal Accepted: Case reopened for supervisory re-hearing.\nOfficer Remarks: {decision_notes or 'Reopening for further inquiry.'}",
                 comment_type='status_update',
                 is_internal=False
             )
+
+            # Broadcast live status update to WebSocket channel layer
+            try:
+                from asgiref.sync import async_to_sync
+                from channels.layers import get_channel_layer
+                channel_layer = get_channel_layer()
+                if channel_layer:
+                    async_to_sync(channel_layer.group_send)(
+                        f'chat_{grievance.id}',
+                        {
+                            'type': 'chat_message',
+                            'id': str(appeal_comment.id),
+                            'comment_id': str(appeal_comment.id),
+                            'message': appeal_comment.message,
+                            'user_name': request.user.get_full_name() or request.user.email,
+                            'user_email': request.user.email,
+                            'timestamp': appeal_comment.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+                            'is_internal': False,
+                            'is_student': False,
+                            'status_changed': True,
+                            'new_status': 'in_progress',
+                            'new_status_display': 'In Progress'
+                        }
+                    )
+            except Exception as ws_err:
+                print(f"WebSocket broadcast error on appeal acceptance: {ws_err}")
             
             # Notify student
             if grievance.student and grievance.student.user:
@@ -226,7 +252,7 @@ def process_grievance_appeal(request, grievance_id):
                     recipient=grievance.student.user,
                     title='Appeal Accepted - Case Reopened',
                     message=f'Your appeal for grievance #{grievance.grievance_id} has been accepted and reopened for supervisory re-examination.',
-                    notification_type='status_change',
+                    notification_type='status_update',
                     related_link=reverse('students:grievance_detail', kwargs={'grievance_id': grievance.id})
                 )
                 
@@ -240,6 +266,7 @@ def process_grievance_appeal(request, grievance_id):
                 appeal.save()
                 
             grievance.is_appealed = False
+            grievance.status = 'resolved'
             grievance.save()
             
             # Create AuditLog
@@ -254,13 +281,39 @@ def process_grievance_appeal(request, grievance_id):
             )
             
             # Create comment
-            GrievanceComment.objects.create(
+            reject_comment = GrievanceComment.objects.create(
                 grievance=grievance,
                 user=request.user,
                 message=f"Appeal Reviewed: Prior resolution upheld.\nSupervisory Justification: {decision_notes or 'After review, the existing resolution stands.'}",
                 comment_type='status_update',
                 is_internal=False
             )
+
+            # Broadcast live status update to WebSocket channel layer
+            try:
+                from asgiref.sync import async_to_sync
+                from channels.layers import get_channel_layer
+                channel_layer = get_channel_layer()
+                if channel_layer:
+                    async_to_sync(channel_layer.group_send)(
+                        f'chat_{grievance.id}',
+                        {
+                            'type': 'chat_message',
+                            'id': str(reject_comment.id),
+                            'comment_id': str(reject_comment.id),
+                            'message': reject_comment.message,
+                            'user_name': request.user.get_full_name() or request.user.email,
+                            'user_email': request.user.email,
+                            'timestamp': reject_comment.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+                            'is_internal': False,
+                            'is_student': False,
+                            'status_changed': True,
+                            'new_status': 'resolved',
+                            'new_status_display': 'Resolved'
+                        }
+                    )
+            except Exception as ws_err:
+                print(f"WebSocket broadcast error on appeal rejection: {ws_err}")
             
             # Notify student
             if grievance.student and grievance.student.user:
@@ -269,7 +322,7 @@ def process_grievance_appeal(request, grievance_id):
                     recipient=grievance.student.user,
                     title='Appeal Decision - Resolution Upheld',
                     message=f'Your appeal for grievance #{grievance.grievance_id} was reviewed. The existing resolution has been upheld.',
-                    notification_type='status_change',
+                    notification_type='status_update',
                     related_link=reverse('students:grievance_detail', kwargs={'grievance_id': grievance.id})
                 )
                 
@@ -280,7 +333,7 @@ def process_grievance_appeal(request, grievance_id):
 
 
 @login_required
-@require_http_methods(["PATCH"])
+@require_http_methods(["PATCH", "POST"])
 def update_grievance_status(request, grievance_id):
     """Update grievance status"""
     if not request.user.is_admin_or_officer:
@@ -293,12 +346,30 @@ def update_grievance_status(request, grievance_id):
         if not can_access_grievance(request.user, grievance):
             return JsonResponse({'success': False, 'error': 'Access denied: You cannot modify this grievance'}, status=403)
             
-        data = json.loads(request.body)
-        new_status = data.get('status')
+        data = {}
+        if request.body:
+            try:
+                data = json.loads(request.body)
+            except Exception:
+                pass
+        
+        new_status = data.get('status') or request.POST.get('status')
+        resolution_notes = (data.get('resolution_notes') or request.POST.get('resolution_notes') or '').strip()
         
         if new_status in ['pending', 'pending_student', 'resolved', 'rejected']:
             old_status = grievance.status
             
+            # If resolution_notes is empty, assign standard professional remarks
+            if not resolution_notes:
+                if new_status == 'resolved':
+                    resolution_notes = 'Grievance marked as resolved by staff.'
+                elif new_status == 'pending_student':
+                    resolution_notes = 'Status updated to awaiting student reply. SLA clock paused.'
+                elif new_status == 'rejected':
+                    resolution_notes = 'Grievance rejected upon administrative review.'
+                elif new_status == 'pending':
+                    resolution_notes = 'Case resumed / reopened for active inquiry.'
+
             # Handle SLA pause tracking
             if new_status == 'pending_student' and old_status != 'pending_student':
                 grievance.sla_pause_time = timezone.now()
@@ -311,7 +382,117 @@ def update_grievance_status(request, grievance_id):
             grievance.status = new_status
             if new_status in ['resolved', 'rejected']:
                 grievance.actual_resolution_date = timezone.now()
+            elif new_status == 'pending':
+                grievance.actual_resolution_date = None
             grievance.save()
+
+            # Record formal Status History
+            from apps.grievances.models import GrievanceStatusHistory
+            history_reason = resolution_notes or f"Status changed from {old_status} to {new_status}"
+            GrievanceStatusHistory.objects.create(
+                grievance=grievance,
+                previous_status=old_status,
+                new_status=new_status,
+                changed_by=request.user,
+                reason=history_reason
+            )
+
+            # Post an official status_update comment
+            prefix = "Official Resolution / Action Taken" if new_status == 'resolved' else (
+                "Reason for Rejection" if new_status == 'rejected' else (
+                    "Information Requested from Student" if new_status == 'pending_student' else "Status Update"
+                )
+            )
+            comment_text = f"{prefix}: {resolution_notes}" if resolution_notes else f"Status changed to {grievance.get_status_display()}."
+            status_comment = GrievanceComment.objects.create(
+                grievance=grievance,
+                user=request.user,
+                message=comment_text,
+                comment_type='status_update',
+                is_internal=False
+            )
+
+            # Broadcast live status update to WebSocket channel layer
+            try:
+                from asgiref.sync import async_to_sync
+                from channels.layers import get_channel_layer
+                channel_layer = get_channel_layer()
+                if channel_layer:
+                    async_to_sync(channel_layer.group_send)(
+                        f'chat_{grievance.id}',
+                        {
+                            'type': 'chat_message',
+                            'id': str(status_comment.id),
+                            'comment_id': str(status_comment.id),
+                            'message': comment_text,
+                            'user_name': request.user.get_full_name() or request.user.email,
+                            'user_email': request.user.email,
+                            'timestamp': status_comment.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+                            'is_internal': False,
+                            'is_student': False,
+                            'status_changed': True,
+                            'new_status': new_status,
+                            'new_status_display': grievance.get_status_display()
+                        }
+                    )
+            except Exception as ws_err:
+                print(f"WebSocket broadcast error: {ws_err}")
+
+            # Notify student of status change
+            if grievance.student and grievance.student.user:
+                from django.urls import reverse
+                from apps.notifications.models import Notification
+
+                if new_status == 'pending':
+                    notif_title = f'Grievance Reopened: #{grievance.grievance_id}'
+                    notif_msg = f'Your grievance #{grievance.grievance_id} has been reopened by administration for active inquiry.'
+                elif new_status == 'resolved':
+                    notif_title = f'Grievance Resolved: #{grievance.grievance_id}'
+                    notif_msg = f'Your grievance #{grievance.grievance_id} has been marked as Resolved by administration.'
+                elif new_status == 'rejected':
+                    notif_title = f'Grievance Rejected: #{grievance.grievance_id}'
+                    notif_msg = f'Your grievance #{grievance.grievance_id} has been marked as Rejected upon review.'
+                elif new_status == 'pending_student':
+                    notif_title = f'Action Required: Grievance #{grievance.grievance_id}'
+                    notif_msg = f'Administration requested additional information on grievance #{grievance.grievance_id}. SLA clock is paused.'
+                else:
+                    notif_title = f'Grievance {grievance.get_status_display()}: #{grievance.grievance_id}'
+                    notif_msg = f'Your grievance #{grievance.grievance_id} status updated to {grievance.get_status_display()}.'
+
+                if resolution_notes:
+                    notif_msg += f' Remarks: {resolution_notes[:140]}'
+
+                Notification.objects.create(
+                    recipient=grievance.student.user,
+                    title=notif_title,
+                    message=notif_msg,
+                    notification_type='status_update',
+                    related_link=reverse('students:grievance_detail', kwargs={'grievance_id': grievance.id})
+                )
+
+                # Send email notification to student
+                try:
+                    from django.core.mail import send_mail
+                    from django.conf import settings
+                    if grievance.student.user.email:
+                        email_subj = f"UPDATE: Grievance #{grievance.grievance_id} - {notif_title}"
+                        email_body = (
+                            f"Dear {grievance.student.user.get_full_name() or 'Student'},\n\n"
+                            f"{notif_msg}\n\n"
+                            f"Grievance: {grievance.title}\n"
+                            f"Status: {grievance.get_status_display()}\n\n"
+                            f"You can log in to view the complete thread and submit replies.\n\n"
+                            f"Student Grievance Management System"
+                        )
+                        send_mail(
+                            email_subj,
+                            email_body,
+                            settings.DEFAULT_FROM_EMAIL,
+                            [grievance.student.user.email],
+                            fail_silently=True
+                        )
+                except Exception as email_err:
+                    print(f"Status update email error: {email_err}")
             
             # Create audit log
             AuditLog.objects.create(
@@ -319,17 +500,19 @@ def update_grievance_status(request, grievance_id):
                 action='update',
                 target_model='Grievance',
                 target_id=str(grievance.id),
-                description=f'Changed grievance {grievance.grievance_id} status to {new_status}',
+                description=f'Changed grievance {grievance.grievance_id} status from {old_status} to {new_status}. Remarks: {resolution_notes[:100] if resolution_notes else "None"}',
                 ip_address=request.META.get('REMOTE_ADDR', ''),
                 user_agent=request.META.get('HTTP_USER_AGENT', '')[:255]
             )
             
-            return JsonResponse({'success': True, 'status': new_status})
+            return JsonResponse({
+                'success': True, 
+                'status': new_status,
+                'status_display': grievance.get_status_display()
+            })
         else:
-            return JsonResponse({'success': False, 'error': 'Invalid status'}, status=400)
+            return JsonResponse({'success': False, 'error': f'Invalid status: {new_status}'}, status=400)
             
-    except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
@@ -346,20 +529,85 @@ def add_admin_response(request, grievance_id):
     
     try:
         grievance = get_object_or_404(Grievance, id=grievance_id)
+        
+        # IDOR Protection: Enforce department access boundary
+        from apps.admin_panel.permissions import can_access_grievance
+        if not can_access_grievance(request.user, grievance):
+            return JsonResponse({'success': False, 'error': 'Access denied: You cannot view or comment on this grievance'}, status=403)
+            
+        # Lock communication if grievance is resolved or rejected
+        if grievance.status in ['resolved', 'rejected']:
+            status_text = 'resolved' if grievance.status == 'resolved' else 'rejected'
+            return JsonResponse({
+                'success': False, 
+                'error': f'This grievance is {status_text}. The communication thread is closed until an appeal is processed or the case is reopened.'
+            }, status=400)
+
         admin_response = request.POST.get('admin_response', '').strip()
         is_internal = request.POST.get('is_internal', 'false').lower() == 'true'
         
-        if not admin_response:
-            return JsonResponse({'success': False, 'error': 'Response cannot be empty'}, status=400)
+        if not admin_response and not request.FILES.get('attachment'):
+            return JsonResponse({'success': False, 'error': 'Response or attachment is required'}, status=400)
+            
+        attachment_obj = None
+        attachment_file = request.FILES.get('attachment')
+        if attachment_file:
+            import os
+            from apps.grievances.models import GrievanceAttachment
+            ext = os.path.splitext(attachment_file.name)[1].lower().lstrip('.')
+            if ext not in GrievanceAttachment.ALLOWED_EXTENSIONS:
+                return JsonResponse({'success': False, 'error': f'Invalid file type. Allowed: {", ".join(GrievanceAttachment.ALLOWED_EXTENSIONS)}'}, status=400)
+            if attachment_file.size > 10 * 1024 * 1024:
+                return JsonResponse({'success': False, 'error': 'Attachment exceeds maximum size of 10MB'}, status=400)
+                
+            attachment_prefix = "[Internal Note]" if is_internal else "[Staff Reply]"
+            attachment_obj = GrievanceAttachment.objects.create(
+                grievance=grievance,
+                file=attachment_file,
+                file_name=f"{attachment_prefix} {attachment_file.name}",
+                file_size=attachment_file.size,
+                file_type=attachment_file.content_type or ext
+            )
         
-        # Create the comment
+        # Format comment message
+        full_message = admin_response
+        if attachment_obj:
+            attachment_tag = f"\n📎 Attached: {attachment_file.name}"
+            full_message = (full_message + attachment_tag) if full_message else f"📎 Attached: {attachment_file.name}"
+
+        # Create single comment record
         comment = GrievanceComment.objects.create(
             grievance=grievance,
             user=request.user,
-            message=admin_response,
+            message=full_message,
             comment_type='internal_note' if is_internal else 'comment',
             is_internal=is_internal
         )
+
+        # Broadcast live to connected WebSockets via Channel Layer
+        try:
+            from asgiref.sync import async_to_sync
+            from channels.layers import get_channel_layer
+            channel_layer = get_channel_layer()
+            if channel_layer:
+                async_to_sync(channel_layer.group_send)(
+                    f'chat_{grievance.id}',
+                    {
+                        'type': 'chat_message',
+                        'id': str(comment.id),
+                        'comment_id': str(comment.id),
+                        'message': full_message,
+                        'user_name': request.user.get_full_name() or request.user.email,
+                        'user_email': request.user.email,
+                        'timestamp': comment.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+                        'is_internal': is_internal,
+                        'is_student': False,
+                        'attachment_url': attachment_obj.file.url if attachment_obj else None,
+                        'attachment_name': attachment_file.name if attachment_obj else None
+                    }
+                )
+        except Exception as ws_err:
+            print(f"WebSocket broadcast warning: {ws_err}")
 
         # Only create notification if student is not currently viewing the grievance
         if not is_internal and grievance.student and grievance.student.user:
@@ -374,7 +622,7 @@ def add_admin_response(request, grievance_id):
                 Notification.objects.create(
                     recipient=student_user,
                     title='New grievance update',
-                    message=f'An admin replied on grievance {grievance.grievance_id}: {admin_response[:120]}',
+                    message=f'An admin replied on grievance {grievance.grievance_id}: {full_message[:120]}',
                     notification_type='comment',
                     related_link=reverse('students:grievance_detail', kwargs={'grievance_id': grievance.id}) + '#message-form'
                 )
@@ -382,8 +630,11 @@ def add_admin_response(request, grievance_id):
         return JsonResponse({
             'success': True, 
             'message': f'{"Internal note" if is_internal else "Response"} added successfully',
+            'id': str(comment.id),
             'comment_id': str(comment.id),
-            'timestamp': comment.timestamp.strftime('%b %d, %Y %H:%M')
+            'timestamp': comment.timestamp.strftime('%b %d, %Y %H:%M'),
+            'attachment_url': attachment_obj.file.url if attachment_obj else None,
+            'attachment_name': attachment_file.name if attachment_obj else None
         })
         
     except Exception as e:

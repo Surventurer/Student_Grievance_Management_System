@@ -39,6 +39,79 @@
         font-weight: 500;
         font-size: 0.9rem;
     }
+
+    @keyframes messageGlow {
+        0% { background-color: rgba(13, 110, 253, 0.16); }
+        100% { background-color: #fff; }
+    }
+    .message-highlight-pulse {
+        animation: messageGlow 2.5s ease-out;
+    }
+
+    @keyframes fileAttachPopIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.82) translateY(6px);
+        }
+        70% {
+            opacity: 1;
+            transform: scale(1.03) translateY(-1px);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+    @keyframes fileAttachPopOut {
+        0% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        100% {
+            opacity: 0;
+            transform: scale(0.8) translateY(5px);
+        }
+    }
+    @keyframes fileIconBounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-3px) scale(1.15); }
+    }
+    .file-preview-chip {
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        border-radius: 6px;
+        background-color: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        display: inline-flex;
+        align-items: center;
+    }
+    .file-preview-chip.file-preview-active {
+        animation: fileAttachPopIn 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    .file-preview-chip.file-preview-removing {
+        animation: fileAttachPopOut 0.2s cubic-bezier(0.4, 0, 1, 1) forwards;
+    }
+    .file-preview-chip .file-type-icon {
+        display: inline-block;
+        transition: transform 0.2s ease;
+        animation: fileIconBounce 0.45s ease-out;
+    }
+    .file-preview-chip .btn-close {
+        transition: transform 0.2s ease, opacity 0.2s ease;
+        opacity: 0.65;
+    }
+    .file-preview-chip .btn-close:hover {
+        transform: rotate(90deg) scale(1.15);
+        opacity: 1;
+    }
+    .file-attach-btn {
+        transition: all 0.2s ease;
+    }
+    .file-attach-btn.attach-btn-active {
+        border-color: #0d6efd !important;
+        background-color: rgba(13, 110, 253, 0.06) !important;
+        color: #0d6efd !important;
+    }
     
     .action-buttons .btn {
         margin: 0.25rem;
@@ -92,11 +165,39 @@
         background: #f8f9fa;
     }
     
-    .comment-box {
-        background: #f8f9fa;
+    #adminChatContainer {
+        max-height: 480px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 14px 16px;
+        background: #f8fafc;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        scroll-behavior: smooth;
+    }
+    
+    #adminChatContainer::-webkit-scrollbar {
+        width: 6px;
+    }
+    #adminChatContainer::-webkit-scrollbar-track {
+        background: #f1f5f9;
         border-radius: 8px;
-        padding: 1.5rem;
-        margin-top: 1rem;
+    }
+    #adminChatContainer::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 8px;
+    }
+    #adminChatContainer::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+
+    .comment-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1.25rem;
+        margin-top: 0.75rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }
 
     /* Mobile Responsive Styles */
@@ -438,26 +539,35 @@
 
             <!-- Admin Responses & Comments -->
             <div class="detail-card">
-                <h5 class="mb-4">
-                    <i class="fas fa-reply me-2 text-success"></i>Admin Responses & Comments
-                </h5>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-reply me-2 text-success"></i>Admin Responses & Comments
+                    </h5>
+                    <span class="badge bg-light text-secondary border small">
+                        <i class="fas fa-arrows-alt-v me-1"></i>Scrollable Thread
+                    </span>
+                </div>
                 
                 <!-- Existing Comments -->
                 <div id="adminChatContainer" class="mb-4">
                     {% with all_comments=grievance.comments.all|dictsort:"timestamp" %}
                     {% if all_comments %}
-                    <h6 class="fw-bold mb-3">Previous Comments:</h6>
                     {% for comment in all_comments %}
-                    <div class="comment-box mb-3 {% if comment.is_internal %}border-warning{% endif %}">
+                    <div class="comment-box mb-3 {% if comment.is_internal %}border-warning{% endif %}" data-comment-id="{{ comment.id }}">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <div>
                                 <strong>
                                     {% if comment.user.is_student %}
                                         <i class="fas fa-user me-1 text-primary"></i>
-                                        {{ comment.user.get_full_name }} (Student)
+                                        {% if grievance.is_anonymous %}
+                                            Anonymous Student
+                                        {% else %}
+                                            {{ comment.user.get_full_name|default:comment.user.email }}
+                                        {% endif %}
+                                        (Student)
                                     {% else %}
                                         <i class="fas fa-user-shield me-1 text-success"></i>
-                                        {{ comment.user.get_full_name }} (Admin)
+                                        {{ comment.user.get_full_name|default:comment.user.email }} (Admin)
                                     {% endif %}
                                 </strong>
                                 {% if comment.comment_type != 'comment' %}
@@ -475,23 +585,55 @@
                     </div>
                     {% endfor %}
                     {% else %}
-                    <h6 class="fw-bold mb-3">Previous Comments:</h6>
-                    <div class="text-center text-muted py-4">
-                        <i class="fas fa-comments fa-3x mb-3 text-secondary"></i>
+                    <div class="text-center text-muted py-5 empty-comments-placeholder">
+                        <i class="fas fa-comments fa-3x mb-3 text-secondary opacity-50"></i>
                         <p class="mb-0">No comments or responses yet. Start the conversation below!</p>
                     </div>
                     {% endif %}
                     {% endwith %}
                 </div>
                 
-                <!-- Add New Response Form -->
-                <form id="adminResponseForm" method="POST" action="{% url 'admin_panel:add_admin_response' grievance.id %}">
+                <!-- Add New Response Form (Hidden when resolved or rejected) -->
+                <form id="adminResponseForm" method="POST" action="{% url 'admin_panel:add_admin_response' grievance.id %}" enctype="multipart/form-data" class="{% if grievance.status == 'resolved' or grievance.status == 'rejected' %}d-none{% endif %}">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="admin_response" class="form-label">Add Comment/Response</label>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label for="admin_response" class="form-label mb-0 fw-bold">Add Comment / Official Response</label>
+                            
+                            <!-- Canned Response Macro Dropdown -->
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="cannedMacroDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-bolt text-warning me-1"></i>Canned Macros
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="cannedMacroDropdown" style="min-width: 270px;">
+                                    <li><h6 class="dropdown-header text-uppercase small">Quick Response Templates</h6></li>
+                                    <li><a class="dropdown-item small" href="javascript:void(0)" onclick="applyAdminMacro('fee_verification')"><i class="fas fa-receipt text-primary me-2"></i>Fee & Accounts Inquiry</a></li>
+                                    <li><a class="dropdown-item small" href="javascript:void(0)" onclick="applyAdminMacro('academic_eval')"><i class="fas fa-graduation-cap text-info me-2"></i>Exam / Marks Re-evaluation</a></li>
+                                    <li><a class="dropdown-item small" href="javascript:void(0)" onclick="applyAdminMacro('hostel_maintenance')"><i class="fas fa-tools text-warning me-2"></i>Hostel & Maintenance</a></li>
+                                    <li><a class="dropdown-item small" href="javascript:void(0)" onclick="applyAdminMacro('document_request')"><i class="fas fa-file-alt text-secondary me-2"></i>Supporting Documents Needed</a></li>
+                                    <li><a class="dropdown-item small" href="javascript:void(0)" onclick="applyAdminMacro('hearing_notice')"><i class="fas fa-calendar-alt text-danger me-2"></i>Committee Hearing Notice</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item small text-muted" href="javascript:void(0)" onclick="applyAdminMacro('clear')"><i class="fas fa-eraser me-2"></i>Clear Textarea</a></li>
+                                </ul>
+                            </div>
+                        </div>
                         <textarea class="form-control" id="admin_response" name="admin_response" rows="4" 
-                                  placeholder="Enter your response or comments..." required></textarea>
-                        <div class="form-text">This response will be visible to the student</div>
+                                  placeholder="Enter your response or comments..."></textarea>
+                        
+                        <!-- Attachment Input & Preview -->
+                        <div class="mt-2 d-flex flex-wrap align-items-center gap-2">
+                            <label for="admin_attachment" id="admin_attachment_label" class="btn btn-sm btn-outline-secondary mb-0 file-attach-btn">
+                                <i class="fas fa-paperclip me-1"></i>Attach File (Max 10MB)
+                            </label>
+                            <input type="file" id="admin_attachment" name="attachment" class="d-none" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.txt" onchange="handleAdminFileSelect(this)">
+                            
+                            <span id="admin_file_preview" class="file-preview-chip badge bg-light text-dark border p-2 d-none align-items-center gap-2">
+                                <i id="admin_file_icon" class="fas fa-file text-primary file-type-icon"></i>
+                                <span id="admin_file_name" class="small fw-normal"></span>
+                                <button type="button" class="btn-close btn-close-sm ms-1" style="font-size: 0.65rem;" onclick="clearAdminFile()" title="Remove file"></button>
+                            </span>
+                        </div>
+                        <div class="form-text">Accepted formats: PDF, PNG, JPG, DOCX, TXT. Public responses are emailed to the student; internal notes remain restricted to staff.</div>
                     </div>
                     <div class="d-flex gap-2 comment-form-buttons">
                         <button type="submit" class="btn btn-success flex-fill">
@@ -506,6 +648,26 @@
                         </button>
                     </div>
                 </form>
+
+                <!-- Communication Closed Banner (Shown when resolved or rejected) -->
+                <div id="adminChatClosedBanner" class="alert alert-secondary border d-flex align-items-center p-3 mt-3 shadow-sm rounded-3 {% if grievance.status != 'resolved' and grievance.status != 'rejected' %}d-none{% endif %}">
+                    <div class="me-3 text-secondary">
+                        <i class="fas fa-lock fa-2x"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="fw-bold text-dark mb-1">
+                            <i class="fas fa-lock me-1 text-secondary"></i>Communication Thread Closed — Grievance <span id="adminChatClosedStatusLabel">{% if grievance.status == 'rejected' %}Rejected{% else %}Resolved{% endif %}</span>
+                        </div>
+                        <div class="small text-muted">
+                            This grievance is marked as <strong id="adminChatClosedStatusDesc">{% if grievance.status == 'rejected' %}Rejected{% else %}Resolved{% endif %}</strong>. The communication chat is closed for all participants (Superadmin, Admin, Officer, and Student).
+                            {% if grievance.is_appealed %}
+                                An appeal has been registered and is pending supervisory review. If accepted, this thread will automatically reopen.
+                            {% else %}
+                                The thread remains closed until an appeal is filed by the student or the case is reopened by staff using "Reopen Case" in the sidebar.
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Appeals & Supervisory Re-Hearing Panel -->
@@ -611,7 +773,7 @@
                 
                 <div class="text-center mb-4">
                     <div class="label mb-2">Current Status</div>
-                    <span class="status-badge bg-{% if grievance.status == 'pending' %}warning{% elif grievance.status == 'resolved' %}success{% elif grievance.status == 'pending_student' %}info{% else %}danger{% endif %} text-white">
+                    <span id="adminStatusBadge" class="status-badge bg-{% if grievance.status == 'pending' %}warning{% elif grievance.status == 'resolved' %}success{% elif grievance.status == 'pending_student' %}info{% else %}danger{% endif %} text-white">
                         {{ grievance.get_status_display }}
                     </span>
                     {% if grievance.status == 'pending_student' %}
@@ -624,34 +786,34 @@
                 <div class="action-buttons">
                     <div class="d-grid gap-2">
                         {% if grievance.status == 'pending' or grievance.status == 'in_progress' %}
-                        <button class="btn btn-success" onclick="updateGrievanceStatus('{{ grievance.id }}', 'resolved')">
+                        <button type="button" class="btn btn-success" onclick="updateGrievanceStatus('{{ grievance.id }}', 'resolved')">
                             <i class="fas fa-check me-2"></i>
                             <span class="d-none d-sm-inline">Mark as Resolved</span>
                             <span class="d-sm-none">Resolve</span>
                         </button>
-                        <button class="btn btn-outline-warning" onclick="updateGrievanceStatus('{{ grievance.id }}', 'pending_student')">
+                        <button type="button" class="btn btn-outline-warning" onclick="updateGrievanceStatus('{{ grievance.id }}', 'pending_student')">
                             <i class="fas fa-pause me-2"></i>
                             <span class="d-none d-sm-inline">Pause SLA (Awaiting Student)</span>
                             <span class="d-sm-none">Pause SLA</span>
                         </button>
-                        <button class="btn btn-danger" onclick="updateGrievanceStatus('{{ grievance.id }}', 'rejected')">
+                        <button type="button" class="btn btn-danger" onclick="updateGrievanceStatus('{{ grievance.id }}', 'rejected')">
                             <i class="fas fa-times me-2"></i>
                             <span class="d-none d-sm-inline">Mark as Rejected</span>
                             <span class="d-sm-none">Reject</span>
                         </button>
                         {% elif grievance.status == 'pending_student' %}
-                        <button class="btn btn-primary" onclick="updateGrievanceStatus('{{ grievance.id }}', 'pending')">
+                        <button type="button" class="btn btn-primary" onclick="updateGrievanceStatus('{{ grievance.id }}', 'pending')">
                             <i class="fas fa-play me-2"></i>
                             <span class="d-none d-sm-inline">Resume Case (Unpause SLA)</span>
                             <span class="d-sm-none">Resume</span>
                         </button>
-                        <button class="btn btn-success" onclick="updateGrievanceStatus('{{ grievance.id }}', 'resolved')">
+                        <button type="button" class="btn btn-success" onclick="updateGrievanceStatus('{{ grievance.id }}', 'resolved')">
                             <i class="fas fa-check me-2"></i>
                             <span class="d-none d-sm-inline">Mark as Resolved</span>
                             <span class="d-sm-none">Resolve</span>
                         </button>
                         {% elif grievance.status == 'resolved' or grievance.status == 'rejected' %}
-                        <button class="btn btn-outline-secondary" onclick="updateGrievanceStatus('{{ grievance.id }}', 'pending')">
+                        <button type="button" class="btn btn-outline-secondary" onclick="updateGrievanceStatus('{{ grievance.id }}', 'pending')">
                             <i class="fas fa-undo me-2"></i>Reopen Case
                         </button>
                         {% endif %}
@@ -724,16 +886,6 @@
                     <div class="label">School</div>
                     <div class="value">{{ grievance.student.school|default:"Not specified" }}</div>
                 </div>
-                
-                <div class="text-center mt-3">
-                    <div class="d-grid">
-                        <a href="{% url 'admin_panel:student_detail' grievance.student.id %}" class="btn btn-outline-info btn-sm">
-                            <i class="fas fa-eye me-2"></i>
-                            <span class="d-none d-sm-inline">View Student Profile</span>
-                            <span class="d-sm-none">View Profile</span>
-                        </a>
-                    </div>
-                </div>
                 {% else %}
                 <div class="text-center py-4">
                     <i class="fas fa-user-secret fa-3x text-warning mb-3"></i>
@@ -779,10 +931,55 @@
         </div>
     </div>
 </div>
+
+<!-- Status Update & Resolution Justification Modal -->
+<div class="modal fade" id="statusActionModal" tabindex="-1" aria-labelledby="statusActionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="statusActionModalLabel">
+                    <i class="fas fa-edit me-2"></i>Update Case Status
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeStatusModal()"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="modalTargetStatus" value="">
+                <div class="alert alert-info py-2 small" id="statusModalNotice">
+                    Please provide an official justification / action report for this status transition.
+                </div>
+                <div class="mb-3">
+                    <label for="statusModalNotes" class="form-label fw-bold" id="statusModalNotesLabel">Official Remarks / Action Taken:</label>
+                    <textarea class="form-control" id="statusModalNotes" rows="4" placeholder="Enter detailed remarks or findings..."></textarea>
+                    <div class="form-text" id="statusModalHelpText">This note will be recorded in the official audit history and communicated to the student.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" onclick="closeStatusModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmStatusActionBtn" onclick="submitModalStatusAction()">
+                    <i class="fas fa-check me-1"></i>Confirm Status Update
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+window.ACTIVE_GRIEVANCE_ID = '{{ grievance.id }}';
+window.CURRENT_GRIEVANCE_STATUS = '{{ grievance.status }}';
+let currentGrievanceId = '{{ grievance.id }}';
+let isAdminAutoReloading = false;
+
+function triggerAdminStatusAutoRefresh(newStatus) {
+    if (!newStatus || newStatus === window.CURRENT_GRIEVANCE_STATUS || isAdminAutoReloading) return;
+    isAdminAutoReloading = true;
+    window.CURRENT_GRIEVANCE_STATUS = newStatus;
+    setTimeout(() => {
+        window.location.reload();
+    }, 800);
+}
+
 // Track that user is viewing this grievance
 document.addEventListener('DOMContentLoaded', function() {
     const grievanceId = '{{ grievance.id }}';
@@ -812,54 +1009,404 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Function to update grievance status
-function updateGrievanceStatus(grievanceId, status) {
-    const confirmMessage = status === 'resolved' ? 'resolve' : 'reject';
-    if (confirm(`Are you sure you want to ${confirmMessage} this grievance?`)) {
-        fetch(`/admin-panel/grievances/${grievanceId}/update-status/`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-            },
-            body: JSON.stringify({
-                status: status
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert('Error updating grievance status: ' + (data.error || 'Unknown error'));
+function getDefaultRemarks(targetStatus) {
+    if (targetStatus === 'resolved') {
+        return 'Grievance investigated and resolved by administration.';
+    } else if (targetStatus === 'pending_student') {
+        return 'Awaiting additional information / clarification from student. SLA paused.';
+    } else if (targetStatus === 'rejected') {
+        return 'Grievance rejected after administrative review.';
+    } else if (targetStatus === 'pending') {
+        return 'Case reopened / resumed for active investigation.';
+    }
+    return '';
+}
+
+function getSafeCsrfToken() {
+    if (typeof getCsrfToken === 'function') {
+        try {
+            const token = getCsrfToken();
+            if (token) return token;
+        } catch (e) {}
+    }
+    const input = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (input && input.value) return input.value;
+    if (typeof getCookie === 'function') {
+        try {
+            const token = getCookie('csrftoken');
+            if (token) return token;
+        } catch (e) {}
+    }
+    const match = document.cookie.match(/(^|;)\s*csrftoken\s*=\s*([^;]+)/);
+    return match ? decodeURIComponent(match[2]) : '';
+}
+
+function closeStatusModal() {
+    const modalEl = document.getElementById('statusActionModal');
+    if (modalEl) {
+        try {
+            if (window.bootstrap && bootstrap.Modal) {
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error updating grievance status');
-        });
+        } catch (e) {}
+        modalEl.classList.remove('show');
+        modalEl.style.display = 'none';
+        modalEl.setAttribute('aria-hidden', 'true');
+        modalEl.removeAttribute('aria-modal');
+    }
+    const fallbackBackdrop = document.getElementById('statusModalBackdropFallback');
+    if (fallbackBackdrop) fallbackBackdrop.remove();
+    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.removeProperty('overflow');
+    document.body.style.removeProperty('padding-right');
+}
+
+function openStatusModal(targetStatus) {
+    const modalEl = document.getElementById('statusActionModal');
+    const defaultText = getDefaultRemarks(targetStatus);
+    
+    if (!modalEl) {
+        const note = prompt(`Enter remarks for ${targetStatus} (or click OK to use default):`, defaultText);
+        if (note !== null) {
+            executeStatusUpdate(currentGrievanceId, targetStatus, note || defaultText);
+        }
+        return;
+    }
+
+    const modalTitle = document.getElementById('statusActionModalLabel');
+    const modalNotesLabel = document.getElementById('statusModalNotesLabel');
+    const modalNotice = document.getElementById('statusModalNotice');
+    const modalTextarea = document.getElementById('statusModalNotes');
+    const confirmBtn = document.getElementById('confirmStatusActionBtn');
+    const targetStatusInput = document.getElementById('modalTargetStatus');
+    
+    if (targetStatusInput) targetStatusInput.value = targetStatus;
+    if (modalTextarea) modalTextarea.value = defaultText;
+
+    if (targetStatus === 'resolved') {
+        if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-check-circle text-success me-2"></i>Official Resolution — Action Taken Report (ATR)';
+        if (modalNotesLabel) modalNotesLabel.textContent = 'Resolution Summary & Redressal Actions:';
+        if (modalNotice) {
+            modalNotice.className = 'alert alert-success py-2 small';
+            modalNotice.textContent = 'Describe the corrective action taken, findings, and remedy provided to the student.';
+        }
+        if (confirmBtn) {
+            confirmBtn.className = 'btn btn-success';
+            confirmBtn.innerHTML = '<i class="fas fa-check-double me-1"></i>Confirm Resolution';
+        }
+    } else if (targetStatus === 'rejected') {
+        if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-times-circle text-danger me-2"></i>Reject Grievance — Reason & Grounds';
+        if (modalNotesLabel) modalNotesLabel.textContent = 'Grounds for Rejection:';
+        if (modalNotice) {
+            modalNotice.className = 'alert alert-danger py-2 small';
+            modalNotice.textContent = 'Specify the institutional policy or factual reasons why this grievance cannot be upheld.';
+        }
+        if (confirmBtn) {
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.innerHTML = '<i class="fas fa-times me-1"></i>Confirm Rejection';
+        }
+    } else if (targetStatus === 'pending_student') {
+        if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-pause-circle text-warning me-2"></i>Pause SLA — Information Requested from Student';
+        if (modalNotesLabel) modalNotesLabel.textContent = 'Required Information / Documents from Student:';
+        if (modalNotice) {
+            modalNotice.className = 'alert alert-warning py-2 small text-dark';
+            modalNotice.textContent = 'The SLA clock will pause. It will automatically resume once the student replies.';
+        }
+        if (confirmBtn) {
+            confirmBtn.className = 'btn btn-warning text-dark';
+            confirmBtn.innerHTML = '<i class="fas fa-pause me-1"></i>Pause SLA & Notify Student';
+        }
+    } else {
+        if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-undo text-primary me-2"></i>Reopen Case / Resume SLA';
+        if (modalNotesLabel) modalNotesLabel.textContent = 'Reopening Remarks:';
+        if (modalNotice) {
+            modalNotice.className = 'alert alert-primary py-2 small';
+            modalNotice.textContent = 'Case will be returned to active pending status and the SLA clock will run.';
+        }
+        if (confirmBtn) {
+            confirmBtn.className = 'btn btn-primary';
+            confirmBtn.innerHTML = '<i class="fas fa-play me-1"></i>Resume Case';
+        }
+    }
+
+    try {
+        if (window.bootstrap && bootstrap.Modal) {
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+        } else {
+            // Manual fallback if Bootstrap script is blocked/unavailable
+            modalEl.classList.add('show');
+            modalEl.style.display = 'block';
+            modalEl.setAttribute('aria-modal', 'true');
+            modalEl.removeAttribute('aria-hidden');
+            let backdrop = document.getElementById('statusModalBackdropFallback');
+            if (!backdrop) {
+                backdrop = document.createElement('div');
+                backdrop.id = 'statusModalBackdropFallback';
+                backdrop.className = 'modal-backdrop fade show';
+                document.body.appendChild(backdrop);
+            }
+            document.body.classList.add('modal-open');
+        }
+    } catch (e) {
+        console.warn('Bootstrap modal open failed, using direct prompt fallback:', e);
+        const note = prompt(`Enter remarks for ${targetStatus} (or click OK to use default):`, defaultText);
+        if (note !== null) {
+            executeStatusUpdate(currentGrievanceId, targetStatus, note || defaultText);
+        }
     }
 }
 
-// Real-Time Chat using WebSockets
-const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-const chatSocket = new WebSocket(
-    wsProtocol + '//' + window.location.host + '/ws/grievances/{{ grievance.id }}/chat/'
-);
-
-chatSocket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-    const container = document.getElementById('adminChatContainer');
-    if (!container) return;
+function submitModalStatusAction() {
+    const targetStatusInput = document.getElementById('modalTargetStatus');
+    const targetStatus = targetStatusInput ? targetStatusInput.value : '';
+    const notesInput = document.getElementById('statusModalNotes');
+    let notes = notesInput ? notesInput.value.trim() : '';
     
-    // Remove empty state message if it exists
-    const emptyState = container.querySelector('.fa-comments.fa-3x');
-    if (emptyState) {
-        container.innerHTML = '<h6 class="fw-bold mb-3">Previous Comments:</h6>';
+    if (!notes) {
+        notes = getDefaultRemarks(targetStatus);
     }
 
+    const confirmBtn = document.getElementById('confirmStatusActionBtn');
+    if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Updating...';
+    }
+
+    executeStatusUpdate(currentGrievanceId, targetStatus, notes, function() {
+        if (confirmBtn) confirmBtn.disabled = false;
+        closeStatusModal();
+    });
+}
+
+function executeStatusUpdate(grievanceId, status, resolutionNotes, onComplete) {
+    const effectiveGrievanceId = grievanceId || currentGrievanceId || window.ACTIVE_GRIEVANCE_ID;
+    const csrfToken = getSafeCsrfToken();
+    const payloadNotes = resolutionNotes || getDefaultRemarks(status);
+
+    fetch(`/admin-panel/grievances/${effectiveGrievanceId}/update-status/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({
+            status: status,
+            resolution_notes: payloadNotes
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errData => {
+                throw new Error(errData.error || `HTTP ${response.status}`);
+            }).catch(e => {
+                throw new Error(e.message || `Server returned ${response.status}`);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            updateAdminStatusUI(data.status, data.status_display);
+            closeStatusModal();
+            location.reload();
+        } else {
+            alert('Error updating status: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error updating status:', error);
+        alert('Failed to update status: ' + error.message);
+    })
+    .finally(() => {
+        if (onComplete) onComplete();
+    });
+}
+
+// Function to update grievance status
+function updateGrievanceStatus(grievanceId, status) {
+    currentGrievanceId = grievanceId || window.ACTIVE_GRIEVANCE_ID;
+    openStatusModal(status);
+}
+
+// Canned Response Macros
+const ADMIN_MACROS = {
+    'fee_verification': 'Dear Student,\n\nYour inquiry regarding fee payment / ledger reconciliation has been forwarded to the Finance and Accounts Department. Please furnish your fee receipt and bank transaction reference ID if not previously attached.\n\nRegards,\nGrievance Redressal Cell',
+    'academic_eval': 'Dear Student,\n\nYour grievance regarding examination evaluation / grading assessment has been referred to the Office of the Controller of Examinations for verification of the evaluation records. You will be notified of the findings.\n\nRegards,\nAcademic Review Cell',
+    'hostel_maintenance': 'Dear Student,\n\nYour maintenance request has been logged with the Campus Facilities & Hostel Warden team. A technician/supervisor has been instructed to inspect and rectify the issue within 24–48 hours.\n\nRegards,\nHostel Administration',
+    'document_request': 'Dear Student,\n\nTo enable us to conduct a comprehensive inquiry into this matter, please upload supporting documentation or clarification through this communication thread at your earliest convenience.\n\nRegards,\nGrievance Officer',
+    'hearing_notice': 'Dear Student,\n\nYou are requested to attend a preliminary hearing with the Grievance Redressal Committee. Please confirm your availability or propose an alternative time slot via reply in this thread.\n\nRegards,\nGrievance Committee'
+};
+
+function applyAdminMacro(macroKey) {
+    const textarea = document.getElementById('admin_response');
+    if (!textarea) return;
+    if (macroKey === 'clear') {
+        textarea.value = '';
+        textarea.focus();
+        return;
+    }
+    const template = ADMIN_MACROS[macroKey];
+    if (template) {
+        if (textarea.value.trim()) {
+            if (confirm('Replace current text with selected template?')) {
+                textarea.value = template;
+            }
+        } else {
+            textarea.value = template;
+        }
+        textarea.focus();
+    }
+}
+
+function getFileTypeIconInfo(filename) {
+    const ext = filename.split('.').pop().toLowerCase();
+    if (ext === 'pdf') {
+        return { icon: 'fa-file-pdf', color: 'text-danger' };
+    } else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+        return { icon: 'fa-file-image', color: 'text-success' };
+    } else if (['doc', 'docx'].includes(ext)) {
+        return { icon: 'fa-file-word', color: 'text-primary' };
+    } else if (['txt', 'csv'].includes(ext)) {
+        return { icon: 'fa-file-alt', color: 'text-info' };
+    }
+    return { icon: 'fa-file', color: 'text-secondary' };
+}
+
+function handleAdminFileSelect(input) {
+    const preview = document.getElementById('admin_file_preview');
+    const nameSpan = document.getElementById('admin_file_name');
+    const icon = document.getElementById('admin_file_icon');
+    const label = document.getElementById('admin_attachment_label');
+
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        if (file.size > 10 * 1024 * 1024) {
+            alert('File exceeds 10MB limit.');
+            clearAdminFile();
+            return;
+        }
+
+        // Set contextual icon matching file extension
+        if (icon) {
+            const iconInfo = getFileTypeIconInfo(file.name);
+            icon.className = `fas ${iconInfo.icon} ${iconInfo.color} file-type-icon`;
+        }
+
+        nameSpan.textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+
+        // Trigger pop-in spring animation
+        preview.classList.remove('d-none', 'file-preview-removing');
+        preview.classList.remove('file-preview-active');
+        void preview.offsetWidth; // Force CSS reflow to replay animation
+        preview.classList.add('d-inline-flex', 'file-preview-active');
+
+        if (label) {
+            label.classList.add('attach-btn-active');
+        }
+    } else {
+        clearAdminFile();
+    }
+}
+
+function clearAdminFile() {
+    const input = document.getElementById('admin_attachment');
+    const preview = document.getElementById('admin_file_preview');
+    const label = document.getElementById('admin_attachment_label');
+
+    if (input) input.value = '';
+    if (label) label.classList.remove('attach-btn-active');
+
+    if (preview && !preview.classList.contains('d-none')) {
+        preview.classList.remove('file-preview-active');
+        preview.classList.add('file-preview-removing');
+        setTimeout(() => {
+            preview.classList.add('d-none');
+            preview.classList.remove('d-inline-flex', 'file-preview-removing');
+        }, 190);
+    }
+}
+
+// Tracking comment IDs and fingerprints for bulletproof deduplication
+const knownAdminCommentIds = new Set();
+const recentAdminFingerprints = new Map();
+
+function updateAdminStatusUI(newStatus, newStatusDisplay) {
+    const badge = document.getElementById('adminStatusBadge');
+    if (badge) {
+        if (newStatusDisplay) {
+            badge.textContent = newStatusDisplay;
+        }
+        const colorClass = newStatus === 'pending' ? 'warning' : (newStatus === 'resolved' ? 'success' : (newStatus === 'pending_student' ? 'info' : 'danger'));
+        badge.className = `status-badge bg-${colorClass} text-white`;
+    }
+
+    const form = document.getElementById('adminResponseForm');
+    const closedBanner = document.getElementById('adminChatClosedBanner');
+    if (form && closedBanner) {
+        if (newStatus === 'resolved' || newStatus === 'rejected') {
+            form.classList.add('d-none');
+            closedBanner.classList.remove('d-none');
+            const statusLabel = document.getElementById('adminChatClosedStatusLabel');
+            const statusDesc = document.getElementById('adminChatClosedStatusDesc');
+            const statusName = newStatus === 'rejected' ? 'Rejected' : 'Resolved';
+            if (statusLabel) statusLabel.textContent = statusName;
+            if (statusDesc) statusDesc.textContent = statusName;
+        } else {
+            form.classList.remove('d-none');
+            closedBanner.classList.add('d-none');
+        }
+    }
+
+    if (newStatus && newStatus !== window.CURRENT_GRIEVANCE_STATUS) {
+        triggerAdminStatusAutoRefresh(newStatus);
+    }
+}
+
+function appendAdminMessage(data, isLive = true) {
+    const container = document.getElementById('adminChatContainer');
+    if (!container) return;
+
+    const commentId = data.id || data.comment_id;
+    if (commentId) {
+        const idStr = String(commentId);
+        if (knownAdminCommentIds.has(idStr) || container.querySelector(`[data-comment-id="${idStr}"]`)) {
+            return;
+        }
+        knownAdminCommentIds.add(idStr);
+    }
+
+    const messageText = (data.message || '').trim();
+    const fp = messageText.toLowerCase().replace(/\s+/g, ' ') + '::' + Boolean(data.is_student) + '::' + Boolean(data.is_internal);
+    if (recentAdminFingerprints.has(fp)) {
+        const prevTime = recentAdminFingerprints.get(fp);
+        if (Date.now() - prevTime < 8000) {
+            return;
+        }
+    }
+    recentAdminFingerprints.set(fp, Date.now());
+
+    // Remove empty state message if it exists
+    const emptyPlaceholder = container.querySelector('.empty-comments-placeholder') || container.querySelector('.fa-comments.fa-3x')?.closest('.text-center');
+    if (emptyPlaceholder) {
+        emptyPlaceholder.remove();
+    }
+
+    const attachmentHtml = data.attachment_url ? `
+        <div class="mt-2 pt-2 border-top">
+            <a href="${escapeHtml(data.attachment_url)}" target="_blank" class="btn btn-sm btn-outline-primary py-1 px-2">
+                <i class="fas fa-paperclip me-1"></i>${escapeHtml(data.attachment_name || 'Download Attachment')}
+            </a>
+        </div>
+    ` : '';
+
+    const timeText = data.timestamp || new Date().toLocaleString();
+    const highlightClass = isLive ? ' message-highlight-pulse' : '';
     const messageHtml = `
-        <div class="comment-box mb-3 ${data.is_internal ? 'border-warning' : ''}">
+        <div class="comment-box mb-3 ${data.is_internal ? 'border-warning' : ''}${highlightClass}" data-comment-id="${commentId || ''}">
             <div class="d-flex justify-content-between align-items-start mb-2">
                 <div>
                     <strong>
@@ -867,84 +1414,197 @@ chatSocket.onmessage = function(e) {
                             ? '<i class="fas fa-user me-1 text-primary"></i>' + escapeHtml(data.user_name) + ' (Student)'
                             : '<i class="fas fa-user-shield me-1 text-success"></i>' + escapeHtml(data.user_name) + ' (Admin)'}
                     </strong>
+                    ${data.comment_type && data.comment_type !== 'comment' ? `<span class="badge bg-${data.comment_type === 'status_update' ? 'info' : 'secondary'} ms-2">${escapeHtml(data.comment_type.replace('_', ' '))}</span>` : ''}
                     ${data.is_internal ? '<span class="badge bg-warning ms-1">Internal</span>' : ''}
                 </div>
-                <small class="text-muted">${escapeHtml(data.timestamp)}</small>
+                <small class="text-muted">${escapeHtml(timeText)}</small>
             </div>
-            <p class="mb-0">${escapeHtml(data.message).replace(/\n/g, '<br>')}</p>
+            <p class="mb-0">${escapeHtml(messageText).replace(/\n/g, '<br>')}</p>
+            ${attachmentHtml}
         </div>
     `;
 
-    const shouldStickToBottom = !container || container.scrollTop + container.clientHeight >= container.scrollHeight - 120;
+    const shouldStickToBottom = !container || (container.scrollTop + container.clientHeight >= container.scrollHeight - 140);
     container.insertAdjacentHTML('beforeend', messageHtml);
     
     if (container && shouldStickToBottom) {
-        container.scrollTop = container.scrollHeight;
+        container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
     }
-};
+}
 
-chatSocket.onclose = function(e) {
-    console.error('Chat socket closed unexpectedly');
-};
+// WebSocket Auto-Reconnect Engine
+let chatSocket = null;
+let socketReconnectTimer = null;
+let isSocketConnecting = false;
+
+function connectAdminChatWebSocket() {
+    if (isSocketConnecting) return;
+    isSocketConnecting = true;
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const socketUrl = wsProtocol + '//' + window.location.host + '/ws/grievances/{{ grievance.id }}/chat/';
+    
+    try {
+        chatSocket = new WebSocket(socketUrl);
+
+        chatSocket.onopen = function() {
+            isSocketConnecting = false;
+            if (socketReconnectTimer) {
+                clearTimeout(socketReconnectTimer);
+                socketReconnectTimer = null;
+            }
+        };
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            if (data.error) {
+                console.warn('Chat notification:', data.error);
+                return;
+            }
+            appendAdminMessage(data, true);
+            if (data.new_status || data.status_changed) {
+                updateAdminStatusUI(data.new_status, data.new_status_display);
+            }
+        };
+
+        chatSocket.onclose = function() {
+            isSocketConnecting = false;
+            if (!socketReconnectTimer) {
+                socketReconnectTimer = setTimeout(connectAdminChatWebSocket, 3000);
+            }
+        };
+
+        chatSocket.onerror = function() {
+            try { chatSocket.close(); } catch (_) {}
+        };
+    } catch (err) {
+        isSocketConnecting = false;
+        if (!socketReconnectTimer) {
+            socketReconnectTimer = setTimeout(connectAdminChatWebSocket, 4000);
+        }
+    }
+}
+connectAdminChatWebSocket();
 
 // Handle admin response form submission
 document.getElementById('adminResponseForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    const formData = new FormData(this);
-    const responseText = formData.get('admin_response').trim();
+    const textarea = document.getElementById('admin_response');
+    const responseText = textarea.value.trim();
+    const fileInput = document.getElementById('admin_attachment');
+    const hasFile = fileInput && fileInput.files.length > 0;
     
-    if (!responseText) {
-        alert('Please enter a response');
+    if (!responseText && !hasFile) {
+        alert('Please enter a response or attach a file');
         return;
     }
     
-    chatSocket.send(JSON.stringify({
-        'message': responseText,
-        'is_internal': false
-    }));
-    
-    document.getElementById('admin_response').value = '';
-    
-    // Post via HTTP anyway for backup and email notifications, but silently
+    const submitBtn = this.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.disabled = true;
+
+    const formData = new FormData(this);
     fetch(this.action, {
         method: 'POST',
         body: formData,
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    }).catch(console.error);
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            textarea.value = '';
+            clearAdminFile();
+            const commentId = String(data.id || data.comment_id || '');
+            const fp = responseText.toLowerCase().replace(/\s+/g, ' ') + '::false::false';
+            if (commentId) knownAdminCommentIds.add(commentId);
+            recentAdminFingerprints.set(fp, Date.now());
+
+            const existingEl = commentId ? document.querySelector(`#adminChatContainer [data-comment-id="${commentId}"]`) : null;
+            if (!existingEl && (!chatSocket || chatSocket.readyState !== WebSocket.OPEN)) {
+                appendAdminMessage({
+                    id: data.id || data.comment_id,
+                    comment_id: data.comment_id || data.id,
+                    message: responseText || ('📎 Attached: ' + (data.attachment_name || 'file')),
+                    user_name: '{{ request.user.get_full_name|default:request.user.email|escapejs }}',
+                    is_internal: false,
+                    is_student: false,
+                    timestamp: data.timestamp || new Date().toLocaleString(),
+                    attachment_url: data.attachment_url,
+                    attachment_name: data.attachment_name
+                }, false);
+            }
+        } else {
+            alert('Error sending response: ' + (data.error || 'Failed'));
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        alert('Failed to send response. Please try again.');
+    })
+    .finally(() => {
+        if (submitBtn) submitBtn.disabled = false;
+    });
 });
 
 // Function to submit internal note
 function submitInternalNote() {
-    const responseText = document.getElementById('admin_response').value.trim();
+    const textarea = document.getElementById('admin_response');
+    const responseText = textarea.value.trim();
+    const fileInput = document.getElementById('admin_attachment');
+    const hasFile = fileInput && fileInput.files.length > 0;
     
-    if (!responseText) {
-        alert('Please enter a note');
+    if (!responseText && !hasFile) {
+        alert('Please enter a note or attach a file');
         return;
     }
     
-    chatSocket.send(JSON.stringify({
-        'message': responseText,
-        'is_internal': true
-    }));
-    
-    document.getElementById('admin_response').value = '';
-    
-    // Post via HTTP anyway for backup and email notifications
     const formData = new FormData();
     formData.append('admin_response', responseText);
     formData.append('is_internal', 'true');
     formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    if (hasFile) {
+        formData.append('attachment', fileInput.files[0]);
+    }
     
     fetch('{% url "admin_panel:add_admin_response" grievance.id %}', {
         method: 'POST',
         body: formData,
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    }).catch(console.error);
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            textarea.value = '';
+            clearAdminFile();
+            const commentId = String(data.id || data.comment_id || '');
+            const fp = responseText.toLowerCase().replace(/\s+/g, ' ') + '::false::true';
+            if (commentId) knownAdminCommentIds.add(commentId);
+            recentAdminFingerprints.set(fp, Date.now());
+
+            const existingEl = commentId ? document.querySelector(`#adminChatContainer [data-comment-id="${commentId}"]`) : null;
+            if (!existingEl && (!chatSocket || chatSocket.readyState !== WebSocket.OPEN)) {
+                appendAdminMessage({
+                    id: data.id || data.comment_id,
+                    comment_id: data.comment_id || data.id,
+                    message: responseText || ('📎 Attached: ' + (data.attachment_name || 'file')),
+                    user_name: '{{ request.user.get_full_name|default:request.user.email|escapejs }}',
+                    is_internal: true,
+                    is_student: false,
+                    timestamp: data.timestamp || new Date().toLocaleString(),
+                    attachment_url: data.attachment_url,
+                    attachment_name: data.attachment_name
+                }, false);
+            }
+        } else {
+            alert('Error adding internal note: ' + (data.error || 'Failed'));
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        alert('Failed to add internal note. Please try again.');
+    });
 }
 
 // Load initial thread
-
 const adminCommentsUrl = '{% url "grievances:grievance_comments" grievance.id %}';
 
 function escapeHtml(value) {
@@ -957,61 +1617,68 @@ function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
-function renderAdminComments(comments) {
-    const container = document.getElementById('adminChatContainer');
-    if (!container) return;
-
-    if (!comments.length) {
-        container.innerHTML = `
-            <div class="mb-4">
-                <h6 class="fw-bold mb-3">Previous Comments:</h6>
-                <div class="text-center text-muted py-4">
-                    <i class="fas fa-comments fa-3x mb-3 text-secondary"></i>
-                    <p class="mb-0">No comments or responses yet. Start the conversation below!</p>
-                </div>
-            </div>`;
-        return;
-    }
-
-    const html = comments.map(comment => `
-        <div class="comment-box mb-3 ${comment.is_internal ? 'border-warning' : ''}">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-                <div>
-                    <strong>
-                        ${comment.is_student
-                            ? '<i class="fas fa-user me-1 text-primary"></i>' + escapeHtml(comment.user) + ' (Student)'
-                            : '<i class="fas fa-user-shield me-1 text-success"></i>' + escapeHtml(comment.user) + ' (Admin)'}
-                    </strong>
-                    ${comment.comment_type !== 'comment' ? `<span class="badge bg-${comment.comment_type === 'status_update' ? 'info' : 'secondary'} ms-2">${escapeHtml(comment.comment_type.replace('_', ' '))}</span>` : ''}
-                    ${comment.is_internal ? '<span class="badge bg-warning ms-1">Internal</span>' : ''}
-                </div>
-                <small class="text-muted">${new Date(comment.timestamp).toLocaleString()}</small>
-            </div>
-            <p class="mb-0">${escapeHtml(comment.message).replace(/\n/g, '<br>')}</p>
-        </div>
-    `).join('');
-
-    container.innerHTML = `
-        <h6 class="fw-bold mb-3">Previous Comments:</h6>
-        ${html}`;
+function seedExistingAdminComments() {
+    document.querySelectorAll('#adminChatContainer .comment-box').forEach(box => {
+        const id = box.getAttribute('data-comment-id');
+        if (id) knownAdminCommentIds.add(id);
+        const text = box.querySelector('p')?.textContent.trim() || '';
+        const isInternal = box.classList.contains('border-warning');
+        const isStudent = box.querySelector('strong')?.textContent.includes('(Student)');
+        const fp = text.toLowerCase().replace(/\s+/g, ' ') + '::' + Boolean(isStudent) + '::' + Boolean(isInternal);
+        if (text) recentAdminFingerprints.set(fp, Date.now());
+    });
 }
 
-function loadInitialThread() {
-    const container = document.getElementById('adminChatContainer');
+function syncLatestAdminComments() {
     fetch(adminCommentsUrl, {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
     })
-    .then(response => response.json())
+    .then(response => {
+        const headerStatus = response.headers.get('X-Grievance-Status');
+        if (headerStatus && headerStatus !== window.CURRENT_GRIEVANCE_STATUS) {
+            triggerAdminStatusAutoRefresh(headerStatus);
+        }
+        return response.json();
+    })
     .then(data => {
         if (Array.isArray(data)) {
-            renderAdminComments(data);
-            if (container) {
-                container.scrollTop = container.scrollHeight;
-            }
+            data.forEach(comment => {
+                const commentId = String(comment.id || comment.comment_id || '');
+                if (commentId && (knownAdminCommentIds.has(commentId) || document.querySelector(`#adminChatContainer [data-comment-id="${commentId}"]`))) {
+                    return;
+                }
+                const timeStr = new Date(comment.timestamp).toLocaleString();
+                appendAdminMessage({
+                    id: comment.id,
+                    comment_id: comment.comment_id,
+                    message: comment.message,
+                    user_name: comment.user,
+                    is_internal: comment.is_internal,
+                    is_student: comment.is_student,
+                    timestamp: timeStr,
+                    comment_type: comment.comment_type
+                }, true);
+            });
         }
     })
     .catch(console.error);
 }
-loadInitialThread();
+
+function scrollAdminChatToBottom(smooth = false) {
+    const container = document.getElementById('adminChatContainer');
+    if (container) {
+        if (smooth) {
+            container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+        } else {
+            container.scrollTop = container.scrollHeight;
+        }
+    }
+}
+
+seedExistingAdminComments();
+scrollAdminChatToBottom(false);
+window.addEventListener('DOMContentLoaded', () => scrollAdminChatToBottom(false));
+window.addEventListener('load', () => scrollAdminChatToBottom(false));
+setInterval(syncLatestAdminComments, 3500);
 </script>
 {% endblock %}

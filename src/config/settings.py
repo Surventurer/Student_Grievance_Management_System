@@ -87,14 +87,31 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
-# Channels / Redis config
+# Channels / Redis config with resilient in-memory fallback
+def get_channel_layer_config():
+    redis_host = config('REDIS_HOST', default='127.0.0.1')
+    redis_port = config('REDIS_PORT', default=6379, cast=int)
+    try:
+        import socket
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(0.3)
+        is_open = (s.connect_ex((redis_host, redis_port)) == 0)
+        s.close()
+        if is_open:
+            return {
+                "BACKEND": "channels_redis.core.RedisChannelLayer",
+                "CONFIG": {
+                    "hosts": [(redis_host, redis_port)],
+                },
+            }
+    except Exception:
+        pass
+    return {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    }
+
 CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [(config('REDIS_HOST', default='127.0.0.1'), config('REDIS_PORT', default=6379, cast=int))],
-        },
-    },
+    "default": get_channel_layer_config(),
 }
 
 # Redis Caching framework
