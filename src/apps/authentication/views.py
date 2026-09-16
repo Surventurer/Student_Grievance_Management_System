@@ -490,6 +490,8 @@ def login_view(request):
                         student_profile = user.student_profile
                         login(request, user)
                         log_login_action(user, request, success=True)
+                        from apps.authentication.security_utils import clear_user_failed_attempts
+                        clear_user_failed_attempts(user, request=request)
                         return redirect('students:dashboard')
                     except Exception:
                         messages.error(request, 'Student profile not found. Please contact administrator.')
@@ -508,17 +510,29 @@ def login_view(request):
                     
                     login(request, user)
                     log_login_action(user, request, success=True)
+                    from apps.authentication.security_utils import clear_user_failed_attempts
+                    clear_user_failed_attempts(user, request=request)
                     return redirect('admin_panel:dashboard')
             else:
+                # Track failed login attempt for existing user
+                target_user = None
+                if email:
+                    try:
+                        target_user = User.objects.filter(email__iexact=email.strip()).first()
+                    except Exception:
+                        pass
+
                 # Check if user exists but is inactive
-                try:
-                    inactive_user = User.objects.get(email=email, is_active=False)
-                    if inactive_user.check_password(password):
-                        reason = inactive_user.deactivation_reason or "Your account has been deactivated by the administrator."
+                if target_user and not target_user.is_active:
+                    if target_user.check_password(password):
+                        reason = target_user.deactivation_reason or "Your account has been deactivated by the administrator."
                         messages.error(request, f'Account Deactivated: {reason}')
                         return render(request, 'authentication/login.html', {'deactivation_reason': reason})
-                except User.DoesNotExist:
-                    pass
+
+                # Record running failed login attempt on target user
+                if target_user:
+                    from apps.authentication.security_utils import record_failed_login
+                    record_failed_login(target_user, request=request, reason="Invalid password")
                 
                 # Increment failed login attempts via security cache
                 try:
@@ -601,6 +615,9 @@ def login_view(request):
                     failed_attempts = security_cache_get(otp_rate_key, 0)
                     security_cache_set(otp_rate_key, failed_attempts + 1, timeout=300)
                     
+                    from apps.authentication.security_utils import record_failed_login
+                    record_failed_login(user, request=request, reason="Invalid OTP")
+                    
                     messages.error(request, 'Invalid OTP. Please try again.')
                     show_dev = getattr(settings, 'SHOW_DEV_OTP', False) or (settings.DEBUG and is_development_mode())
                     return render(request, 'authentication/login.html', {
@@ -627,6 +644,8 @@ def login_view(request):
                 
                 login(request, user)
                 log_login_action(user, request, success=True)
+                from apps.authentication.security_utils import clear_user_failed_attempts
+                clear_user_failed_attempts(user, request=request)
                 messages.success(request, 'Login successful!')
                 return redirect('admin_panel:dashboard')
                 

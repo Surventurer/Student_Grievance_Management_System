@@ -554,14 +554,14 @@ def users_search_api(request):
     users = User.objects.filter(
         Q(is_active=True) &
         Q(role__in=['admin', 'officer']) &  # Only admin and officer roles
-        Q(email__icontains=query)  # Search by email only since that's the main field
-    ).order_by('email')[:10]  # Limit to 10 results
+        (Q(email__icontains=query) | Q(admin_profile__name__icontains=query))
+    ).select_related('admin_profile').order_by('email')[:10]  # Limit to 10 results
     
     users_data = []
     for user in users:
         users_data.append({
             'id': user.id,
-            'name': user.email.split('@')[0],  # Use email prefix as display name
+            'name': user.get_full_name(),
             'email': user.email,
             'role': user.role.title() if user.role else 'User'
         })
@@ -607,7 +607,7 @@ def edit_department_user(request, user_id):
             profile.save()
         elif user.role in ['admin', 'officer'] and hasattr(user, 'admin_profile'):
             profile = user.admin_profile
-            profile.employee_id = data.get('employee_id', profile.employee_id)
+            # Name and Employee ID are permanent records and cannot be edited
             profile.department = data.get('department', profile.department)
             profile.phone = data.get('phone', profile.phone)
             profile.office_location = data.get('office_location', profile.office_location)
@@ -934,6 +934,7 @@ def create_department_user(request):
         elif role == 'officer':
             AdminProfile.objects.create(
                 user=user,
+                name=data.get('name', '').strip(),
                 role_level='officer',
                 department=department,  # Use admin's department
                 employee_id=data.get('employee_id', '').strip(),
@@ -991,6 +992,8 @@ def get_department_user_details(request, user_id):
             'is_email_verified': user.is_email_verified,
             'date_joined': user.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'last_login': user.last_login.strftime('%Y-%m-%d %H:%M:%S') if user.last_login else None,
+            'failed_login_attempts': user.failed_login_attempts,
+            'last_failed_login': user.last_failed_login,
             'deactivation_reason': user.deactivation_reason,
             'name': None,
             'student_profile': None,
@@ -1012,18 +1015,19 @@ def get_department_user_details(request, user_id):
             except StudentProfile.DoesNotExist:
                 user_details['student_profile'] = None
         
-        # Add admin profile information if user is an admin or officer
-        elif user.role in ['admin', 'officer']:
+        # Add admin profile information if user is an admin, officer, or superadmin
+        elif user.role in ['admin', 'officer', 'superadmin']:
             try:
                 user_admin_profile = AdminProfile.objects.get(user=user)
                 user_details['admin_profile'] = {
+                    'name': user_admin_profile.name,
                     'employee_id': user_admin_profile.employee_id,
                     'department': user_admin_profile.department,
                     'phone': user_admin_profile.phone,
                     'office_location': user_admin_profile.office_location,
                     'role_level': user_admin_profile.get_role_level_display(),
                 }
-                user_details['name'] = f"{user_admin_profile.get_role_level_display()} ({user_admin_profile.employee_id})"
+                user_details['name'] = user_admin_profile.name or (f"{user_admin_profile.get_role_level_display()} ({user_admin_profile.employee_id})" if user.role != 'superadmin' else 'Super Administrator')
             except AdminProfile.DoesNotExist:
                 user_details['admin_profile'] = None
         

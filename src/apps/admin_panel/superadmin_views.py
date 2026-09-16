@@ -19,8 +19,9 @@ from apps.authentication.models import User, TemporaryRegistration, AdminLoginOT
 from apps.students.models import StudentProfile, AdminProfile, Department, School
 from apps.grievances.models import (
     Grievance, Category, AuditLog, GrievanceComment,
-    GrievanceStatusHistory, GrievanceAssignmentHistory
+    GrievanceStatusHistory, GrievanceAssignmentHistory, CategoryAssignment
 )
+from apps.notifications.models import ReadNotification
 
 
 @superadmin_required
@@ -208,6 +209,13 @@ def toggle_user_status(request, user_id):
             user_agent=request.META.get('HTTP_USER_AGENT', '')
         )
         
+        # Sync HOD assignment if user is an admin
+        if user.role == 'admin' and hasattr(user, 'admin_profile') and user.admin_profile:
+            dept_name = user.admin_profile.department
+            if dept_name:
+                for dept in Department.objects.filter(name__iexact=dept_name.strip()):
+                    dept.auto_assign_hod_if_needed(save=True)
+
         return JsonResponse({
             'success': True,
             'message': f'User {status_text} successfully',
@@ -380,28 +388,53 @@ def get_temporary_registration_details(request, temp_id):
 
 @superadmin_required
 @require_http_methods(["POST"])
-def clear_failed_login_attempts(request):
-    """Clear failed login attempts - Superadmin only"""
+def clear_failed_login_attempts(request, user_id=None):
+    """Clear failed login attempts and restore login access - Superadmin only"""
     try:
-        data = json.loads(request.body)
-        user_id = data.get('user_id')
+        target_user_id = user_id
+        if not target_user_id and request.body:
+            try:
+                data = json.loads(request.body)
+                target_user_id = data.get('user_id')
+            except Exception:
+                pass
         
-        if user_id:
-            user = get_object_or_404(User, id=user_id)
-            # Clear AdminLoginOTP records for this user
-            deleted_count = AdminLoginOTP.objects.filter(user=user).delete()[0]
-            message = f'Cleared failed login attempts for {user.email}. Cleaned {deleted_count} OTP records.'
+        if target_user_id:
+            user = get_object_or_404(User, id=target_user_id)
+            from apps.authentication.security_utils import clear_user_failed_attempts
+            clear_user_failed_attempts(user, request=request)
+            
+            # Audit log superadmin action
+            try:
+                from apps.grievances.models import AuditLog
+                from apps.admin_panel.audit_utils import get_client_ip
+                AuditLog.objects.create(
+                    user=request.user,
+                    action='update',
+                    target_model='User',
+                    target_id=str(user.id),
+                    description=f"Superadmin restored failed login attempts to 0 for {user.email}",
+                    ip_address=get_client_ip(request),
+                    user_agent=request.META.get('HTTP_USER_AGENT', '')[:255]
+                )
+            except Exception as e:
+                print(f"Failed to log clear_failed_login_attempts: {e}")
+                
+            return JsonResponse({
+                'success': True,
+                'message': f'Successfully restored failed login attempts to 0 for {user.email}.',
+                'failed_login_attempts': 0
+            })
         else:
             # Clear all old AdminLoginOTP records
+            from apps.authentication.models import AdminLoginOTP
             deleted_count = AdminLoginOTP.objects.filter(
                 created_at__lt=timezone.now() - timedelta(hours=1)
             ).delete()[0]
-            message = f'Cleared all failed login attempts. Cleaned {deleted_count} old OTP records.'
-        
-        return JsonResponse({
-            'success': True,
-            'message': message
-        })
+            return JsonResponse({
+                'success': True,
+                'message': f'Cleared expired login OTP records. Cleaned {deleted_count} record(s).'
+            })
         
     except Exception as e:
         return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
@@ -587,6 +620,7 @@ def create_user(request):
                     
                 else:  # admin or officer
                     # Admin-specific fields
+                    name = request.POST.get('admin_name', '').strip() or request.POST.get('name', '').strip()
                     department = request.POST.get('admin_department')  # Changed from 'department' to 'admin_department'
                     employee_id = request.POST.get('employee_id')
                     phone = request.POST.get('phone', '')
@@ -594,6 +628,7 @@ def create_user(request):
                     
                     # Debug: Log the received values
                     print(f"DEBUG - Admin fields received:")
+                    print(f"  name: '{name}'")
                     print(f"  admin_department: '{department}'")
                     print(f"  employee_id: '{employee_id}'")
                     print(f"  phone: '{phone}'")
@@ -607,6 +642,7 @@ def create_user(request):
                     
                     AdminProfile.objects.create(
                         user=user,
+                        name=name,
                         role_level=role,
                         department=department,
                         employee_id=employee_id,
@@ -696,58 +732,58 @@ def bulk_delete_users(request):
         csv_writer.writerow(['User Email', 'Role', 'Grievance ID', 'Title', 'Status', 'Submitted At'])
         
         with transaction.atomic():
-            # For SQLite only, temporarily disable foreign key checks
-            if is_sqlite:
-                with connection.cursor() as cursor:
-                    cursor.execute("PRAGMA foreign_keys = OFF")
-            
-            try:
-                # Create audit logs before deletion
-                for user in users_to_delete:
-                    deleted_users_info.append({
-                        'id': user.id,
-                        'email': user.email,
-                        'role': user.role
-                    })
-                    
-                    # Write user and grievance data to CSV before deletion
-                    if user.role == 'student' and hasattr(user, 'student_profile') and user.student_profile:
-                        grievances = user.student_profile.grievances.all()
-                        if grievances.exists():
-                            for g in grievances:
-                                csv_writer.writerow([user.email, user.role, g.grievance_id, g.title, g.status, g.submitted_at])
-                        else:
-                            csv_writer.writerow([user.email, user.role, 'No Grievances', 'N/A', 'N/A', 'N/A'])
+            for user in users_to_delete:
+                user_id = user.id
+                user_email = user.email
+                user_role = user.role
+                user_role_display = user.get_role_display()
+
+                deleted_users_info.append({
+                    'id': user_id,
+                    'email': user_email,
+                    'role': user_role
+                })
+
+                # Write user and grievance data to CSV backup before deletion
+                if user.role == 'student' and hasattr(user, 'student_profile') and user.student_profile:
+                    grievances = user.student_profile.grievances.all()
+                    if grievances.exists():
+                        for g in grievances:
+                            csv_writer.writerow([user_email, user_role, g.grievance_id, g.title, g.status, g.submitted_at])
                     else:
-                        csv_writer.writerow([user.email, user.role, 'N/A', 'N/A', 'N/A', 'N/A'])
-                    
-                # Safely soft-deactivate users and archive records instead of destructive hard deletes
-                for user in users_to_delete:
-                    # Deactivate user account
-                    user.is_active = False
-                    user.deactivation_reason = "Account removed via User Management (Soft Deleted for compliance)"
-                    user.save(update_fields=['is_active', 'deactivation_reason'])
-                    
-                    # Archive grievances rather than destroying them
-                    if hasattr(user, 'student_profile') and user.student_profile:
-                        user.student_profile.grievances.all().update(is_archived=True)
-                    
-                    # Log compliance action
-                    AuditLog.objects.create(
-                        user=request.user,
-                        action='delete',
-                        description=f'Soft-deleted user {user.email} (Role: {user.get_role_display()}) - preserved historical audit trail',
-                        target_model='User',
-                        target_id=str(user.id),
-                        ip_address=request.META.get('REMOTE_ADDR'),
-                        user_agent=request.META.get('HTTP_USER_AGENT', '')
-                    )
-                
-            finally:
-                # Re-enable foreign key checks for SQLite only
-                if is_sqlite:
-                    with connection.cursor() as cursor:
-                        cursor.execute("PRAGMA foreign_keys = ON")
+                        csv_writer.writerow([user_email, user_role, 'No Grievances', 'N/A', 'N/A', 'N/A'])
+                else:
+                    csv_writer.writerow([user_email, user_role, 'N/A', 'N/A', 'N/A', 'N/A'])
+
+                # 1. Clean up HOD reference if user heads any department
+                affected_depts = list(Department.objects.filter(head_of_department=user))
+                Department.objects.filter(head_of_department=user).update(head_of_department=None)
+
+                # 2. Clean up CategoryAssignment & assigned grievances if admin profile exists
+                if hasattr(user, 'admin_profile') and user.admin_profile:
+                    Grievance.objects.filter(assigned_to=user.admin_profile).update(assigned_to=None)
+                    CategoryAssignment.objects.filter(assigned_admin=user.admin_profile).delete()
+
+                # 3. Clean up read notifications for this user
+                ReadNotification.objects.filter(student=user).delete()
+
+                # 4. Create AuditLog entry before user deletion to keep full record
+                AuditLog.objects.create(
+                    user=request.user,
+                    action='delete',
+                    description=f'Permanently deleted user {user_email} (Role: {user_role_display})',
+                    target_model='User',
+                    target_id=str(user_id),
+                    ip_address=request.META.get('REMOTE_ADDR'),
+                    user_agent=request.META.get('HTTP_USER_AGENT', '')
+                )
+
+                # 5. Permanently delete the user account (cascades cleanly)
+                user.delete()
+
+                # Re-sync HODs for affected departments
+                for dept in affected_depts:
+                    dept.auto_assign_hod_if_needed(save=True)
         
         deleted_count = len(deleted_users_info)
         return JsonResponse({
@@ -824,6 +860,17 @@ def bulk_deactivate_users(request):
                 )
                 
                 deactivated_users_info.append(user_info)
+
+        # Sync HODs for any departments affected by deactivated admins
+        for user_info in deactivated_users_info:
+            if user_info.get('role') == 'admin':
+                try:
+                    user_obj = User.objects.get(id=user_info['id'])
+                    if hasattr(user_obj, 'admin_profile') and user_obj.admin_profile:
+                        for dept in Department.objects.filter(name__iexact=user_obj.admin_profile.department.strip()):
+                            dept.auto_assign_hod_if_needed(save=True)
+                except Exception:
+                    pass
         
         return JsonResponse({
             'success': True,
@@ -890,6 +937,17 @@ def bulk_activate_users(request):
                 )
                 
                 activated_users_info.append(user_info)
+
+        # Sync HODs for any departments affected by reactivated admins
+        for user_info in activated_users_info:
+            if user_info.get('role') == 'admin':
+                try:
+                    user_obj = User.objects.get(id=user_info['id'])
+                    if hasattr(user_obj, 'admin_profile') and user_obj.admin_profile:
+                        for dept in Department.objects.filter(name__iexact=user_obj.admin_profile.department.strip()):
+                            dept.auto_assign_hod_if_needed(save=True)
+                except Exception:
+                    pass
         
         return JsonResponse({
             'success': True,
@@ -931,8 +989,8 @@ def get_user_details(request, user_id):
             'is_superuser': user.is_superuser,
             'date_joined': user.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'last_login': user.last_login.strftime('%Y-%m-%d %H:%M:%S') if user.last_login else None,
-            'failed_login_attempts': getattr(user, 'failed_login_attempts', 0),
-            'last_failed_login': getattr(user, 'last_failed_login', None),
+            'failed_login_attempts': user.failed_login_attempts,
+            'last_failed_login': user.last_failed_login,
             'name': None,
             'student_profile': None,
             'admin_profile': None,
@@ -957,20 +1015,21 @@ def get_user_details(request, user_id):
                 print("StudentProfile not found!")
                 user_details['student_profile'] = None
         
-        # Add admin profile information if user is an admin or officer
-        elif user.role in ['admin', 'officer']:
-            print("User is an admin/officer, looking for AdminProfile...")
+        # Add admin profile information if user is an admin, officer, or superadmin
+        elif user.role in ['admin', 'officer', 'superadmin']:
+            print("User is an admin/officer/superadmin, looking for AdminProfile...")
             try:
                 admin_profile = AdminProfile.objects.get(user=user)
                 print(f"Found admin profile: role_level={admin_profile.role_level}, department={admin_profile.department}")
                 user_details['admin_profile'] = {
+                    'name': admin_profile.name,
                     'employee_id': admin_profile.employee_id,
                     'department': admin_profile.department,
                     'phone': admin_profile.phone,
                     'office_location': admin_profile.office_location,
                     'role_level': admin_profile.get_role_level_display(),
                 }
-                user_details['name'] = f"{admin_profile.get_role_level_display()} ({admin_profile.employee_id})"
+                user_details['name'] = admin_profile.name or (f"{admin_profile.get_role_level_display()} ({admin_profile.employee_id})" if user.role != 'superadmin' else 'Super Administrator')
                 print(f"Admin profile details: {user_details['admin_profile']}")
             except AdminProfile.DoesNotExist:
                 print("AdminProfile not found!")
@@ -1087,6 +1146,7 @@ def edit_user(request, user_id):
             admin_profile, created = AdminProfile.objects.get_or_create(
                 user=user,
                 defaults={
+                    'name': admin_data.get('name', ''),
                     'role_level': new_role,
                     'department': admin_data.get('department', ''),
                     'employee_id': admin_data.get('employee_id', ''),
@@ -1096,10 +1156,16 @@ def edit_user(request, user_id):
             )
             
             if not created:
-                # Update existing profile
+                # Update existing profile - Superadmin is authorized to update name & employee_id
                 admin_profile.role_level = new_role
                 admin_profile.department = admin_data.get('department', admin_profile.department)
-                admin_profile.employee_id = admin_data.get('employee_id', admin_profile.employee_id)
+                if 'name' in admin_data:
+                    admin_profile.name = admin_data.get('name', '').strip()
+                if 'employee_id' in admin_data and admin_data.get('employee_id'):
+                    new_emp_id = admin_data.get('employee_id').strip()
+                    if AdminProfile.objects.exclude(id=admin_profile.id).filter(employee_id=new_emp_id).exists():
+                        return JsonResponse({'error': f'Employee ID "{new_emp_id}" is already in use by another user.'}, status=400)
+                    admin_profile.employee_id = new_emp_id
                 admin_profile.phone = admin_data.get('phone', admin_profile.phone)
                 admin_profile.office_location = admin_data.get('office_location', admin_profile.office_location)
                 admin_profile.save()
@@ -1115,25 +1181,21 @@ def edit_user(request, user_id):
                 pass
         
         elif new_role == 'superadmin':
-            # For superadmin, we might just update the name if provided
+            # For superadmin, update display name if provided
             name = data.get('name')
             if name:
-                # We could store this in a separate field or handle it differently
-                print(f"Updated superadmin name: {name}")
-            
-            # Remove both student and admin profiles for superadmin
+                try:
+                    admin_profile = AdminProfile.objects.get(user=user)
+                    admin_profile.name = name.strip()
+                    admin_profile.save()
+                except AdminProfile.DoesNotExist:
+                    pass
+            # Remove student profile if role was somehow changed
             try:
                 student_profile = StudentProfile.objects.get(user=user)
                 student_profile.delete()
                 print("Removed existing student profile for superadmin")
             except StudentProfile.DoesNotExist:
-                pass
-                
-            try:
-                admin_profile = AdminProfile.objects.get(user=user)
-                admin_profile.delete()
-                print("Removed existing admin profile for superadmin")
-            except AdminProfile.DoesNotExist:
                 pass
         
         print(f"Successfully updated user {user.email} to role {new_role}")

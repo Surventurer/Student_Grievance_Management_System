@@ -856,6 +856,21 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     color: #ffffff !important;
 }
 
+.stats-card.escalated {
+    background: #7C3AED !important;
+    background-color: #7C3AED !important;
+    border-color: #7C3AED !important;
+    color: #ffffff !important;
+}
+
+.stats-card.appealed,
+.stats-card.appeals {
+    background: #2563EB !important;
+    background-color: #2563EB !important;
+    border-color: #2563EB !important;
+    color: #ffffff !important;
+}
+
 /* Ensure white text and translucent icons inside solid stats cards */
 .stats-card.total .stats-number,
 .stats-card.pending .stats-number,
@@ -863,12 +878,18 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 .stats-card.active .stats-number,
 .stats-card.rejected .stats-number,
 .stats-card.inactive .stats-number,
+.stats-card.escalated .stats-number,
+.stats-card.appealed .stats-number,
+.stats-card.appeals .stats-number,
 .stats-card.total h3,
 .stats-card.pending h3,
 .stats-card.resolved h3,
 .stats-card.active h3,
 .stats-card.rejected h3,
-.stats-card.inactive h3 {
+.stats-card.inactive h3,
+.stats-card.escalated h3,
+.stats-card.appealed h3,
+.stats-card.appeals h3 {
     color: #ffffff !important;
 }
 
@@ -878,30 +899,45 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 .stats-card.active .stats-label,
 .stats-card.rejected .stats-label,
 .stats-card.inactive .stats-label,
+.stats-card.escalated .stats-label,
+.stats-card.appealed .stats-label,
+.stats-card.appeals .stats-label,
 .stats-card.total p,
 .stats-card.pending p,
 .stats-card.resolved p,
 .stats-card.active p,
 .stats-card.rejected p,
 .stats-card.inactive p,
+.stats-card.escalated p,
+.stats-card.appealed p,
+.stats-card.appeals p,
 .stats-card.total h5,
 .stats-card.pending h5,
 .stats-card.resolved h5,
 .stats-card.active h5,
 .stats-card.rejected h5,
 .stats-card.inactive h5,
+.stats-card.escalated h5,
+.stats-card.appealed h5,
+.stats-card.appeals h5,
 .stats-card.total .card-title,
 .stats-card.pending .card-title,
 .stats-card.resolved .card-title,
 .stats-card.active .card-title,
 .stats-card.rejected .card-title,
 .stats-card.inactive .card-title,
+.stats-card.escalated .card-title,
+.stats-card.appealed .card-title,
+.stats-card.appeals .card-title,
 .stats-card.total small,
 .stats-card.pending small,
 .stats-card.resolved small,
 .stats-card.active small,
 .stats-card.rejected small,
-.stats-card.inactive small {
+.stats-card.inactive small,
+.stats-card.escalated small,
+.stats-card.appealed small,
+.stats-card.appeals small {
     color: rgba(255, 255, 255, 0.9) !important;
     font-weight: 700 !important;
     letter-spacing: 0.05em !important;
@@ -912,7 +948,10 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 .stats-card.resolved [class*="text-"],
 .stats-card.active [class*="text-"],
 .stats-card.rejected [class*="text-"],
-.stats-card.inactive [class*="text-"] {
+.stats-card.inactive [class*="text-"],
+.stats-card.escalated [class*="text-"],
+.stats-card.appealed [class*="text-"],
+.stats-card.appeals [class*="text-"] {
     color: rgba(255, 255, 255, 0.95) !important;
 }
 
@@ -922,12 +961,18 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 .stats-card.active .stats-icon,
 .stats-card.rejected .stats-icon,
 .stats-card.inactive .stats-icon,
+.stats-card.escalated .stats-icon,
+.stats-card.appealed .stats-icon,
+.stats-card.appeals .stats-icon,
 .stats-card.total i,
 .stats-card.pending i,
 .stats-card.resolved i,
 .stats-card.active i,
 .stats-card.rejected i,
-.stats-card.inactive i {
+.stats-card.inactive i,
+.stats-card.escalated i,
+.stats-card.appealed i,
+.stats-card.appeals i {
     color: rgba(255, 255, 255, 0.45) !important;
     opacity: 1 !important;
 }

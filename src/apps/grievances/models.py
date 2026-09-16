@@ -131,6 +131,10 @@ class Grievance(models.Model):
         return f"{self.title} - {self.student.student_id}"
 
     def delete(self, using=None, keep_parents=False):
+        """Permanently delete grievance from database"""
+        return super().delete(using=using, keep_parents=keep_parents)
+
+    def soft_delete(self):
         """Soft delete grievance to preserve compliance records"""
         self.is_archived = True
         self.save(update_fields=['is_archived'])
@@ -378,7 +382,8 @@ class AuditLog(models.Model):
         ordering = ['-timestamp']
     
     def __str__(self):
-        return f"{self.user.email} - {self.action} - {self.target_model}"
+        user_email = self.user.email if self.user else "System"
+        return f"{user_email} - {self.action} - {self.target_model}"
 
 
 class GrievanceOTPVerification(models.Model):

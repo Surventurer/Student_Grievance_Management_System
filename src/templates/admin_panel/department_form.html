@@ -485,14 +485,23 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
     
-    // Initialize selected HOD if editing
+    // Initialize selected HOD if editing or auto-assigned
     {% if department and department.head_of_department %}
     setTimeout(() => {
         selectHOD(
             {{ department.head_of_department.id }},
-            '{{ department.head_of_department.get_full_name }}',
-            '{{ department.head_of_department.email }}',
+            '{{ department.head_of_department.get_full_name|escapejs }}',
+            '{{ department.head_of_department.email|escapejs }}',
             'HOD'
+        );
+    }, 100);
+    {% elif default_hod %}
+    setTimeout(() => {
+        selectHOD(
+            {{ default_hod.id }},
+            '{{ default_hod.get_full_name|escapejs }}',
+            '{{ default_hod.email|escapejs }}',
+            'Auto-assigned HOD'
         );
     }, 100);
     {% endif %}
@@ -536,7 +545,7 @@ function selectHOD(id, name, email, title) {
         <div class="alert alert-info">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <strong>${name}</strong><br>
+                    <strong>${name}</strong> ${title ? `<span class="badge bg-primary ms-1">${title}</span>` : ''}<br>
                     <small class="text-muted">${email}</small>
                 </div>
                 <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearHodSelection()">

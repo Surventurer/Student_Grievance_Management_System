@@ -106,18 +106,33 @@
                             
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="name" class="form-label fw-bold">Full Name</label>
-                                    <input type="text" class="form-control" id="name" name="name" 
-                                           value="{{ admin_profile.name|default:'' }}" 
-                                           placeholder="Enter your full name">
+                                    <label for="name" class="form-label fw-bold">
+                                        Full Name 
+                                        {% if admin_profile.name %}
+                                            <i class="fas fa-lock text-muted ms-1" title="Locked by system"></i>
+                                        {% endif %}
+                                    </label>
+                                    {% if admin_profile.name %}
+                                        <input type="text" class="form-control bg-light" id="name" name="name" 
+                                               value="{{ admin_profile.name }}" 
+                                               readonly title="Official Name cannot be changed">
+                                        <div class="form-text text-muted small"><i class="fas fa-info-circle me-1"></i>Official name cannot be changed.</div>
+                                    {% else %}
+                                        <input type="text" class="form-control" id="name" name="name" 
+                                               value="" placeholder="Enter your official full name" required>
+                                        <div class="form-text text-warning small"><i class="fas fa-exclamation-triangle me-1"></i>Please set your official full name (permanent once submitted).</div>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="employee_id" class="form-label fw-bold">Employee ID</label>
-                                    <input type="text" class="form-control" id="employee_id" name="employee_id" 
+                                    <label for="employee_id" class="form-label fw-bold">
+                                        Employee ID <i class="fas fa-lock text-muted ms-1" title="Locked by system"></i>
+                                    </label>
+                                    <input type="text" class="form-control bg-light" id="employee_id" name="employee_id" 
                                            value="{{ admin_profile.employee_id|default:'' }}" 
-                                           placeholder="Enter your Employee ID">
+                                           readonly title="Employee ID is permanent and cannot be modified">
+                                    <div class="form-text text-muted small"><i class="fas fa-info-circle me-1"></i>Employee ID is permanent and cannot be modified.</div>
                                 </div>
                             </div>
                             

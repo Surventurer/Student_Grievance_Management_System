@@ -165,11 +165,11 @@ class User(AbstractBaseUser, PermissionsMixin):
             return Grievance.objects.none()
     
     def get_full_name(self):
-        """Get full name from student profile if available, otherwise return email"""
-        if hasattr(self, 'student_profile') and self.student_profile:
-            return self.student_profile.name or self.email
-        if hasattr(self, 'admin_profile') and self.admin_profile:
-            return f"{self.admin_profile.user.email} ({self.admin_profile.role_level})"
+        """Get full name from admin or student profile if available, otherwise return email"""
+        if hasattr(self, 'admin_profile') and self.admin_profile and self.admin_profile.name:
+            return self.admin_profile.name
+        if hasattr(self, 'student_profile') and self.student_profile and self.student_profile.name:
+            return self.student_profile.name
         return self.email
 
     def has_permission(self, permission):
@@ -242,12 +242,34 @@ class User(AbstractBaseUser, PermissionsMixin):
         return False
 
     def delete(self, using=None, keep_parents=False):
+        """Permanently delete user account from database"""
+        return super().delete(using=using, keep_parents=keep_parents)
+
+    def soft_delete(self, reason="Account soft-deleted"):
         """Soft-delete user account to preserve audit records and compliance"""
         self.is_active = False
-        self.deactivation_reason = self.deactivation_reason or "Account soft-deleted"
+        self.deactivation_reason = self.deactivation_reason or reason
         self.save(update_fields=['is_active', 'deactivation_reason'])
         if hasattr(self, 'student_profile') and self.student_profile:
             self.student_profile.grievances.all().update(is_archived=True)
+
+    @property
+    def failed_login_attempts(self):
+        """Get running count of failed login attempts"""
+        try:
+            from apps.authentication.security_utils import get_user_failed_attempts
+            return get_user_failed_attempts(self)
+        except Exception:
+            return 0
+
+    @property
+    def last_failed_login(self):
+        """Get timestamp of last failed login attempt"""
+        try:
+            from apps.authentication.security_utils import get_user_last_failed_login
+            return get_user_last_failed_login(self)
+        except Exception:
+            return None
 
 
 class EmailVerification(models.Model):

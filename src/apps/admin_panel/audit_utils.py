@@ -71,15 +71,16 @@ def get_client_ip(request):
 
 
 def log_login_action(user, request, success=True):
-    """Log login/logout actions"""
+    """Log login/logout actions for all user roles"""
     try:
-        if user.role in ['admin', 'superadmin']:
+        if user and user.pk:
+            role_title = user.get_role_display() if hasattr(user, 'get_role_display') else getattr(user, 'role', 'User')
             AuditLog.objects.create(
                 user=user,
                 action='login' if success else 'login_failed',
                 target_model='User',
                 target_id=str(user.id),
-                description=f"Admin {'login successful' if success else 'login failed'}",
+                description=f"{role_title} {'login successful' if success else 'login failed'}",
                 ip_address=get_client_ip(request),
                 user_agent=request.META.get('HTTP_USER_AGENT', '')[:255]
             )

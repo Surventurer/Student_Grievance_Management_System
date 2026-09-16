@@ -131,6 +131,10 @@
                                     <h5 class="text-warning border-bottom pb-2">Admin/Officer Information</h5>
                                 </div>
                                 <div class="col-md-6 mb-3">
+                                    <label for="admin_name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="admin_name" name="admin_name" placeholder="Enter full name">
+                                </div>
+                                <div class="col-md-6 mb-3">
                                     <label for="employee_id" class="form-label">Employee ID <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="employee_id" name="employee_id">
                                 </div>
@@ -203,24 +207,30 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('department').classList.add('required-field');
             
             // Remove admin field requirements and styling, but disable them
+            document.getElementById('admin_name').required = false;
             document.getElementById('employee_id').required = false;
             document.getElementById('admin_department').required = false;
+            document.getElementById('admin_name').disabled = true;
             document.getElementById('employee_id').disabled = true;
             document.getElementById('admin_department').disabled = true;
+            document.getElementById('admin_name').classList.remove('required-field');
             document.getElementById('employee_id').classList.remove('required-field');
             document.getElementById('admin_department').classList.remove('required-field');
         } else if (selectedRole === 'admin' || selectedRole === 'officer') {
             adminFields.style.display = 'block';
             
             // Make admin fields required and add visual feedback
+            document.getElementById('admin_name').required = true;
             document.getElementById('employee_id').required = true;
             document.getElementById('admin_department').required = true;
             
             // Ensure fields are enabled
+            document.getElementById('admin_name').disabled = false;
             document.getElementById('employee_id').disabled = false;
             document.getElementById('admin_department').disabled = false;
             
             // Add required styling
+            document.getElementById('admin_name').classList.add('required-field');
             document.getElementById('employee_id').classList.add('required-field');
             document.getElementById('admin_department').classList.add('required-field');
             
@@ -239,6 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('student_id').required = false;
             document.getElementById('school').required = false;
             document.getElementById('department').required = false;
+            document.getElementById('admin_name').required = false;
             document.getElementById('employee_id').required = false;
             document.getElementById('admin_department').required = false;
             
@@ -246,6 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('student_id').disabled = true;
             document.getElementById('school').disabled = true;
             document.getElementById('department').disabled = true;
+            document.getElementById('admin_name').disabled = true;
             document.getElementById('employee_id').disabled = true;
             document.getElementById('admin_department').disabled = true;
             
@@ -303,10 +315,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
         } else if (role === 'admin' || role === 'officer') {
+            const adminName = document.getElementById('admin_name').value.trim();
             const employeeId = document.getElementById('employee_id').value.trim();
             const department = document.getElementById('admin_department').value;
             
-            console.log('Admin form data:', { employeeId, department });
+            console.log('Admin form data:', { adminName, employeeId, department });
+            
+            if (!adminName) {
+                e.preventDefault();
+                alert('Full Name is required for ' + role + ' accounts.');
+                document.getElementById('admin_name').focus();
+                return;
+            }
             
             if (!employeeId) {
                 e.preventDefault();

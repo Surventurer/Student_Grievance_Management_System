@@ -22,14 +22,6 @@
                         <i class="fas fa-shield-alt me-2"></i>
                         <strong>Staff Security:</strong> Two-factor authentication required for Officers and Administrators. Enter the 6-digit OTP sent to <strong>{{ email }}</strong> to complete login.
                     </div>
-                    
-                    {% if dev_otp %}
-                    <div class="alert alert-warning mb-3 border-warning">
-                        <i class="fas fa-laptop-code me-2"></i>
-                        <strong>Development Mode:</strong> Your OTP code is <strong class="fs-5 text-dark px-2 py-1 bg-white rounded border border-warning ms-1">{{ dev_otp }}</strong>
-                    </div>
-                    {% endif %}
-                    
                     <form method="post" id="otpForm">
                         {% csrf_token %}
                         <input type="hidden" name="email" value="{{ email }}">

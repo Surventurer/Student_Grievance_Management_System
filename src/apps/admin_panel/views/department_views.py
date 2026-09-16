@@ -81,6 +81,10 @@ def department_management(request):
     sort = request.GET.get('sort', 'name')
     per_page = int(request.GET.get('per_page', 10))
     
+    # Auto-assign HOD for any active departments missing HOD if an active admin exists
+    for dept in Department.objects.filter(head_of_department__isnull=True, is_active=True):
+        dept.auto_assign_hod_if_needed(save=True)
+
     # Start with all departments
     departments = Department.objects.select_related('school', 'head_of_department')
     
@@ -166,7 +170,11 @@ def departments_api(request):
     
     from apps.students.models import Department
     
-    departments = Department.objects.select_related('school').filter(is_active=True).order_by('name')
+    # Auto-assign HOD for any active departments missing HOD if an active admin exists
+    for dept in Department.objects.filter(head_of_department__isnull=True, is_active=True):
+        dept.auto_assign_hod_if_needed(save=True)
+
+    departments = Department.objects.select_related('school', 'head_of_department').filter(is_active=True).order_by('name')
     
     departments_data = []
     for dept in departments:
@@ -349,6 +357,12 @@ def department_create(request):
                 head_of_department=head_of_department
             )
             
+            # If no HOD was explicitly selected, auto-assign first/only department admin if available
+            if not department.head_of_department:
+                auto_hod = department.auto_assign_hod_if_needed(save=True)
+                if auto_hod:
+                    head_of_department = auto_hod
+            
             # Create audit log
             hod_info = f' (HOD: {head_of_department.get_full_name()})' if head_of_department else ''
             AuditLog.objects.create(
@@ -455,6 +469,17 @@ def department_edit(request, department_id):
             department.head_of_department = head_of_department
             department.save()
             
+            # If no HOD was explicitly selected, auto-assign first/only department admin if available
+            if not department.head_of_department:
+                department.auto_assign_hod_if_needed(save=True)
+                head_of_department = department.head_of_department
+
+            # If department was renamed, sync AdminProfile and StudentProfile department strings
+            if old_name.strip().lower() != name.strip().lower():
+                from apps.students.models import AdminProfile, StudentProfile
+                AdminProfile.objects.filter(department__iexact=old_name.strip()).update(department=name.strip())
+                StudentProfile.objects.filter(department__iexact=old_name.strip()).update(department=name.strip())
+            
             # Create audit log
             school_info = f' in {school.name}' if school else ''
             old_school_info = f' in {old_school.name}' if old_school else ''
@@ -483,8 +508,19 @@ def department_edit(request, department_id):
         except Exception as e:
             messages.error(request, f'Error updating department: {str(e)}')
     
+    # Determine default/suggested HOD for pre-selection if department has no HOD
+    default_hod = department.head_of_department
+    if not default_hod:
+        from apps.authentication.models import User
+        default_hod = User.objects.filter(
+            role='admin',
+            is_active=True,
+            admin_profile__department__iexact=department.name.strip()
+        ).order_by('created_at').first()
+
     context = {
         'department': department,
+        'default_hod': default_hod,
         'schools': School.objects.filter(is_active=True).order_by('name'),
         'action': 'Edit',
         'page_title': 'Edit Department'

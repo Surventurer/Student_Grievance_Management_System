@@ -61,6 +61,46 @@ class Department(models.Model):
         from apps.grievances.models import CategoryAssignment
         return CategoryAssignment.objects.filter(department__icontains=self.name)
     
+    def auto_assign_hod_if_needed(self, save=True):
+        """
+        Auto-assigns the department HOD if:
+        1. There is currently no HOD (or current HOD is inactive/no longer an admin in this dept), AND
+        2. There is an active department admin for this department:
+           - If exactly one active department admin exists, OR
+           - The first active department admin is assigned.
+        Preserves an existing valid, active HOD.
+        Returns the assigned User or None.
+        """
+        from apps.authentication.models import User
+        
+        # If currently assigned HOD is active and is still an admin for this department, keep them
+        if self.head_of_department and self.head_of_department.is_active and self.head_of_department.role == 'admin':
+            if hasattr(self.head_of_department, 'admin_profile') and self.head_of_department.admin_profile:
+                if (self.head_of_department.admin_profile.department or '').strip().lower() == self.name.strip().lower():
+                    return self.head_of_department
+
+        # Find active department admins matching this department
+        dept_admins = User.objects.filter(
+            role='admin',
+            is_active=True,
+            admin_profile__department__iexact=self.name.strip()
+        ).order_by('created_at')
+
+        if dept_admins.exists():
+            first_admin = dept_admins.first()
+            if self.head_of_department != first_admin:
+                self.head_of_department = first_admin
+                if save:
+                    self.save(update_fields=['head_of_department'])
+            return first_admin
+        else:
+            # If previous HOD is no longer valid, clear it
+            if self.head_of_department:
+                self.head_of_department = None
+                if save:
+                    self.save(update_fields=['head_of_department'])
+        return None
+
     class Meta:
         verbose_name = "Department"
         verbose_name_plural = "Departments"
@@ -116,12 +156,42 @@ class AdminProfile(models.Model):
         return f"{self.name or self.user.email} - {self.get_role_level_display()}"
     
     def save(self, *args, **kwargs):
-        """Ensure user role matches admin role_level"""
+        """Ensure user role matches admin role_level and auto-assign HOD if first/only admin"""
+        old_department = None
+        if self.pk:
+            try:
+                old_profile = AdminProfile.objects.filter(pk=self.pk).only('department', 'role_level').first()
+                if old_profile:
+                    old_department = old_profile.department
+            except Exception:
+                pass
+
         if self.user_id:
             # Sync user role with admin role_level
-            self.user.role = self.role_level
-            self.user.save()
+            if self.user.role != self.role_level:
+                self.user.role = self.role_level
+                self.user.save(update_fields=['role'])
         super().save(*args, **kwargs)
+
+        # If department changed or role changed away from admin, clear old department's HOD
+        if old_department and (old_department.strip().lower() != (self.department or '').strip().lower() or self.role_level != 'admin'):
+            try:
+                old_dept = Department.objects.filter(name__iexact=old_department.strip(), head_of_department=self.user).first()
+                if old_dept:
+                    old_dept.head_of_department = None
+                    old_dept.save(update_fields=['head_of_department'])
+                    old_dept.auto_assign_hod_if_needed(save=True)
+            except Exception:
+                pass
+
+        # Auto-assign HOD for department if this is an active department admin
+        if self.role_level == 'admin' and self.department and getattr(self.user, 'is_active', True):
+            try:
+                dept = Department.objects.filter(name__iexact=self.department.strip()).first()
+                if dept:
+                    dept.auto_assign_hod_if_needed(save=True)
+            except Exception:
+                pass
     
     @property
     def can_manage_department(self):

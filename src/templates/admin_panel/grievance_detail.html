@@ -597,26 +597,7 @@
                 <form id="adminResponseForm" method="POST" action="{% url 'admin_panel:add_admin_response' grievance.id %}" enctype="multipart/form-data" class="{% if grievance.status == 'resolved' or grievance.status == 'rejected' %}d-none{% endif %}">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <label for="admin_response" class="form-label mb-0 fw-bold">Add Comment / Official Response</label>
-                            
-                            <!-- Canned Response Macro Dropdown -->
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="cannedMacroDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-bolt text-warning me-1"></i>Canned Macros
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="cannedMacroDropdown" style="min-width: 270px;">
-                                    <li><h6 class="dropdown-header text-uppercase small">Quick Response Templates</h6></li>
-                                    <li><a class="dropdown-item small" href="javascript:void(0)" onclick="applyAdminMacro('fee_verification')"><i class="fas fa-receipt text-primary me-2"></i>Fee & Accounts Inquiry</a></li>
-                                    <li><a class="dropdown-item small" href="javascript:void(0)" onclick="applyAdminMacro('academic_eval')"><i class="fas fa-graduation-cap text-info me-2"></i>Exam / Marks Re-evaluation</a></li>
-                                    <li><a class="dropdown-item small" href="javascript:void(0)" onclick="applyAdminMacro('hostel_maintenance')"><i class="fas fa-tools text-warning me-2"></i>Hostel & Maintenance</a></li>
-                                    <li><a class="dropdown-item small" href="javascript:void(0)" onclick="applyAdminMacro('document_request')"><i class="fas fa-file-alt text-secondary me-2"></i>Supporting Documents Needed</a></li>
-                                    <li><a class="dropdown-item small" href="javascript:void(0)" onclick="applyAdminMacro('hearing_notice')"><i class="fas fa-calendar-alt text-danger me-2"></i>Committee Hearing Notice</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item small text-muted" href="javascript:void(0)" onclick="applyAdminMacro('clear')"><i class="fas fa-eraser me-2"></i>Clear Textarea</a></li>
-                                </ul>
-                            </div>
-                        </div>
+                        <label for="admin_response" class="form-label fw-bold mb-2">Add Comment / Official Response</label>
                         <textarea class="form-control" id="admin_response" name="admin_response" rows="4" 
                                   placeholder="Enter your response or comments..."></textarea>
                         
@@ -1232,35 +1213,6 @@ function updateGrievanceStatus(grievanceId, status) {
     openStatusModal(status);
 }
 
-// Canned Response Macros
-const ADMIN_MACROS = {
-    'fee_verification': 'Dear Student,\n\nYour inquiry regarding fee payment / ledger reconciliation has been forwarded to the Finance and Accounts Department. Please furnish your fee receipt and bank transaction reference ID if not previously attached.\n\nRegards,\nGrievance Redressal Cell',
-    'academic_eval': 'Dear Student,\n\nYour grievance regarding examination evaluation / grading assessment has been referred to the Office of the Controller of Examinations for verification of the evaluation records. You will be notified of the findings.\n\nRegards,\nAcademic Review Cell',
-    'hostel_maintenance': 'Dear Student,\n\nYour maintenance request has been logged with the Campus Facilities & Hostel Warden team. A technician/supervisor has been instructed to inspect and rectify the issue within 24–48 hours.\n\nRegards,\nHostel Administration',
-    'document_request': 'Dear Student,\n\nTo enable us to conduct a comprehensive inquiry into this matter, please upload supporting documentation or clarification through this communication thread at your earliest convenience.\n\nRegards,\nGrievance Officer',
-    'hearing_notice': 'Dear Student,\n\nYou are requested to attend a preliminary hearing with the Grievance Redressal Committee. Please confirm your availability or propose an alternative time slot via reply in this thread.\n\nRegards,\nGrievance Committee'
-};
-
-function applyAdminMacro(macroKey) {
-    const textarea = document.getElementById('admin_response');
-    if (!textarea) return;
-    if (macroKey === 'clear') {
-        textarea.value = '';
-        textarea.focus();
-        return;
-    }
-    const template = ADMIN_MACROS[macroKey];
-    if (template) {
-        if (textarea.value.trim()) {
-            if (confirm('Replace current text with selected template?')) {
-                textarea.value = template;
-            }
-        } else {
-            textarea.value = template;
-        }
-        textarea.focus();
-    }
-}
 
 function getFileTypeIconInfo(filename) {
     const ext = filename.split('.').pop().toLowerCase();

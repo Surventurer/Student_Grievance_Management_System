@@ -631,10 +631,22 @@
                         <h6 class="text-primary mb-3">Staff Information</h6>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="editAdminEmployeeId" class="form-label">Employee ID</label>
-                                <input type="text" class="form-control" id="editAdminEmployeeId" name="admin_employee_id" readonly>
+                                <label for="editAdminName" class="form-label">
+                                    Full Name <i class="fas fa-lock text-muted ms-1" title="Locked by system"></i>
+                                </label>
+                                <input type="text" class="form-control bg-light" id="editAdminName" name="admin_name" readonly title="Permanent record">
+                                <small class="text-muted">Permanent record</small>
                             </div>
                             <div class="col-md-6">
+                                <label for="editAdminEmployeeId" class="form-label">
+                                    Employee ID <i class="fas fa-lock text-muted ms-1" title="Locked by system"></i>
+                                </label>
+                                <input type="text" class="form-control bg-light" id="editAdminEmployeeId" name="admin_employee_id" readonly title="Permanent record">
+                                <small class="text-muted">Permanent record</small>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
                                 <label for="editAdminDepartment" class="form-label">Department</label>
                                 <input type="text" class="form-control" id="editAdminDepartment" name="admin_department" readonly>
                             </div>
@@ -1067,6 +1079,7 @@ function showEditModal(user) {
         document.getElementById('editStudentContact').value = user.student_profile.contact_no || '';
     } else if (user.admin_profile) {
         document.getElementById('editAdminFields').style.display = 'block';
+        document.getElementById('editAdminName').value = user.admin_profile.name || user.name || '';
         document.getElementById('editAdminEmployeeId').value = user.admin_profile.employee_id || '';
         document.getElementById('editAdminDepartment').value = user.admin_profile.department || '';
         document.getElementById('editAdminPhone').value = user.admin_profile.phone || '';

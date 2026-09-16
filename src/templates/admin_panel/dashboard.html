@@ -31,6 +31,21 @@
         transition: all 0.3s ease;
     }
     
+    .stats-card.escalated {
+        background: #7C3AED !important;
+        background-color: #7C3AED !important;
+        border-color: #7C3AED !important;
+        color: #ffffff !important;
+    }
+    
+    .stats-card.appealed,
+    .stats-card.appeals {
+        background: #2563EB !important;
+        background-color: #2563EB !important;
+        border-color: #2563EB !important;
+        color: #ffffff !important;
+    }
+    
     /* Responsive stats cards */
     @media (max-width: 575.98px) {
         .stats-card {
@@ -286,21 +301,21 @@
             </div>
         </div>
         <div class="col-xl-2 col-md-4 col-sm-6 col-6">
-            <div class="stats-card h-100 bg-danger text-white border-0 shadow-sm" style="border-radius: 8px; padding: 1.25rem; position: relative; overflow: hidden;">
-                <div class="stats-icon" style="position: absolute; right: 1rem; top: 1rem; opacity: 0.3; font-size: 2.25rem;">
+            <div class="stats-card escalated h-100" style="background: #7C3AED !important; background-color: #7C3AED !important; border-color: #7C3AED !important; color: #ffffff !important;">
+                <div class="stats-icon">
                     <i class="fas fa-exclamation-triangle"></i>
                 </div>
-                <div class="stats-number" style="font-size: 2.25rem; font-weight: bold;">{{ escalated_grievances|default:0 }}</div>
-                <div class="stats-label" style="font-size: 0.95rem; font-weight: 500;">Escalated (L1/L2)</div>
+                <div class="stats-number">{{ escalated_grievances|default:0 }}</div>
+                <div class="stats-label">Escalated (L1/L2)</div>
             </div>
         </div>
         <div class="col-xl-2 col-md-4 col-sm-6 col-6">
-            <div class="stats-card h-100 bg-info text-white border-0 shadow-sm" style="border-radius: 8px; padding: 1.25rem; position: relative; overflow: hidden;">
-                <div class="stats-icon" style="position: absolute; right: 1rem; top: 1rem; opacity: 0.3; font-size: 2.25rem;">
+            <div class="stats-card appealed h-100" style="background: #2563EB !important; background-color: #2563EB !important; border-color: #2563EB !important; color: #ffffff !important;">
+                <div class="stats-icon">
                     <i class="fas fa-gavel"></i>
                 </div>
-                <div class="stats-number" style="font-size: 2.25rem; font-weight: bold;">{{ appealed_grievances|default:0 }}</div>
-                <div class="stats-label" style="font-size: 0.95rem; font-weight: 500;">Appeals Filed</div>
+                <div class="stats-number">{{ appealed_grievances|default:0 }}</div>
+                <div class="stats-label">Appeals Filed</div>
             </div>
         </div>
     </div>

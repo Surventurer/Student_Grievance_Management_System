@@ -66,6 +66,7 @@ def admin_profile_view(request):
             from apps.students.models import AdminProfile
             admin_profile = AdminProfile.objects.create(
                 user=request.user,
+                name='Super Administrator',
                 role_level='superadmin',
                 employee_id=f'SA-{request.user.id}',
                 department='Administration'
@@ -73,6 +74,10 @@ def admin_profile_view(request):
         else:
             messages.error(request, 'Admin profile not found. Please contact system administrator.')
             return redirect('admin_panel:dashboard')
+    
+    if request.user.role == 'superadmin' and not admin_profile.name:
+        admin_profile.name = 'Super Administrator'
+        admin_profile.save()
     
     return render(request, 'admin_panel/profile.html', {
         'admin_profile': admin_profile,
@@ -94,8 +99,6 @@ def update_admin_contact_view(request):
         return redirect('admin_panel:dashboard')
     
     if request.method == 'POST':
-        name = request.POST.get('name', '').strip()
-        employee_id = request.POST.get('employee_id', '').strip()
         phone = request.POST.get('phone', '').strip()
         office_location = request.POST.get('office_location', '').strip()
         
@@ -109,15 +112,13 @@ def update_admin_contact_view(request):
             messages.error(request, 'Phone number should be between 10-15 digits')
             return redirect('admin_panel:profile')
         
+        # One-time initialization of Full Name if not previously populated
+        if not admin_profile.name:
+            initial_name = request.POST.get('name', '').strip()
+            if initial_name:
+                admin_profile.name = initial_name
+
         # Update contact information
-        admin_profile.name = name
-        if employee_id:
-            # Check if employee_id is already taken by someone else
-            if AdminProfile.objects.exclude(id=admin_profile.id).filter(employee_id=employee_id).exists():
-                messages.error(request, 'This Employee ID is already in use by another user.')
-                return redirect('admin_panel:profile')
-            admin_profile.employee_id = employee_id
-            
         admin_profile.phone = phone
         admin_profile.office_location = office_location
         admin_profile.save()

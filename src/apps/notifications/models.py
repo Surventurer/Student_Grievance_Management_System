@@ -20,7 +20,8 @@ class ReadNotification(models.Model):
         ]
     
     def __str__(self):
-        return f"{self.student.email} read comment {self.comment.id}"
+        student_email = self.student.email if self.student else "Anonymous"
+        return f"{student_email} read comment {self.comment_id}"
 
 
 class Notification(models.Model):

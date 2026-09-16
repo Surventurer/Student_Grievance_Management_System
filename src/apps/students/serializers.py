@@ -45,14 +45,16 @@ class AdminProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdminProfile
         fields = [
-            'id', 'role_level', 'department', 'employee_id', 'phone',
+            'id', 'name', 'role_level', 'department', 'employee_id', 'phone',
             'office_location', 'user_email', 'user_name', 'first_name',
             'last_name', 'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'employee_id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'name', 'employee_id', 'created_at', 'updated_at']
     
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', {})
+        validated_data.pop('name', None)
+        validated_data.pop('employee_id', None)
         
         # Update user fields
         if user_data:

@@ -1332,14 +1332,25 @@ function showUserDetailsModal(details) {
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="row mb-2">
+                                                <div class="row mb-2 align-items-center">
                                                     <div class="col-6"><strong>Failed Attempts:</strong></div>
-                                                    <div class="col-6">
-                                                        <span class="badge ${details.failed_login_attempts > 0 ? 'bg-warning' : 'bg-success'}">
+                                                    <div class="col-6 d-flex align-items-center gap-2">
+                                                        <span id="modalFailedAttemptsBadge" class="badge ${details.failed_login_attempts > 0 ? 'bg-warning' : 'bg-success'}">
                                                             ${details.failed_login_attempts || 0}
                                                         </span>
+                                                        ${details.failed_login_attempts > 0 ? `
+                                                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" id="modalInlineResetBtn" style="font-size: 0.75rem;" onclick="resetFailedAttempts(${details.id}, '${details.email}')" title="Restore / Reset failed attempts to 0">
+                                                                <i class="fas fa-undo-alt me-1"></i>Reset
+                                                            </button>
+                                                        ` : ''}
                                                     </div>
                                                 </div>
+                                                ${details.last_failed_login ? `
+                                                <div class="row mb-2">
+                                                    <div class="col-6"><strong class="text-muted small">Last Failed:</strong></div>
+                                                    <div class="col-6 small text-danger">${new Date(details.last_failed_login).toLocaleString()}</div>
+                                                </div>
+                                                ` : ''}
                                             </div>
                                         </div>
                                     </div>
@@ -1347,7 +1358,18 @@ function showUserDetailsModal(details) {
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer d-flex justify-content-between">
+                        <div>
+                            ${details.failed_login_attempts > 0 ? `
+                                <button type="button" class="btn btn-outline-danger btn-sm" id="modalFooterResetBtn" onclick="resetFailedAttempts(${details.id}, '${details.email}')">
+                                    <i class="fas fa-undo-alt me-1"></i>Reset Failed Attempts
+                                </button>
+                            ` : `
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="modalFooterResetBtn" onclick="resetFailedAttempts(${details.id}, '${details.email}')" title="Clear any temporary security rate-limits">
+                                    <i class="fas fa-shield-alt me-1"></i>Clear Security Cache
+                                </button>
+                            `}
+                        </div>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                             <i class="fas fa-times me-2"></i>Close
                         </button>
@@ -1373,6 +1395,53 @@ function showUserDetailsModal(details) {
     // Clean up when modal is hidden
     document.getElementById('userDetailsModal').addEventListener('hidden.bs.modal', function () {
         this.remove();
+    });
+}
+
+// Function to reset/restore failed login attempts for a user
+function resetFailedAttempts(userId, email) {
+    if (!confirm(`Are you sure you want to restore and reset failed login attempts to 0 for ${email}? This will also clear any security lockouts.`)) {
+        return;
+    }
+    
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+    
+    fetch(`/admin-panel/superadmin/users/${userId}/clear-failed-attempts/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({ user_id: userId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update badge in modal
+            const badge = document.getElementById('modalFailedAttemptsBadge');
+            if (badge) {
+                badge.className = 'badge bg-success';
+                badge.textContent = '0';
+            }
+            // Remove the inline reset button if present
+            const inlineBtn = document.getElementById('modalInlineResetBtn');
+            if (inlineBtn) {
+                inlineBtn.remove();
+            }
+            // Update footer reset button
+            const footerBtn = document.getElementById('modalFooterResetBtn');
+            if (footerBtn) {
+                footerBtn.className = 'btn btn-outline-secondary btn-sm';
+                footerBtn.innerHTML = '<i class="fas fa-shield-alt me-1"></i>Clear Security Cache';
+            }
+            alert(data.message || 'Failed login attempts restored to 0 successfully.');
+        } else {
+            alert('Error: ' + (data.error || 'Failed to reset login attempts.'));
+        }
+    })
+    .catch(error => {
+        console.error('Error resetting failed login attempts:', error);
+        alert('Error resetting failed login attempts: ' + error.message);
     });
 }
 
@@ -1534,13 +1603,15 @@ function showEditUserModal(userDetails) {
                                             <div class="mb-3">
                                                 <label for="edit_admin_name" class="form-label">Full Name</label>
                                                 <input type="text" class="form-control" id="edit_admin_name" 
-                                                       value="${userDetails.name || ''}">
+                                                       value="${userDetails.admin_profile?.name || ''}" 
+                                                       placeholder="Enter full name">
                                             </div>
                                             
                                             <div class="mb-3">
                                                 <label for="edit_employee_id" class="form-label">Employee ID</label>
                                                 <input type="text" class="form-control" id="edit_employee_id" 
-                                                       value="${userDetails.admin_profile?.employee_id || ''}">
+                                                       value="${userDetails.admin_profile?.employee_id || ''}" 
+                                                       placeholder="Enter employee ID">
                                             </div>
                                             
                                             <div class="mb-3">
@@ -1589,7 +1660,7 @@ function showEditUserModal(userDetails) {
                                             <div class="mb-3">
                                                 <label for="edit_superadmin_name" class="form-label">Display Name</label>
                                                 <input type="text" class="form-control" id="edit_superadmin_name" 
-                                                       value="${userDetails.name || 'Super Administrator'}" 
+                                                       value="${userDetails.admin_profile?.name || userDetails.name || 'Super Administrator'}" 
                                                        placeholder="Super Administrator">
                                                 <small class="text-muted">Optional display name for the super admin account</small>
                                             </div>
