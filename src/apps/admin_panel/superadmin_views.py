@@ -474,12 +474,7 @@ def system_settings(request):
             settings_obj.allow_anonymous = request.POST.get('allow_anonymous') == 'on'
             messages.success(request, 'Grievance settings updated successfully!')
             
-        elif form_type == 'ai_kb':
-            settings_obj.enable_auto_suggestions = request.POST.get('enable_auto_suggestions') == 'on'
-            settings_obj.auto_categorize = request.POST.get('auto_categorize') == 'on'
-            settings_obj.kb_confidence_score = int(request.POST.get('kb_confidence_score', settings_obj.kb_confidence_score))
-            messages.success(request, 'AI & Knowledge Base settings updated successfully!')
-            
+
         elif form_type == 'workflow':
             settings_obj.max_reopen_count = int(request.POST.get('max_reopen_count', settings_obj.max_reopen_count))
             settings_obj.sla_breach_action = request.POST.get('sla_breach_action', settings_obj.sla_breach_action)

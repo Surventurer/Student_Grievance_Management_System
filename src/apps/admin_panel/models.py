@@ -36,10 +36,6 @@ class SystemSettings(models.Model):
     escalation_threshold = models.IntegerField(default=7)
     allow_anonymous = models.BooleanField(default=False)
 
-    # AI & Knowledge Base Settings
-    enable_auto_suggestions = models.BooleanField(default=True)
-    auto_categorize = models.BooleanField(default=True)
-    kb_confidence_score = models.IntegerField(default=80, help_text="Percentage 50-100")
 
     # Workflow & SLA Settings
     max_reopen_count = models.IntegerField(default=2)

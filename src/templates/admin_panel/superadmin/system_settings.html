@@ -208,50 +208,6 @@
             </div>
         </div>
 
-        <!-- AI & Knowledge Base Settings -->
-        <div class="col-md-6 mb-4">
-            <div class="card settings-section">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-robot"></i> AI & Knowledge Base Settings</h5>
-                </div>
-                <div class="card-body">
-                    <form method="POST" action="{% url 'admin_panel:system_settings' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="form_type" value="ai_kb">
-                        
-                        <div class="mb-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="enable_auto_suggestions" 
-                                       {% if settings.enable_auto_suggestions %}checked{% endif %}>
-                                <label class="form-check-label">Enable KB Auto-Suggestions</label>
-                            </div>
-                            <div class="form-text">Suggest solutions to students while they type</div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="auto_categorize" 
-                                       {% if settings.auto_categorize %}checked{% endif %}>
-                                <label class="form-check-label">AI Auto-Categorization</label>
-                            </div>
-                            <div class="form-text">Automatically categorize incoming grievances based on content</div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Minimum Confidence Score (%)</label>
-                            <input type="number" class="form-control" name="kb_confidence_score" 
-                                   value="{{ settings.kb_confidence_score|default_if_none:80 }}" min="50" max="100">
-                            <div class="form-text">Confidence required to suggest an article</div>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-brain"></i> Save AI Settings
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
         <!-- Workflow & SLA Settings -->
         <div class="col-md-6 mb-4">
             <div class="card settings-section">
