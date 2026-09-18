@@ -162,21 +162,26 @@ class Grievance(models.Model):
     def auto_assign(self):
         """Enhanced auto-assign grievance based on category assignments and department"""
         from apps.admin_panel.audit_utils import log_custom_action
+        from apps.students.models import Department
+        from django.db.models import Q, Count
         
         # Skip if already assigned
         if self.assigned_to:
-            return
+            return self.assigned_to, "Already assigned"
+            
+        # Skip if system-wide auto-assignment is disabled
+        from apps.admin_panel.models import SystemSettings
+        if not SystemSettings.load().auto_assignment:
+            return None, "System-wide auto-assignment is disabled"
         
         # Skip if auto-assignment is disabled for this category
         if not self.category.auto_assign_enabled:
-            return
+            return None, "Auto-assignment disabled for this category"
         
         assigned_admin = None
         assignment_reason = "No assignment found"
         
         # Determine target department:
-        # Priority 1: Department targeted on the grievance (e.g., Hostel, Accounts, Library, etc.)
-        # Priority 2: Fallback to student's academic department if grievance department is unspecified
         target_department = self.department.strip() if self.department else None
         if not target_department:
             try:
@@ -184,25 +189,33 @@ class Grievance(models.Model):
                     target_department = self.student.department.strip()
             except Exception:
                 target_department = None
+                
+        # Resolve target department name against the Department model to ensure exact matching
+        if target_department:
+            dept_obj = Department.objects.filter(Q(name__iexact=target_department) | Q(code__iexact=target_department)).first()
+            if dept_obj:
+                target_department = dept_obj.name
         
         # Step 1: Try to find specific department assignment for this category
         if target_department:
             assignment = CategoryAssignment.objects.filter(
                 category=self.category,
                 department__iexact=target_department,
-                is_active=True
+                is_active=True,
+                assigned_admin__user__is_active=True
             ).order_by('-priority_level').first()
             
             if assignment:
                 assigned_admin = assignment.assigned_admin
-                assignment_reason = f"Department-specific assignment: {target_department}"
+                assignment_reason = f"Department-specific category assignment: {target_department}"
         
         # Step 2: Try keyword matching in CategoryAssignment
         if not assigned_admin:
             assignments_with_keywords = CategoryAssignment.objects.filter(
                 category=self.category,
                 is_active=True,
-                auto_assign_keywords__isnull=False
+                auto_assign_keywords__isnull=False,
+                assigned_admin__user__is_active=True
             ).exclude(auto_assign_keywords='')
             
             description_lower = self.description.lower()
@@ -221,28 +234,50 @@ class Grievance(models.Model):
                 except Exception as e:
                     print(f"Error processing keywords for assignment {assignment.id}: {e}")
                     continue
-        
-        # Step 3: Fallback to category default admin
-        if not assigned_admin and self.category.default_admin:
-            assigned_admin = self.category.default_admin
-            assignment_reason = "Category default admin"
-        
-        # Step 4: Fallback to any available admin for the target department (Load-Balanced)
+                    
+        # Step 3: Department-Level Hierarchy Routing (Officer -> HOD)
         if not assigned_admin and target_department:
             try:
-                from django.db.models import Count, Q
-                fallback_admin = AdminProfile.objects.filter(
+                # 3A: Department Grievance Officers (Level 0)
+                officer = AdminProfile.objects.filter(
                     department__iexact=target_department,
-                    role_level__in=['admin', 'officer']
+                    role_level='officer',
+                    user__is_active=True
                 ).annotate(
                     active_count=Count('assigned_grievances', filter=Q(assigned_grievances__status__in=['pending', 'pending_student']))
-                ).order_by('active_count').first()
+                ).order_by('active_count', 'id').first()
                 
-                if fallback_admin:
-                    assigned_admin = fallback_admin
-                    assignment_reason = f"Load-balanced assignment: {target_department}"
+                if officer:
+                    assigned_admin = officer
+                    assignment_reason = f"Department Grievance Officer load-balanced assignment: {target_department}"
+                else:
+                    # 3B: Department Admin / HOD Fallback (No Officer exists!)
+                    dept_admin = AdminProfile.objects.filter(
+                        department__iexact=target_department,
+                        role_level='admin',
+                        user__is_active=True
+                    ).annotate(
+                        active_count=Count('assigned_grievances', filter=Q(assigned_grievances__status__in=['pending', 'pending_student']))
+                    ).order_by('active_count', 'id').first()
+                    
+                    if dept_admin:
+                        assigned_admin = dept_admin
+                        assignment_reason = f"Direct HOD Intake (No active Grievance Officer in {target_department})"
             except Exception as e:
-                print(f"Error finding fallback admin: {e}")
+                print(f"Error in department fallback assignment: {e}")
+
+        # Step 4: Fallback to category default admin
+        if not assigned_admin and self.category.default_admin and self.category.default_admin.user.is_active:
+            assigned_admin = self.category.default_admin
+            assignment_reason = f"Category default admin (No staff found in {target_department or 'unspecified department'})"
+            
+        # Step 5: Ultimate Fallback to Superadmin / Central Cell
+        if not assigned_admin:
+            assigned_admin = AdminProfile.objects.filter(role_level='superadmin', user__is_active=True).first()
+            assignment_reason = f"Central Cell Fallback (No officer, admin, or category default found for {target_department or 'unspecified department'})"
+            if assigned_admin:
+                self.is_escalated = True
+                self.escalation_level = 2
         
         # Assign and save
         if assigned_admin:
@@ -251,7 +286,6 @@ class Grievance(models.Model):
             
             # Create audit log for auto-assignment
             try:
-                # Import here to avoid circular imports
                 from apps.grievances.models import AuditLog
                 AuditLog.objects.create(
                     user=assigned_admin.user,
@@ -264,10 +298,23 @@ class Grievance(models.Model):
                 )
             except Exception as e:
                 print(f"Failed to create audit log for auto-assignment: {e}")
+                
+            # Send notification to assigned user
+            try:
+                from apps.notifications.models import Notification
+                Notification.objects.create(
+                    recipient=assigned_admin.user,
+                    notification_type='new_assignment',
+                    title=f"New Grievance Assigned: #{self.grievance_id}",
+                    message=f"Grievance '{self.title}' has been auto-assigned to you ({assignment_reason}).",
+                    related_link=f"/admin-panel/grievances/{self.id}/"
+                )
+            except Exception as e:
+                print(f"Failed to create notification for auto-assignment: {e}")
             
             return assigned_admin, assignment_reason
         
-        return None, "No suitable admin found for assignment"
+        return None, "System error: No active superadmin fallback available"
 
 
 class GrievanceAttachment(models.Model):

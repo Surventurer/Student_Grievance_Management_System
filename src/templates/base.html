@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="SGS">
     
-    <title>{% block title %}Student Grievance Management System{% endblock %}</title>
+    <title>{% block title %}{{ system_settings.system_name }}{% endblock %}</title>
     
     <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -32,26 +32,26 @@
                 {% if user.is_admin_or_officer %}
                     <a class="navbar-brand" href="{% url 'admin_panel:dashboard' %}">
                         <i class="fas fa-graduation-cap d-inline d-lg-none me-2"></i>
-                        <span class="d-none d-sm-inline">Student Grievance System</span>
+                        <span class="d-none d-sm-inline">{{ system_settings.system_name }}</span>
                         <span class="d-inline d-sm-none">SGS</span>
                     </a>
                 {% elif user.is_student %}
                     <a class="navbar-brand" href="{% url 'students:dashboard' %}">
                         <i class="fas fa-graduation-cap d-inline d-lg-none me-2"></i>
-                        <span class="d-none d-sm-inline">Student Grievance System</span>
+                        <span class="d-none d-sm-inline">{{ system_settings.system_name }}</span>
                         <span class="d-inline d-sm-none">SGS</span>
                     </a>
                 {% else %}
                     <a class="navbar-brand" href="{% url 'authentication:login_view' %}">
                         <i class="fas fa-graduation-cap d-inline d-lg-none me-2"></i>
-                        <span class="d-none d-sm-inline">Student Grievance System</span>
+                        <span class="d-none d-sm-inline">{{ system_settings.system_name }}</span>
                         <span class="d-inline d-sm-none">SGS</span>
                     </a>
                 {% endif %}
             {% else %}
                 <a class="navbar-brand" href="{% url 'authentication:login_view' %}">
                     <i class="fas fa-graduation-cap d-inline d-lg-none me-2"></i>
-                    <span class="d-none d-sm-inline">Student Grievance System</span>
+                    <span class="d-none d-sm-inline">{{ system_settings.system_name }}</span>
                     <span class="d-inline d-sm-none">SGS</span>
                 </a>
             {% endif %}

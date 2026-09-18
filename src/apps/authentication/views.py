@@ -911,10 +911,25 @@ def reset_password_view(request, token):
 
 
 def student_registration(request):
-    """Student Registration View"""
+    from apps.admin_panel.models import SystemSettings
+    system_settings = SystemSettings.load()
+    
+    if not system_settings.allow_student_registration:
+        messages.error(request, 'Student registration is currently disabled by the administration.')
+        return redirect('authentication:login')
+
     if request.method == 'POST':
         form = StudentRegistrationForm(request.POST)
         if form.is_valid():
+            # Domain Check
+            email = form.cleaned_data.get('email', '')
+            allowed_domains = system_settings.allowed_email_domains
+            if allowed_domains:
+                domains = [d.strip().lower() for d in allowed_domains.split(',')]
+                user_domain = email.split('@')[-1].lower() if '@' in email else ''
+                if user_domain not in domains:
+                    messages.error(request, f'Registration is only allowed for the following domains: {allowed_domains}')
+                    return render(request, 'authentication/student_registration.html', {'form': form, 'system_settings': system_settings})
             try:
                 # Save to temporary registration (not actual database)
                 temp_registration = form.save()
@@ -956,7 +971,7 @@ def student_registration(request):
     else:
         form = StudentRegistrationForm()
     
-    return render(request, 'authentication/student_registration.html', {'form': form})
+    return render(request, 'authentication/student_registration.html', {'form': form, 'system_settings': system_settings})
 
 
 def load_departments(request):

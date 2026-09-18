@@ -63,25 +63,25 @@
                         <div class="mb-3">
                             <label class="form-label">System Name</label>
                             <input type="text" class="form-control" name="system_name" 
-                                   value="{{ settings.system_name|default:'Student Grievance Management System' }}">
+                                   value="{{ settings.system_name|default_if_none:'Student Grievance Management System' }}">
                         </div>
                         
                         <div class="mb-3">
                             <label class="form-label">Contact Email</label>
                             <input type="email" class="form-control" name="contact_email" 
-                                   value="{{ settings.contact_email|default:'admin@university.edu' }}">
+                                   value="{{ settings.contact_email|default_if_none:'admin@university.edu' }}">
                         </div>
                         
                         <div class="mb-3">
                             <label class="form-label">Max File Size (MB)</label>
                             <input type="number" class="form-control" name="max_file_size" 
-                                   value="{{ settings.max_file_size|default:10 }}" min="1" max="100">
+                                   value="{{ settings.max_file_size|default_if_none:10 }}" min="1" max="100">
                         </div>
                         
                         <div class="mb-3">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="email_notifications" 
-                                       {% if settings.email_notifications|default:True %}checked{% endif %}>
+                                       {% if settings.email_notifications %}checked{% endif %}>
                                 <label class="form-check-label">Enable Email Notifications</label>
                             </div>
                         </div>
@@ -89,7 +89,7 @@
                         <div class="mb-3">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="auto_assignment" 
-                                       {% if settings.auto_assignment|default:True %}checked{% endif %}>
+                                       {% if settings.auto_assignment %}checked{% endif %}>
                                 <label class="form-check-label">Auto-assign Grievances</label>
                             </div>
                         </div>
@@ -116,7 +116,7 @@
                         <div class="mb-3">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="require_email_verification" 
-                                       {% if settings.require_email_verification|default:True %}checked{% endif %}>
+                                       {% if settings.require_email_verification %}checked{% endif %}>
                                 <label class="form-check-label">Require Email Verification</label>
                             </div>
                         </div>
@@ -124,7 +124,7 @@
                         <div class="mb-3">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="allow_student_registration" 
-                                       {% if settings.allow_student_registration|default:True %}checked{% endif %}>
+                                       {% if settings.allow_student_registration %}checked{% endif %}>
                                 <label class="form-check-label">Allow Student Registration</label>
                             </div>
                         </div>
@@ -132,7 +132,7 @@
                         <div class="mb-3">
                             <label class="form-label">Allowed Email Domain(s)</label>
                             <input type="text" class="form-control" name="allowed_email_domains" 
-                                   value="{{ settings.allowed_email_domains|default:'' }}" 
+                                   value="{{ settings.allowed_email_domains|default_if_none:'' }}" 
                                    placeholder="e.g. university.edu, student.university.edu">
                             <small class="form-text text-muted">Comma-separated allowed domains for student registration. Leave blank to allow all valid domains.</small>
                         </div>
@@ -140,13 +140,13 @@
                         <div class="mb-3">
                             <label class="form-label">Session Timeout (minutes)</label>
                             <input type="number" class="form-control" name="session_timeout" 
-                                   value="{{ settings.session_timeout|default:60 }}" min="15" max="480">
+                                   value="{{ settings.session_timeout|default_if_none:60 }}" min="15" max="480">
                         </div>
                         
                         <div class="mb-3">
                             <label class="form-label">Password Min Length</label>
                             <input type="number" class="form-control" name="password_min_length" 
-                                   value="{{ settings.password_min_length|default:8 }}" min="6" max="20">
+                                   value="{{ settings.password_min_length|default_if_none:8 }}" min="6" max="20">
                         </div>
                         
                         <button type="submit" class="btn btn-danger">
@@ -181,21 +181,21 @@
                         <div class="mb-3">
                             <label class="form-label">Auto-resolve After (days)</label>
                             <input type="number" class="form-control" name="auto_resolve_days" 
-                                   value="{{ settings.auto_resolve_days|default:30 }}" min="7" max="365">
+                                   value="{{ settings.auto_resolve_days|default_if_none:30 }}" min="7" max="365">
                             <div class="form-text">Grievances will be auto-resolved after this many days of inactivity</div>
                         </div>
                         
                         <div class="mb-3">
                             <label class="form-label">Escalation Threshold (days)</label>
                             <input type="number" class="form-control" name="escalation_threshold" 
-                                   value="{{ settings.escalation_threshold|default:7 }}" min="1" max="30">
+                                   value="{{ settings.escalation_threshold|default_if_none:7 }}" min="1" max="30">
                             <div class="form-text">Escalate grievances after this many days without resolution</div>
                         </div>
                         
                         <div class="mb-3">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="allow_anonymous" 
-                                       {% if settings.allow_anonymous|default:False %}checked{% endif %}>
+                                       {% if settings.allow_anonymous %}checked{% endif %}>
                                 <label class="form-check-label">Allow Anonymous Grievances</label>
                             </div>
                         </div>
@@ -222,7 +222,7 @@
                         <div class="mb-3">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="enable_auto_suggestions" 
-                                       {% if settings.enable_auto_suggestions|default:True %}checked{% endif %}>
+                                       {% if settings.enable_auto_suggestions %}checked{% endif %}>
                                 <label class="form-check-label">Enable KB Auto-Suggestions</label>
                             </div>
                             <div class="form-text">Suggest solutions to students while they type</div>
@@ -231,7 +231,7 @@
                         <div class="mb-3">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="auto_categorize" 
-                                       {% if settings.auto_categorize|default:True %}checked{% endif %}>
+                                       {% if settings.auto_categorize %}checked{% endif %}>
                                 <label class="form-check-label">AI Auto-Categorization</label>
                             </div>
                             <div class="form-text">Automatically categorize incoming grievances based on content</div>
@@ -240,7 +240,7 @@
                         <div class="mb-3">
                             <label class="form-label">Minimum Confidence Score (%)</label>
                             <input type="number" class="form-control" name="kb_confidence_score" 
-                                   value="{{ settings.kb_confidence_score|default:80 }}" min="50" max="100">
+                                   value="{{ settings.kb_confidence_score|default_if_none:80 }}" min="50" max="100">
                             <div class="form-text">Confidence required to suggest an article</div>
                         </div>
                         
@@ -266,7 +266,7 @@
                         <div class="mb-3">
                             <label class="form-label">Maximum Re-open Count</label>
                             <input type="number" class="form-control" name="max_reopen_count" 
-                                   value="{{ settings.max_reopen_count|default:2 }}" min="0" max="5">
+                                   value="{{ settings.max_reopen_count|default_if_none:2 }}" min="0" max="5">
                             <div class="form-text">How many times a student can reopen a resolved grievance</div>
                         </div>
                         
@@ -282,7 +282,7 @@
                         <div class="mb-3">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="require_closure_remark" 
-                                       {% if settings.require_closure_remark|default:True %}checked{% endif %}>
+                                       {% if settings.require_closure_remark %}checked{% endif %}>
                                 <label class="form-check-label">Require Officer Closure Remark</label>
                             </div>
                         </div>
@@ -310,7 +310,7 @@
                         <div class="mb-3">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="allow_attachments_in_replies" 
-                                       {% if settings.allow_attachments_in_replies|default:True %}checked{% endif %}>
+                                       {% if settings.allow_attachments_in_replies %}checked{% endif %}>
                                 <label class="form-check-label">Allow Attachments in Replies</label>
                             </div>
                         </div>
@@ -318,7 +318,7 @@
                         <div class="mb-3">
                             <label class="form-label">Support Hours Message</label>
                             <input type="text" class="form-control" name="support_hours" 
-                                   value="{{ settings.support_hours|default:'Mon-Fri, 9:00 AM - 5:00 PM' }}">
+                                   value="{{ settings.support_hours|default_if_none:'Mon-Fri, 9:00 AM - 5:00 PM' }}">
                             <div class="form-text">Displayed on the submission page</div>
                         </div>
                         

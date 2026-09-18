@@ -148,12 +148,11 @@ class User(AbstractBaseUser, PermissionsMixin):
             if hasattr(self, 'admin_profile') and self.admin_profile:
                 query |= Q(assigned_to=self.admin_profile)
 
-            # 2. Any grievance targeting this user's department
-            if dept_name:
+            # 2. Any grievance targeting this user's department (ADMIN ONLY for oversight)
+            if dept_name and self.role == 'admin':
                 query |= Q(department__iexact=dept_name)
                 # For academic department admins, also include grievances filed by their students
-                if self.role == 'admin':
-                    query |= Q(student__department__iexact=dept_name)
+                query |= Q(student__department__iexact=dept_name)
 
             if query:
                 return Grievance.objects.filter(query, is_archived=False).distinct()

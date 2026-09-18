@@ -176,6 +176,11 @@ class StudentRegistrationForm(forms.Form):
         if password and confirm_password:
             if password != confirm_password:
                 raise forms.ValidationError("Passwords do not match.")
+                
+            from apps.admin_panel.models import SystemSettings
+            min_length = SystemSettings.load().password_min_length
+            if len(password) < min_length:
+                raise forms.ValidationError(f"Password must be at least {min_length} characters long.")
         
         return cleaned_data
     

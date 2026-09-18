@@ -787,9 +787,12 @@ def appeal_grievance_view(request, grievance_id):
             messages.error(request, 'You can only appeal resolved or rejected grievances.')
             return redirect('students:grievance_detail', grievance_id=grievance_id)
             
+        from apps.admin_panel.models import SystemSettings
+        max_appeals = SystemSettings.load().max_reopen_count
+        
         appeal_count = grievance.appeals.count()
-        if appeal_count >= 2:
-            messages.warning(request, 'Maximum appeal limit reached (2 appeals allowed). Further appeals cannot be submitted.')
+        if appeal_count >= max_appeals:
+            messages.warning(request, f'Maximum appeal limit reached ({max_appeals} appeals allowed). Further appeals cannot be submitted.')
             return redirect('students:grievance_detail', grievance_id=grievance_id)
             
         # Read reason from POST request

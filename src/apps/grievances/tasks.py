@@ -55,26 +55,28 @@ def escalate_grievance(grievance, is_appeal=False, appeal_reason=None):
     current_level = grievance.escalation_level
     new_assignee = None
     target_dept = grievance.department or (old_assignee.department if old_assignee else None)
-
-    if current_level == 0 and not is_appeal:
+    if current_level >= 1 or (old_assignee and old_assignee.role_level in ['admin', 'superadmin']) or is_appeal:
+        # Escalate to Level 2 (Superadmin / Appellate Authority)
+        new_assignee = AdminProfile.objects.filter(role_level='superadmin', user__is_active=True).first()
+        next_level = 2
+    else:
         # Escalate Level 0 -> Level 1 (Department Admin)
         if target_dept:
             new_assignee = AdminProfile.objects.filter(
                 role_level='admin', 
-                department__iexact=target_dept
+                department__iexact=target_dept,
+                user__is_active=True
             ).first()
-        if not new_assignee and grievance.category and grievance.category.default_admin:
+        if not new_assignee and grievance.category and grievance.category.default_admin and grievance.category.default_admin.user.is_active:
             if grievance.category.default_admin.role_level in ['admin', 'superadmin']:
                 new_assignee = grievance.category.default_admin
         if not new_assignee:
-            new_assignee = AdminProfile.objects.filter(role_level='superadmin').first()
-        next_level = 1
-    else:
-        # Escalate Level 1 -> Level 2 (Superadmin / Appellate Authority) or direct appeal
-        new_assignee = AdminProfile.objects.filter(role_level='superadmin').first()
-        next_level = 2
+            new_assignee = AdminProfile.objects.filter(role_level='superadmin', user__is_active=True).first()
+            next_level = 2 if new_assignee and new_assignee.role_level == 'superadmin' else 1
+        else:
+            next_level = 1
 
-    if not new_assignee or (new_assignee == old_assignee and current_level == next_level):
+    if not new_assignee or (new_assignee == old_assignee and current_level >= next_level):
         # Cannot escalate further
         return False
 

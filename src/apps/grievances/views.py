@@ -115,47 +115,66 @@ def submit_grievance_view(request):
             category_id = request.POST.get('nature_of_grievance')
             category_type = request.POST.get('category_type', 'academic')
             department_id = request.POST.get('department')
+            from apps.admin_panel.models import SystemSettings
+            system_settings = SystemSettings.load()
+            
+            # Enforce allow_anonymous setting
             is_anonymous = request.POST.get('is_anonymous') == 'on'
+            if is_anonymous and not system_settings.allow_anonymous:
+                is_anonymous = False  # Or return an error
+                
             is_hosteler = request.POST.get('is_hosteler') == 'yes'
             hostel_name = request.POST.get('hostel_name', '').strip() if is_hosteler else ''
             hostel_room_no = request.POST.get('hostel_room_no', '').strip() if is_hosteler else ''
             otp_code = request.POST.get('otp_code', '').strip()
-            
-            # Validate required fields
-            if not all([title, description, category_id, otp_code]):
-                messages.error(request, 'Please fill all required fields')
-                context = {
-                    'student_profile': request.user.student_profile
-                }
-                return render(request, 'grievances/submit_grievance.html', context)
+            if system_settings.require_email_verification:
+                if not all([title, description, category_id, otp_code]):
+                    messages.error(request, 'Please fill all required fields including OTP')
+                    context = {
+                        'student_profile': request.user.student_profile,
+                        'system_settings': system_settings
+                    }
+                    return render(request, 'grievances/submit_grievance.html', context)
+            else:
+                if not all([title, description, category_id]):
+                    messages.error(request, 'Please fill all required fields')
+                    context = {
+                        'student_profile': request.user.student_profile,
+                        'system_settings': system_settings
+                    }
+                    return render(request, 'grievances/submit_grievance.html', context)
             
             # For non-academic grievances, department is required
             if category_type == 'non_academic' and not department_id:
                 messages.error(request, 'Please select a department for non-academic grievances')
                 context = {
-                    'student_profile': request.user.student_profile
+                    'student_profile': request.user.student_profile,
+                    'system_settings': system_settings
                 }
                 return render(request, 'grievances/submit_grievance.html', context)
             
             # Verify OTP
-            email_verification = GrievanceOTPVerification.objects.filter(
-                email=request.user.email,
-                otp=otp_code,
-                is_verified=False
-            ).first()
-            
-            print(f"DEBUG: OTP verification lookup - email: {request.user.email}, otp: {otp_code}")
-            print(f"DEBUG: Found verification: {email_verification}")
-            if email_verification:
-                print(f"DEBUG: Verification expired: {email_verification.is_expired}")
-            
-            if not email_verification or email_verification.is_expired:
-                print(f"DEBUG: OTP verification failed")
-                messages.error(request, 'Invalid or expired OTP. Please try again.')
-                context = {
-                    'student_profile': request.user.student_profile
-                }
-                return render(request, 'grievances/submit_grievance.html', context)
+            email_verification = None
+            if system_settings.require_email_verification:
+                email_verification = GrievanceOTPVerification.objects.filter(
+                    email=request.user.email,
+                    otp=otp_code,
+                    is_verified=False
+                ).first()
+                
+                print(f"DEBUG: OTP verification lookup - email: {request.user.email}, otp: {otp_code}")
+                print(f"DEBUG: Found verification: {email_verification}")
+                if email_verification:
+                    print(f"DEBUG: Verification expired: {email_verification.is_expired}")
+                
+                if not email_verification or email_verification.is_expired:
+                    print(f"DEBUG: OTP verification failed")
+                    messages.error(request, 'Invalid or expired OTP. Please try again.')
+                    context = {
+                        'student_profile': request.user.student_profile,
+                        'system_settings': system_settings
+                    }
+                    return render(request, 'grievances/submit_grievance.html', context)
             
             # Get category
             try:
@@ -163,7 +182,8 @@ def submit_grievance_view(request):
             except Category.DoesNotExist:
                 messages.error(request, 'Invalid grievance category selected')
                 context = {
-                    'student_profile': request.user.student_profile
+                    'student_profile': request.user.student_profile,
+                    'system_settings': system_settings
                 }
                 return render(request, 'grievances/submit_grievance.html', context)
             
@@ -214,8 +234,10 @@ def submit_grievance_view(request):
                 if ext not in allowed_extensions or (file.content_type and file.content_type.lower() not in allowed_mime_types):
                     messages.warning(request, f'File "{file.name}" was skipped: unsupported file format.')
                     continue
-                if file.size > 5 * 1024 * 1024:  # 5MB limit
-                    messages.warning(request, f'File "{file.name}" was skipped: exceeds 5MB limit.')
+                
+                max_bytes = system_settings.max_file_size * 1024 * 1024
+                if file.size > max_bytes:
+                    messages.warning(request, f'File "{file.name}" was skipped: exceeds {system_settings.max_file_size}MB limit.')
                     continue
                 # Create attachment record
                 from .models import GrievanceAttachment
@@ -244,13 +266,15 @@ def submit_grievance_view(request):
             traceback.print_exc()
             messages.error(request, f'Error submitting grievance: {str(e)}')
             context = {
-                'student_profile': request.user.student_profile
+                'student_profile': request.user.student_profile,
+                'system_settings': __import__('apps.admin_panel.models', fromlist=['SystemSettings']).SystemSettings.load()
             }
             return render(request, 'grievances/submit_grievance.html', context)
     
     # GET request - show the form
     context = {
-        'student_profile': request.user.student_profile
+        'student_profile': request.user.student_profile,
+        'system_settings': __import__('apps.admin_panel.models', fromlist=['SystemSettings']).SystemSettings.load()
     }
     return render(request, 'grievances/submit_grievance.html', context)
 

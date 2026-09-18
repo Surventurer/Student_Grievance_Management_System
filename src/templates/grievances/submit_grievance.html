@@ -115,9 +115,12 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h5 class="card-title mb-0">
+                <h5 class="card-title mb-0 d-flex justify-content-between align-items-center">
                     <i class="fas fa-edit me-2 d-none d-sm-inline"></i>
-                    Grievance Submission Form
+                    <span></span>
+                    <span class="badge bg-info fw-normal ms-auto"><i class="fas fa-clock me-1"></i> Support Hours: {{ system_settings.support_hours }}</span>
+
+                    
                 </h5>
             </div>
             <div class="card-body">
@@ -237,12 +240,12 @@
                     <div class="form-section">
                         <div class="mb-3">
                             <label for="supporting_docs" class="form-label fw-bold">
-                                Complaint Related Documents (if any, max 5.0 MB)
+                                Complaint Related Documents (if any, max {{ system_settings.max_file_size }} MB)
                             </label>
                             <input type="file" class="form-control" id="supporting_docs" name="supporting_docs" 
                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple>
                             <div class="form-text">
-                                Supported formats: PDF, DOC, DOCX, JPG, PNG. Maximum file size: 5MB per file.
+                                Supported formats: PDF, DOC, DOCX, JPG, PNG. Maximum file size: {{ system_settings.max_file_size }}MB per file.
                             </div>
                         </div>
                     </div>
@@ -290,6 +293,7 @@
                     </div>
 
                     <!-- Anonymous Option -->
+                    {% if system_settings.allow_anonymous %}
                     <div class="form-section">
                         <div class="mb-3">
                             <div class="form-check">
@@ -305,8 +309,10 @@
                             </div>
                         </div>
                     </div>
+                    {% endif %}
 
                     <!-- Email Verification Section -->
+                    {% if system_settings.require_email_verification %}
                     <div class="otp-section">
                         <h6 class="text-primary mb-3">
                             <i class="fas fa-envelope-circle-check"></i> Email Verification
@@ -344,9 +350,14 @@
                             </div>
                         </div>
                     </div>
+                    {% else %}
+                    <!-- If email verification is not required, we still need a hidden dummy field for OTP validation or we disable it in JS -->
+                    <input type="hidden" id="otp_code" name="otp_code" value="000000">
+                    <script>var otpVerified = true;</script>
+                    {% endif %}
 
                     <div class="d-grid gap-2 mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" {% if system_settings.require_email_verification %}disabled{% endif %}>
                             <i class="fas fa-paper-plane"></i> Submit Grievance
                         </button>
                     </div>
@@ -680,6 +691,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
         
+        {% if system_settings.require_email_verification %}
         if (!otpCode || otpCode.length !== 6) {
             e.preventDefault();
             alert('Please enter the 6-digit OTP sent to your email.');
@@ -692,6 +704,7 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Please verify your email with OTP before submitting.');
             return false;
         }
+        {% endif %}
         
         // Show loading state
         submitBtn.disabled = true;

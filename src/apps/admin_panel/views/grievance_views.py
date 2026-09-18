@@ -48,10 +48,18 @@ def grievance_list(request):
     
     # Get accessible grievances based on user's department assignment
     accessible_grievances = user.get_accessible_grievances().select_related('student__user', 'category')
+    # Apply quick filters from dashboard (if present)
+    assigned_to_param = request.GET.get('assigned_to')
+    status_param = request.GET.get('status')
+    
+    if assigned_to_param:
+        accessible_grievances = accessible_grievances.filter(assigned_to__user__id=assigned_to_param)
+        
+    if status_param:
+        accessible_grievances = accessible_grievances.filter(status=status_param)
     
     # Order grievances
     grievances = accessible_grievances.order_by('-submitted_at')
-    
     # Get categories that are relevant to the user's accessible grievances
     if user.is_superadmin:
         categories = Category.objects.all()
@@ -359,7 +367,14 @@ def update_grievance_status(request, grievance_id):
         if new_status in ['pending', 'pending_student', 'resolved', 'rejected']:
             old_status = grievance.status
             
-            # If resolution_notes is empty, assign standard professional remarks
+            from apps.admin_panel.models import SystemSettings
+            require_remark = SystemSettings.load().require_closure_remark
+            
+            # Check if closure remark is required
+            if new_status in ['resolved', 'rejected'] and not resolution_notes and require_remark:
+                return JsonResponse({'success': False, 'error': 'A closure/resolution remark is required to close this grievance.'}, status=400)
+            
+            # If resolution_notes is empty (and not required), assign standard professional remarks
             if not resolution_notes:
                 if new_status == 'resolved':
                     resolution_notes = 'Grievance marked as resolved by staff.'

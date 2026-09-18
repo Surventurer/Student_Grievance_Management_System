@@ -626,10 +626,10 @@
                         
                         <!-- Attachment Input & Preview -->
                         <div class="mt-2 d-flex flex-wrap align-items-center gap-2">
-                            <label for="admin_attachment" id="admin_attachment_label" class="btn btn-sm btn-outline-secondary mb-0 file-attach-btn">
+                            <label for="admin_attachment" {% if not system_settings.allow_attachments_in_replies %}style="display:none;"{% endif %} id="admin_attachment_label" class="btn btn-sm btn-outline-secondary mb-0 file-attach-btn">
                                 <i class="fas fa-paperclip me-1"></i>Attach File (Max 10MB)
                             </label>
-                            <input type="file" id="admin_attachment" name="attachment" class="d-none" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.txt" onchange="handleAdminFileSelect(this)">
+                            <input type="file" id="admin_attachment" {% if not system_settings.allow_attachments_in_replies %}disabled{% endif %} name="attachment" class="d-none" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.txt" onchange="handleAdminFileSelect(this)">
                             
                             <span id="admin_file_preview" class="file-preview-chip badge bg-light text-dark border p-2 d-none align-items-center gap-2">
                                 <i id="admin_file_icon" class="fas fa-file text-primary file-type-icon"></i>
@@ -847,6 +847,30 @@
                             <span class="badge bg-warning text-dark">Level 1 (Dept Head / Committee)</span>
                         {% else %}
                             <span class="badge bg-danger">Level 2 (Ombudsman / Institute Head)</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="label">Assigned Authority:</div>
+                    <div class="value">
+                        {% if grievance.assigned_to %}
+                            <strong>{{ grievance.assigned_to.user.get_full_name|default:grievance.assigned_to.user.email }}</strong><br>
+                            {% if grievance.assigned_to.role_level == 'officer' %}
+                                <span class="badge bg-primary mt-1">Grievance Officer</span>
+                            {% elif grievance.assigned_to.role_level == 'admin' %}
+                                <span class="badge bg-warning text-dark mt-1">Department Admin / HOD</span>
+                                {% if grievance.escalation_level == 0 %}
+                                    <span class="badge bg-info text-dark mt-1" title="Direct Intake: No Grievance Officer in this department"><i class="fas fa-info-circle me-1"></i>Direct HOD Intake</span>
+                                {% endif %}
+                            {% elif grievance.assigned_to.role_level == 'superadmin' %}
+                                <span class="badge bg-dark mt-1">Superadmin (Central Cell)</span>
+                                {% if not grievance.is_escalated %}
+                                    <span class="badge bg-danger mt-1"><i class="fas fa-shield-alt me-1"></i>Central Cell Fallback</span>
+                                {% endif %}
+                            {% endif %}
+                        {% else %}
+                            <span class="text-danger fw-bold"><i class="fas fa-exclamation-triangle me-1"></i>Unassigned (Orphaned)</span>
                         {% endif %}
                     </div>
                 </div>
