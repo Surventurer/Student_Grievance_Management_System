@@ -23,6 +23,17 @@
         border-bottom: none;
     }
     
+    @media (min-width: 768px) {
+        .border-end-md {
+            border-right: 1px solid #e9ecef;
+        }
+    }
+    @media (max-width: 767.98px) {
+        .border-end-md .info-row:last-child {
+            border-bottom: 1px solid #e9ecef;
+        }
+    }
+    
     .label {
         font-weight: 600;
         color: #495057;
@@ -381,76 +392,88 @@
                     <div class="value">{{ grievance.description|linebreaks }}</div>
                 </div>
                 
-                <div class="info-row">
-                    <div class="label">Category</div>
-                    <div class="value">
-                        <span class="badge bg-{% if grievance.category.category_type == 'academic' %}info{% else %}warning{% endif %} fs-6">
-                            {{ grievance.category.name }}
-                        </span>
-                        <small class="text-muted ms-2">({{ grievance.category.get_category_type_display }})</small>
+                <!-- Two-Column Metadata Details -->
+                <div class="row g-0 pt-1">
+                    <!-- Left Column: Category, Department, Hosteler Information -->
+                    <div class="col-md-6 pe-md-3 border-end-md">
+                        <div class="info-row">
+                            <div class="label">Category</div>
+                            <div class="value">
+                                <span class="badge bg-{% if grievance.category.category_type == 'academic' %}info{% else %}warning{% endif %} fs-6">
+                                    {{ grievance.category.name }}
+                                </span>
+                                <small class="text-muted ms-2">({{ grievance.category.get_category_type_display }})</small>
+                            </div>
+                        </div>
+                        
+                        {% if grievance.department %}
+                        <div class="info-row">
+                            <div class="label">Department</div>
+                            <div class="value">{{ grievance.department }}</div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="info-row">
+                            <div class="label">Hosteler</div>
+                            <div class="value">
+                                {% if grievance.is_hosteler %}
+                                    <i class="fas fa-check text-success"></i> Yes
+                                    {% if grievance.hostel_name %} - {{ grievance.hostel_name }}{% endif %}
+                                    {% if grievance.hostel_room_no %} (Room: {{ grievance.hostel_room_no }}){% endif %}
+                                {% else %}
+                                    <i class="fas fa-times text-danger"></i> No
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if grievance.is_hosteler and grievance.hostel_name %}
+                        <div class="info-row">
+                            <div class="label">Hostel Name</div>
+                            <div class="value fw-bold text-primary">{{ grievance.hostel_name }}</div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if grievance.is_hosteler and grievance.hostel_room_no %}
+                        <div class="info-row">
+                            <div class="label">Hostel Room No</div>
+                            <div class="value fw-bold text-primary">{{ grievance.hostel_room_no }}</div>
+                        </div>
+                        {% endif %}
                     </div>
-                </div>
-                
-                {% if grievance.is_escalated %}
-                <div class="info-row">
-                    <div class="label text-danger">Escalation Status</div>
-                    <div class="value">
-                        <span class="badge bg-danger fs-6">Escalated (Level {{ grievance.escalation_level }})</span>
-                    </div>
-                </div>
-                {% endif %}
-                
-                {% if grievance.is_appealed %}
-                <div class="info-row">
-                    <div class="label text-info">Appeal Status</div>
-                    <div class="value">
-                        <span class="badge bg-info fs-6">Appealed by Student</span>
-                    </div>
-                </div>
-                {% endif %}
-                
-                {% if grievance.department %}
-                <div class="info-row">
-                    <div class="label">Department</div>
-                    <div class="value">{{ grievance.department }}</div>
-                </div>
-                {% endif %}
-                
-                <div class="info-row">
-                    <div class="label">Hosteler</div>
-                    <div class="value">
-                        {% if grievance.is_hosteler %}
-                            <i class="fas fa-check text-success"></i> Yes
-                            {% if grievance.hostel_name %} - {{ grievance.hostel_name }}{% endif %}
-                            {% if grievance.hostel_room_no %} (Room: {{ grievance.hostel_room_no }}){% endif %}
-                        {% else %}
-                            <i class="fas fa-times text-danger"></i> No
+                    
+                    <!-- Right Column: Escalation Status, Appeal Status, Submitted Date, Resolved Date -->
+                    <div class="col-md-6 ps-md-3">
+                        {% if grievance.is_escalated %}
+                        <div class="info-row">
+                            <div class="label text-danger">Escalation Status</div>
+                            <div class="value">
+                                <span class="badge bg-danger fs-6">Escalated (Level {{ grievance.escalation_level }})</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if grievance.is_appealed %}
+                        <div class="info-row">
+                            <div class="label text-info">Appeal Status</div>
+                            <div class="value">
+                                <span class="badge bg-info fs-6">Appealed by Student</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="info-row">
+                            <div class="label">Submitted Date</div>
+                            <div class="value">{{ grievance.submitted_at|date:"F d, Y \a\t H:i" }}</div>
+                        </div>
+                        
+                        {% if grievance.resolved_at %}
+                        <div class="info-row">
+                            <div class="label">Resolved Date</div>
+                            <div class="value">{{ grievance.resolved_at|date:"F d, Y \a\t H:i" }}</div>
+                        </div>
                         {% endif %}
                     </div>
                 </div>
-                
-                {% if grievance.is_hosteler %}
-                <div class="info-row">
-                    <div class="label">Hostel Name</div>
-                    <div class="value fw-bold text-primary">{{ grievance.hostel_name|default:"Not specified" }}</div>
-                </div>
-                <div class="info-row">
-                    <div class="label">Hostel Room No</div>
-                    <div class="value fw-bold text-primary">{{ grievance.hostel_room_no|default:"Not specified" }}</div>
-                </div>
-                {% endif %}
-                
-                <div class="info-row">
-                    <div class="label">Submitted Date</div>
-                    <div class="value">{{ grievance.submitted_at|date:"F d, Y \a\t H:i" }}</div>
-                </div>
-                
-                {% if grievance.resolved_at %}
-                <div class="info-row">
-                    <div class="label">Resolved Date</div>
-                    <div class="value">{{ grievance.resolved_at|date:"F d, Y \a\t H:i" }}</div>
-                </div>
-                {% endif %}
             </div>
 
             <!-- Supporting Documents -->
