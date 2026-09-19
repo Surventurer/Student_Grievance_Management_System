@@ -934,54 +934,35 @@ def student_registration(request):
                 # Save to temporary registration (not actual database)
                 temp_registration = form.save()
                 
-                if system_settings.require_email_verification:
-                    # Send OTP via email
-                    try:
-                        send_mail(
-                            'Verify Your Email - Student Grievance System',
-                            f'Dear {temp_registration.name},\n\nYour OTP for email verification is: {temp_registration.otp}\n\nThis OTP is valid for 10 minutes.\n\nThank you!',
-                            settings.EMAIL_HOST_USER,
-                            [temp_registration.email],
-                            fail_silently=False,
-                        )
-                        
-                        # For development: print OTP to console
-                        if settings.DEBUG:
-                            print(f"\n{'='*60}")
-                            print(f"📋 STUDENT REGISTRATION OTP")
-                            print(f"Name: {temp_registration.name}")
-                            print(f"Email: {temp_registration.email}")
-                            print(f"Student ID: {temp_registration.student_id}")
-                            print(f"OTP Code: {temp_registration.otp}")
-                            print(f"Expires in: 10 minutes")
-                            print(f"{'='*60}\n")
-                        
-                        messages.success(request, f'Registration initiated! Please check your email ({temp_registration.email}) for verification OTP. Your Student ID is: {temp_registration.student_id}')
-                    except Exception as email_error:
-                        messages.warning(request, f'Registration saved! However, we could not send the verification email. Your Student ID is: {temp_registration.student_id}. Please contact support.')
+                # Send OTP via email
+                try:
+                    send_mail(
+                        'Verify Your Email - Student Grievance System',
+                        f'Dear {temp_registration.name},\n\nYour OTP for email verification is: {temp_registration.otp}\n\nThis OTP is valid for 10 minutes.\n\nThank you!',
+                        settings.EMAIL_HOST_USER,
+                        [temp_registration.email],
+                        fail_silently=False,
+                    )
                     
-                    # Store in session and redirect to email verification page with student_id prefilled
-                    request.session['pending_student_id'] = temp_registration.student_id
-                    from django.urls import reverse
-                    return redirect(f"{reverse('authentication:verify_email_view')}?student_id={temp_registration.student_id}")
-                else:
-                    from django.utils import timezone
-                    user = User.objects.create(
-                        email=temp_registration.email,
-                        role='student',
-                        is_active=True,
-                        is_email_verified=True,
-                        email_verified_at=timezone.now()
-                    )
-                    user.set_password(temp_registration.password)
-                    user.save()
-                    StudentProfile.objects.create(
-                        user=user, name=temp_registration.name, student_id=temp_registration.student_id,
-                        contact_no=temp_registration.contact_no, school=temp_registration.school, department=temp_registration.department
-                    )
-                    temp_registration.delete()
-                    messages.success(request, 'Registration successful! You can now log in.')
-                    return redirect('authentication:login')
+                    # For development: print OTP to console
+                    if settings.DEBUG:
+                        print(f"\n{'='*60}")
+                        print(f"📋 STUDENT REGISTRATION OTP")
+                        print(f"Name: {temp_registration.name}")
+                        print(f"Email: {temp_registration.email}")
+                        print(f"Student ID: {temp_registration.student_id}")
+                        print(f"OTP Code: {temp_registration.otp}")
+                        print(f"Expires in: 10 minutes")
+                        print(f"{'='*60}\n")
+                    
+                    messages.success(request, f'Registration initiated! Please check your email ({temp_registration.email}) for verification OTP. Your Student ID is: {temp_registration.student_id}')
+                except Exception as email_error:
+                    messages.warning(request, f'Registration saved! However, we could not send the verification email. Your Student ID is: {temp_registration.student_id}. Please contact support.')
+                
+                # Store in session and redirect to email verification page with student_id prefilled
+                request.session['pending_student_id'] = temp_registration.student_id
+                from django.urls import reverse
+                return redirect(f"{reverse('authentication:verify_email_view')}?student_id={temp_registration.student_id}")
                     
             except Exception as e:
                 messages.error(request, f'Registration failed: {str(e)}')
