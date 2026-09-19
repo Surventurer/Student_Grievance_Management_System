@@ -12,7 +12,6 @@ class SystemSettings(models.Model):
     auto_assignment = models.BooleanField(default=True)
     
     # Security Settings
-    require_email_verification = models.BooleanField(default=True)
     allow_student_registration = models.BooleanField(default=True)
     allowed_email_domains = models.CharField(
         max_length=255, 

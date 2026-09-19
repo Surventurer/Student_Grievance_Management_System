@@ -457,7 +457,6 @@ def system_settings(request):
             settings_obj.contact_email = request.POST.get('contact_email', settings_obj.contact_email)
             
             # Security & Access
-            settings_obj.require_email_verification = request.POST.get('require_email_verification') == 'on'
             settings_obj.allow_student_registration = request.POST.get('allow_student_registration') == 'on'
             settings_obj.allowed_email_domains = request.POST.get('allowed_email_domains', '').strip()
             settings_obj.session_timeout = int(request.POST.get('session_timeout', settings_obj.session_timeout))

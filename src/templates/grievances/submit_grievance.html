@@ -312,7 +312,6 @@
                     {% endif %}
 
                     <!-- Email Verification Section -->
-                    {% if system_settings.require_email_verification %}
                     <div class="otp-section">
                         <h6 class="text-primary mb-3">
                             <i class="fas fa-envelope-circle-check"></i> Email Verification
@@ -350,14 +349,9 @@
                             </div>
                         </div>
                     </div>
-                    {% else %}
-                    <!-- If email verification is not required, we still need a hidden dummy field for OTP validation or we disable it in JS -->
-                    <input type="hidden" id="otp_code" name="otp_code" value="000000">
-                    <script>var otpVerified = true;</script>
-                    {% endif %}
 
                     <div class="d-grid gap-2 mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" {% if system_settings.require_email_verification %}disabled{% endif %}>
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
                             <i class="fas fa-paper-plane"></i> Submit Grievance
                         </button>
                     </div>
@@ -691,10 +685,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
         
-        {% if system_settings.require_email_verification %}
         if (!otpCode || otpCode.length !== 6) {
             e.preventDefault();
-            alert('Please enter the 6-digit OTP sent to your email.');
+            alert('Please complete email verification before submitting.');
             return false;
         }
         
@@ -704,7 +697,6 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Please verify your email with OTP before submitting.');
             return false;
         }
-        {% endif %}
         
         // Show loading state
         submitBtn.disabled = true;

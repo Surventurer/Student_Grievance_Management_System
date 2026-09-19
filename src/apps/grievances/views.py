@@ -127,22 +127,14 @@ def submit_grievance_view(request):
             hostel_name = request.POST.get('hostel_name', '').strip() if is_hosteler else ''
             hostel_room_no = request.POST.get('hostel_room_no', '').strip() if is_hosteler else ''
             otp_code = request.POST.get('otp_code', '').strip()
-            if system_settings.require_email_verification:
-                if not all([title, description, category_id, otp_code]):
-                    messages.error(request, 'Please fill all required fields including OTP')
-                    context = {
-                        'student_profile': request.user.student_profile,
-                        'system_settings': system_settings
-                    }
-                    return render(request, 'grievances/submit_grievance.html', context)
-            else:
-                if not all([title, description, category_id]):
-                    messages.error(request, 'Please fill all required fields')
-                    context = {
-                        'student_profile': request.user.student_profile,
-                        'system_settings': system_settings
-                    }
-                    return render(request, 'grievances/submit_grievance.html', context)
+            
+            if not all([title, description, category_id, otp_code]):
+                messages.error(request, 'Please fill all required fields including OTP')
+                context = {
+                    'student_profile': request.user.student_profile,
+                    'system_settings': system_settings
+                }
+                return render(request, 'grievances/submit_grievance.html', context)
             
             # For non-academic grievances, department is required
             if category_type == 'non_academic' and not department_id:
@@ -154,27 +146,25 @@ def submit_grievance_view(request):
                 return render(request, 'grievances/submit_grievance.html', context)
             
             # Verify OTP
-            email_verification = None
-            if system_settings.require_email_verification:
-                email_verification = GrievanceOTPVerification.objects.filter(
-                    email=request.user.email,
-                    otp=otp_code,
-                    is_verified=False
-                ).first()
-                
-                print(f"DEBUG: OTP verification lookup - email: {request.user.email}, otp: {otp_code}")
-                print(f"DEBUG: Found verification: {email_verification}")
-                if email_verification:
-                    print(f"DEBUG: Verification expired: {email_verification.is_expired}")
-                
-                if not email_verification or email_verification.is_expired:
-                    print(f"DEBUG: OTP verification failed")
-                    messages.error(request, 'Invalid or expired OTP. Please try again.')
-                    context = {
-                        'student_profile': request.user.student_profile,
-                        'system_settings': system_settings
-                    }
-                    return render(request, 'grievances/submit_grievance.html', context)
+            email_verification = GrievanceOTPVerification.objects.filter(
+                email=request.user.email,
+                otp=otp_code,
+                is_verified=False
+            ).first()
+            
+            print(f"DEBUG: OTP verification lookup - email: {request.user.email}, otp: {otp_code}")
+            print(f"DEBUG: Found verification: {email_verification}")
+            if email_verification:
+                print(f"DEBUG: Verification expired: {email_verification.is_expired}")
+            
+            if not email_verification or email_verification.is_expired:
+                print(f"DEBUG: OTP verification failed")
+                messages.error(request, 'Invalid or expired OTP. Please try again.')
+                context = {
+                    'student_profile': request.user.student_profile,
+                    'system_settings': system_settings
+                }
+                return render(request, 'grievances/submit_grievance.html', context)
             
             # Get category
             try:
@@ -200,9 +190,9 @@ def submit_grievance_view(request):
                 except Department.DoesNotExist:
                     messages.error(request, 'Invalid department selected')
                     context = {
-                        'student_profile': request.user.student_profile
-                    }
-                    return render(request, 'grievances/submit_grievance.html', context)
+                    'student_profile': request.user.student_profile
+                }
+                return render(request, 'grievances/submit_grievance.html', context)
             
             # Create grievance
             grievance = Grievance.objects.create(
