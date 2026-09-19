@@ -775,6 +775,7 @@ def bulk_delete_users(request):
 
                 # Re-sync HODs for affected departments
                 for dept in affected_depts:
+                    dept.refresh_from_db()
                     dept.auto_assign_hod_if_needed(save=True)
         
         deleted_count = len(deleted_users_info)
