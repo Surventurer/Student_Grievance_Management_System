@@ -323,20 +323,30 @@
                     
                     <!-- Reply Form -->
                     <div id="message-form"></div>
+                    
+                    {% if not system_settings.is_support_active %}
+                    <div id="studentSupportHoursAlert" class="alert alert-warning mt-3 mb-2 d-flex align-items-center">
+                        <i class="fas fa-business-time fa-lg me-2 text-warning"></i>
+                        <div>
+                            <strong>Support Offline:</strong> Messaging is disabled outside active support hours (<strong>{{ system_settings.support_hours }}</strong>). {{ system_settings.support_hours_message }}
+                        </div>
+                    </div>
+                    {% endif %}
+
                     <form id="studentResponseForm" method="POST" action="{% url 'students:add_student_response' grievance.id %}" enctype="multipart/form-data" class="mt-3 {% if grievance.status == 'resolved' or grievance.status == 'rejected' %}d-none{% endif %}">
                         {% csrf_token %}
                         <div class="input-group mb-2">
                             <textarea class="form-control" id="student_response" name="student_response" rows="2" 
-                                      placeholder="Type your message to the administration..."></textarea>
-                            <button type="submit" class="btn btn-primary px-4">
+                                      {% if not system_settings.is_support_active %}disabled placeholder="Messaging disabled outside support hours ({{ system_settings.support_hours }})..."{% else %}placeholder="Type your message to the administration..."{% endif %}></textarea>
+                            <button type="submit" class="btn btn-primary px-4" {% if not system_settings.is_support_active %}disabled title="Support is currently offline"{% endif %}>
                                 <i class="fas fa-paper-plane me-1"></i>Send
                             </button>
                         </div>
                         <div class="d-flex flex-wrap align-items-center gap-2">
-                            <label for="student_attachment" {% if not system_settings.allow_attachments_in_replies %}style="display:none;"{% endif %} id="student_attachment_label" class="btn btn-sm btn-outline-secondary mb-0 file-attach-btn">
-                                <i class="fas fa-paperclip me-1"></i>Attach File (Max 10MB)
+                            <label for="student_attachment" {% if not system_settings.allow_attachments_in_replies or not system_settings.is_support_active %}style="display:none;"{% endif %} id="student_attachment_label" class="btn btn-sm btn-outline-secondary mb-0 file-attach-btn">
+                                <i class="fas fa-paperclip me-1"></i>Attach File (Max {{ system_settings.max_file_size|default:10 }}MB)
                             </label>
-                            <input type="file" id="student_attachment" {% if not system_settings.allow_attachments_in_replies %}disabled{% endif %} name="attachment" class="d-none" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.txt" onchange="handleStudentFileSelect(this)">
+                            <input type="file" id="student_attachment" {% if not system_settings.allow_attachments_in_replies or not system_settings.is_support_active %}disabled{% endif %} name="attachment" class="d-none" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.txt" onchange="handleStudentFileSelect(this)">
                             
                             <span id="student_file_preview" class="file-preview-chip badge bg-light text-dark border p-2 d-none align-items-center gap-2">
                                 <i id="student_file_icon" class="fas fa-file text-primary file-type-icon"></i>
@@ -860,6 +870,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (studentResponseForm) {
         studentResponseForm.addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            {% if not system_settings.is_support_active %}
+            alert('Messages cannot be sent outside active support hours ({{ system_settings.support_hours }}).');
+            return false;
+            {% endif %}
+            
             const textarea = this.querySelector('textarea[name="student_response"]');
             const fileInput = document.getElementById('student_attachment');
             const hasFile = fileInput && fileInput.files.length > 0;

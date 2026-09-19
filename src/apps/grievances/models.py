@@ -192,7 +192,7 @@ class Grievance(models.Model):
                 
         # Resolve target department name against the Department model to ensure exact matching
         if target_department:
-            dept_obj = Department.objects.filter(Q(name__iexact=target_department) | Q(code__iexact=target_department)).first()
+            dept_obj = Department.objects.filter(name__iexact=target_department).first()
             if dept_obj:
                 target_department = dept_obj.name
         

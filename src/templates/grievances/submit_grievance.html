@@ -117,13 +117,24 @@
             <div class="card-header">
                 <h5 class="card-title mb-0 d-flex justify-content-between align-items-center">
                     <i class="fas fa-edit me-2 d-none d-sm-inline"></i>
-                    <span></span>
-                    <span class="badge bg-info fw-normal ms-auto"><i class="fas fa-clock me-1"></i> Support Hours: {{ system_settings.support_hours }}</span>
-
-                    
+                    <span>Submit New Grievance</span>
+                    {% if system_settings.is_support_active %}
+                    <span class="badge bg-success fw-normal ms-auto"><i class="fas fa-check-circle me-1"></i> Support Active ({{ system_settings.support_hours }})</span>
+                    {% else %}
+                    <span class="badge bg-danger fw-normal ms-auto"><i class="fas fa-clock me-1"></i> Support Closed ({{ system_settings.support_hours }})</span>
+                    {% endif %}
                 </h5>
             </div>
             <div class="card-body">
+                {% if not system_settings.is_support_active %}
+                <div class="alert alert-danger border-danger d-flex align-items-center mb-4 p-3" role="alert">
+                    <i class="fas fa-business-time fa-2x me-3 text-danger"></i>
+                    <div>
+                        <h6 class="alert-heading mb-1 fw-bold">Support Hours Offline</h6>
+                        <p class="mb-0">Grievance submissions are currently disabled. Submissions are strictly accepted during active support hours (<strong>{{ system_settings.support_hours }}</strong>). {{ system_settings.support_hours_message }}</p>
+                    </div>
+                </div>
+                {% endif %}
                 <form method="post" id="grievanceForm" enctype="multipart/form-data">
                     {% csrf_token %}
                     
@@ -435,6 +446,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function refreshOtpButtonState() {
+        const isSupportActive = {% if system_settings.is_support_active %}true{% else %}false{% endif %};
+        if (!isSupportActive) {
+            sendOtpBtn.disabled = true;
+            sendOtpBtn.title = "Submissions closed outside support hours";
+            return;
+        }
         const isValid = validateRequiredFields(false);
         sendOtpBtn.disabled = !isValid;
         if (isValid && !otpSent) {
@@ -641,7 +658,12 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success) {
                     otpVerified = true;
-                    submitBtn.disabled = false;
+                    if ({% if system_settings.is_support_active %}true{% else %}false{% endif %}) {
+                        submitBtn.disabled = false;
+                    } else {
+                        submitBtn.disabled = true;
+                        submitBtn.title = "Submissions closed outside support hours.";
+                    }
                     otpStatus.textContent = 'Email verified successfully!';
                     otpStatus.classList.remove('text-muted');
                     otpStatus.classList.add('text-success');
@@ -669,6 +691,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     grievanceForm.addEventListener('submit', function(e) {
         console.log('Form submission attempted');
+        
+        {% if not system_settings.is_support_active %}
+        e.preventDefault();
+        alert('Grievance submissions are closed outside support hours ({{ system_settings.support_hours }}).');
+        return false;
+        {% endif %}
         
         // Check if all required fields are filled
         const title = document.getElementById('title').value.trim();

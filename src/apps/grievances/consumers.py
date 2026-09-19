@@ -125,8 +125,7 @@ class GrievanceChatConsumer(AsyncWebsocketConsumer):
             admin_profile = getattr(user, 'admin_profile', None)
             if hasattr(user, 'is_officer') and user.is_officer:
                 is_assigned = grievance.assigned_to and grievance.assigned_to.user == user
-                is_dept = bool(admin_profile and admin_profile.department and grievance.department and grievance.department.strip().lower() == admin_profile.department.strip().lower())
-                return is_assigned or is_dept
+                return is_assigned
             if hasattr(user, 'is_admin') and user.is_admin:
                 return bool(admin_profile and admin_profile.department and grievance.department and grievance.department.strip().lower() == admin_profile.department.strip().lower())
             return False
@@ -139,6 +138,14 @@ class GrievanceChatConsumer(AsyncWebsocketConsumer):
             grievance = Grievance.objects.get(id=grievance_id)
             if grievance.status in ['resolved', 'rejected']:
                 return None, False, f"This grievance is {grievance.status}. Communication is closed."
+            
+            # Check support hours if user is student
+            if hasattr(user, 'is_student') and user.is_student:
+                from apps.admin_panel.models import SystemSettings
+                system_settings = SystemSettings.load()
+                if not system_settings.is_support_active:
+                    return None, False, f"Messages can only be sent during support hours ({system_settings.support_hours})."
+
             comment = GrievanceComment.objects.create(
                 grievance=grievance,
                 user=user,

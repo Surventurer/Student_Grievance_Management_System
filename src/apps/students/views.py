@@ -16,6 +16,7 @@ from .serializers import StudentProfileSerializer, AdminProfileSerializer, Depar
 from apps.authentication.models import User
 from apps.grievances.models import Grievance, GrievanceComment
 from apps.notifications.models import ReadNotification, Notification
+from apps.admin_panel.models import SystemSettings
 from django.shortcuts import get_object_or_404
 
 
@@ -511,6 +512,20 @@ def add_student_response(request, grievance_id):
             from django.urls import reverse
             return redirect(reverse('students:grievance_detail', kwargs={'grievance_id': grievance_id}))
 
+        system_settings = SystemSettings.load()
+
+        # Enforce support hours: Students cannot send messages outside active support hours
+        if not system_settings.is_support_active:
+            err_msg = f'Messages cannot be sent outside support hours ({system_settings.support_hours}). {system_settings.support_hours_message}'
+            if is_ajax:
+                return JsonResponse({
+                    'success': False,
+                    'error': err_msg
+                }, status=403)
+            messages.error(request, err_msg)
+            from django.urls import reverse
+            return redirect(reverse('students:grievance_detail', kwargs={'grievance_id': grievance_id}))
+
         student_response = request.POST.get('student_response', '').strip()
         
         if not student_response and not request.FILES.get('attachment'):
@@ -525,7 +540,6 @@ def add_student_response(request, grievance_id):
         attachment_obj = None
         attachment_file = request.FILES.get('attachment')
         
-        system_settings = SystemSettings.load()
         if attachment_file and not system_settings.allow_attachments_in_replies:
             if is_ajax:
                 return JsonResponse({'success': False, 'error': 'Attachments in replies are disabled.'}, status=400)
@@ -672,8 +686,8 @@ def add_student_response(request, grievance_id):
         if grievance.assigned_to and grievance.assigned_to.user:
             recipients.add(grievance.assigned_to.user)
         else:
-            from apps.admin_panel.models import AdminProfile
-            dept_admins = AdminProfile.objects.filter(department=grievance.department, user__is_active=True).select_related('user')
+            from apps.students.models import AdminProfile
+            dept_admins = AdminProfile.objects.filter(department=grievance.department, role_level='admin', user__is_active=True).select_related('user')
             for a in dept_admins:
                 recipients.add(a.user)
         
@@ -896,6 +910,7 @@ def appeal_grievance_view(request, grievance_id):
             if grievance.department:
                 dept_admins = AdminProfile.objects.filter(
                     department__iexact=grievance.department.strip(),
+                    role_level='admin',
                     user__is_active=True
                 ).select_related('user')
                 for da in dept_admins:

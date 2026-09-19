@@ -222,16 +222,19 @@ class User(AbstractBaseUser, PermissionsMixin):
                 # Direct assignment
                 if grievance.assigned_to == admin_profile:
                     return True
-                # Department match
-                dept_name = admin_profile.department
-                if dept_name and grievance.department and grievance.department.strip().lower() == dept_name.strip().lower():
-                    return True
-                # Academic department admin can also view grievances from their students
-                if self.role == 'admin' and dept_name and grievance.student and grievance.student.department:
-                    if grievance.student.department.strip().lower() == dept_name.strip().lower():
+                
+                # Department oversight (ADMIN ONLY)
+                if self.role == 'admin':
+                    dept_name = admin_profile.department
+                    if dept_name and grievance.department and grievance.department.strip().lower() == dept_name.strip().lower():
                         return True
+                    # Academic department admin can also view grievances from their students
+                    if dept_name and grievance.student and grievance.student.department:
+                        if grievance.student.department.strip().lower() == dept_name.strip().lower():
+                            return True
                 return False
-            except Exception:
+            except Exception as e:
+                print(f"Error checking admin grievance access: {e}")
                 return False
         elif self.role == 'student':
             try:

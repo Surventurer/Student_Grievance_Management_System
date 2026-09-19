@@ -55,7 +55,7 @@ def escalate_grievance(grievance, is_appeal=False, appeal_reason=None):
     current_level = grievance.escalation_level
     new_assignee = None
     target_dept = grievance.department or (old_assignee.department if old_assignee else None)
-    if current_level >= 1 or (old_assignee and old_assignee.role_level in ['admin', 'superadmin']) or is_appeal:
+    if current_level >= 1 or (old_assignee and old_assignee.role_level in ['admin', 'superadmin']):
         # Escalate to Level 2 (Superadmin / Appellate Authority)
         new_assignee = AdminProfile.objects.filter(role_level='superadmin', user__is_active=True).first()
         next_level = 2

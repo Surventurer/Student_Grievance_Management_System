@@ -569,6 +569,7 @@ def add_admin_response(request, grievance_id):
         attachment_obj = None
         attachment_file = request.FILES.get('attachment')
         
+        from apps.admin_panel.models import SystemSettings
         system_settings = SystemSettings.load()
         if attachment_file and not system_settings.allow_attachments_in_replies:
             return JsonResponse({'success': False, 'error': 'Attachments in replies are disabled by system settings.'}, status=400)

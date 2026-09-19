@@ -67,4 +67,16 @@ class SystemSettings(models.Model):
         obj, created = cls.objects.get_or_create(pk=1)
         return obj
 
+    @property
+    def is_support_active(self):
+        from apps.admin_panel.support_hours import is_within_support_hours
+        active, _ = is_within_support_hours(self.support_hours)
+        return active
+
+    @property
+    def support_hours_message(self):
+        from apps.admin_panel.support_hours import is_within_support_hours
+        _, msg = is_within_support_hours(self.support_hours)
+        return msg
+
 

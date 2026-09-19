@@ -118,6 +118,18 @@ def submit_grievance_view(request):
             from apps.admin_panel.models import SystemSettings
             system_settings = SystemSettings.load()
             
+            # Enforce support hours
+            if not system_settings.is_support_active:
+                messages.error(
+                    request,
+                    f"Grievance submissions are closed outside support hours ({system_settings.support_hours}). {system_settings.support_hours_message}"
+                )
+                context = {
+                    'student_profile': request.user.student_profile,
+                    'system_settings': system_settings
+                }
+                return render(request, 'grievances/submit_grievance.html', context)
+            
             # Enforce allow_anonymous setting
             is_anonymous = request.POST.get('is_anonymous') == 'on'
             if is_anonymous and not system_settings.allow_anonymous:
@@ -190,9 +202,10 @@ def submit_grievance_view(request):
                 except Department.DoesNotExist:
                     messages.error(request, 'Invalid department selected')
                     context = {
-                    'student_profile': request.user.student_profile
-                }
-                return render(request, 'grievances/submit_grievance.html', context)
+                        'student_profile': request.user.student_profile,
+                        'system_settings': system_settings
+                    }
+                    return render(request, 'grievances/submit_grievance.html', context)
             
             # Create grievance
             grievance = Grievance.objects.create(
@@ -276,6 +289,13 @@ def submit_grievance(request):
     """Submit a new grievance"""
     if not request.user.is_student:
         return Response({'error': 'Only students can submit grievances'}, status=status.HTTP_403_FORBIDDEN)
+    
+    from apps.admin_panel.models import SystemSettings
+    system_settings = SystemSettings.load()
+    if not system_settings.is_support_active:
+        return Response({
+            'error': f'Submissions are closed outside support hours ({system_settings.support_hours}). {system_settings.support_hours_message}'
+        }, status=status.HTTP_403_FORBIDDEN)
     
     # Create grievance logic here
     return Response({'message': 'Grievance submitted successfully'}, status=status.HTTP_201_CREATED)
