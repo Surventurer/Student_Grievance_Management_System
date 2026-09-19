@@ -11,6 +11,10 @@ def send_email_notification(subject, recipient_email, template_name, context):
     Send email notification using Celery for async processing
     """
     try:
+        from apps.admin_panel.models import SystemSettings
+        if not SystemSettings.load().email_notifications:
+            return f"Email notification suppressed by system settings for {recipient_email}"
+            
         # Render the email template
         html_message = render_to_string(template_name, context)
         plain_message = strip_tags(html_message)

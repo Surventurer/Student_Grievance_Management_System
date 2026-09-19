@@ -524,6 +524,16 @@ def add_student_response(request, grievance_id):
             
         attachment_obj = None
         attachment_file = request.FILES.get('attachment')
+        
+        system_settings = SystemSettings.load()
+        if attachment_file and not system_settings.allow_attachments_in_replies:
+            if is_ajax:
+                return JsonResponse({'success': False, 'error': 'Attachments in replies are disabled.'}, status=400)
+            messages.error(request, 'Attachments in replies are currently disabled by the administration.')
+            from django.http import HttpResponseRedirect
+            from django.urls import reverse
+            return HttpResponseRedirect(f"{reverse('students:grievance_detail', kwargs={'grievance_id': grievance_id})}#message-form")
+
         if attachment_file:
             import os
             from apps.grievances.models import GrievanceAttachment
@@ -535,10 +545,12 @@ def add_student_response(request, grievance_id):
                 from django.http import HttpResponseRedirect
                 from django.urls import reverse
                 return HttpResponseRedirect(f"{reverse('students:grievance_detail', kwargs={'grievance_id': grievance_id})}#message-form")
-            if attachment_file.size > 10 * 1024 * 1024:
+            
+            max_size_bytes = system_settings.max_file_size * 1024 * 1024
+            if attachment_file.size > max_size_bytes:
                 if is_ajax:
-                    return JsonResponse({'success': False, 'error': 'Attachment exceeds maximum size of 10MB'}, status=400)
-                messages.error(request, 'Attachment exceeds maximum size of 10MB')
+                    return JsonResponse({'success': False, 'error': f'Attachment exceeds maximum size of {system_settings.max_file_size}MB'}, status=400)
+                messages.error(request, 'Attachment exceeds maximum size limit')
                 from django.http import HttpResponseRedirect
                 from django.urls import reverse
                 return HttpResponseRedirect(f"{reverse('students:grievance_detail', kwargs={'grievance_id': grievance_id})}#message-form")

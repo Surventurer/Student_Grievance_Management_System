@@ -48,243 +48,199 @@
         {% endfor %}
     {% endif %}
 
-    <div class="row">
-        <!-- General Settings -->
-        <div class="col-md-6 mb-4">
-            <div class="card settings-section">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-cog"></i> General Settings</h5>
+        <form method="POST" action="{% url 'admin_panel:system_settings' %}">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="all">
+            
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-md-6">
+                    <!-- General / System -->
+                    <div class="card settings-section mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-cog"></i> General / System</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">System Name</label>
+                                <input type="text" class="form-control" name="system_name" 
+                                       value="{{ settings.system_name|default_if_none:'Student Grievance Management System' }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Contact Email</label>
+                                <input type="email" class="form-control" name="contact_email" 
+                                       value="{{ settings.contact_email|default_if_none:'admin@university.edu' }}" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security & Access -->
+                    <div class="card settings-section mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-shield-alt"></i> Security & Access</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="require_email_verification" 
+                                           {% if settings.require_email_verification %}checked{% endif %}>
+                                    <label class="form-check-label">Require Email Verification</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="allow_student_registration" 
+                                           {% if settings.allow_student_registration %}checked{% endif %}>
+                                    <label class="form-check-label">Allow Student Registration</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Allowed Email Domain(s)</label>
+                                <input type="text" class="form-control" name="allowed_email_domains" 
+                                       value="{{ settings.allowed_email_domains|default_if_none:'' }}" 
+                                       placeholder="e.g. university.edu, student.university.edu">
+                                <div class="form-text">Comma-separated allowed domains for student registration. Leave blank to allow all valid domains.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Session Timeout (minutes)</label>
+                                <input type="number" class="form-control" name="session_timeout" 
+                                       value="{{ settings.session_timeout|default_if_none:60 }}" min="5" max="1440">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password Min Length</label>
+                                <input type="number" class="form-control" name="password_min_length" 
+                                       value="{{ settings.password_min_length|default_if_none:8 }}" min="6" max="32">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grievance Rules -->
+                    <div class="card settings-section mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-clipboard-list"></i> Grievance Rules</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Default Priority Level</label>
+                                <select class="form-select" name="default_priority">
+                                    <option value="low" {% if settings.default_priority == 'low' %}selected{% endif %}>Low</option>
+                                    <option value="medium" {% if settings.default_priority == 'medium' or not settings.default_priority %}selected{% endif %}>Medium</option>
+                                    <option value="high" {% if settings.default_priority == 'high' %}selected{% endif %}>High</option>
+                                    <option value="urgent" {% if settings.default_priority == 'urgent' %}selected{% endif %}>Urgent</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Auto-resolve After (days)</label>
+                                <input type="number" class="form-control" name="auto_resolve_days" 
+                                       value="{{ settings.auto_resolve_days|default_if_none:30 }}" min="7" max="365">
+                                <div class="form-text">Grievances will be auto-resolved after this many days of inactivity</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Escalation Threshold (days)</label>
+                                <input type="number" class="form-control" name="escalation_threshold" 
+                                       value="{{ settings.escalation_threshold|default_if_none:7 }}" min="1" max="30">
+                                <div class="form-text">Escalate grievances after this many days without resolution</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <form method="POST" action="{% url 'admin_panel:system_settings' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="form_type" value="general">
-                        
-                        <div class="mb-3">
-                            <label class="form-label">System Name</label>
-                            <input type="text" class="form-control" name="system_name" 
-                                   value="{{ settings.system_name|default_if_none:'Student Grievance Management System' }}">
+
+                <!-- Right Column -->
+                <div class="col-md-6">
+                    <!-- Workflow & SLA -->
+                    <div class="card settings-section mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-project-diagram"></i> Workflow & SLA</h5>
                         </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Contact Email</label>
-                            <input type="email" class="form-control" name="contact_email" 
-                                   value="{{ settings.contact_email|default_if_none:'admin@university.edu' }}">
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Max File Size (MB)</label>
-                            <input type="number" class="form-control" name="max_file_size" 
-                                   value="{{ settings.max_file_size|default_if_none:10 }}" min="1" max="100">
-                        </div>
-                        
-                        <div class="mb-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="email_notifications" 
-                                       {% if settings.email_notifications %}checked{% endif %}>
-                                <label class="form-check-label">Enable Email Notifications</label>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="auto_assignment" 
+                                           {% if settings.auto_assignment %}checked{% endif %}>
+                                    <label class="form-check-label">Auto-assign Grievances</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Maximum Re-open Count</label>
+                                <input type="number" class="form-control" name="max_reopen_count" 
+                                       value="{{ settings.max_reopen_count|default_if_none:2 }}" min="0" max="5">
+                                <div class="form-text">How many times a student can reopen a resolved grievance</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">SLA Breach Action</label>
+                                <select class="form-select" name="sla_breach_action">
+                                    <option value="notify" {% if settings.sla_breach_action == 'notify' %}selected{% endif %}>Notify Admin Only</option>
+                                    <option value="escalate" {% if settings.sla_breach_action == 'escalate' or not settings.sla_breach_action %}selected{% endif %}>Auto-Escalate Immediately</option>
+                                    <option value="both" {% if settings.sla_breach_action == 'both' %}selected{% endif %}>Notify & Auto-Escalate</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="require_closure_remark" 
+                                           {% if settings.require_closure_remark %}checked{% endif %}>
+                                    <label class="form-check-label">Require Officer Closure Remark</label>
+                                </div>
                             </div>
                         </div>
-                        
-                        <div class="mb-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="auto_assignment" 
-                                       {% if settings.auto_assignment %}checked{% endif %}>
-                                <label class="form-check-label">Auto-assign Grievances</label>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div class="card settings-section mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-bell"></i> Notifications</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="email_notifications" 
+                                           {% if settings.email_notifications %}checked{% endif %}>
+                                    <label class="form-check-label">Enable Email Notifications</label>
+                                </div>
                             </div>
                         </div>
-                        
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Save General Settings
-                        </button>
-                    </form>
+                    </div>
+
+                    <!-- Student Experience -->
+                    <div class="card settings-section mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-user-graduate"></i> Student Experience</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="allow_anonymous" 
+                                           {% if settings.allow_anonymous %}checked{% endif %}>
+                                    <label class="form-check-label">Allow Anonymous Grievances</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="allow_attachments_in_replies" 
+                                           {% if settings.allow_attachments_in_replies %}checked{% endif %}>
+                                    <label class="form-check-label">Allow Attachments in Replies</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Max File Size (MB)</label>
+                                <input type="number" class="form-control" name="max_file_size" 
+                                       value="{{ settings.max_file_size|default_if_none:10 }}" min="1" max="50">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Support Hours Message</label>
+                                <input type="text" class="form-control" name="support_hours" 
+                                       value="{{ settings.support_hours|default_if_none:'Mon-Fri, 9:00 AM - 5:00 PM' }}">
+                                <div class="form-text">Displayed on the submission page</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Security Settings -->
-        <div class="col-md-6 mb-4">
-            <div class="card settings-section">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-shield-alt"></i> Security Settings</h5>
-                </div>
-                <div class="card-body">
-                    <form method="POST" action="{% url 'admin_panel:system_settings' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="form_type" value="security">
-                        
-                        <div class="mb-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="require_email_verification" 
-                                       {% if settings.require_email_verification %}checked{% endif %}>
-                                <label class="form-check-label">Require Email Verification</label>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="allow_student_registration" 
-                                       {% if settings.allow_student_registration %}checked{% endif %}>
-                                <label class="form-check-label">Allow Student Registration</label>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Allowed Email Domain(s)</label>
-                            <input type="text" class="form-control" name="allowed_email_domains" 
-                                   value="{{ settings.allowed_email_domains|default_if_none:'' }}" 
-                                   placeholder="e.g. university.edu, student.university.edu">
-                            <small class="form-text text-muted">Comma-separated allowed domains for student registration. Leave blank to allow all valid domains.</small>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Session Timeout (minutes)</label>
-                            <input type="number" class="form-control" name="session_timeout" 
-                                   value="{{ settings.session_timeout|default_if_none:60 }}" min="15" max="480">
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Password Min Length</label>
-                            <input type="number" class="form-control" name="password_min_length" 
-                                   value="{{ settings.password_min_length|default_if_none:8 }}" min="6" max="20">
-                        </div>
-                        
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fas fa-shield-alt"></i> Update Security Settings
-                        </button>
-                    </form>
-                </div>
+            <!-- Global Save Button -->
+            <div class="text-end mt-2 mb-5">
+                <button type="submit" class="btn btn-primary btn-lg px-5">
+                    <i class="fas fa-save me-2"></i> Save All Settings
+                </button>
             </div>
-        </div>
-
-        <!-- Grievance Settings -->
-        <div class="col-md-6 mb-4">
-            <div class="card settings-section">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-clipboard-list"></i> Grievance Settings</h5>
-                </div>
-                <div class="card-body">
-                    <form method="POST" action="{% url 'admin_panel:system_settings' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="form_type" value="grievance">
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Default Priority Level</label>
-                            <select class="form-select" name="default_priority">
-                                <option value="low" {% if settings.default_priority == 'low' %}selected{% endif %}>Low</option>
-                                <option value="medium" {% if settings.default_priority == 'medium' or not settings.default_priority %}selected{% endif %}>Medium</option>
-                                <option value="high" {% if settings.default_priority == 'high' %}selected{% endif %}>High</option>
-                                <option value="urgent" {% if settings.default_priority == 'urgent' %}selected{% endif %}>Urgent</option>
-                            </select>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Auto-resolve After (days)</label>
-                            <input type="number" class="form-control" name="auto_resolve_days" 
-                                   value="{{ settings.auto_resolve_days|default_if_none:30 }}" min="7" max="365">
-                            <div class="form-text">Grievances will be auto-resolved after this many days of inactivity</div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Escalation Threshold (days)</label>
-                            <input type="number" class="form-control" name="escalation_threshold" 
-                                   value="{{ settings.escalation_threshold|default_if_none:7 }}" min="1" max="30">
-                            <div class="form-text">Escalate grievances after this many days without resolution</div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="allow_anonymous" 
-                                       {% if settings.allow_anonymous %}checked{% endif %}>
-                                <label class="form-check-label">Allow Anonymous Grievances</label>
-                            </div>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-info">
-                            <i class="fas fa-clipboard-list"></i> Save Grievance Settings
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Workflow & SLA Settings -->
-        <div class="col-md-6 mb-4">
-            <div class="card settings-section">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-project-diagram"></i> Workflow & SLA Settings</h5>
-                </div>
-                <div class="card-body">
-                    <form method="POST" action="{% url 'admin_panel:system_settings' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="form_type" value="workflow">
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Maximum Re-open Count</label>
-                            <input type="number" class="form-control" name="max_reopen_count" 
-                                   value="{{ settings.max_reopen_count|default_if_none:2 }}" min="0" max="5">
-                            <div class="form-text">How many times a student can reopen a resolved grievance</div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">SLA Breach Action</label>
-                            <select class="form-select" name="sla_breach_action">
-                                <option value="notify" {% if settings.sla_breach_action == 'notify' %}selected{% endif %}>Notify Admin Only</option>
-                                <option value="escalate" {% if settings.sla_breach_action == 'escalate' or not settings.sla_breach_action %}selected{% endif %}>Auto-Escalate Immediately</option>
-                                <option value="both" {% if settings.sla_breach_action == 'both' %}selected{% endif %}>Notify & Auto-Escalate</option>
-                            </select>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="require_closure_remark" 
-                                       {% if settings.require_closure_remark %}checked{% endif %}>
-                                <label class="form-check-label">Require Officer Closure Remark</label>
-                            </div>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-warning">
-                            <i class="fas fa-tasks"></i> Save Workflow Settings
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Student Experience Settings -->
-        <div class="col-md-6 mb-4">
-            <div class="card settings-section">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-user-graduate"></i> Student Experience Settings</h5>
-                </div>
-                <div class="card-body">
-                    <form method="POST" action="{% url 'admin_panel:system_settings' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="form_type" value="experience">
-                        
-                        
-                        <div class="mb-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="allow_attachments_in_replies" 
-                                       {% if settings.allow_attachments_in_replies %}checked{% endif %}>
-                                <label class="form-check-label">Allow Attachments in Replies</label>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Support Hours Message</label>
-                            <input type="text" class="form-control" name="support_hours" 
-                                   value="{{ settings.support_hours|default_if_none:'Mon-Fri, 9:00 AM - 5:00 PM' }}">
-                            <div class="form-text">Displayed on the submission page</div>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-smile"></i> Save Experience Settings
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-    </div>
+        </form>
 {% endblock %}

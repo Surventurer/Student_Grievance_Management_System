@@ -211,6 +211,7 @@ def submit_grievance_view(request):
                 description=description,
                 category=category,
                 department=grievance_department,
+                priority=system_settings.default_priority,
                 is_anonymous=is_anonymous,
                 is_hosteler=is_hosteler,
                 hostel_name=hostel_name if is_hosteler else None,

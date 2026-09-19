@@ -277,6 +277,10 @@
         
         {% block content %}
         {% endblock %}
+        <div class="container-fluid mt-5 mb-3 text-center text-muted small border-top pt-3">
+            &copy; 2026 {{ system_settings.system_name }}. Need help? Contact us at <a href="mailto:{{ system_settings.contact_email }}">{{ system_settings.contact_email }}</a>.
+        </div>
+
     </main>
     
     <!-- Smartphone-Style Floating Push Toast Container -->

@@ -487,7 +487,9 @@ def update_grievance_status(request, grievance_id):
 
                 # Send email notification to student
                 try:
-                    from django.core.mail import send_mail
+                    from apps.admin_panel.models import SystemSettings
+                    if SystemSettings.load().email_notifications:
+                        from django.core.mail import send_mail
                     from django.conf import settings
                     if grievance.student.user.email:
                         email_subj = f"UPDATE: Grievance #{grievance.grievance_id} - {notif_title}"
@@ -566,14 +568,21 @@ def add_admin_response(request, grievance_id):
             
         attachment_obj = None
         attachment_file = request.FILES.get('attachment')
+        
+        system_settings = SystemSettings.load()
+        if attachment_file and not system_settings.allow_attachments_in_replies:
+            return JsonResponse({'success': False, 'error': 'Attachments in replies are disabled by system settings.'}, status=400)
+
         if attachment_file:
             import os
             from apps.grievances.models import GrievanceAttachment
             ext = os.path.splitext(attachment_file.name)[1].lower().lstrip('.')
             if ext not in GrievanceAttachment.ALLOWED_EXTENSIONS:
                 return JsonResponse({'success': False, 'error': f'Invalid file type. Allowed: {", ".join(GrievanceAttachment.ALLOWED_EXTENSIONS)}'}, status=400)
-            if attachment_file.size > 10 * 1024 * 1024:
-                return JsonResponse({'success': False, 'error': 'Attachment exceeds maximum size of 10MB'}, status=400)
+            
+            max_size_bytes = system_settings.max_file_size * 1024 * 1024
+            if attachment_file.size > max_size_bytes:
+                return JsonResponse({'success': False, 'error': f'Attachment exceeds maximum size of {system_settings.max_file_size}MB'}, status=400)
                 
             attachment_prefix = "[Internal Note]" if is_internal else "[Staff Reply]"
             attachment_obj = GrievanceAttachment.objects.create(
