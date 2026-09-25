@@ -31,6 +31,7 @@ class DepartmentAssignmentMiddleware(MiddlewareMixin):
             '/static/',
             '/media/',
             '/admin/',  # Skip Django admin
+            '/api/',    # Skip REST API endpoints
         ]
         
         if any(request.path.startswith(url) for url in skip_urls):
@@ -53,8 +54,11 @@ class DepartmentAssignmentMiddleware(MiddlewareMixin):
         current_dept_id = request.user.assigned_department.id if request.user.assigned_department else None
         session_dept_id = request.session.get('user_department_id')
         
-        if session_dept_id != current_dept_id:
-            # Department assignment has changed
+        if session_dept_id is None:
+            # First request in session, simply store current department
+            request.session['user_department_id'] = current_dept_id
+        elif session_dept_id != current_dept_id:
+            # Department assignment has changed during active session
             request.session['user_department_id'] = current_dept_id
             
             if current_dept_id:

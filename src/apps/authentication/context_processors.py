@@ -26,9 +26,11 @@ def role_context(request):
         # Add profile and department information
         try:
             if user.role == 'student' and hasattr(user, 'student_profile'):
+                dept = user.student_profile.department
+                dept_name = dept.name if hasattr(dept, 'name') else dept
                 context.update({
                     'user_profile': user.student_profile,
-                    'user_department': user.student_profile.department.name if user.student_profile.department else None,
+                    'user_department': dept_name,
                 })
             elif user.role in ['admin', 'officer', 'superadmin']:
                 # Use the new department assignment property

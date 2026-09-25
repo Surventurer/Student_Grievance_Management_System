@@ -80,6 +80,7 @@ class Grievance(models.Model):
     
     STATUS_CHOICES = [
         ('pending', 'Pending'),
+        ('in_progress', 'In Progress'),
         ('pending_student', 'Pending Student Reply'),
         ('resolved', 'Resolved'),
         ('rejected', 'Rejected'),
@@ -143,6 +144,11 @@ class Grievance(models.Model):
     def grievance_id(self):
         """Generate a human-readable grievance ID"""
         return f"GRV-{str(self.id)[:8].upper()}"
+
+    @property
+    def resolved_at(self):
+        """Resolution date property used across templates and views"""
+        return self.actual_resolution_date
 
     @property
     def effective_sla_hours(self):

@@ -74,10 +74,13 @@ class Department(models.Model):
         from apps.authentication.models import User
         
         # If currently assigned HOD is active and is still an admin for this department, keep them
-        if self.head_of_department and self.head_of_department.is_active and self.head_of_department.role == 'admin':
-            if hasattr(self.head_of_department, 'admin_profile') and self.head_of_department.admin_profile:
-                if (self.head_of_department.admin_profile.department or '').strip().lower() == self.name.strip().lower():
-                    return self.head_of_department
+        if self.head_of_department_id:
+            current_hod = User.objects.filter(id=self.head_of_department_id).first()
+            if current_hod and current_hod.is_active and current_hod.role == 'admin':
+                if hasattr(current_hod, 'admin_profile') and current_hod.admin_profile:
+                    if (current_hod.admin_profile.department or '').strip().lower() == self.name.strip().lower():
+                        self.head_of_department = current_hod
+                        return current_hod
 
         # Find active department admins matching this department
         dept_admins = User.objects.filter(

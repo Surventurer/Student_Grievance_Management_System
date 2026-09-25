@@ -32,29 +32,31 @@ A comprehensive, institutional-grade **Student Grievance Management System (SGMS
 ## 🚀 Key Capabilities
 
 ### 👨‍🎓 Student Portal
-* **Verified Registration**: Self-registration with email OTP verification before account activation.
+* **Verified Registration**: Self-registration with permanent email OTP verification (`TemporaryRegistration`) before account creation.
 * **Grievance Lodging**: Structured lodging with category classification (Academic vs. Non-Academic), file attachments, and email OTP verification.
-* **Whistleblower Anonymous Mode**: Students can submit grievances anonymously; personal identifiers are strictly masked across all UI views and exports.
+* **Support Hours Enforcement**: Submissions and chat replies are governed by configured institution support hours.
+* **Whistleblower Anonymous Mode**: Students can lodge grievances anonymously; personal identifiers are strictly masked across all UI views and exports.
 * **Real-time Live Chat**: Interactive WebSocket communication thread directly with assigned grievance officers.
-* **Student Right of Appeal**: Option to lodge formal appeals on unsatisfactory or rejected resolutions with additional grounds and supporting files.
-* **Resolution Feedback**: Post-resolution 5-star rating and qualitative feedback.
+* **Student Right of Appeal**: Option to lodge formal appeals on unsatisfactory or rejected resolutions with additional grounds and evidence up to `max_reopen_count`.
 
 ### 🏛️ Admin & Grievance Officer Portal
 * **Granular Role Hierarchy**: Strict boundaries between **Superadmin**, **Department Admin**, and **Grievance Officer**.
 * **Department Data Isolation**: Department admins and officers only access grievances belonging to their assigned department.
-* **Automated Assignment Engine**: Smart grievance routing based on category rules, keywords, and officer workload.
+* **5-Tier Automated Assignment Engine**: Smart grievance routing based on category rules, keywords, officer workload, HOD fallback, and central cell.
+* **Self-Healing Department HOD**: Automatically assigns active department admin as HOD and heals orphaned assignments on bulk user deletions.
+* **Support Hours Management**: Central configuration of working hours (weekdays, 24/7, overnight schedules) from the Superadmin dashboard.
 * **Dynamic Priority-Weighted SLA**:
   * Urgent: 25% of baseline SLA hours
   * High: 50% of baseline SLA hours
   * Medium: 100% of baseline SLA hours
   * Low: 150% of baseline SLA hours
-* **SLA Pause Capability**: Automatically pauses SLA clock when a grievance status transitions to `pending_student` (Awaiting Student Input).
-* **Multi-Tier Escalation Engine**: Automated Celery task escalates unresolved grievances:
+* **SLA Pause & Unpause**: Automatically pauses SLA clock when a grievance status transitions to `pending_student` and resumes clock upon student response.
+* **Multi-Tier Escalation Engine**: Automated Celery task and `python manage.py process_slas` cron:
   * **Level 0**: Assigned Officer
   * **Level 1**: Department Admin / Head of Department (HOD)
   * **Level 2**: Superadmin / Appellate Authority
-* **Bulk Administrative Actions**: Bulk status updates and bulk reassignments strictly validated within department boundaries.
-* **Auditing & Reporting**: Immutable audit logging for all status changes, reassignments, and administrative actions; CSV / Excel export capabilities.
+* **Bulk Administrative Actions**: Bulk status updates, bulk activations, and bulk reassignments strictly validated within department boundaries.
+* **Auditing & Reporting**: Immutable audit logging for all status changes, reassignments, and administrative actions; role-scoped CSV exports.
 
 ---
 
@@ -301,6 +303,26 @@ Running `python manage.py setup_initial_data` creates the following test account
 * **Privilege Escalation Prevention**: Non-superadmin staff cannot modify or grant the `superadmin` role via any API or web endpoint.
 * **MIME-Type & Extension Upload Validation**: Uploaded documents are verified against whitelisted MIME types and file extensions (PDF, DOC, DOCX, JPG, PNG, TXT) with a hard 10MB ceiling.
 * **Protected Media Serving**: Grievance attachments are protected and streamed via authenticated views or secure fallback handlers.
+
+---
+
+## 🧪 Automated Testing Suite
+
+The repository contains an enterprise-grade automated test suite spanning Unit, Integration, and E2E layers across all core domains.
+
+```bash
+# Run the complete test suite across all apps
+python src/manage.py test apps --verbosity=2
+
+# Run tests by domain
+python src/manage.py test apps.authentication --verbosity=2
+python src/manage.py test apps.students --verbosity=2
+python src/manage.py test apps.grievances --verbosity=2
+python src/manage.py test apps.admin_panel --verbosity=2
+python src/manage.py test apps.notifications --verbosity=2
+```
+
+> **Note**: Automated tests run with isolated in-memory caching (`LocMemCache`) and eager in-process Celery task execution, requiring no active Redis instance to run.
 
 ---
 

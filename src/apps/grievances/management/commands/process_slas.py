@@ -24,9 +24,18 @@ class Command(BaseCommand):
         resolved_count = 0
         for g in stale_grievances:
             g.status = 'resolved'
-            g.admin_remarks = f"Auto-resolved after {settings.auto_resolve_days} days of inactivity."
-            g.save(update_fields=['status', 'admin_remarks', 'updated_at'])
+            g.actual_resolution_date = now
+            g.save(update_fields=['status', 'actual_resolution_date', 'updated_at'])
             resolved_count += 1
+            
+            from apps.grievances.models import GrievanceComment
+            GrievanceComment.objects.create(
+                grievance=g,
+                user=None,
+                comment_type='status_update',
+                message=f"Auto-resolved after {settings.auto_resolve_days} days of inactivity.",
+                is_internal=False
+            )
             
             # Notify student
             Notification.objects.create(

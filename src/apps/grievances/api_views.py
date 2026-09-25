@@ -19,15 +19,15 @@ class IsStudentOrAdmin(permissions.BasePermission):
             return True
             
         if hasattr(request.user, 'is_student') and request.user.is_student:
-            student_profile = getattr(request.user, 'studentprofile', None)
+            student_profile = getattr(request.user, 'student_profile', None)
             return student_profile and obj.student == student_profile
             
         if hasattr(request.user, 'is_officer') and request.user.is_officer:
-            admin_profile = getattr(request.user, 'adminprofile', None)
+            admin_profile = getattr(request.user, 'admin_profile', None)
             return admin_profile and obj.assigned_to == admin_profile
             
         if hasattr(request.user, 'is_admin') and request.user.is_admin:
-            admin_profile = getattr(request.user, 'adminprofile', None)
+            admin_profile = getattr(request.user, 'admin_profile', None)
             if not admin_profile:
                 return False
             # Check if grievance belongs to admin's department
@@ -57,18 +57,18 @@ class GrievanceViewSet(viewsets.ModelViewSet):
             return Grievance.objects.all().order_by('-submitted_at')
             
         if hasattr(user, 'is_student') and user.is_student:
-            student_profile = getattr(user, 'studentprofile', None)
+            student_profile = getattr(user, 'student_profile', None)
             if student_profile:
                 return Grievance.objects.filter(student=student_profile).order_by('-submitted_at')
             return Grievance.objects.none()
             
         if hasattr(user, 'is_officer') and user.is_officer:
-            admin_profile = getattr(user, 'adminprofile', None)
+            admin_profile = getattr(user, 'admin_profile', None)
             if admin_profile:
                 return Grievance.objects.filter(assigned_to=admin_profile).order_by('-submitted_at')
                 
         if hasattr(user, 'is_admin') and user.is_admin:
-            admin_profile = getattr(user, 'adminprofile', None)
+            admin_profile = getattr(user, 'admin_profile', None)
             if admin_profile and admin_profile.department:
                 return Grievance.objects.filter(department=admin_profile.department).order_by('-submitted_at')
                 

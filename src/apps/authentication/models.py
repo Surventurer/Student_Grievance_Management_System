@@ -93,8 +93,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.role == 'superadmin':
             return None  # Superadmin has access to all departments
         elif self.role == 'admin':
-            # Admins are assigned as HOD of departments
-            return self.headed_departments.first()
+            # Admins are assigned as HOD of departments or via admin_profile
+            dept = self.headed_departments.first()
+            if not dept and hasattr(self, 'admin_profile') and self.admin_profile:
+                from apps.students.models import Department
+                dept = Department.objects.filter(name__iexact=self.admin_profile.department).first()
+            return dept
         elif self.role == 'officer':
             # Officers are assigned through AdminProfile
             try:

@@ -40,7 +40,7 @@ from apps.admin_panel.permissions import (
 
 
 @login_required
-@staff_member_required
+@role_required(['admin', 'officer', 'superadmin'])
 def download_grievances_csv(request):
     """Download grievances report as CSV"""
     import csv
@@ -52,8 +52,13 @@ def download_grievances_csv(request):
     status_filter = request.GET.get('status')
     category_filter = request.GET.get('category')
     
-    # Base queryset
-    grievances = Grievance.objects.select_related(
+    # Base queryset scoped by user role and department access
+    if request.user.is_superadmin:
+        grievances = Grievance.objects.filter(is_archived=False)
+    else:
+        grievances = request.user.get_accessible_grievances()
+
+    grievances = grievances.select_related(
         'student', 'category', 'assigned_to'
     ).order_by('-submitted_at')
     
@@ -135,7 +140,7 @@ def download_grievances_csv(request):
 
 
 @login_required
-@staff_member_required
+@role_required(['admin', 'officer', 'superadmin'])
 def download_monthly_stats_csv(request):
     """Download monthly statistics as CSV"""
     import csv
@@ -160,9 +165,11 @@ def download_monthly_stats_csv(request):
         'Resolution Rate (%)'
     ])
     
+    base_grievances = Grievance.objects.filter(is_archived=False) if request.user.is_superadmin else request.user.get_accessible_grievances()
+    
     # Monthly data
     for month_num in range(1, 13):
-        month_grievances = Grievance.objects.filter(
+        month_grievances = base_grievances.filter(
             submitted_at__year=year,
             submitted_at__month=month_num
         )

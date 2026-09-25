@@ -197,8 +197,7 @@ def process_grievance_appeal(request, grievance_id):
             # Reopen grievance for supervisory re-hearing
             grievance.status = 'in_progress'
             grievance.is_appealed = False
-            grievance.resolved_at = None
-            grievance.resolution_notes = None
+            grievance.actual_resolution_date = None
             grievance.save()
             
             if appeal:
@@ -364,7 +363,7 @@ def update_grievance_status(request, grievance_id):
         new_status = data.get('status') or request.POST.get('status')
         resolution_notes = (data.get('resolution_notes') or request.POST.get('resolution_notes') or '').strip()
         
-        if new_status in ['pending', 'pending_student', 'resolved', 'rejected']:
+        if new_status in ['pending', 'in_progress', 'pending_student', 'resolved', 'rejected']:
             old_status = grievance.status
             
             from apps.admin_panel.models import SystemSettings
@@ -384,6 +383,8 @@ def update_grievance_status(request, grievance_id):
                     resolution_notes = 'Grievance rejected upon administrative review.'
                 elif new_status == 'pending':
                     resolution_notes = 'Case resumed / reopened for active inquiry.'
+                elif new_status == 'in_progress':
+                    resolution_notes = 'Investigation in progress by assigned authority.'
 
             # Handle SLA pause tracking
             if new_status == 'pending_student' and old_status != 'pending_student':
@@ -397,7 +398,7 @@ def update_grievance_status(request, grievance_id):
             grievance.status = new_status
             if new_status in ['resolved', 'rejected']:
                 grievance.actual_resolution_date = timezone.now()
-            elif new_status == 'pending':
+            elif new_status in ['pending', 'in_progress']:
                 grievance.actual_resolution_date = None
             grievance.save()
 

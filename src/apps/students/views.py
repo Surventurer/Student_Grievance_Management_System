@@ -897,7 +897,8 @@ def appeal_grievance_view(request, grievance_id):
         # Send in-app notifications and email alerts to all relevant admins & officers
         try:
             from apps.notifications.models import Notification
-            from apps.authentication.models import User, AdminProfile
+            from apps.authentication.models import User
+            from apps.students.models import AdminProfile
             from django.urls import reverse
 
             staff_recipients = set()
@@ -918,7 +919,7 @@ def appeal_grievance_view(request, grievance_id):
                         staff_recipients.add(da.user)
 
             # 3. Superadmins (Appellate Authority)
-            for sa in User.objects.filter(is_superadmin=True, is_active=True):
+            for sa in User.objects.filter(role='superadmin', is_active=True):
                 staff_recipients.add(sa)
 
             admin_link = reverse('admin_panel:grievance_detail', kwargs={'grievance_id': grievance.id})

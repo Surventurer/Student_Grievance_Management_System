@@ -26,9 +26,9 @@ def check_sla_and_escalate():
         # If at Level 1, measure breach from when it escalated to Level 1
         base_time = grievance.submitted_at
         if grievance.escalation_level == 1:
-            last_esc = grievance.escalation_logs.order_by('-created_at').first()
+            last_esc = grievance.escalations.order_by('-timestamp').first()
             if last_esc:
-                base_time = last_esc.created_at
+                base_time = last_esc.timestamp
 
         breach_time = base_time + timedelta(hours=effective_sla) + pause_td
         

@@ -445,7 +445,9 @@ def category_list_api(request):
 def grievance_detail(request, grievance_id):
     """Get grievance details"""
     try:
-        grievance = Grievance.objects.get(id=grievance_id)
+        grievance = Grievance.objects.select_related('student', 'assigned_to', 'category').get(id=grievance_id, is_archived=False)
+        if not request.user.can_access_grievance(grievance):
+            return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)
         return Response({
             'id': grievance.id,
             'title': grievance.title,

@@ -8,15 +8,15 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     
     user_email = serializers.EmailField(source='user.email', read_only=True)
     user_name = serializers.CharField(source='user.get_full_name', read_only=True)
-    first_name = serializers.CharField(source='user.first_name')
-    last_name = serializers.CharField(source='user.last_name')
+    first_name = serializers.CharField(source='user.first_name', required=False)
+    last_name = serializers.CharField(source='user.last_name', required=False)
     
     class Meta:
         model = StudentProfile
         fields = [
-            'id', 'student_id', 'department', 'contact_no', 'year_of_study',
-            'course', 'emergency_contact', 'address', 'user_email', 'user_name',
-            'first_name', 'last_name', 'created_at', 'updated_at'
+            'id', 'student_id', 'name', 'school', 'department', 'contact_no',
+            'user_email', 'user_name', 'first_name', 'last_name',
+            'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'student_id', 'created_at', 'updated_at']
     
