@@ -33,6 +33,8 @@ _memory_cache = {}
 
 def is_development_mode():
     """Check whether application is running in explicit development mode"""
+    if getattr(settings, 'TESTING', False):
+        return False
     env = getattr(settings, 'ENVIRONMENT', 'development')
     if isinstance(env, str):
         env = env.lower().strip()

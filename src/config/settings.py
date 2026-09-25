@@ -15,9 +15,12 @@ def _parse_bool(val):
         return val
     return str(val).lower().strip() in ('true', '1', 't', 'yes', 'y', 'debug')
 
+import sys
+TESTING = 'test' in sys.argv or os.environ.get('TESTING') == '1'
+
 DEBUG = _parse_bool(config('DEBUG', default=True))
 ENVIRONMENT = config('ENVIRONMENT', default='development').lower().strip()
-SHOW_DEV_OTP = DEBUG and (ENVIRONMENT == 'development')
+SHOW_DEV_OTP = DEBUG and (ENVIRONMENT == 'development') and not TESTING
 
 _raw_allowed = config('ALLOWED_HOSTS', default='*')
 ALLOWED_HOSTS = [host.strip().strip("'\"") for host in _raw_allowed.split(',') if host.strip()]
@@ -126,9 +129,6 @@ def get_channel_layer_config():
 CHANNEL_LAYERS = {
     "default": get_channel_layer_config(),
 }
-
-import sys
-TESTING = 'test' in sys.argv or os.environ.get('TESTING') == '1'
 
 # Redis Caching framework (isolated LocMemCache in testing)
 if TESTING:
@@ -318,6 +318,13 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
-
     },
 }
+
+if TESTING:
+    # Silence expected 4xx warnings (Forbidden, Bad Request) during intentional security test runs
+    LOGGING['loggers']['django.request'] = {
+        'handlers': ['console'],
+        'level': 'ERROR',
+        'propagate': False,
+    }

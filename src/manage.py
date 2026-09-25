@@ -11,6 +11,10 @@ def main():
         default_addrport = os.environ.get('DJANGO_RUNSERVER_ADDRPORT', '0.0.0.0:8000')
         if len(sys.argv) == 2 or sys.argv[2].startswith('-'):
             sys.argv.insert(2, default_addrport)
+    elif len(sys.argv) >= 2 and sys.argv[1] == 'test':
+        has_label = any(not arg.startswith('-') for arg in sys.argv[2:])
+        if not has_label:
+            sys.argv.insert(2, 'apps')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
