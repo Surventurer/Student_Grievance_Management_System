@@ -92,3 +92,67 @@ class CrudManagementTest(TestCase):
         cat.refresh_from_db()
         self.assertEqual(cat.name, 'Dining & Mess Hygiene')
         self.assertEqual(cat.sla_hours, 24)
+
+    def test_category_toggle_status(self):
+        cat = Category.objects.create(
+            name='Hostel Wi-Fi',
+            category_type='non_academic',
+            is_active=True
+        )
+        toggle_url = reverse('admin_panel:toggle_category_status', kwargs={'category_id': cat.id})
+        
+        # Deactivate
+        response = self.client.post(toggle_url)
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['success'])
+        self.assertFalse(data['is_active'])
+        self.assertEqual(data['status'], 'deactivated')
+        cat.refresh_from_db()
+        self.assertFalse(cat.is_active)
+
+        # Reactivate
+        response2 = self.client.post(toggle_url)
+        self.assertEqual(response2.status_code, 200)
+        data2 = response2.json()
+        self.assertTrue(data2['success'])
+        self.assertTrue(data2['is_active'])
+        self.assertEqual(data2['status'], 'activated')
+        cat.refresh_from_db()
+        self.assertTrue(cat.is_active)
+
+    def test_category_bulk_update_status(self):
+        cat1 = Category.objects.create(name='Cat 1', category_type='academic', is_active=True)
+        cat2 = Category.objects.create(name='Cat 2', category_type='non_academic', is_active=True)
+        
+        bulk_url = reverse('admin_panel:bulk_update_category_status')
+        
+        # Bulk deactivate
+        response = self.client.post(
+            bulk_url,
+            data={'category_ids': [str(cat1.id), str(cat2.id)], 'is_active': False},
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['success'])
+        self.assertEqual(data['updated_count'], 2)
+        cat1.refresh_from_db()
+        cat2.refresh_from_db()
+        self.assertFalse(cat1.is_active)
+        self.assertFalse(cat2.is_active)
+
+        # Bulk activate
+        response2 = self.client.post(
+            bulk_url,
+            data={'category_ids': [str(cat1.id), str(cat2.id)], 'is_active': True},
+            content_type='application/json'
+        )
+        self.assertEqual(response2.status_code, 200)
+        data2 = response2.json()
+        self.assertTrue(data2['success'])
+        cat1.refresh_from_db()
+        cat2.refresh_from_db()
+        self.assertTrue(cat1.is_active)
+        self.assertTrue(cat2.is_active)
+

@@ -90,8 +90,8 @@ class SLAAndEscalationTest(TestCase):
         self.assertEqual(self.grievance.assigned_to, self.super_prof)
 
     def test_check_sla_and_escalate_task_breached(self):
-        # Backdate submitted_at by 50 hours (breaching 24h SLA)
-        past_time = timezone.now() - timedelta(hours=50)
+        # Backdate submitted_at by 7 days (guaranteed breach across weekend shifts)
+        past_time = timezone.now() - timedelta(days=7)
         Grievance.objects.filter(id=self.grievance.id).update(submitted_at=past_time)
 
         msg = check_sla_and_escalate()
@@ -108,7 +108,7 @@ class SLAAndEscalationTest(TestCase):
         self.grievance.is_escalated = True
         self.grievance.save()
 
-        # Previous escalation log created 30 hours ago (breaching 24h)
+        # Previous escalation log created 7 days ago (guaranteed breach across weekend shifts)
         esc_log = EscalationLog.objects.create(
             grievance=self.grievance,
             escalated_from=self.officer_prof,
@@ -116,7 +116,7 @@ class SLAAndEscalationTest(TestCase):
             reason="Level 1 escalation"
         )
         EscalationLog.objects.filter(id=esc_log.id).update(
-            timestamp=timezone.now() - timedelta(hours=30)
+            timestamp=timezone.now() - timedelta(days=7)
         )
 
         msg = check_sla_and_escalate()
@@ -130,7 +130,7 @@ class SLAAndEscalationTest(TestCase):
         self.grievance.status = 'pending_student'
         self.grievance.save()
 
-        past_time = timezone.now() - timedelta(hours=50)
+        past_time = timezone.now() - timedelta(days=7)
         Grievance.objects.filter(id=self.grievance.id).update(submitted_at=past_time)
 
         msg = check_sla_and_escalate()

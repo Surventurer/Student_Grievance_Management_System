@@ -376,9 +376,9 @@
                         <td>
                             {% if user.id != request.user.id %}
                                 <div class="btn-group" role="group">
-                                    <button class="btn btn-sm btn-outline-primary" onclick="editUser({{ user.id }})" 
-                                            title="Edit User">
-                                        <i class="fas fa-edit"></i>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="viewUser({{ user.id }})" 
+                                            title="View User">
+                                        <i class="fas fa-eye"></i>
                                     </button>
                                     <button class="btn btn-sm btn-outline-{{ user.is_active|yesno:'warning,success' }}" 
                                             onclick="toggleUserStatus({{ user.id }})" 
@@ -550,12 +550,12 @@
     </div>
 </div>
 
-<!-- Edit User Modal -->
+<!-- View User Modal -->
 <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editModalLabel">Edit User</h5>
+                <h5 class="modal-title" id="editModalLabel">View User</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -631,18 +631,12 @@
                         <h6 class="text-primary mb-3">Staff Information</h6>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="editAdminName" class="form-label">
-                                    Full Name <i class="fas fa-lock text-muted ms-1" title="Locked by system"></i>
-                                </label>
-                                <input type="text" class="form-control bg-light" id="editAdminName" name="admin_name" readonly title="Permanent record">
-                                <small class="text-muted">Permanent record</small>
+                                <label for="editAdminName" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="editAdminName" name="admin_name" readonly>
                             </div>
                             <div class="col-md-6">
-                                <label for="editAdminEmployeeId" class="form-label">
-                                    Employee ID <i class="fas fa-lock text-muted ms-1" title="Locked by system"></i>
-                                </label>
-                                <input type="text" class="form-control bg-light" id="editAdminEmployeeId" name="admin_employee_id" readonly title="Permanent record">
-                                <small class="text-muted">Permanent record</small>
+                                <label for="editAdminEmployeeId" class="form-label">Employee ID</label>
+                                <input type="text" class="form-control" id="editAdminEmployeeId" name="admin_employee_id" readonly>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -934,16 +928,14 @@ function debugBulkDelete() {
     
     // Check if we have everything we need
     if (checkboxes.length === 0) {
-        alert('❌ No checkboxes selected');
+        alert('No checkboxes selected');
         return;
     }
     
     if (!csrfToken) {
-        alert('❌ CSRF token not found');
+        alert('CSRF token not found');
         return;
     }
-    
-    alert(`✅ Ready to delete ${checkboxes.length} users with CSRF token`);
     
     // Actually perform the action
     performBulkAction('delete');
@@ -1023,8 +1015,8 @@ function toggleUserStatus(userId) {
     });
 }
 
-// Edit user function
-function editUser(userId) {
+// View user function
+function viewUser(userId) {
     // Get user details first
     fetch(`{% url 'admin_panel:get_department_user_details' user_id=0 %}`.replace('0', userId))
     .then(response => response.json())
@@ -1042,10 +1034,15 @@ function editUser(userId) {
     });
 }
 
-// Show edit modal with user data
+// Backward compatibility alias
+function editUser(userId) {
+    viewUser(userId);
+}
+
+// Show edit/view modal with user data
 function showEditModal(user) {
     // Set the modal title
-    document.getElementById('editModalLabel').textContent = `Edit User: ${user.name || user.email}`;
+    document.getElementById('editModalLabel').textContent = `View User: ${user.name || user.email}`;
     
     // Populate basic fields
     document.getElementById('editUserId').value = user.id;

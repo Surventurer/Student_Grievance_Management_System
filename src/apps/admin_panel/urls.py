@@ -59,8 +59,10 @@ urlpatterns = [
     path('manage/categories/create/', views.category_create, name='category_create'),
     path('manage/categories/<uuid:category_id>/edit/', views.category_edit, name='category_edit'),
     path('manage/categories/<uuid:category_id>/delete/', views.category_delete, name='category_delete'),
+    path('manage/categories/<uuid:category_id>/toggle-status/', views.toggle_category_status, name='toggle_category_status'),
     path('manage/categories/bulk-delete/', views.bulk_delete_categories, name='bulk_delete_categories'),
     path('manage/categories/bulk-update-status/', views.bulk_update_category_status, name='bulk_update_category_status'),
+    path('categories/<uuid:category_id>/toggle/', views.toggle_category_status, name='toggle_category_status_legacy'),
     
     # School CRUD
     path('manage/schools/', views.school_management, name='school_management'),
@@ -103,7 +105,6 @@ urlpatterns = [
     path('superadmin/users/bulk-delete/', superadmin_views.bulk_delete_users, name='bulk_delete_users'),
     path('superadmin/users/bulk-deactivate/', superadmin_views.bulk_deactivate_users, name='bulk_deactivate_users'),
     path('superadmin/users/bulk-activate/', superadmin_views.bulk_activate_users, name='bulk_activate_users'),
-    path('superadmin/users/import-csv/', superadmin_views.import_users_csv, name='import_users_csv'),
     
     # Temporary Registration Management (Part of User Management)
     path('superadmin/temp-registrations/<int:temp_id>/approve/', superadmin_views.approve_temporary_registration, name='approve_temp_registration'),

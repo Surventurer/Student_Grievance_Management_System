@@ -28,6 +28,7 @@ from apps.grievances.models import (
 )
 from apps.notifications.models import Notification
 from apps.students.models import School, Department, StudentProfile, AdminProfile
+from apps.admin_panel.models import SystemSettings
 from apps.authentication.models import User
 from apps.authentication.decorators import (
     dept_admin_required, admin_required, superadmin_required, permission_required, role_required
@@ -110,14 +111,23 @@ def admin_dashboard(request):
         
         if user.is_superadmin:
             total_users = User.objects.count()
-            # Count distinct users from active sessions
+            sys_settings = SystemSettings.load()
+            timeout_seconds = sys_settings.session_timeout * 60
+            now_ts = timezone.now().timestamp()
+
+            # Count distinct users who have been active within the session_timeout window
             active_session_qs = Session.objects.filter(expire_date__gte=timezone.now())
             active_user_ids = set()
             for session in active_session_qs:
-                data = session.get_decoded()
-                user_id = data.get('_auth_user_id')
-                if user_id:
-                    active_user_ids.add(user_id)
+                try:
+                    data = session.get_decoded()
+                    user_id = data.get('_auth_user_id')
+                    last_activity = data.get('last_activity')
+                    if user_id and last_activity:
+                        if (now_ts - last_activity) <= timeout_seconds:
+                            active_user_ids.add(user_id)
+                except Exception:
+                    continue
             active_sessions = len(active_user_ids)
             
         elif user.role in ['admin', 'officer']:

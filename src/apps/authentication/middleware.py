@@ -1,7 +1,9 @@
-from datetime import datetime, timedelta
-from django.utils import timezone
+from datetime import datetime
+from django.contrib import messages
+from django.shortcuts import redirect
 from apps.admin_panel.models import SystemSettings
 from django.contrib.auth import logout
+
 
 class SessionTimeoutMiddleware:
     def __init__(self, get_response):
@@ -18,9 +20,12 @@ class SessionTimeoutMiddleware:
                 
                 if last_activity and (now - last_activity) > timeout:
                     logout(request)
-                    # Don't delete the message directly so user knows they were logged out
+                    messages.warning(request, 'Your session has expired due to inactivity. Please log in again.')
+                    return redirect('authentication:login_view')
                 else:
                     request.session['last_activity'] = now
+                    # Synchronize cookie & database expire_date with sliding inactivity timeout
+                    request.session.set_expiry(timeout)
             except Exception:
                 pass
                 

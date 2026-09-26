@@ -6,15 +6,24 @@
 {% block extra_css %}
 <style>
     .category-card {
-        border: none;
+        border: 1px solid #e5e7eb;
         border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.06);
         transition: all 0.3s ease;
     }
     
     .category-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+    
+    .category-card.is-active {
+        border-left: 4px solid #198754;
+    }
+    
+    .category-card.is-inactive {
+        border-left: 4px solid #6c757d;
+        background-color: #fafbfc;
     }
     
     .category-type-badge {
@@ -29,24 +38,17 @@
     
     .status-toggle:hover {
         transform: scale(1.05);
-        opacity: 0.8;
-    }
-    
-    .bg-success.status-toggle:hover {
-        background-color: #198754 !important;
-    }
-    
-    .bg-secondary.status-toggle:hover {
-        background-color: #6c757d !important;
+        opacity: 0.85;
     }
     
     .search-filters {
         background: #ffffff;
-        border-radius: 4px;
+        border-radius: 6px;
         color: #111827;
         padding: 1.5rem;
         margin-bottom: 2rem;
         border: 1px solid #e5e7eb;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
     
     .filter-input {
@@ -68,20 +70,10 @@
     }
     
     .bulk-actions-card {
-        background: #f9fafb;
-        border: 1px solid #e5e7eb;
-        border-radius: 4px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
         color: #111827;
-    }
-    
-    .bulk-actions-card .btn {
-        border-color: #d1d5db;
-        color: #111827;
-    }
-    
-    .bulk-actions-card .btn:hover {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.5);
     }
 </style>
 {% endblock %}
@@ -118,6 +110,9 @@
         </div>
     </div>
 
+    <!-- Dynamic AJAX Alert Container -->
+    <div id="ajaxAlertContainer" class="mb-3"></div>
+
     <!-- Active Filters Indicator -->
     {% if search or category_type or status_filter %}
     <div class="row mb-3">
@@ -135,7 +130,7 @@
                         </span>
                     {% endif %}
                     {% if status_filter %}
-                        <span class="badge bg-warning ms-1">Status: {{ status_filter|title }}</span>
+                        <span class="badge bg-warning text-dark ms-1">Status: {{ status_filter|title }}</span>
                     {% endif %}
                 </div>
                 <a href="{% url 'admin_panel:category_management' %}" class="btn btn-sm btn-outline-primary">
@@ -150,12 +145,12 @@
     <div class="search-filters">
         <form method="GET" class="row g-3">
             <div class="col-md-4">
-                <label for="search" class="form-label">Search Nature of Grievance</label>
+                <label for="search" class="form-label fw-semibold">Search Nature of Grievance</label>
                 <input type="text" class="form-control filter-input" id="search" name="search" 
                        value="{{ search }}" placeholder="Search by name">
             </div>
             <div class="col-md-3">
-                <label for="type" class="form-label">Category Type</label>
+                <label for="type" class="form-label fw-semibold">Category Type</label>
                 <select class="form-select filter-input" id="type" name="type">
                     <option value="">All Types</option>
                     {% for value, label in category_types %}
@@ -166,7 +161,7 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="status" class="form-label">Status</label>
+                <label for="status" class="form-label fw-semibold">Status</label>
                 <select class="form-select filter-input" id="status" name="status">
                     <option value="">All Status</option>
                     <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
@@ -174,36 +169,36 @@
                 </select>
             </div>
             <div class="col-md-2 d-flex align-items-end">
-                <div class="d-grid gap-1 w-100">
-                    <button type="submit" class="btn btn-light">
-                        <i class="fas fa-search"></i> Filter
+                <div class="d-grid gap-2 w-100">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-1"></i> Filter
                     </button>
-                    <a href="{% url 'admin_panel:category_management' %}" class="btn btn-outline-light btn-sm"
+                    <a href="{% url 'admin_panel:category_management' %}" class="btn btn-outline-secondary btn-sm"
                        data-bs-toggle="tooltip" data-bs-placement="top" title="Clear all filters (Ctrl+R)">
-                        <i class="fas fa-times"></i> Clear Filters
+                        <i class="fas fa-times me-1"></i> Clear Filters
                     </a>
                 </div>
             </div>
         </form>
         
         <!-- Quick Filters -->
-        <div class="row mt-3">
+        <div class="row mt-3 pt-3 border-top">
             <div class="col-12">
                 <div class="d-flex flex-wrap gap-2 align-items-center">
-                    <small class="text-white-50 me-2">Quick Filters:</small>
-                    <button type="button" class="btn btn-outline-light btn-sm" onclick="filterByType('academic')">
+                    <span class="text-secondary small fw-semibold me-2"><i class="fas fa-bolt text-warning me-1"></i>Quick Filters:</span>
+                    <button type="button" class="btn btn-outline-primary btn-sm {% if category_type == 'academic' %}active{% endif %}" onclick="filterByType('academic')">
                         <i class="fas fa-graduation-cap me-1"></i>Academic Only
                     </button>
-                    <button type="button" class="btn btn-outline-light btn-sm" onclick="filterByType('non_academic')">
+                    <button type="button" class="btn btn-outline-info btn-sm {% if category_type == 'non_academic' %}active{% endif %}" onclick="filterByType('non_academic')">
                         <i class="fas fa-cogs me-1"></i>Non-Academic Only
                     </button>
-                    <button type="button" class="btn btn-outline-light btn-sm" onclick="filterByStatus('active')">
+                    <button type="button" class="btn btn-outline-success btn-sm {% if status_filter == 'active' %}active{% endif %}" onclick="filterByStatus('active')">
                         <i class="fas fa-check-circle me-1"></i>Active Only
                     </button>
-                    <button type="button" class="btn btn-outline-light btn-sm" onclick="filterByStatus('inactive')">
+                    <button type="button" class="btn btn-outline-danger btn-sm {% if status_filter == 'inactive' %}active{% endif %}" onclick="filterByStatus('inactive')">
                         <i class="fas fa-times-circle me-1"></i>Inactive Only
                     </button>
-                    <button type="button" class="btn btn-light btn-sm" onclick="clearFilters()"
+                    <button type="button" class="btn btn-outline-dark btn-sm" onclick="clearFilters()"
                             data-bs-toggle="tooltip" data-bs-placement="top" title="Reset all filters (Ctrl+R)">
                         <i class="fas fa-undo me-1"></i>Show All
                     </button>
@@ -219,22 +214,22 @@
                 <div class="card-body py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="d-flex gap-2 flex-wrap">
-                            <button type="button" class="btn btn-outline-light btn-sm" onclick="bulkActivateCategories()">
+                            <button type="button" class="btn btn-success btn-sm" onclick="bulkActivateCategories()">
                                 <i class="fas fa-check me-1"></i>Bulk Activate
                             </button>
-                            <button type="button" class="btn btn-outline-light btn-sm" onclick="bulkDeactivateCategories()">
-                                <i class="fas fa-times me-1"></i>Bulk Deactivate
+                            <button type="button" class="btn btn-warning btn-sm" onclick="bulkDeactivateCategories()">
+                                <i class="fas fa-ban me-1"></i>Bulk Deactivate
                             </button>
-                            <button type="button" class="btn btn-outline-light btn-sm" onclick="bulkDeleteCategories()">
+                            <button type="button" class="btn btn-danger btn-sm" onclick="bulkDeleteCategories()">
                                 <i class="fas fa-trash me-1"></i>Bulk Delete
                             </button>
-                            <button type="button" class="btn btn-outline-light btn-sm" onclick="clearSelection()">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="clearSelection()">
                                 <i class="fas fa-times me-1"></i>Clear Selection
                             </button>
                         </div>
                         <div class="text-center">
                             <strong><span id="selectedCount">0</span> categories selected</strong>
-                            <br><small class="opacity-75">Use checkboxes to select categories for bulk operations</small>
+                            <br><small class="text-muted">Use checkboxes to select categories for bulk operations</small>
                         </div>
                     </div>
                 </div>
@@ -293,8 +288,8 @@
     <div class="row">
         {% for category in categories %}
         <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card category-card h-100" id="category-{{ category.id }}">
-                <div class="card-body">
+            <div class="card category-card h-100 {% if category.is_active %}is-active{% else %}is-inactive{% endif %}" id="category-{{ category.id }}">
+                <div class="card-body d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div class="d-flex align-items-center">
                             <input class="form-check-input me-2 category-checkbox" type="checkbox" 
@@ -303,10 +298,17 @@
                         </div>
                         <div class="dropdown">
                             <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" 
-                                    data-bs-toggle="dropdown">
+                                    data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-ellipsis-v"></i>
                             </button>
-                            <ul class="dropdown-menu">
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                <li>
+                                    <a class="dropdown-item toggle-status-menu-btn text-{% if category.is_active %}warning{% else %}success{% endif %}" 
+                                       href="#" onclick="toggleCategoryStatus('{{ category.id }}', '{{ category.name|escapejs }}'); return false;">
+                                        <i class="fas fa-{% if category.is_active %}ban{% else %}check-circle{% endif %} me-2"></i>
+                                        <span>{% if category.is_active %}Deactivate{% else %}Activate{% endif %}</span>
+                                    </a>
+                                </li>
                                 <li>
                                     <a class="dropdown-item" href="{% url 'admin_panel:category_edit' category.id %}">
                                         <i class="fas fa-edit me-2"></i>Edit
@@ -315,7 +317,7 @@
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item text-danger" href="#" 
-                                       onclick="deleteCategory('{{ category.id }}', '{{ category.name }}')">
+                                       onclick="deleteCategory('{{ category.id }}', '{{ category.name|escapejs }}'); return false;">
                                         <i class="fas fa-trash me-2"></i>Delete
                                     </a>
                                 </li>
@@ -324,24 +326,26 @@
                     </div>
                     
                     <div class="mb-3">
+                        {% if category.category_type %}
                         <span class="badge category-type-badge 
                                    {% if category.category_type == 'academic' %}bg-primary{% else %}bg-info{% endif %}">
                             {{ category.get_category_type_display }}
                         </span>
-                        <span class="badge ms-2 status-toggle {% if category.is_active %}bg-success{% else %}bg-secondary{% endif %}" 
+                        {% endif %}
+                        <span class="badge ms-1 status-toggle {% if category.is_active %}bg-success{% else %}bg-secondary{% endif %}" 
                               data-category-id="{{ category.id }}" id="statusBadge-{{ category.id }}"
-                              onclick="toggleCategoryStatus('{{ category.id }}', '{{ category.name }}')"
+                              onclick="toggleCategoryStatus('{{ category.id }}', '{{ category.name|escapejs }}')"
                               style="cursor: pointer;" 
-                              {% if category.is_active %}data-bs-toggle="tooltip" data-bs-placement="top" title="Click to deactivate"{% else %}data-bs-toggle="tooltip" data-bs-placement="top" title="Click to activate"{% endif %}>
+                              title="Click to {% if category.is_active %}deactivate{% else %}activate{% endif %}">
                             {% if category.is_active %}
                                 <i class="fas fa-check-circle me-1"></i>Active
                             {% else %}
                                 <i class="fas fa-times-circle me-1"></i>Inactive
                             {% endif %}
                         </span>
-                        <span class="badge bg-dark ms-2"><i class="fas fa-stopwatch me-1"></i>SLA: {{ category.sla_hours|default:48 }}h</span>
+                        <span class="badge bg-dark ms-1"><i class="fas fa-stopwatch me-1"></i>SLA: {{ category.sla_hours|default:48 }}h</span>
                         {% if category.auto_assign_enabled %}
-                        <span class="badge bg-warning text-dark ms-2">Auto-Assign</span>
+                        <span class="badge bg-warning text-dark ms-1">Auto-Assign</span>
                         {% endif %}
                     </div>
                     
@@ -350,28 +354,29 @@
                         <small class="text-muted">Keywords:</small>
                         <div class="mt-1">
                             {% for keyword in category.keyword_list %}
-                                <span class="badge bg-light text-dark me-1">{{ keyword }}</span>
+                                <span class="badge bg-light text-dark me-1 border">{{ keyword }}</span>
                             {% endfor %}
                         </div>
                     </div>
                     {% endif %}
                     
-                    <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
                         <small class="text-muted">
                             Created: {{ category.created_at|date:"M d, Y" }}
                         </small>
                         <div class="btn-group btn-group-sm">
-                            <button class="btn btn-outline-{% if category.is_active %}warning{% else %}success{% endif %} btn-sm" 
-                                    onclick="toggleCategoryStatus('{{ category.id }}', '{{ category.name }}')"
-                                    title="Toggle Status">
-                                <i class="fas fa-{% if category.is_active %}pause{% else %}play{% endif %}"></i>
+                            <button class="btn btn-outline-{% if category.is_active %}warning{% else %}success{% endif %} btn-sm category-toggle-btn" 
+                                    onclick="toggleCategoryStatus('{{ category.id }}', '{{ category.name|escapejs }}')"
+                                    title="{% if category.is_active %}Deactivate Category{% else %}Activate Category{% endif %}">
+                                <i class="fas fa-{% if category.is_active %}ban{% else %}check{% endif %} me-1"></i>
+                                <span class="btn-text">{% if category.is_active %}Deactivate{% else %}Activate{% endif %}</span>
                             </button>
                             <a href="{% url 'admin_panel:category_edit' category.id %}" 
                                class="btn btn-outline-primary btn-sm" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
                             <button class="btn btn-outline-danger btn-sm" 
-                                    onclick="deleteCategory('{{ category.id }}', '{{ category.name }}')"
+                                    onclick="deleteCategory('{{ category.id }}', '{{ category.name|escapejs }}')"
                                     title="Delete">
                                 <i class="fas fa-trash"></i>
                             </button>
@@ -497,63 +502,106 @@ function filterByStatus(status) {
 }
 
 function toggleCategoryStatus(categoryId, categoryName) {
-    if (!confirm(`Are you sure you want to toggle the status of "${categoryName}"?`)) {
-        return;
-    }
-    
-    const statusBadge = document.querySelector(`[data-category-id="${categoryId}"]`);
-    const originalContent = statusBadge.innerHTML;
+    const card = document.getElementById(`category-${categoryId}`);
+    const statusBadge = document.getElementById(`statusBadge-${categoryId}`) || document.querySelector(`[data-category-id="${categoryId}"]`);
+    const originalBadgeContent = statusBadge ? statusBadge.innerHTML : '';
+    const originalBadgeClass = statusBadge ? statusBadge.className : '';
     
     // Show loading state
-    statusBadge.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Updating...';
-    statusBadge.className = 'badge ms-2 bg-secondary';
+    if (statusBadge) {
+        statusBadge.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Updating...';
+        statusBadge.className = 'badge ms-1 bg-secondary';
+    }
     
-    fetch(`/admin-panel/categories/${categoryId}/toggle/`, {
+    const toggleButton = card ? card.querySelector('.category-toggle-btn') : null;
+    if (toggleButton) {
+        toggleButton.disabled = true;
+    }
+    
+    fetch(`/admin-panel/manage/categories/${categoryId}/toggle-status/`, {
         method: 'POST',
         headers: {
-            'X-CSRFToken': '{{ csrf_token }}',
+            'X-CSRFToken': getCookie('csrftoken') || '{{ csrf_token }}',
             'Content-Type': 'application/json',
         },
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
+        if (toggleButton) toggleButton.disabled = false;
+        
         if (data.success) {
-            // Update badge based on new status
-            if (data.is_active) {
-                statusBadge.innerHTML = '<i class="fas fa-check-circle me-1"></i>Active';
-                statusBadge.className = 'badge ms-2 bg-success status-toggle';
-                statusBadge.setAttribute('title', 'Click to deactivate');
-            } else {
-                statusBadge.innerHTML = '<i class="fas fa-times-circle me-1"></i>Inactive';
-                statusBadge.className = 'badge ms-2 bg-secondary status-toggle';
-                statusBadge.setAttribute('title', 'Click to activate');
-            }
+            const isActive = data.is_active;
             
-            // Update toggle button icon in actions
-            const toggleButton = statusBadge.closest('.card').querySelector('.btn-group .btn-outline-warning, .btn-group .btn-outline-success');
-            if (toggleButton) {
-                if (data.is_active) {
-                    toggleButton.className = 'btn btn-outline-warning btn-sm';
-                    toggleButton.innerHTML = '<i class="fas fa-pause"></i>';
-                    toggleButton.setAttribute('title', 'Deactivate');
+            // Update Card visual style
+            if (card) {
+                if (isActive) {
+                    card.classList.remove('is-inactive');
+                    card.classList.add('is-active');
                 } else {
-                    toggleButton.className = 'btn btn-outline-success btn-sm';
-                    toggleButton.innerHTML = '<i class="fas fa-play"></i>';
-                    toggleButton.setAttribute('title', 'Activate');
+                    card.classList.remove('is-active');
+                    card.classList.add('is-inactive');
                 }
             }
             
-            showAlert('success', `Category "${categoryName}" has been ${data.status}.`);
+            // Update Status Badge
+            if (statusBadge) {
+                if (isActive) {
+                    statusBadge.innerHTML = '<i class="fas fa-check-circle me-1"></i>Active';
+                    statusBadge.className = 'badge ms-1 bg-success status-toggle';
+                    statusBadge.setAttribute('title', 'Click to deactivate');
+                } else {
+                    statusBadge.innerHTML = '<i class="fas fa-times-circle me-1"></i>Inactive';
+                    statusBadge.className = 'badge ms-1 bg-secondary status-toggle';
+                    statusBadge.setAttribute('title', 'Click to activate');
+                }
+            }
+            
+            // Update Toggle Button in Card Footer
+            if (toggleButton) {
+                if (isActive) {
+                    toggleButton.className = 'btn btn-outline-warning btn-sm category-toggle-btn';
+                    toggleButton.innerHTML = '<i class="fas fa-ban me-1"></i><span class="btn-text">Deactivate</span>';
+                    toggleButton.setAttribute('title', 'Deactivate Category');
+                } else {
+                    toggleButton.className = 'btn btn-outline-success btn-sm category-toggle-btn';
+                    toggleButton.innerHTML = '<i class="fas fa-check me-1"></i><span class="btn-text">Activate</span>';
+                    toggleButton.setAttribute('title', 'Activate Category');
+                }
+            }
+            
+            // Update Dropdown Menu Item
+            const menuToggle = card ? card.querySelector('.toggle-status-menu-btn') : null;
+            if (menuToggle) {
+                if (isActive) {
+                    menuToggle.className = 'dropdown-item toggle-status-menu-btn text-warning';
+                    menuToggle.innerHTML = '<i class="fas fa-ban me-2"></i><span>Deactivate</span>';
+                } else {
+                    menuToggle.className = 'dropdown-item toggle-status-menu-btn text-success';
+                    menuToggle.innerHTML = '<i class="fas fa-check-circle me-2"></i><span>Activate</span>';
+                }
+            }
+            
+            showAlert('success', data.message || `Category "${categoryName}" has been ${isActive ? 'activated' : 'deactivated'}.`);
         } else {
-            // Restore original state on error
-            statusBadge.innerHTML = originalContent;
+            if (statusBadge) {
+                statusBadge.innerHTML = originalBadgeContent;
+                statusBadge.className = originalBadgeClass;
+            }
             showAlert('danger', data.error || 'Failed to update category status.');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        // Restore original state on error
-        statusBadge.innerHTML = originalContent;
+        if (toggleButton) toggleButton.disabled = false;
+        if (statusBadge) {
+            statusBadge.innerHTML = originalBadgeContent;
+            statusBadge.className = originalBadgeClass;
+        }
         showAlert('danger', 'An error occurred while updating the category status.');
     });
 }
@@ -570,21 +618,19 @@ function confirmDelete() {
     fetch(`/admin-panel/manage/categories/${categoryIdToDelete}/delete/`, {
         method: 'POST',
         headers: {
-            'X-CSRFToken': '{{ csrf_token }}',
+            'X-CSRFToken': getCookie('csrftoken') || '{{ csrf_token }}',
             'Content-Type': 'application/json',
         },
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Show success message
             showAlert('success', data.message);
-            // Reload page after short delay
             setTimeout(() => {
                 location.reload();
-            }, 1500);
+            }, 1200);
         } else {
-            showAlert('danger', data.error);
+            showAlert('danger', data.error || 'Failed to delete category.');
         }
         bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
     })
@@ -597,16 +643,23 @@ function confirmDelete() {
 
 function showAlert(type, message) {
     const alertHTML = `
-        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+        <div class="alert alert-${type} alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : (type === 'warning' ? 'exclamation-circle' : 'exclamation-triangle')} me-2"></i>
             ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     `;
     
-    const alertContainer = document.createElement('div');
-    alertContainer.innerHTML = alertHTML;
-    document.querySelector('.container-fluid').insertBefore(alertContainer.firstElementChild, document.querySelector('.container-fluid').firstElementChild);
+    const alertContainer = document.getElementById('ajaxAlertContainer');
+    if (alertContainer) {
+        alertContainer.innerHTML = alertHTML;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        const container = document.querySelector('.container-fluid');
+        const temp = document.createElement('div');
+        temp.innerHTML = alertHTML;
+        container.insertBefore(temp.firstElementChild, container.firstElementChild);
+    }
 }
 
 // CSRF Cookie function
@@ -756,28 +809,52 @@ function bulkUpdateStatus(categoryIds, isActive) {
                 const categoryElement = document.getElementById(`category-${id}`);
                 const statusBadge = document.getElementById(`statusBadge-${id}`);
                 
-                if (categoryElement && statusBadge) {
+                if (categoryElement) {
                     if (isActive) {
-                        statusBadge.className = 'badge ms-2 bg-success status-toggle';
+                        categoryElement.classList.remove('is-inactive');
+                        categoryElement.classList.add('is-active');
+                    } else {
+                        categoryElement.classList.remove('is-active');
+                        categoryElement.classList.add('is-inactive');
+                    }
+                }
+                
+                if (statusBadge) {
+                    if (isActive) {
+                        statusBadge.className = 'badge ms-1 bg-success status-toggle';
                         statusBadge.innerHTML = '<i class="fas fa-check-circle me-1"></i>Active';
                         statusBadge.setAttribute('title', 'Click to deactivate');
                     } else {
-                        statusBadge.className = 'badge ms-2 bg-secondary status-toggle';
+                        statusBadge.className = 'badge ms-1 bg-secondary status-toggle';
                         statusBadge.innerHTML = '<i class="fas fa-times-circle me-1"></i>Inactive';
                         statusBadge.setAttribute('title', 'Click to activate');
                     }
-                    
+                }
+                
+                if (categoryElement) {
                     // Update toggle button in actions
-                    const toggleButton = categoryElement.querySelector('.btn-group .btn-outline-warning, .btn-group .btn-outline-success');
+                    const toggleButton = categoryElement.querySelector('.category-toggle-btn');
                     if (toggleButton) {
                         if (isActive) {
-                            toggleButton.className = 'btn btn-outline-warning btn-sm';
-                            toggleButton.innerHTML = '<i class="fas fa-pause"></i>';
-                            toggleButton.setAttribute('title', 'Deactivate');
+                            toggleButton.className = 'btn btn-outline-warning btn-sm category-toggle-btn';
+                            toggleButton.innerHTML = '<i class="fas fa-ban me-1"></i><span class="btn-text">Deactivate</span>';
+                            toggleButton.setAttribute('title', 'Deactivate Category');
                         } else {
-                            toggleButton.className = 'btn btn-outline-success btn-sm';
-                            toggleButton.innerHTML = '<i class="fas fa-play"></i>';
-                            toggleButton.setAttribute('title', 'Activate');
+                            toggleButton.className = 'btn btn-outline-success btn-sm category-toggle-btn';
+                            toggleButton.innerHTML = '<i class="fas fa-check me-1"></i><span class="btn-text">Activate</span>';
+                            toggleButton.setAttribute('title', 'Activate Category');
+                        }
+                    }
+                    
+                    // Update dropdown menu
+                    const menuToggle = categoryElement.querySelector('.toggle-status-menu-btn');
+                    if (menuToggle) {
+                        if (isActive) {
+                            menuToggle.className = 'dropdown-item toggle-status-menu-btn text-warning';
+                            menuToggle.innerHTML = '<i class="fas fa-ban me-2"></i><span>Deactivate</span>';
+                        } else {
+                            menuToggle.className = 'dropdown-item toggle-status-menu-btn text-success';
+                            menuToggle.innerHTML = '<i class="fas fa-check-circle me-2"></i><span>Activate</span>';
                         }
                     }
                 }

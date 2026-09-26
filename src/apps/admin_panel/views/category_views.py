@@ -101,20 +101,34 @@ def manage_categories_view(request):
 
 
 @login_required
+@require_http_methods(["POST"])
 def toggle_category_status(request, category_id):
     """Toggle category active status"""
-    if not request.user.is_admin_or_officer:
-        return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
+    if not (can_manage_categories(request.user) or request.user.role in ['admin', 'superadmin'] or request.user.is_superuser):
+        return JsonResponse({'success': False, 'error': 'Access denied - Administrator privileges required'}, status=403)
     
     try:
         category = get_object_or_404(Category, id=category_id)
         category.is_active = not category.is_active
         category.save()
         
+        # Log audit entry
+        try:
+            AuditLog.objects.create(
+                user=request.user,
+                action='status_change',
+                description=f'{"Activated" if category.is_active else "Deactivated"} category: {category.name}',
+                target_model='Category',
+                target_id=str(category.id)
+            )
+        except Exception as audit_err:
+            print(f"Warning: Failed to create audit log for category toggle: {audit_err}")
+        
         return JsonResponse({
             'success': True, 
             'is_active': category.is_active,
-            'status': 'activated' if category.is_active else 'deactivated'
+            'status': 'activated' if category.is_active else 'deactivated',
+            'message': f'Category "{category.name}" has been {"activated" if category.is_active else "deactivated"}.'
         })
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
@@ -254,13 +268,11 @@ def bulk_delete_categories(request):
 
 
 @login_required
+@require_http_methods(["POST"])
 def bulk_update_category_status(request):
     """Bulk activate/deactivate categories"""
-    if not request.user.is_admin_or_officer:
-        return JsonResponse({'success': False, 'error': 'Access denied'}, status=403)
-    
-    if request.method != 'POST':
-        return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
+    if not (can_manage_categories(request.user) or request.user.role in ['admin', 'superadmin'] or request.user.is_superuser):
+        return JsonResponse({'success': False, 'error': 'Access denied - Administrator privileges required'}, status=403)
     
     try:
         import json
@@ -273,9 +285,20 @@ def bulk_update_category_status(request):
         
         updated_count = Category.objects.filter(id__in=category_ids).update(is_active=is_active)
         
+        try:
+            AuditLog.objects.create(
+                user=request.user,
+                action='status_change',
+                description=f'Bulk {"activated" if is_active else "deactivated"} {updated_count} categories',
+                target_model='Category'
+            )
+        except Exception as audit_err:
+            print(f"Warning: Failed to create audit log for bulk category update: {audit_err}")
+        
         return JsonResponse({
             'success': True,
             'updated_count': updated_count,
+            'is_active': is_active,
             'message': f'Successfully {"activated" if is_active else "deactivated"} {updated_count} categories'
         })
     
