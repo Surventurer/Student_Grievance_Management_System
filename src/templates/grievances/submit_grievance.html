@@ -182,8 +182,7 @@
                                 Department <span class="required-field">*</span>
                             </label>
                             
-                            <!-- Academic Department (Read-only) -->
-                            <div id="academic_department" class="department-field">
+                            <div id="student_department" class="department-field">
                                 <div class="form-control readonly-field">
                                     <i class="fas fa-lock me-2 text-muted"></i>
                                     {% if student_profile and student_profile.department %}{{ student_profile.department }}{% else %}Department not set{% endif %}
@@ -191,17 +190,8 @@
                                 <input type="hidden" name="academic_department" value="{% if student_profile %}{{ student_profile.department }}{% endif %}">
                                 <div class="form-text">
                                     <i class="fas fa-info-circle me-1"></i>
-                                    For academic grievances, your registered department will be used automatically
+                                    Your registered department will be used automatically for this grievance
                                 </div>
-                            </div>
-                            
-                            <!-- Non-Academic Department (Selectable) -->
-                            <div id="non_academic_department" class="department-field" style="display: none;">
-                                <select class="form-control" id="department_select" name="department">
-                                    <option value="">Select Department (All Schools)</option>
-                                    <!-- Will be populated dynamically -->
-                                </select>
-                                <div class="form-text">Select the department related to your grievance from any school</div>
                             </div>
                         </div>
                     </div>
@@ -345,6 +335,9 @@
                             </div>
                         </div>
                         
+                        <!-- OTP Alert / Dev Message Banner (Matching admin login OTP display) -->
+                        <div id="otpAlertBox" class="mt-2 mb-3" style="display: none;"></div>
+                        
                         <div class="row" id="otpVerificationRow" style="display: none;">
                             <div class="col-md-6">
                                 <div class="mb-3">
@@ -388,9 +381,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const otpCode = document.getElementById('otp_code');
     const submitBtn = document.getElementById('submitBtn');
     const otpStatus = document.getElementById('otpStatus');
-    const academicDepartment = document.getElementById('academic_department');
-    const nonAcademicDepartment = document.getElementById('non_academic_department');
-    const departmentSelect = document.getElementById('department_select');
     const hostelerRadios = document.querySelectorAll('input[name="is_hosteler"]');
     const hostelFields = document.getElementById('hostelFields');
 
@@ -402,13 +392,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const description = document.getElementById('description').value.trim();
         const categoryType = document.querySelector('input[name="category_type"]:checked')?.value || '';
         const categoryId = document.getElementById('nature_of_grievance').value.trim();
-        const departmentId = document.getElementById('department_select').value.trim();
 
-        return { title, description, categoryType, categoryId, departmentId };
+        return { title, description, categoryType, categoryId };
     }
 
     function validateRequiredFields(showAlerts = true) {
-        const { title, description, categoryType, categoryId, departmentId } = getGrievanceFormData();
+        const { title, description, categoryType, categoryId } = getGrievanceFormData();
 
         if (!title) {
             if (showAlerts) alert('Please enter a title for your grievance.');
@@ -427,11 +416,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!categoryId) {
             if (showAlerts) alert('Please select a category.');
-            return false;
-        }
-
-        if (categoryType === 'non_academic' && !departmentId) {
-            if (showAlerts) alert('Please select a department for non-academic grievances.');
             return false;
         }
 
@@ -466,61 +450,7 @@ document.addEventListener('DOMContentLoaded', function() {
         refreshOtpButtonState();
     });
 
-    // Load departments for non-academic
-    function loadDepartments() {
-        fetch('/students/api/departments/', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-            },
-            credentials: 'same-origin'
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                departmentSelect.innerHTML = '<option value="">Select Department (All Schools)</option>';
-                data.forEach(dept => {
-                    const option = document.createElement('option');
-                    option.value = dept.id;
-                    option.textContent = dept.display_name || dept.name; // Use display_name which includes school
-                    departmentSelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error('Error loading departments:', error);
-                // Fallback with actual department IDs from database
-                departmentSelect.innerHTML = `
-                    <option value="">Select Department (All Schools)</option>
-                    <option value="36">Computer Science - School of Engineering</option>
-                    <option value="37">Electrical Engineering - School of Engineering</option>
-                    <option value="38">Mechanical Engineering - School of Engineering</option>
-                    <option value="39">Civil Engineering - School of Engineering</option>
-                    <option value="40">Chemical Engineering - School of Engineering</option>
-                    <option value="41">Business Administration - School of Business</option>
-                    <option value="42">Marketing - School of Business</option>
-                    <option value="43">Finance - School of Business</option>
-                    <option value="44">Human Resources - School of Business</option>
-                    <option value="45">Operations Management - School of Business</option>
-                    <option value="46">English Literature - School of Arts and Sciences</option>
-                    <option value="47">Mathematics - School of Arts and Sciences</option>
-                    <option value="48">Physics - School of Arts and Sciences</option>
-                    <option value="49">Chemistry - School of Arts and Sciences</option>
-                    <option value="50">Biology - School of Arts and Sciences</option>
-                    <option value="51">History - School of Arts and Sciences</option>
-                    <option value="52">Psychology - School of Arts and Sciences</option>
-                    <option value="53">General Medicine - School of Medicine</option>
-                    <option value="54">Surgery - School of Medicine</option>
-                    <option value="55">Pediatrics - School of Medicine</option>
-                    <option value="56">Cardiology - School of Medicine</option>
-                    <option value="57">Neurology - School of Medicine</option>
-                `;
-            });
-    }
+
 
     // Load categories based on type
     function loadCategories(categoryType) {
@@ -556,18 +486,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.checked) {
                 loadCategories(this.value);
                 categoryDescription.style.display = 'none';
-                
-                // Show/hide department fields based on category
-                if (this.value === 'academic') {
-                    academicDepartment.style.display = 'block';
-                    nonAcademicDepartment.style.display = 'none';
-                    departmentSelect.removeAttribute('required');
-                } else {
-                    academicDepartment.style.display = 'none';
-                    nonAcademicDepartment.style.display = 'block';
-                    departmentSelect.setAttribute('required', 'required');
-                    loadDepartments(); // Load departments for non-academic
-                }
 
                 refreshOtpButtonState();
             }
@@ -589,7 +507,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.getElementById('title').addEventListener('input', refreshOtpButtonState);
-    document.getElementById('department_select').addEventListener('change', refreshOtpButtonState);
 
     // Send OTP handler
     sendOtpBtn.addEventListener('click', function() {
@@ -600,7 +517,7 @@ document.addEventListener('DOMContentLoaded', function() {
         this.disabled = true;
         this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
-        const { title, description, categoryType, categoryId, departmentId } = getGrievanceFormData();
+        const { title, description, categoryType, categoryId } = getGrievanceFormData();
         
         fetch('/grievances/send-otp/', {
             method: 'POST',
@@ -613,28 +530,96 @@ document.addEventListener('DOMContentLoaded', function() {
                 'title': title,
                 'description': description,
                 'category_type': categoryType,
-                'category_id': categoryId,
-                'department_id': departmentId
+                'category_id': categoryId
             })
         })
         .then(response => response.json())
         .then(data => {
+            const otpAlertBox = document.getElementById('otpAlertBox');
             if (data.success) {
                 otpSent = true;
                 otpVerificationRow.style.display = 'block';
-                otpStatus.textContent = 'OTP sent successfully! Please check your email.';
+                const messageText = data.message || 'OTP sent successfully! Please check your email.';
+                
+                if (otpAlertBox) {
+                    otpAlertBox.style.display = 'block';
+                    otpAlertBox.innerHTML = `
+                        <div class="alert alert-success d-flex align-items-center justify-content-between mb-0" role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <div>${messageText}</div>
+                            </div>
+                            ${data.dev_otp ? `<button type="button" class="btn btn-sm btn-outline-success ms-2 py-0 px-2 fw-bold" id="autoFillOtpBtn" title="Auto-fill verification code">Auto-fill</button>` : ''}
+                        </div>
+                    `;
+                    if (data.dev_otp) {
+                        const autoFillBtn = document.getElementById('autoFillOtpBtn');
+                        if (autoFillBtn) {
+                            autoFillBtn.addEventListener('click', function() {
+                                otpCode.value = data.dev_otp;
+                                otpCode.dispatchEvent(new Event('input'));
+                            });
+                        }
+                    }
+                }
+                
+                otpStatus.textContent = messageText;
+                otpStatus.classList.remove('text-muted', 'text-danger');
+                otpStatus.classList.add('text-success');
+
                 this.innerHTML = '<i class="fas fa-check"></i> Sent';
                 this.classList.remove('btn-success');
                 this.classList.add('btn-secondary');
+
+                if (otpCode) {
+                    otpCode.focus();
+                }
+
+                // Allow resending after 30 seconds
+                let cooldown = 30;
+                const cooldownTimer = setInterval(() => {
+                    cooldown--;
+                    if (cooldown <= 0) {
+                        clearInterval(cooldownTimer);
+                        if (!otpVerified) {
+                            sendOtpBtn.disabled = false;
+                            sendOtpBtn.innerHTML = '<i class="fas fa-redo"></i> Resend OTP';
+                            sendOtpBtn.classList.remove('btn-secondary');
+                            sendOtpBtn.classList.add('btn-outline-primary');
+                        }
+                    }
+                }, 1000);
             } else {
-                alert(data.error || 'Failed to send OTP. Please try again.');
+                const errorMsg = data.error || data.message || 'Failed to send OTP. Please try again.';
+                if (otpAlertBox) {
+                    otpAlertBox.style.display = 'block';
+                    otpAlertBox.innerHTML = `
+                        <div class="alert alert-danger d-flex align-items-center mb-0" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <div>${errorMsg}</div>
+                        </div>
+                    `;
+                } else {
+                    alert(errorMsg);
+                }
                 this.disabled = false;
                 this.innerHTML = '<i class="fas fa-paper-plane"></i> Send OTP';
             }
         })
         .catch(error => {
             console.error('Error sending OTP:', error);
-            alert('Error sending OTP. Please try again.');
+            const otpAlertBox = document.getElementById('otpAlertBox');
+            if (otpAlertBox) {
+                otpAlertBox.style.display = 'block';
+                otpAlertBox.innerHTML = `
+                    <div class="alert alert-danger d-flex align-items-center mb-0" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <div>Error sending OTP. Please try again.</div>
+                    </div>
+                `;
+            } else {
+                alert('Error sending OTP. Please try again.');
+            }
             this.disabled = false;
             this.innerHTML = '<i class="fas fa-paper-plane"></i> Send OTP';
         });
@@ -656,6 +641,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
+                const otpAlertBox = document.getElementById('otpAlertBox');
                 if (data.success) {
                     otpVerified = true;
                     if ({% if system_settings.is_support_active %}true{% else %}false{% endif %}) {
@@ -664,13 +650,32 @@ document.addEventListener('DOMContentLoaded', function() {
                         submitBtn.disabled = true;
                         submitBtn.title = "Submissions closed outside support hours.";
                     }
+                    if (otpAlertBox) {
+                        otpAlertBox.style.display = 'block';
+                        otpAlertBox.innerHTML = `
+                            <div class="alert alert-success d-flex align-items-center mb-0" role="alert">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <div>Email verified successfully! You can now submit your grievance.</div>
+                            </div>
+                        `;
+                    }
                     otpStatus.textContent = 'Email verified successfully!';
-                    otpStatus.classList.remove('text-muted');
+                    otpStatus.classList.remove('text-muted', 'text-danger');
                     otpStatus.classList.add('text-success');
-                    this.classList.remove('form-control');
+                    this.classList.remove('form-control', 'is-invalid');
                     this.classList.add('form-control', 'is-valid');
                 } else {
-                    otpStatus.textContent = 'Invalid OTP. Please try again.';
+                    const errorMsg = data.error || 'Invalid OTP. Please try again.';
+                    if (otpAlertBox) {
+                        otpAlertBox.style.display = 'block';
+                        otpAlertBox.innerHTML = `
+                            <div class="alert alert-danger d-flex align-items-center mb-0" role="alert">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <div>${errorMsg}</div>
+                            </div>
+                        `;
+                    }
+                    otpStatus.textContent = errorMsg;
                     otpStatus.classList.remove('text-success');
                     otpStatus.classList.add('text-danger');
                     this.classList.remove('is-valid');
@@ -680,6 +685,16 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Error verifying OTP:', error);
+                const otpAlertBox = document.getElementById('otpAlertBox');
+                if (otpAlertBox) {
+                    otpAlertBox.style.display = 'block';
+                    otpAlertBox.innerHTML = `
+                        <div class="alert alert-danger d-flex align-items-center mb-0" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <div>Error verifying OTP. Please try again.</div>
+                        </div>
+                    `;
+                }
                 otpStatus.textContent = 'Error verifying OTP. Please try again.';
                 otpStatus.classList.add('text-danger');
             });
@@ -703,10 +718,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const description = document.getElementById('description').value.trim();
         const categoryType = document.querySelector('input[name="category_type"]:checked')?.value;
         const categoryId = document.getElementById('nature_of_grievance').value;
-        const departmentId = document.getElementById('department_select').value;
         const otpCode = document.getElementById('otp_code').value.trim();
         
-        console.log('Form data:', { title, description, categoryType, categoryId, departmentId, otpCode });
+        console.log('Form data:', { title, description, categoryType, categoryId, otpCode });
         
         if (!validateRequiredFields(true)) {
             e.preventDefault();
@@ -749,9 +763,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('hostel_name')?.addEventListener('input', refreshOtpButtonState);
 
-    // Load academic categories by default and set up departments
+    // Load academic categories by default
     loadCategories('academic');
-    loadDepartments(); // Load departments for potential non-academic use
     refreshOtpButtonState();
 });
 </script>

@@ -49,6 +49,16 @@ def _safe_view_cache_delete(key):
     _view_cache.pop(key, None)
 
 
+def is_development_mode():
+    """Check whether application is running in explicit development mode"""
+    if getattr(settings, 'TESTING', False):
+        return False
+    env = getattr(settings, 'ENVIRONMENT', 'development')
+    if isinstance(env, str):
+        env = env.lower().strip()
+    return bool(getattr(settings, 'DEBUG', False) and env == 'development')
+
+
 def is_user_viewing_grievance(user, grievance_id):
     """Check if user is currently viewing a grievance"""
     if not user or not user.is_authenticated:
@@ -148,15 +158,7 @@ def submit_grievance_view(request):
                 }
                 return render(request, 'grievances/submit_grievance.html', context)
             
-            # For non-academic grievances, department is required
-            if category_type == 'non_academic' and not department_id:
-                messages.error(request, 'Please select a department for non-academic grievances')
-                context = {
-                    'student_profile': request.user.student_profile,
-                    'system_settings': system_settings
-                }
-                return render(request, 'grievances/submit_grievance.html', context)
-            
+
             # Verify OTP
             email_verification = GrievanceOTPVerification.objects.filter(
                 email=request.user.email,
@@ -189,23 +191,8 @@ def submit_grievance_view(request):
                 }
                 return render(request, 'grievances/submit_grievance.html', context)
             
-            # Determine department based on category type
-            if category_type == 'academic':
-                # For academic grievances, use student's department
-                grievance_department = request.user.student_profile.department
-            else:
-                # For non-academic grievances, use selected department
-                try:
-                    from apps.students.models import Department
-                    dept = Department.objects.get(id=department_id)
-                    grievance_department = dept.name
-                except Department.DoesNotExist:
-                    messages.error(request, 'Invalid department selected')
-                    context = {
-                        'student_profile': request.user.student_profile,
-                        'system_settings': system_settings
-                    }
-                    return render(request, 'grievances/submit_grievance.html', context)
+            # Determine department (always use student's department)
+            grievance_department = request.user.student_profile.department
             
             # Create grievance
             grievance = Grievance.objects.create(
@@ -269,16 +256,20 @@ def submit_grievance_view(request):
             import traceback
             traceback.print_exc()
             messages.error(request, f'Error submitting grievance: {str(e)}')
+            show_dev = getattr(settings, 'SHOW_DEV_OTP', False) or (settings.DEBUG and is_development_mode())
             context = {
                 'student_profile': request.user.student_profile,
-                'system_settings': __import__('apps.admin_panel.models', fromlist=['SystemSettings']).SystemSettings.load()
+                'system_settings': __import__('apps.admin_panel.models', fromlist=['SystemSettings']).SystemSettings.load(),
+                'show_dev_otp': show_dev,
             }
             return render(request, 'grievances/submit_grievance.html', context)
     
     # GET request - show the form
+    show_dev = getattr(settings, 'SHOW_DEV_OTP', False) or (settings.DEBUG and is_development_mode())
     context = {
         'student_profile': request.user.student_profile,
-        'system_settings': __import__('apps.admin_panel.models', fromlist=['SystemSettings']).SystemSettings.load()
+        'system_settings': __import__('apps.admin_panel.models', fromlist=['SystemSettings']).SystemSettings.load(),
+        'show_dev_otp': show_dev,
     }
     return render(request, 'grievances/submit_grievance.html', context)
 
@@ -320,9 +311,7 @@ def send_otp_view(request):
         if not all([title, description, category_id]):
             return JsonResponse({'success': False, 'error': 'Please fill all required grievance fields before requesting OTP'})
 
-        if category_type == 'non_academic' and not department_id:
-            return JsonResponse({'success': False, 'error': 'Please select a department before requesting OTP'})
-        
+
         # Generate OTP
         otp = ''.join(random.choices(string.digits, k=6))
         
@@ -336,6 +325,9 @@ def send_otp_view(request):
             purpose='grievance_submission'
         )
         
+        show_dev = getattr(settings, 'SHOW_DEV_OTP', False) or (settings.DEBUG and is_development_mode())
+        dev_otp_val = otp if show_dev else None
+
         # Send OTP email (you can implement actual email sending here)
         from django.core.mail import send_mail
         try:
@@ -348,7 +340,7 @@ def send_otp_view(request):
             )
             
             # For development: print OTP to console
-            if settings.DEBUG:
+            if show_dev:
                 print(f"\n{'='*60}")
                 print(f"✉️  GRIEVANCE SUBMISSION OTP")
                 print(f"Email: {email}")
@@ -356,19 +348,27 @@ def send_otp_view(request):
                 print(f"Expires in: 10 minutes")
                 print(f"{'='*60}\n")
             
-            return JsonResponse({'success': True})
+            msg = 'OTP sent successfully! Please check your email.'
+            if show_dev:
+                msg += f' [DEV CODE: {otp}]'
+            
+            return JsonResponse({'success': True, 'message': msg, 'dev_otp': dev_otp_val})
         except Exception as e:
             print(f"Email sending failed: {e}")
             
             # For development: show OTP in dev message if email fails
-            if settings.DEBUG:
+            if show_dev:
                 print(f"\n{'='*60}")
                 print(f"⚠️  EMAIL FAILED - GRIEVANCE SUBMISSION OTP")
                 print(f"Email: {email}")
                 print(f"OTP Code: {otp}")
                 print(f"Error: {str(e)}")
                 print(f"{'='*60}\n")
-                return JsonResponse({'success': True, 'dev_otp': otp, 'message': f'Dev mode: OTP is {otp}'})
+                return JsonResponse({
+                    'success': True, 
+                    'dev_otp': otp, 
+                    'message': f'Development Mode: Your verification OTP is: {otp} (Email delivery failed). [DEV CODE: {otp}]'
+                })
             
             return JsonResponse({'success': False, 'error': 'Failed to deliver OTP to the provided email address. Please try again or contact support.'}, status=500)
         

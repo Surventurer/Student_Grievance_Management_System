@@ -717,12 +717,7 @@ def bulk_delete_users(request):
         deleted_users_info = []
         is_sqlite = connection.vendor == 'sqlite'
         
-        import io
-        import csv
-        csv_buffer = io.StringIO()
-        csv_writer = csv.writer(csv_buffer)
-        csv_writer.writerow(['User Email', 'Role', 'Grievance ID', 'Title', 'Status', 'Submitted At'])
-        
+
         with transaction.atomic():
             for user in users_to_delete:
                 user_id = user.id
@@ -736,16 +731,6 @@ def bulk_delete_users(request):
                     'role': user_role
                 })
 
-                # Write user and grievance data to CSV backup before deletion
-                if user.role == 'student' and hasattr(user, 'student_profile') and user.student_profile:
-                    grievances = user.student_profile.grievances.all()
-                    if grievances.exists():
-                        for g in grievances:
-                            csv_writer.writerow([user_email, user_role, g.grievance_id, g.title, g.status, g.submitted_at])
-                    else:
-                        csv_writer.writerow([user_email, user_role, 'No Grievances', 'N/A', 'N/A', 'N/A'])
-                else:
-                    csv_writer.writerow([user_email, user_role, 'N/A', 'N/A', 'N/A', 'N/A'])
 
                 # 1. Clean up HOD reference if user heads any department
                 affected_depts = list(Department.objects.filter(head_of_department=user))
@@ -783,8 +768,7 @@ def bulk_delete_users(request):
             'success': True,
             'deleted_count': deleted_count,
             'deleted_users': deleted_users_info,
-            'message': f'Successfully deleted {deleted_count} user(s)',
-            'csv_report': csv_buffer.getvalue()
+            'message': f'Successfully deleted {deleted_count} user(s)'
         })
         
     except json.JSONDecodeError:
